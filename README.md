@@ -1,0 +1,2 @@
+# ScarlettOS
+Coming soon friends.
