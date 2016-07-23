@@ -1,0 +1,5 @@
+[flake8]
+# W191: Tabs instead of spaces
+# E302: Expected 2 blank lines, found 0
+ignore = E302,E401,E501,E265,E713,D204,D102,D400,D205,E402,D202,D103,D209,D105,D101,D401,D200,E127,D100
+max-line-length = 120
