@@ -7,7 +7,7 @@ import click
 def main(args=None):
     """Console script for scarlett_os"""
     click.echo("Replace this message by putting your code into "
-                "scarlett_os.cli.main")
+               "scarlett_os.cli.main")
     click.echo("See click documentation at http://click.pocoo.org/")
 
 
