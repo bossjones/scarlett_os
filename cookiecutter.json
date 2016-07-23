@@ -1,0 +1,18 @@
+{
+    "full_name": "Malcolm Jones",
+    "email": "bossjones@theblacktonystark.com",
+    "github_username": "bossjones",
+    "project_name": "ScarlettOS",
+    "project_slug": "scarlett_os",
+    "project_short_description": "S.C.A.R.L.E.T.T is Tony Darks artificially programmed intelligent computer. She is programmed to speak with a female voice in a British accent.",
+    "pypi_username": "bossjones",
+    "version": "0.1.0",
+    "use_pytest": "n",
+    "use_pypi_deployment_with_travis": "y",
+    "command_line_interface": "Click",
+    "create_author_file": "y",
+    "repo_name": "scarlett-os",
+    "release_date": "2016-07-23",
+    "year": "2016",
+    "open_source_license": "MIT license"
+}
