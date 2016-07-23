@@ -93,3 +93,6 @@ install: clean ## install the package to the active Python's site-packages
 
 setup-venv:
 	mkvirtualenv --python=/usr/local/bin/python3 scarlett-os-venv
+
+install-travis-lint:
+	bundle install --path .vendor
