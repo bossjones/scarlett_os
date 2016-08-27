@@ -2,6 +2,7 @@
 sudo: required
 dist: xenial
 language: python
+group: edge
 
 before_install:
   - "sudo apt-get update -qq"
