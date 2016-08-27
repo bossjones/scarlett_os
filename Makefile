@@ -102,3 +102,15 @@ run-travis-lint:
 
 install-gi-osx:
 	brew reinstall pygobject3 --with-python3
+
+# source: https://github.com/docker/machine/blob/master/docs/drivers/generic.md#interaction-with-ssh-agents
+# source: http://blog.scottlowe.org/2015/08/04/using-vagrant-docker-machine-together/
+create-docker-machine:
+	docker-machine create -d generic \
+						  --generic-ssh-user pi \
+						  --generic-ssh-key /Users/malcolm/dev/bossjones/scarlett_os/keys/vagrant_id_rsa \
+						  --generic-ssh-port 2222 \
+						  --generic-ip-address 127.0.0.1 \
+						  --engine-install-url "https://test.docker.com" \
+						  scarlett-1604-packer
+	eval $(docker-machine env scarlett-1604-packer)
