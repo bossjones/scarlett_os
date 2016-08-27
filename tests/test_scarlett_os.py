@@ -30,6 +30,17 @@ class TestScarlett_os(unittest.TestCase):
     def test_000_something(self):
         pass
 
+    def test_gstreamer_versions(self):
+        import gi
+        gi.require_version('Gst', '1.0')
+        from gi.repository import GObject
+        from gi.repository import Gst
+        from gi.repository import GLib
+        from gi.repository import Gio
+
+        assert GObject.pygobject_version == (3, 20, 0)
+        assert Gst.version_string() == 'GStreamer 1.8.2'
+
     def test_command_line_interface(self):
         runner = CliRunner()
         result = runner.invoke(cli.main)

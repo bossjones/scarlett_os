@@ -96,3 +96,6 @@ setup-venv:
 
 install-travis-lint:
 	bundle install --path .vendor
+
+run-travis-lint:
+	bundle exec travis lint

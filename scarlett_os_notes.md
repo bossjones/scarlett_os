@@ -165,3 +165,32 @@ In more detail, Python 2.x has docstrings, which allow you to attach a metadata 
 
 There's no preconceived use case, but the PEP suggests several. One very handy one is to allow you to annotate parameters with their expected types; it would then be easy to write a decorator that verifies the annotations or coerces the arguments to the right type. Another is to allow parameter-specific documentation instead of encoding it into the docstring.
 ```
+
+### Ansible roles to use going forward
+
+https://galaxy.ansible.com/angstwad/docker_ubuntu/
+https://galaxy.ansible.com/thefinn93/letsencrypt/
+https://galaxy.ansible.com/geerlingguy/git/
+https://galaxy.ansible.com/geerlingguy/daemonize/
+https://galaxy.ansible.com/geerlingguy/java/
+https://galaxy.ansible.com/geerlingguy/
+https://galaxy.ansible.com/geerlingguy/firewall/
+https://galaxy.ansible.com/geerlingguy/nodejs/
+https://galaxy.ansible.com/nickhammond/logrotate/
+https://galaxy.ansible.com/geerlingguy/security/
+https://galaxy.ansible.com/mattwillsher/sshd/
+https://galaxy.ansible.com/rvm_io/rvm1-ruby/
+https://galaxy.ansible.com/angstwad/docker_ubuntu/
+https://galaxy.ansible.com/resmo/ntp/
+https://galaxy.ansible.com/joshualund/golang/
+https://galaxy.ansible.com/yatesr/timezone/
+https://galaxy.ansible.com/tersmitten/limits/
+https://galaxy.ansible.com/f500/dumpall/
+https://galaxy.ansible.com/zzet/rbenv/
+https://galaxy.ansible.com/williamyeh/oracle-java/
+https://galaxy.ansible.com/mivok0/users/
+https://galaxy.ansible.com/gaqzi/ssh-config/
+https://galaxy.ansible.com/leonidas/nvm/
+https://galaxy.ansible.com/bennojoy/network_interface/
+https://galaxy.ansible.com/jdauphant/ssl-certs/
+https://galaxy.ansible.com/dev-sec/os-hardening/

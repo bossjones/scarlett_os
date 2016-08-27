@@ -15,3 +15,8 @@ pydocstyle>=1.0.0
 mypy-lang>=0.4
 pylint>=1.5.6
 coveralls>=1.1
+
+# data science
+ipython
+gnureadline
+
