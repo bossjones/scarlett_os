@@ -99,3 +99,6 @@ install-travis-lint:
 
 run-travis-lint:
 	bundle exec travis lint
+
+install-gi-osx:
+	brew reinstall pygobject3 --with-python3

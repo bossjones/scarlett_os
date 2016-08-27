@@ -11,6 +11,7 @@ Tests for `scarlett_os` module.
 
 import sys
 import unittest
+import click
 from contextlib import contextmanager
 from click.testing import CliRunner
 
@@ -33,10 +34,10 @@ class TestScarlett_os(unittest.TestCase):
     def test_gstreamer_versions(self):
         import gi
         gi.require_version('Gst', '1.0')
-        from gi.repository import GObject
-        from gi.repository import Gst
-        from gi.repository import GLib
-        from gi.repository import Gio
+        from gi.repository import GObject, Gst, GLib, Gio  # NOQA
+        Gst.init(None)
+        Gst.debug_set_active(True)
+        Gst.debug_set_default_threshold(1)
 
         assert GObject.pygobject_version == (3, 20, 0)
         assert Gst.version_string() == 'GStreamer 1.8.2'
