@@ -37,7 +37,7 @@ deploy:
 # python: 3.5
 # script: tox -e ${TOXENV}
 
-sudo: false
+# sudo: false
 matrix:
   fast_finish: true
   include:
