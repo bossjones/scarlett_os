@@ -4,24 +4,38 @@ dist: xenial
 language: python
 group: edge
 
+env:
+  - GSTREAMER=1.0
+
 # source: https://github.com/Mousers/mousetrap-3.17/blob/c184167da0b6f03d75e9ba197ce80aa15bc72ad5/bin/ci-install-deps.bash
 before_install:
   - PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
   - PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
   - PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+  - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:ricotz/testing; fi"
+  - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3; fi"
+  - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3-staging; fi"
+  - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gstreamer-developers/ppa; fi"
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libde265-dev libz-dev libbz2-dev gstreamer$GSTREAMER-tools libgstreamer$GSTREAMER-dev libgstreamer-plugins-base$GSTREAMER-dev libgstreamer-plugins-bad$GSTREAMER-dev
+  - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo apt-get install -y libgstreamer-plugins-good$GSTREAMER-dev; fi"
   - "sudo apt-get update -qq"
   - "sudo apt-get install -y gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0 graphviz-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad python-gst-1.0"
   - "sudo apt-get install -qq python3-gi"
   - "sudo apt-get install -qq python-gst-1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-libav libsndfile1-dev libasound2-dev libgstreamer-plugins-base1.0-dev python-numpy python-scipy"
-  # sudo apt-get --assume-yes install python3-gi \
-  #   gstreamer1.0-tools \
-  #   gir1.2-gstreamer-1.0 \
-  #   gir1.2-gst-plugins-base-1.0 \
-  #   gstreamer1.0-plugins-good \
-  #   gstreamer1.0-plugins-ugly \
-  #   gstreamer1.0-plugins-bad \
-  #   gstreamer1.0-libav
-  # - "sudo apt-get install -qq python3-xlib"
+  # source: https://github.com/ErinMorelli/em-media-handler/blob/6fbb1188ba6ebffa0b20cc1a255f37828325ee87/.travis.yml
+  # DBUS fixes for ABC
+  # - sudo apt-get install -y dbus* -qq
+  # - export DISPLAY=:0
+  # - eval $(dbus-launch --sh-syntax)
+  # - export DBUS_SESSION_BUS_ADDRESS
+  # - export DBUS_SESSION_BUS_PID
+  - sudo apt-get -y install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev;
+  - sudo apt-get -y install libgstreamer1.0-dev gstreamer1.0-alsa gstreamer1.0-plugins-base;
+  - sudo apt-get -y install python-dev libsmpeg-dev libswscale-dev libavformat-dev libavcodec-dev libjpeg-dev libtiff4-dev libX11-dev libmtdev-dev;
+  - sudo apt-get -y install python-setuptools build-essential libgl1-mesa-dev libgles2-mesa-dev;
+  - sudo apt-get -y install xvfb pulseaudio;
+
   - PYGI_LOCATION=$(dpkg-query -L python3-gi | grep "packages/gi$")
   - echo $PYTHON_VERSION
   - echo $PYTHON_INC_DIR
