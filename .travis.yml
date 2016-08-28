@@ -28,6 +28,9 @@ before_install:
   - echo $PYTHON_SITE_PACKAGES
   - echo $PYGI_LOCATION
   - ln -s $PYGI_LOCATION "${PYTHON_SITE_PACKAGES}/gi"
+  - file ${PYTHON_SITE_PACKAGES}/gi
+  - ls -lta ${PYTHON_SITE_PACKAGES}
+  - ls -lta ${PYTHON_SITE_PACKAGES}/gi
 
 deploy:
   distributions: sdist bdist_wheel
