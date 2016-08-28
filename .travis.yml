@@ -75,6 +75,7 @@ matrix:
 cache:
   directories:
     - $HOME/.cache/pip
+    - $HOME/virtualenv/python3.5.0/lib/python3.5_with_system_site_packages/site-packages
 install: pip install -U tox coveralls
 language: python
 script: tox -e ${TOXENV}
