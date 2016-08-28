@@ -1,4 +1,4 @@
-http:
+scarlett_master:
     build: .
     environment:
         - FAKE_ENV=random

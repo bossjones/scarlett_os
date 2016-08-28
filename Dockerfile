@@ -14,10 +14,85 @@ ENV PATH /usr/local/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
+RUN apt-get update -q && \
+    apt-get upgrade -yqq && \
+    apt-get install -yqq \
+        git \
+        curl \
+        wget \
+        curl \
+        software-properties-common \
+        ca-certificates \
+    && \
+    locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
+    add-apt-repository ppa:git-core/ppa -y && \
+    add-apt-repository ppa:ricotz/testing -y && \
+    add-apt-repository ppa:gnome3-team/gnome3 -y && \
+    add-apt-repository ppa:gnome3-team/gnome3-staging -y && \
+    rm -rf /var/lib/apt/lists/*
+
 # runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		tcl \
 		tk \
+        wget \
+        curl \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		ca-certificates \
+		curl \
+		wget \
+	&& rm -rf /var/lib/apt/lists/*
+
+# procps is very common in build systems, and is a reasonably small package
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		bzr \
+		git \
+		mercurial \
+		openssh-client \
+		subversion \
+		\
+		procps \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		autoconf \
+		automake \
+		bzip2 \
+		file \
+		g++ \
+		gcc \
+		imagemagick \
+		libbz2-dev \
+		libc6-dev \
+		libcurl4-openssl-dev \
+		libdb-dev \
+		libevent-dev \
+		libffi-dev \
+		libgeoip-dev \
+		libglib2.0-dev \
+		libjpeg-dev \
+		libkrb5-dev \
+		liblzma-dev \
+		libmagickcore-dev \
+		libmagickwand-dev \
+		libmysqlclient-dev \
+		libncurses-dev \
+		libpng-dev \
+		libpq-dev \
+		libreadline-dev \
+		libsqlite3-dev \
+		libssl-dev \
+		libtool \
+		libwebp-dev \
+		libxml2-dev \
+		libxslt-dev \
+		libyaml-dev \
+		make \
+		patch \
+		xz-utils \
+		zlib1g-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
@@ -82,41 +157,7 @@ RUN cd /usr/local/bin \
 	&& ln -s python3 python \
 	&& ln -s python3-config python-config
 
-RUN pip3 install virtualenv virtualenvwrapper ipython numpy
-
-# base_vars:
-#   PYTHON_VERSION_MAJOR: '3'
-#   PYTHON_VERSION: '3.5'
-#   GSTREAMER: '1.0'
-#   USER: 'pi'
-#   USER_HOME: '/home/pi'
-#   LANGUAGE_ID: 1473
-#   GITHUB_BRANCH: "master"
-#   GITHUB_REPO_NAME: "scarlett_os"
-#   GITHUB_REPO_ORG: "bossjones"
-#
-# virtualenv_vars:
-#   MAIN_DIR: "{{ base_vars.USER_HOME }}/dev/bossjones-github/{{ base_vars.GITHUB_REPO_NAME }}"
-#   VIRT_ROOT: "{{ base_vars.USER_HOME }}/.virtualenvs/{{ base_vars.GITHUB_REPO_NAME }}"
-#
-# build_vars:
-#   PKG_CONFIG_PATH: "{{ virtualenv_vars.VIRT_ROOT }}/lib/pkgconfig"
-#   LD_LIBRARY_PATH: "{{ virtualenv_vars.VIRT_ROOT }}/lib"
-#   GST_PLUGIN_PATH: "{{ virtualenv_vars.VIRT_ROOT }}/lib/gstreamer-{{ base_vars.GSTREAMER }}"
-#
-# scarlett_vars:
-#   SCARLETT_CONFIG: "{{ virtualenv_vars.MAIN_DIR }}/tests/fixtures/.scarlett"
-#   SCARLETT_HMM: "{{ virtualenv_vars.MAIN_DIR }}/.virtualenvs/{{ base_vars.GITHUB_REPO_NAME }}/share/pocketsphinx/model/en-us/en-us"
-#   SCARLETT_LM: "{{ virtualenv_vars.MAIN_DIR }}/tests/fixtures/lm/{{ base_vars.LANGUAGE_ID }}.lm"
-#   SCARLETT_DICT: "{{ virtualenv_vars.MAIN_DIR }}/tests/fixtures/dict/{{ base_vars.LANGUAGE_ID }}.dic"
-
-
-# RUN
-#
-# export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-# export WORKON_HOME={{ virtualenv_vars.VIRT_ROOT }}
-# source /usr/local/bin/virtualenvwrapper.sh
-# mkvirtualenv --system-site-packages scarlett_os
+RUN pip3 install virtualenv virtualenvwrapper ipython numpy tox coveralls
 
 ENV PYTHON_VERSION_MAJOR '3'
 ENV GSTREAMER '1.0'
