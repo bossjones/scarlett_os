@@ -1,0 +1,7 @@
+http:
+    build: .
+    environment:
+        - FAKE_ENV=random
+
+    volumes:
+        - ./:/app
