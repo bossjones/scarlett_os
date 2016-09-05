@@ -34,7 +34,7 @@ cd pycairo-1.10.0
 export ARCHFLAGS='-arch x86_64'
 
 python waf configure --prefix=$VIRTUAL_ENV # It's ok, this will fail.
-gsed -i '' '154s/data={}/return/' .waf3-1.6.4-*/waflib/Build.py # Bufix: https://bugs.freedesktop.org/show_bug.cgi?id=76759
+gsed -i '154s/data={}/return/' .waf3-1.6.4-*/waflib/Build.py # Bufix: https://bugs.freedesktop.org/show_bug.cgi?id=76759
 python waf configure --prefix=$VIRTUAL_ENV # Now it should configure.
 python waf build
 python waf install
@@ -86,6 +86,9 @@ patch -i ~/dev/bossjones/espeakosx/portaudio_configure_sdk.patch
 ./configure  --prefix=$VIRT_ROOT
 make
 
+#############################################
+# espeak compile
+#############################################
 
 cd $MAIN_DIR
 curl -L "http://sourceforge.net/projects/espeak/files/espeak/espeak-1.48/espeak-1.48.04-source.zip" > ess.zip
@@ -98,10 +101,11 @@ cp $MAIN_DIR/portaudio/lib/.libs/libportaudio.a .
 cp $MAIN_DIR/portaudio/include/portaudio.h .
 make
 
-# CURRENT_DIR=`pwd`
-# DIR="/tmp/espeakosx"
-# INNER_SRC_DIR="espeak-1.48.04-source/src"
+export PATH=$PATH:$MAIN_DIR/espeak-1.48.04-source/src
 
+#############################################
+# espeak gst plugin
+#############################################
 
 cd $MAIN_DIR && \
 curl -L "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz" > gst-plugins-espeak-0.4.0.tar.gz && \
@@ -109,7 +113,58 @@ tar xvf gst-plugins-espeak-0.4.0.tar.gz && \
 rm -rfv gst-plugins-espeak-0.4.0 && \
 mv -fv bossjones-gst-plugins-espeak-0-4-0-0.4.1 gst-plugins-espeak-0.4.0 && \
 cd gst-plugins-espeak-0.4.0 && \
-./configure --prefix=$VIRT_ROOT && \
+
+# export PKG_CONFIG_PATH=$VIRTUAL_ENV/lib/pkgconfig:/usr/local/opt/libffi/lib/pkgconfig
+export PKG_CONFIG_PATH=$VIRTUAL_ENV/lib/pkgconfig:/usr/local/Cellar/gtk+3/3.18.5/lib/pkgconfig
+
+export ESPEAK_PREFIX="$MAIN_DIR/espeak-1.48.04-source/src" && \
+gsed -i "s,espeak/speak_lib.h,$MAIN_DIR/espeak-1.48.04-source/src/speak_lib.h," $MAIN_DIR/gst-plugins-espeak-0.4.0/src/espeak.c && \
+./configure --prefix=$VIRT_ROOT CFLAGS="-I$VIRTUAL_ENV/include -I/usr/local/Cellar/gtk+3/3.20.6/include" --prefix=$VIRTUAL_ENV && \
 make && \
+make install && \
+cd $MAIN_DIR
+
+if [ -z ${MAIN_DIR+x} ]; then echo "MAIN_DIR is unset" && exit 1; else echo "MAIN_DIR is set to '$MAIN_DIR'"; fi
+
+#############################################
+# sphinx base CLONING
+#############################################
+
+if [[ -d $MAIN_DIR/sphinxbase ]]; then
+  cd $MAIN_DIR/sphinxbase
+  (git status && git add . && git reset --hard && git fetch --all)
+else
+    cd $MAIN_DIR && git clone https://github.com/cmusphinx/sphinxbase.git .
+fi
+
+git checkout ${sha}
+git clean -ffdx
+git submodule update --init --recursive
+
+git clone https://github.com/cmusphinx/sphinxbase.git # 74370799d5b53afc5b5b94a22f5eff9cb9907b97
+git clone https://github.com/cmusphinx/pocketsphinx.git # 68ef5dc6d48d791a747026cd43cc6940a9e19f69
+
+
+#############################################
+# sphinx base
+#############################################
+
+cd $MAIN_DIR/sphinxbase && \
+./autogen.sh --prefix=$VIRT_ROOT && \
+./configure --prefix=$VIRT_ROOT && \
+make clean all && \
+# make check && \
+make install && \
+cd $MAIN_DIR
+
+#############################################
+# pocketsphinx
+#############################################
+
+cd $MAIN_DIR/pocketsphinx && \
+./autogen.sh --prefix=$VIRT_ROOT && \
+./configure --prefix=$VIRT_ROOT && \
+make clean all && \
+# make check && \
 make install && \
 cd $MAIN_DIR
