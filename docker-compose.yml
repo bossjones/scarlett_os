@@ -4,4 +4,4 @@ scarlett_master:
         - FAKE_ENV=random
 
     volumes:
-        - ./:/app
+        - ./:/home/pi/dev/bossjones-github/scarlett_os

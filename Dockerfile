@@ -29,71 +29,58 @@ RUN apt-get update -q && \
     add-apt-repository ppa:ricotz/testing -y && \
     add-apt-repository ppa:gnome3-team/gnome3 -y && \
     add-apt-repository ppa:gnome3-team/gnome3-staging -y && \
-    rm -rf /var/lib/apt/lists/*
-
-# runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		tcl \
-		tk \
-        wget \
-        curl \
-	&& rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		ca-certificates \
-		curl \
-		wget \
-	&& rm -rf /var/lib/apt/lists/*
-
-# procps is very common in build systems, and is a reasonably small package
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		bzr \
-		git \
-		mercurial \
-		openssh-client \
-		subversion \
-		\
-		procps \
-	&& rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		autoconf \
-		automake \
-		bzip2 \
-		file \
-		g++ \
-		gcc \
-		imagemagick \
-		libbz2-dev \
-		libc6-dev \
-		libcurl4-openssl-dev \
-		libdb-dev \
-		libevent-dev \
-		libffi-dev \
-		libgeoip-dev \
-		libglib2.0-dev \
-		libjpeg-dev \
-		libkrb5-dev \
-		liblzma-dev \
-		libmagickcore-dev \
-		libmagickwand-dev \
-		libmysqlclient-dev \
-		libncurses-dev \
-		libpng-dev \
-		libpq-dev \
-		libreadline-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		libtool \
-		libwebp-dev \
-		libxml2-dev \
-		libxslt-dev \
-		libyaml-dev \
-		make \
-		patch \
-		xz-utils \
-		zlib1g-dev \
-	&& rm -rf /var/lib/apt/lists/*
+    apt-get update && apt-get install -y --no-install-recommends \
+    		tcl \
+    		tk \
+            wget \
+            curl \
+            ca-certificates && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    		bzr \
+    		git \
+    		mercurial \
+    		openssh-client \
+    		subversion \
+    		procps && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    		autoconf \
+    		automake \
+    		bzip2 \
+    		file \
+    		g++ \
+    		gcc \
+    		imagemagick \
+    		libbz2-dev \
+    		libc6-dev \
+    		libcurl4-openssl-dev \
+    		libdb-dev \
+    		libevent-dev \
+    		libffi-dev \
+    		libgeoip-dev \
+    		libglib2.0-dev \
+    		libjpeg-dev \
+    		libkrb5-dev \
+    		liblzma-dev \
+    		libmagickcore-dev \
+    		libmagickwand-dev \
+    		libmysqlclient-dev \
+    		libncurses-dev \
+    		libpng-dev \
+    		libpq-dev \
+    		libreadline-dev \
+    		libsqlite3-dev \
+    		libssl-dev \
+    		libtool \
+    		libwebp-dev \
+    		libxml2-dev \
+    		libxslt-dev \
+    		libyaml-dev \
+    		make \
+    		patch \
+    		xz-utils \
+    		zlib1g-dev \
+            bash \
+    	&& rm -rf /var/lib/apt/lists/*
 
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
 ENV PYTHON_VERSION 3.5.2
@@ -155,9 +142,10 @@ RUN cd /usr/local/bin \
 	&& ln -s idle3 idle \
 	&& ln -s pydoc3 pydoc \
 	&& ln -s python3 python \
-	&& ln -s python3-config python-config
+	&& ln -s python3-config python-config \
+    && pip3 install virtualenv virtualenvwrapper ipython numpy tox coveralls
 
-RUN pip3 install virtualenv virtualenvwrapper ipython numpy tox coveralls
+# RUN pip3 install virtualenv virtualenvwrapper ipython numpy tox coveralls
 
 ENV PYTHON_VERSION_MAJOR '3'
 ENV GSTREAMER '1.0'
@@ -187,35 +175,83 @@ ENV PIP_DOWNLOAD_CACHE '${USER_HOME}/.pip/cache'
 ENV WORKON_HOME '${VIRT_ROOT}'
 
 RUN set -xe \
-    && useradd -d ${PI_HOME} -m -r -g ${USER} ${USER} \
-    && groupadd -r ${USER} \
+    && useradd -U -d ${PI_HOME} -m -r -G adm,sudo,dip,plugdev,tty,audio ${USER} \
     && usermod -a -G ${USER} ${USER} \
+    && mkdir -p ${MAIN_DIR} \
     && mkdir -p ${PI_HOME}/dev/${GITHUB_REPO_ORG}-github \
     && chown -hR ${USER}:${USER} ${PI_HOME}/dev/${GITHUB_REPO_ORG}-github \
+    && chown -hR ${USER}:${USER} ${MAIN_DIR} \
     && echo '${USER}     ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
-    && echo '%${USER}     ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+    && echo '%${USER}     ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
+    && chown -hR ${USER}:${USER} /usr/local/lib/python3.5/site-packages
 
-USER ${USER}
+COPY ./dotfiles/.bashrc /home/pi/.bashrc
+COPY ./dotfiles/.profile /home/pi/.profile
 
-RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv --system-site-packages ${GITHUB_REPO_NAME}"
-
-# RUN python3 -m venv /.venv && \
-#     /bin/bash -c "source /.venv/bin/activate"
-
-# Clean up
-RUN apt-get autoclean -y && \
-    apt-get autoremove -y && \
-    rm -rf /tmp/* /var/tmp/* && \
-    rm -rf /var/lib/apt/lists/*
+RUN set -xe \
+    && chown -hR ${USER}:${USER} ${MAIN_DIR} \
+    && apt-get autoclean -y \
+    && apt-get autoremove -y \
+    && rm -rf /tmp/* /var/tmp/* \
+    && rm -rf /var/lib/apt/lists/*
 
 # Layer customizations over existing structure
 COPY ./container/root /
 
+# USER ${USER}
+
 # Ensure application code makes it into the /app directory
-COPY ./ /app/
+COPY ./ /home/pi/dev/bossjones-github/scarlett_os/
 
-RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh && workon ${GITHUB_REPO_NAME} && pip install -r /app/requirements.txt"
+RUN ls -lta /home/pi/dev/bossjones-github/scarlett_os/ && \
+    bash -c "source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv --system-site-packages ${GITHUB_REPO_NAME}"
 
-RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh && workon ${GITHUB_REPO_NAME} && pip install -r /app/requirements_dev.txt"
+# RUN bash -c "source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv --system-site-packages ${GITHUB_REPO_NAME}"
 
-CMD ["/bin/bash", "/run.sh"]
+COPY ./postactivate /home/pi/.virtualenvs/scarlett_os/postactivate
+
+# RUN bash -c "/usr/sbin/sudo chown -hR ${USER}:${USER} /home/pi/.virtualenvs/scarlett_os/postactivate"
+
+# RUN bash -c "source /usr/local/bin/virtualenvwrapper.sh && workon ${GITHUB_REPO_NAME} && pip install -r /home/pi/home/pi/dev/bossjones-github/scarlett_os/requirements.txt"
+
+RUN set -xe \
+    && chown -hR ${USER}:${USER} ${PI_HOME}/dev/${GITHUB_REPO_ORG}-github \
+    && chown -hR ${USER}:${USER} ${MAIN_DIR} \
+    && chown -hR ${USER}:${USER} /usr/local/lib/python3.5/site-packages \
+    && chown -R ${USER}:${USER} /home/pi/.virtualenvs
+#
+# RUN sudo su - ${USER} -c "source /usr/local/bin/virtualenvwrapper.sh && workon ${GITHUB_REPO_NAME} && pip install -r /home/pi/home/pi/dev/bossjones-github/scarlett_os/requirements_dev.txt"
+
+# # virtualenv python runtime
+# RUN sudo su - rdash -c "echo 'export WORKON_HOME=${WORKON_HOME}' >> /home/rdash/.profile"
+# RUN sudo su - rdash -c "echo 'export PROJECT_HOME=${PROJECT_HOME}' >> /home/rdash/.profile"
+# RUN sudo su - rdash -c "echo 'source /usr/local/bin/virtualenvwrapper.sh' >> /home/rdash/.profile"
+# RUN sudo su - rdash -c "mkvirtualenv rdash"
+# # RUN sudo su - rdash -c "mkproject rdash"
+# RUN sudo su - rdash -c "echo 'workon rdash' >> /home/rdash/.profile"
+#
+# # Add source code
+#
+# #ADD . ${PROJECT_HOME}
+# RUN git clone https://github.com/adysuciu/rdash-django.git ${PROJECT_HOME}
+#
+# # Environment info
+# ADD rdash/.env ${PROJECT_HOME}/rdash/.env
+#
+# RUN chown -R rdash:users ${PROJECT_HOME}
+# RUN chmod 755 ${PROJECT_HOME}/manage.py
+#
+# # Install django and dependencies
+# RUN sudo su - rdash -c "${WORKON_HOME}/rdash/bin/pip install -r ${PROJECT_HOME}/requirements.txt"
+# RUN sudo su - rdash -c 'echo {\"registry\":\"http://bower.herokuapp.com\"} > /home/rdash/.bowerrc'
+# RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py bower_install"
+# RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py collectstatic --noinput"
+# #RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py compilemessages"
+# RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py makemigrations"
+# RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py migrate"
+#
+# ENTRYPOINT ["sudo","su","-","rdash"]
+
+# CMD ["/bin/bash", "/run.sh"]
+# ENTRYPOINT ["ls", "-lta", "/home/pi/dev/bossjones-github/scarlett_os/"]
+ENTRYPOINT ["file","/bin/bash"]

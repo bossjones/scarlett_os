@@ -62,3 +62,13 @@ target/
 .bundle/
 .vendor/
 Gemfile.lock
+
+pycairo*
+pygobject*
+*gst-plugins-espeak-*
+espeak-1.48.04-source.zip
+pa_stable_v19_20140130.tgz
+pa.tgz
+portaudio
+ess.zip
+espeak-1.48.04-source

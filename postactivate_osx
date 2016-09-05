@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+export PYTHON_VERSION=3.5
+export GSTREAMER=1.0
+export PI_HOME=~/
+export MAIN_DIR="${PI_HOME}/dev/bossjones/scarlett_os"
+export VIRT_ROOT=/home/pi/.virtualenvs/scarlett_os
+export PKG_CONFIG_PATH=/home/pi/.virtualenvs/scarlett_os/lib/pkgconfig
+export SCARLETT_CONFIG=/home/pi/dev/bossjones-github/scarlett_os/tests/fixtures/.scarlett
+export SCARLETT_HMM=/home/pi/dev/bossjones-github/scarlett_os/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+export SCARLETT_LM=/home/pi/dev/bossjones-github/scarlett_os/tests/fixtures/lm/1473.lm
+export SCARLETT_DICT=/home/pi/dev/bossjones-github/scarlett_os/tests/fixtures/dict/1473.dic
+
+# for GST PLUGINS
+export LD_LIBRARY_PATH=/home/pi/.virtualenvs/scarlett_os/lib
+export GST_PLUGIN_PATH=/home/pi/.virtualenvs/scarlett_os/lib/gstreamer-1.0
+
+export PYTHON=/usr/bin/local/python
+export PYTHON_VERSION='3.5'
+
+
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2.7-dbg
+mkvirtualenv --system-site-packages scarlett-debug
+mkdir -p ~/.virtualenvs/scarlett-debug/bin/.debug
+ln -s /usr/lib/debug/usr/bin/python2.7-gdb.py ~/.virtualenvs/scarlett-debug/bin/.debug/python2.7-gdb.py
+ln -s /usr/lib/debug/usr/bin/python2.7 ~/.virtualenvs/scarlett-debug/bin/.debug/
+gdb --args bin/python2.7 ...
+
+
+brew reinstall gtk+3
+brew reinstall pygobject3

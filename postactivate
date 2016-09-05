@@ -1,0 +1,40 @@
+#!/bin/bash
+# This hook is sourced after every virtualenv is activated.
+
+export PYTHON_VERSION=3.5
+export GSTREAMER=1.0
+export PI_HOME=/home/pi
+export MAIN_DIR=/home/pi/dev/bossjones-github/scarlett_os
+export VIRT_ROOT=/home/pi/.virtualenvs/scarlett_os
+export PKG_CONFIG_PATH=/home/pi/.virtualenvs/scarlett_os/lib/pkgconfig
+export SCARLETT_CONFIG=/home/pi/dev/bossjones-github/scarlett_os/tests/fixtures/.scarlett
+export SCARLETT_HMM=/home/pi/dev/bossjones-github/scarlett_os/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+export SCARLETT_LM=/home/pi/dev/bossjones-github/scarlett_os/tests/fixtures/lm/1473.lm
+export SCARLETT_DICT=/home/pi/dev/bossjones-github/scarlett_os/tests/fixtures/dict/1473.dic
+
+# for GST PLUGINS
+export LD_LIBRARY_PATH=/home/pi/.virtualenvs/scarlett_os/lib
+export GST_PLUGIN_PATH=/home/pi/.virtualenvs/scarlett_os/lib/gstreamer-1.0
+
+# export PYTHONPATH=/usr/lib/$PYTHON_VERSION
+# export PATH=$PATH:$PYTHONPATH
+
+export PYTHON=/usr/bin/local/python
+export PYTHON_VERSION='3.5'
+
+echo "I have set the following env variables for this Scarlett virtualenv"
+echo "*******************************************************************"
+echo $GSTREAMER
+echo $PI_HOME
+echo $MAIN_DIR
+echo $VIRT_ROOT
+echo $PKG_CONFIG_PATH
+echo $SCARLETT_CONFIG
+echo $SCARLETT_HMM
+echo $SCARLETT_LM
+echo $SCARLETT_DICT
+echo $LD_LIBRARY_PATH
+echo $GST_PLUGIN_PATH
+echo "*******************************************************************"
+
+cd $MAIN_DIR
