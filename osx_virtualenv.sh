@@ -8,9 +8,11 @@ export PYTHON_VERSION=3.5
 export GSTREAMER=1.0
 export PI_HOME=~/
 export MAIN_DIR="${PI_HOME}/dev/bossjones/scarlett_os"
-export VIRT_ROOT="${PI_HOME}/.virtualenvs/scarlett_os"
-export PKG_CONFIG_PATH="${PI_HOME}/.virtualenvs/scarlett_os/lib/pkgconfig"
+export VIRT_ROOT="${PI_HOME}/.virtualenvs/scarlett-os-venv2"
+export PKG_CONFIG_PATH="${PI_HOME}/.virtualenvs/scarlett-os-venv2/lib/pkgconfig"
 export SCARLETT_CONFIG="${PI_HOME}/dev/bossjones/scarlett_os/tests/fixtures/.scarlett"
+
+# NOTE: THIS NEEDS TO BE FIXED
 export SCARLETT_HMM="${PI_HOME}/dev/bossjones/scarlett_os/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us"
 export SCARLETT_LM="${PI_HOME}/dev/bossjones/scarlett_os/tests/fixtures/lm/1473.lm"
 export SCARLETT_DICT="${PI_HOME}/dev/bossjones/scarlett_os/tests/fixtures/dict/1473.dic"
@@ -47,7 +49,7 @@ cd -
 ###########################################
 
 export PKG_CONFIG_PATH=$VIRTUAL_ENV/lib/pkgconfig:/usr/local/opt/libffi/lib/pkgconfig
-
+cd $MAIN_DIR
 curl -L http://ftp.gnome.org/pub/GNOME/sources/pygobject/3.20/pygobject-3.20.1.tar.xz | tar xJ
 cd pygobject-3.20.1
 
@@ -90,6 +92,9 @@ make
 # espeak compile
 #############################################
 
+export PATH_ESPEAK_DATA=$VIRTUAL_ENV/share
+mkdir -p $PATH_ESPEAK_DATA=$VIRTUAL_ENV/share
+
 cd $MAIN_DIR
 curl -L "http://sourceforge.net/projects/espeak/files/espeak/espeak-1.48/espeak-1.48.04-source.zip" > ess.zip
 unzip ess.zip
@@ -129,29 +134,103 @@ if [ -z ${MAIN_DIR+x} ]; then echo "MAIN_DIR is unset" && exit 1; else echo "MAI
 #############################################
 # sphinx base CLONING
 #############################################
+cd $MAIN_DIR
 
 if [[ -d $MAIN_DIR/sphinxbase ]]; then
   cd $MAIN_DIR/sphinxbase
-  (git status && git add . && git reset --hard && git fetch --all)
+  git status && git add . && git reset --hard && git fetch --all
 else
-    cd $MAIN_DIR && git clone https://github.com/cmusphinx/sphinxbase.git .
+  cd $MAIN_DIR && git clone https://github.com/cmusphinx/sphinxbase.git sphinxbase && cd sphinxbase
 fi
 
-git checkout ${sha}
+git checkout 74370799d5b53afc5b5b94a22f5eff9cb9907b97
 git clean -ffdx
 git submodule update --init --recursive
 
-git clone https://github.com/cmusphinx/sphinxbase.git # 74370799d5b53afc5b5b94a22f5eff9cb9907b97
-git clone https://github.com/cmusphinx/pocketsphinx.git # 68ef5dc6d48d791a747026cd43cc6940a9e19f69
+#############################################
+# pocketsphinx CLONING
+#############################################
+cd $MAIN_DIR
+
+if [[ -d $MAIN_DIR/pocketsphinx ]]; then
+  cd $MAIN_DIR/pocketsphinx
+  (git status && git add . && git reset --hard && git fetch --all)
+else
+    cd $MAIN_DIR && git clone https://github.com/cmusphinx/pocketsphinx.git pocketsphinx && cd pocketsphinx
+fi
+
+git checkout 68ef5dc6d48d791a747026cd43cc6940a9e19f69
+git clean -ffdx
+git submodule update --init --recursive
 
 
+# git clone https://github.com/cmusphinx/sphinxbase.git # 74370799d5b53afc5b5b94a22f5eff9cb9907b97
+# git clone https://github.com/cmusphinx/pocketsphinx.git # 68ef5dc6d48d791a747026cd43cc6940a9e19f69
+
+# "msg": "'/usr/bin/aptitude safe-upgrade' failed: No apport report written because the error message indicates its a followup error from a previous failure.\nNo apport report written because the error message indicates its a followup error from a previous failure.\nNo apport report written because MaxReports is reached already\nE: Sub-process /usr/bin/dpkg returned an error code (1)\nFailed to perform requested operation on package.  Trying to recover:\nRunning depmod.\nupdate-initramfs: deferring update (hook will be called later)\nThe link /initrd.img is a dangling linkto /boot/initrd.img-4.4.0-36-generic\nvmlinuz(/boot/vmlinuz-4.4.0-36-generic\n) points to /boot/vmlinuz-4.4.0-36-generic\n (/boot/vmlinuz-4.4.0-36-generic) -- doing nothing at /var/lib/dpkg/info/linux-image-4.4.0-36-generic.postinst line 491.\nExamining /etc/kernel/postinst.d.\nrun-parts: executing /etc/kernel/postinst.d/apt-auto-removal 4.4.0-36-generic /boot/vmlinuz-4.4.0-36-generic\nrun-parts: executing /etc/kernel/postinst.d/dkms 4.4.0-36-generic /boot/vmlinuz-4.4.0-36-generic\nrun-parts: executing /etc/kernel/postinst.d/initramfs-tools 4.4.0-36-generic /boot/vmlinuz-4.4.0-36-generic\nupdate-initramfs: Generating /boot/initrd.img-4.4.0-36-generic\n\ngzip: stdout: No space left on device\ncpio: write error: Broken pipe\nE: mkinitramfs failure cpio 1 gzip 1\nupdate-initramfs: failed for /boot/initrd.img-4.4.0-36-generic with 1.\nrun-parts: /etc/kernel/postinst.d/initramfs-tools exited with return code 1\nFailed to process /etc/kernel/postinst.d at /var/lib/dpkg/info/linux-image-4.4.0-36-generic.postinst line 1052.\ndpkg: error processing package linux-image-4.4.0-36-generic (--configure):\n subprocess installed post-installation script returned error exit status 2\ndpkg: dependency problems prevent configuration of linux-image-extra-4.4.0-36-generic:\n linux-image-extra-4.4.0-36-generic depends on linux-image-4.4.0-36-generic; however:\n  Package linux-image-4.4.0-36-generic is not configured yet.\n\ndpkg: error processing package linux-image-extra-4.4.0-36-generic (--configure):\n dependency problems - leaving unconfigured\ndpkg: dependency problems prevent configuration of linux-image-generic:\n linux-image-generic depends on linux-image-4.4.0-36-generic; however:\n  Package linux-image-4.4.0-36-generic is not configured yet.\n linux-image-generic depends on linux-image-extra-4.4.0-36-generic; however:\n  Package linux-image-extra-4.4.0-36-generic is not configured yet.\n\ndpkg: error processing package linux-image-generic (--configure):\n dependency problems - leaving unconfigured\ndpkg: dependency problems prevent configuration of linux-generic:\n linux-generic depends on linux-image-generic (= 4.4.0.36.38); however:\n  Package linux-image-generic is not configured yet.\n\ndpkg: error processing package linux-generic (--configure):\n dependency problems - leaving unconfigured\nErrors were encountered while processing:\n linux-image-4.4.0-36-generic\n linux-image-extra-4.4.0-36-generic\n linux-image-generic\n linux-generic\n",
 #############################################
 # sphinx base
 #############################################
 
+# PYTHON=/usr/local/bin/python3 PYTHON_VERSION='3.5' ./autogen.sh --prefix=$VIRT_ROOT --disable-debug --disable-dependency-tracking
+#  |2.1.7|  using virtualenv: scarlett-os-venv2  Malcolms-MBP-3 in ~/dev/bossjones/scarlett_os/sphinxbase
+# ± |detached:master~32 ?:56 ?| ? python -c "import sys; print(sys.path);"
+# ['',
+# '/Users/malcolm/.virtualenvs/scarlett-os-venv2/lib/python35.zip'
+# '/Users/malcolm/.virtualenvs/scarlett-os-venv2/lib/python3.5'
+# '/Users/malcolm/.virtualenvs/scarlett-os-venv2/lib/python3.5/plat-darwin'
+# '/Users/malcolm/.virtualenvs/scarlett-os-venv2/lib/python3.5/lib-dynload'
+# '/usr/local/Cellar/python3/3.5.2_1/Frameworks/Python.framework/Versions/3.5/lib/python3.5'
+# '/usr/local/Cellar/python3/3.5.2_1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/plat-darwin'
+# '/Users/malcolm/.virtualenvs/scarlett-os-venv2/lib/python3.5/site-packages']
+
+
+# NOTE: potential solution
+# source: http://stackoverflow.com/questions/6490513/vim-failing-to-compile-with-python-on-os-x
+# ./configure PYTHON_EXTRA_LDFLAGS="-u _PyMac_Error /Library/Frameworks/Python.framework/Versions/2.7/Python"
+# checking python extra linking flags... PYTHON_EXTRA_LDFLAGS="-u _PyMac_Error /usr/local/opt/python3/Frameworks/Python.framework/Versions/3.5/Python"
+
+./autogen.sh --prefix=$VIRT_ROOT PYTHON_EXTRA_LDFLAGS="-u _PyMac_Error /usr/local/opt/python3/Frameworks/Python.framework/Versions/3.5/Python" --disable-dependency-tracking PYTHON=python3
+# "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}", "PYTHON=#{python}"
+
+# source: https://docs.python.org/3/extending/embedding.html#compiling-and-linking-
+
+#  |2.1.7|  using virtualenv: scarlett-os-venv2  Malcolms-MBP-3 in ~/dev/bossjones/scarlett_os/sphinxbase
+# ± |detached:master~32 ?:56 ?| ? /usr/local/bin/python3.5-config --cflags
+# -I/usr/local/Cellar/python3/3.5.2_1/Frameworks/Python.framework/Versions/3.5/include/python3.5m -I/usr/local/Cellar/python3/3.5.2_1/Frameworks/Python.framework/Versions/3.5/include/python3.5m -Wno-unused-result -Wsign-compare -Wunreachable-code -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
+#
+#  |2.1.7|  using virtualenv: scarlett-os-venv2  Malcolms-MBP-3 in ~/dev/bossjones/scarlett_os/sphinxbase
+# ± |detached:master~32 ?:56 ?| ? /usr/local/bin/python3.5-config --ldflags
+# -L/usr/local/Cellar/python3/3.5.2_1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/config-3.5m -lpython3.5m -ldl -framework CoreFoundation
+#
+#  |2.1.7|  using virtualenv: scarlett-os-venv2  Malcolms-MBP-3 in ~/dev/bossjones/scarlett_os/sphinxbase
+# ± |detached:master~32 ?:56 ?| ?
+
+
+# ± |detached:master~32 ?:56 ?| ? ipython
+# WARNING: Attempting to work in a virtualenv. If you encounter problems, please install IPython inside the virtualenv.
+# Python 2.7.11 (default, Jan 22 2016, 08:28:37)
+# Type "copyright", "credits" or "license" for more information.
+#
+# IPython 4.0.0 -- An enhanced Interactive Python.
+# ?         -> Introduction and overview of IPython's features.
+# %quickref -> Quick reference.
+# help      -> Python's own help system.
+# object?   -> Details about 'object', use 'object??' for extra details.
+#
+# In [1]: import sysconfig
+#
+# In [2]: sysconfig.get_config_var('LIBS')
+# Out[2]: '-ldl  -framework CoreFoundation'
+#
+# In [3]: sysconfig.get_config_var('LINKFORSHARED')
+# Out[3]: '-u _PyMac_Error Python.framework/Versions/2.7/Python'
+#
+# In [4]:
+
 cd $MAIN_DIR/sphinxbase && \
-./autogen.sh --prefix=$VIRT_ROOT && \
-./configure --prefix=$VIRT_ROOT && \
+PYTHON=/usr/local/bin/python3 ./autogen.sh --prefix=$VIRT_ROOT LDFLAGS="-L$VIRT_ROOT/lib -L/usr/local/opt/python3/lib" --disable-debug --disable-dependency-tracking && \
+PYTHON=/usr/local/bin/python3 PYTHON_VERSION='3.5' ./configure --prefix=$VIRT_ROOT LDFLAGS="-L/usr/local/opt/python3/lib" --disable-debug --disable-dependency-tracking && \
 make clean all && \
 # make check && \
 make install && \
