@@ -6,10 +6,11 @@ group: edge
 
 # source: https://github.com/Mousers/mousetrap-3.17/blob/c184167da0b6f03d75e9ba197ce80aa15bc72ad5/bin/ci-install-deps.bash
 before_install:
-  - GSTREAMER=1.0
-  - PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
-  - PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
-  - PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+  - export PYTHONIOENCODING=UTF8
+  - export GSTREAMER=1.0
+  - export PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
+  - export PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
+  - export PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
   - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:ricotz/testing; fi"
   - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3; fi"
   - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3-staging; fi"
@@ -33,8 +34,10 @@ before_install:
   - sudo apt-get -y install python-dev libsmpeg-dev libswscale-dev libavformat-dev libavcodec-dev libjpeg-dev libtiff4-dev libX11-dev libmtdev-dev;
   - sudo apt-get -y install python-setuptools build-essential libgl1-mesa-dev libgles2-mesa-dev;
   - sudo apt-get -y install xvfb pulseaudio;
+  # - sudo apt-get install -y gir1.2-atk-1.0 gir1.2-gtk-2.0 gir1.2-pango-1.0 gperf libatk1.0-dev libgsl0-dev libgtk2.0-dev libgtksourceview2.0-dev libharfbuzz-dev libharfbuzz-gobject0 libintl-perl libkpathsea6 libpango1.0-dev libptexenc1 librsvg2-bin libtext-diff-perl libtext-unidecode-perl libxcomposite-dev libxcursor-dev libxi-dev libxinerama-dev libxml-libxml-perl libxml-namespacesupport-perl libxml-sax-base-perl libxml-sax-perl libxml2-utils libxrandr-dev x11proto-composite-dev x11proto-randr-dev x11proto-xinerama-dev -y
 
-  - PYGI_LOCATION=$(dpkg-query -L python3-gi | grep "packages/gi$")
+
+  - export PYGI_LOCATION=$(dpkg-query -L python3-gi | grep "packages/gi$")
   - echo $PYTHON_VERSION
   - echo $PYTHON_INC_DIR
   - echo $PYTHON_SITE_PACKAGES
