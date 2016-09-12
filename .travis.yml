@@ -5,7 +5,7 @@ language: python
 group: edge
 
 # source: https://github.com/Mousers/mousetrap-3.17/blob/c184167da0b6f03d75e9ba197ce80aa15bc72ad5/bin/ci-install-deps.bash
-before_install:
+install:
   - export MAIN_DIR=$(pwd)
   - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
   - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
