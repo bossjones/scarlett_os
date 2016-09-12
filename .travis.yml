@@ -12,7 +12,6 @@ before_install:
   - export MAIN_DIR=$(pwd)
   - sudo apt-get update
   - sudo apt-get install -qq python-gi gir1.2-gtk-3.0 ibus gir1.2-appindicator3-0.1 gir1.2-notify-0.7 gir1.2-glib-2.0
-  - sudo apt-get -y install software-properties-common
   # - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
   # - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
   # - export SCARLETT_CONFIG=$MAIN_DIR/tests/fixtures/.scarlett
