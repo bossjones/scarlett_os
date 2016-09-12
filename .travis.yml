@@ -92,19 +92,19 @@ matrix:
       env: TOXENV=typing PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
       sudo: required
       dist: xenial
-      language: python
+      language: generic
       group: edge
     - python: "3.5"
       env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
       sudo: required
       dist: xenial
-      language: python
+      language: generic
       group: edge
     - python: "pypy"
       env: TOXENV=pypy PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
       sudo: required
       dist: xenial
-      language: python
+      language: generic
       group: edge
   allow_failures:
     - python: "3.5"
@@ -138,7 +138,6 @@ install:
   - export GST_PLUGIN_PATH="${VIRT_ROOT}/lib/gstreamer-${GSTREAMER}"
   # pip 8.1.2 from /home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages
   - export PYTHON=$VIRT_ROOT
-
   - ls -lta $PKG_CONFIG_PATH
   - ls -lta $VIRT_ROOT
   - ls -lta $MAIN_DIR
@@ -147,8 +146,11 @@ install:
   - echo $PYTHON_INC_DIR
   - echo $PYTHON_SITE_PACKAGES
   - echo $PYGI_LOCATION
+  # - mkdir -p $VIRT_ROOT/lib/python3.5/dist-packages/
+  # - cd $VIRT_ROOT/lib/python3.5/dist-packages/
   - ln -s $PYGI_LOCATION "${PYTHON_SITE_PACKAGES}/gi"
-  - file ${PYTHON_SITE_PACKAGES}/gi
+  # - ln -s ${PYGI_LOCATION}/gi gi
+  # - file ${PYTHON_SITE_PACKAGES}/gi
   - ls -lta ${PYTHON_SITE_PACKAGES}
   - ls -lta ${PYTHON_SITE_PACKAGES}/gi
   - pip install -U tox coveralls sphinx numpy
