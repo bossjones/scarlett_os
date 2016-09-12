@@ -1,8 +1,4 @@
-# addons:
-#   apt:
-#     packages:
-#     - python-gi
-#     - python3-gi
+dist: xenial
 virtualenv:
   system_site_packages: true
 
