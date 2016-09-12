@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# script for pyenv installation of pygtk3 in ubuntu 12.04
+# Adapted from https://gist.github.com/mehcode/6172694
+
+system_package_installed() {
+	if ! dpkg -l | grep -q $1; then
+		sudo apt-get install $1
+	fi
+}
+
+python_module_installed() {
+	local mod=$1
+	if ! python <<- EOF
+	try:
+	    import $mod
+	    raise SystemExit(0)
+	except ImportError:
+	    raise SystemExit(-1)
+	EOF
+	then
+		return 1
+	fi
+}
+
+set -e
+PYGTK_PREFIX="${VIRT_ROOT}"
+# NOTE: "pyenv prefix" can return multiple.
+PYGTK_PREFIX=${PYGTK_PREFIX%%:*}
+echo -e "\E[1m * Using prefix: $PYGTK_PREFIX\E[0m"
+export PATH="$PYGTK_PREFIX/bin:$PATH"
+export PKG_CONFIG_PATH="$PYGTK_PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+system_package_installed libcairo2-dev
+system_package_installed libglib2.0-dev
+system_package_installed libgirepository1.0-dev
+
+# Setup variables.
+CACHE="${MAIN_DIR}/install-pygtk-$$"
+echo -e "\E[1m * Building in $CACHE\E[0m"
+
+PYTHON_VERSION="$(python -c 'import sys; print(sys.version_info[0])')"
+if [[ "$PYTHON_VERSION" == 2 ]]; then
+    echo "[USING: python2]"
+    PYCAIRO_BASENAME=py2cairo
+else
+    echo "[USING: python3]"
+    PYCAIRO_BASENAME=pycairo
+fi
+
+# Make temp directory.
+mkdir -p $CACHE
+
+# Test for pycairo/py2cairo.
+echo -e "\E[1m * Checking for cairo...\E[0m"
+if ! python_module_installed cairo; then
+    echo -e "\E[1m * Installing ${PYCAIRO_BASENAME}...\E[0m"
+    # Fetch, build, and install pycairo/py2cairo.
+    (   cd $CACHE
+        if [[ $PYCAIRO_BASENAME == py2cairo ]]; then
+            curl 'http://cairographics.org/releases/py2cairo-1.10.0.tar.bz2' > "py2cairo.tar.bz2"
+            tar -xvf py2cairo.tar.bz2
+            (   cd py2cairo*
+                touch ChangeLog
+                autoreconf -ivf
+                ./configure --prefix=$PYGTK_PREFIX
+                make
+                make install
+            )
+        else
+            git clone --depth=10 git://git.cairographics.org/git/${PYCAIRO_BASENAME}
+            (   cd ${PYCAIRO_BASENAME}*
+                python3 setup.py install
+            )
+        fi
+    )
+fi
+
+# Test for gobject.
+echo -e "\E[1m * Checking for gobject...\E[0m"
+if ! python_module_installed gi; then
+    echo -e "\E[1m * Installing gobject...\E[0m"
+    # Fetch, build, and install gobject.
+    (   cd $CACHE
+        git clone --depth=10 git://git.gnome.org/pygobject
+        (   cd pygobject*
+            # Fix include (reported at https://bugzilla.gnome.org/show_bug.cgi?id=746742).
+            sed -i 's~^#include <pycairo/py3cairo.h>~#include <py3cairo.h>~' gi/pygi-foreign-cairo.c
+            ./autogen.sh --prefix=$PYGTK_PREFIX
+            make
+            make install
+        )
+    )
+fi

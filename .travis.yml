@@ -152,29 +152,30 @@ install:
   - echo $PYTHON_INC_DIR
   - echo $PYTHON_SITE_PACKAGES
   - echo $PYGI_LOCATION
-
-  - cd $MAIN_DIR
-  - curl -L https://cairographics.org/releases/pycairo-1.10.0.tar.bz2 | tar xj
-  - cd pycairo-1.10.0
-  - export ARCHFLAGS='-arch x86_64'
-  - set -x; python3 ./waf configure --prefix=$VIRT_ROOT
-  - sed -i '154s/data={}/return/' .waf3-1.6.4-*/waflib/Build.py
-  - set -e; python3 ./waf configure --prefix=$VIRT_ROOT
-  - python3 ./waf build
-  - python3 ./waf install
-  - unset ARCHFLAGS
-  - cd $MAIN_DIR
+  - bash $MAIN_DIR/gtk3-venv.sh
+  #
+  # - cd $MAIN_DIR
+  # - curl -L https://cairographics.org/releases/pycairo-1.10.0.tar.bz2 | tar xj
+  # - cd pycairo-1.10.0
+  # - export ARCHFLAGS='-arch x86_64'
+  # - set -x; python3 ./waf configure --prefix=$VIRT_ROOT
+  # - sed -i '154s/data={}/return/' .waf3-1.6.4-*/waflib/Build.py
+  # - set -e; python3 ./waf configure --prefix=$VIRT_ROOT
+  # - python3 ./waf build
+  # - python3 ./waf install
+  # - unset ARCHFLAGS
+  # - cd $MAIN_DIR
   ###########################################
   # pygobject3
   ###########################################
-  # - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig:/usr/local/opt/libffi/lib/pkgconfig
-  - cd $MAIN_DIR
-  - curl -L http://ftp.gnome.org/pub/GNOME/sources/pygobject/3.20/pygobject-3.20.1.tar.xz | tar xJ
-  - cd pygobject-3.20.1
-  - ./configure CFLAGS="-I$VIRT_ROOT/include" --prefix=$VIRT_ROOT
-  - make
-  - make install
-  - cd $MAIN_DIR
+  # # - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig:/usr/local/opt/libffi/lib/pkgconfig
+  # - cd $MAIN_DIR
+  # - curl -L http://ftp.gnome.org/pub/GNOME/sources/pygobject/3.20/pygobject-3.20.1.tar.xz | tar xJ
+  # - cd pygobject-3.20.1
+  # - ./configure CFLAGS="-I$VIRT_ROOT/include" --prefix=$VIRT_ROOT
+  # - make
+  # - make install
+  # - cd $MAIN_DIR
   # - mkdir -p $VIRT_ROOT/lib/python3.5/dist-packages/
   # - cd $VIRT_ROOT/lib/python3.5/dist-packages/
   # - ln -s $PYGI_LOCATION "${PYTHON_SITE_PACKAGES}/gi"
