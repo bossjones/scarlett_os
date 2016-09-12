@@ -5,19 +5,19 @@ language: python
 group: edge
 
 # source: https://github.com/Mousers/mousetrap-3.17/blob/c184167da0b6f03d75e9ba197ce80aa15bc72ad5/bin/ci-install-deps.bash
-install:
+before_install:
   - export MAIN_DIR=$(pwd)
-  - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
-  - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
-  - export SCARLETT_CONFIG=$MAIN_DIR/tests/fixtures/.scarlett
+  # - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
+  # - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
+  # - export SCARLETT_CONFIG=$MAIN_DIR/tests/fixtures/.scarlett
   # - export SCARLETT_HMM=$MAIN_DIR/tests/fixtures/model/hmm/en_US/hub4wsj_sc_8k
-  - export SCARLETT_LM=$MAIN_DIR/tests/fixtures/lm/1602.lm
-  - export SCARLETT_DICT=$MAIN_DIR/tests/fixtures/dict/1602.dic
-  - export PYTHONIOENCODING=UTF8
+  # - export SCARLETT_LM=$MAIN_DIR/tests/fixtures/lm/1602.lm
+  # - export SCARLETT_DICT=$MAIN_DIR/tests/fixtures/dict/1602.dic
+  # - export PYTHONIOENCODING=UTF8
   - export GSTREAMER=1.0
-  - export PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
-  - export PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
-  - export PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+  # - export PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
+  # - export PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
+  # - export PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
   - ls -lta $PKG_CONFIG_PATH
   - ls -lta $VIRT_ROOT
   - ls -lta $MAIN_DIR
@@ -45,16 +45,16 @@ install:
   - sudo apt-get -y install python-setuptools build-essential libgl1-mesa-dev libgles2-mesa-dev;
   - sudo apt-get -y install xvfb pulseaudio;
 
-
-  - export PYGI_LOCATION=$(dpkg-query -L python3-gi | grep "packages/gi$")
-  - echo $PYTHON_VERSION
-  - echo $PYTHON_INC_DIR
-  - echo $PYTHON_SITE_PACKAGES
-  - echo $PYGI_LOCATION
-  - ln -s $PYGI_LOCATION "${PYTHON_SITE_PACKAGES}/gi"
-  - file ${PYTHON_SITE_PACKAGES}/gi
-  - ls -lta ${PYTHON_SITE_PACKAGES}
-  - ls -lta ${PYTHON_SITE_PACKAGES}/gi
+  #
+  # - export PYGI_LOCATION=$(dpkg-query -L python3-gi | grep "packages/gi$")
+  # - echo $PYTHON_VERSION
+  # - echo $PYTHON_INC_DIR
+  # - echo $PYTHON_SITE_PACKAGES
+  # - echo $PYGI_LOCATION
+  # - ln -s $PYGI_LOCATION "${PYTHON_SITE_PACKAGES}/gi"
+  # - file ${PYTHON_SITE_PACKAGES}/gi
+  # - ls -lta ${PYTHON_SITE_PACKAGES}
+  # - ls -lta ${PYTHON_SITE_PACKAGES}/gi
 
 deploy:
   distributions: sdist bdist_wheel
@@ -90,20 +90,44 @@ deploy:
 matrix:
   fast_finish: true
   include:
-    - python: "3.5"
+    - python: "3.5_with_system_site_packages"
       env: TOXENV=typing
-    - python: "3.5"
+    - python: "3.5_with_system_site_packages"
       env: TOXENV=py35
     - python: "pypy"
       env: TOXENV=pypy
   allow_failures:
-    - python: "3.5"
+    - python: "3.5_with_system_site_packages"
       env: TOXENV=typing
 cache:
   directories:
     - $HOME/.cache/pip
     - $HOME/virtualenv/python3.5.0/lib/python3.5_with_system_site_packages/site-packages
-install: pip install -U tox coveralls
-language: python
+install:
+  - export MAIN_DIR=$(pwd)
+  - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
+  - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
+  - export SCARLETT_CONFIG=$MAIN_DIR/tests/fixtures/.scarlett
+  # - export SCARLETT_HMM=$MAIN_DIR/tests/fixtures/model/hmm/en_US/hub4wsj_sc_8k
+  - export SCARLETT_LM=$MAIN_DIR/tests/fixtures/lm/1602.lm
+  - export SCARLETT_DICT=$MAIN_DIR/tests/fixtures/dict/1602.dic
+  - export PYTHONIOENCODING=UTF8
+  - export GSTREAMER=1.0
+  - export PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
+  - export PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
+  - export PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+  - ls -lta $PKG_CONFIG_PATH
+  - ls -lta $VIRT_ROOT
+  - ls -lta $MAIN_DIR
+  - pip install -U tox coveralls
+  - export PYGI_LOCATION=$(dpkg-query -L python3-gi | grep "packages/gi$")
+  - echo $PYTHON_VERSION
+  - echo $PYTHON_INC_DIR
+  - echo $PYTHON_SITE_PACKAGES
+  - echo $PYGI_LOCATION
+  - ln -s $PYGI_LOCATION "${PYTHON_SITE_PACKAGES}/gi"
+  - file ${PYTHON_SITE_PACKAGES}/gi
+  - ls -lta ${PYTHON_SITE_PACKAGES}
+  - ls -lta ${PYTHON_SITE_PACKAGES}/gi
 script: tox -e ${TOXENV}
 after_success: coveralls
