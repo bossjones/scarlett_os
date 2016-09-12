@@ -120,10 +120,10 @@ install:
   # - source _venv/bin/activate
   - export MAIN_DIR=$(pwd)
   - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
-  - ls -lta /home/travis/virtualenv
+  - ls -lta /home/travis/virtualenv/
   - ls -lta /home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
-  - export WORKON_HOME=/home/travis/virtualenv
-  - export PKG_CONFIG_PATH=$WORKON_HOME/lib/pkgconfig
+  # - export WORKON_HOME=/home/travis/virtualenv
+  - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
   # - export SCARLETT_CONFIG=$MAIN_DIR/tests/fixtures/.scarlett
   # # - export SCARLETT_HMM=$MAIN_DIR/tests/fixtures/model/hmm/en_US/hub4wsj_sc_8k
   # - export SCARLETT_LM=$MAIN_DIR/tests/fixtures/lm/1602.lm
@@ -134,8 +134,9 @@ install:
   - export PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
   - export PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
 
-  # - export LD_LIBRARY_PATH="${PI_HOME}/.virtualenvs/scarlett_os/lib"
-  # - export GST_PLUGIN_PATH="${PI_HOME}/.virtualenvs/scarlett_os/lib/gstreamer-${GSTREAMER}"
+  - export LD_LIBRARY_PATH="${VIRT_ROOT}/lib"
+  - export GST_PLUGIN_PATH="${VIRT_ROOT}/lib/gstreamer-${GSTREAMER}"
+  # pip 8.1.2 from /home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages
   - export PYTHON=$VIRT_ROOT
 
   - ls -lta $PKG_CONFIG_PATH
