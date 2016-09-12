@@ -143,5 +143,6 @@ install:
   # - ls -lta ${PYTHON_SITE_PACKAGES}
   # - ls -lta ${PYTHON_SITE_PACKAGES}/gi
   - pip install -U tox coveralls
+  - env
 script: tox -e ${TOXENV}
 after_success: coveralls
