@@ -159,9 +159,9 @@ install:
   # - export ARCHFLAGS='-arch x86_64'
   # - python waf configure --prefix=$VIRT_ROOT
   # - gsed -i '154s/data={}/return/' .waf3-1.6.4-*/waflib/Build.py # Bufix: https://bugs.freedesktop.org/show_bug.cgi?id=76759
-  - python waf configure --prefix=$VIRT_ROOT
-  - python waf build
-  - python waf install
+  - ./waf configure --prefix=$VIRT_ROOT
+  - ./waf build
+  - ./waf install
   # - unset ARCHFLAGS
   - cd $MAIN_DIR
   ###########################################
