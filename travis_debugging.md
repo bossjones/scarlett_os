@@ -1,6 +1,6 @@
 # travis env for debugging
 
-``
+```
 0.01s$ env
 MANPATH=/home/travis/.nvm/versions/node/v4.1.2/share/man:/usr/local/clang-3.5.0/share/man:/usr/local/man:/usr/local/share/man:/usr/share/man
 XDG_SESSION_ID=2
