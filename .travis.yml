@@ -156,13 +156,13 @@ install:
   - cd $MAIN_DIR
   - curl -L https://cairographics.org/releases/pycairo-1.10.0.tar.bz2 | tar xj
   - cd pycairo-1.10.0
-  # - export ARCHFLAGS='-arch x86_64'
-  # - python waf configure --prefix=$VIRT_ROOT
-  # - gsed -i '154s/data={}/return/' .waf3-1.6.4-*/waflib/Build.py # Bufix: https://bugs.freedesktop.org/show_bug.cgi?id=76759
-  - ./waf configure --prefix=$VIRT_ROOT
-  - ./waf build
-  - ./waf install
-  # - unset ARCHFLAGS
+  - export ARCHFLAGS='-arch x86_64'
+  - python3 ./waf configure --prefix=$VIRT_ROOT
+  - sed -i '154s/data={}/return/' .waf3-1.6.4-*/waflib/Build.py
+  - python3 ./waf configure --prefix=$VIRT_ROOT
+  - python3 ./waf build
+  - python3 ./waf install
+  - unset ARCHFLAGS
   - cd $MAIN_DIR
   ###########################################
   # pygobject3
