@@ -116,8 +116,8 @@ cache:
 install:
   - sudo apt-get update -q
   - sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
-  - virtualenv --python=$PYTHON --system-site-packages _venv
-  - source _venv/bin/activate
+  # - virtualenv --python=$PYTHON --system-site-packages _venv
+  # - source _venv/bin/activate
   # - export MAIN_DIR=$(pwd)
   # - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
   # - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
@@ -142,7 +142,8 @@ install:
   # - file ${PYTHON_SITE_PACKAGES}/gi
   # - ls -lta ${PYTHON_SITE_PACKAGES}
   # - ls -lta ${PYTHON_SITE_PACKAGES}/gi
-  - pip install -U tox coveralls
+  - pip install -U tox coveralls sphinx numpy
   - env
+  - pip install ruamel.venvgtk
 script: tox -e ${TOXENV}
 after_success: coveralls
