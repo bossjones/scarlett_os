@@ -1,4 +1,3 @@
-dist: xenial
 virtualenv:
   system_site_packages: true
 
@@ -6,9 +5,9 @@ virtualenv:
 # source: https://github.com/Mousers/mousetrap-3.17/blob/c184167da0b6f03d75e9ba197ce80aa15bc72ad5/bin/ci-install-deps.bash
 before_install:
   - export MAIN_DIR=$(pwd)
-  - sudo apt-get update
-  - sudo apt-get install -qq python-gi gir1.2-gtk-3.0 ibus gir1.2-appindicator3-0.1 gir1.2-notify-0.7 gir1.2-glib-2.0
-  # - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
+  # - sudo apt-get update
+  # - sudo apt-get install -qq python-gi gir1.2-gtk-3.0 ibus gir1.2-appindicator3-0.1 gir1.2-notify-0.7 gir1.2-glib-2.0
+  # # - export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
   # - export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
   # - export SCARLETT_CONFIG=$MAIN_DIR/tests/fixtures/.scarlett
   # - export SCARLETT_HMM=$MAIN_DIR/tests/fixtures/model/hmm/en_US/hub4wsj_sc_8k
@@ -45,8 +44,8 @@ before_install:
   - sudo apt-get -y install python-dev libsmpeg-dev libswscale-dev libavformat-dev libavcodec-dev libjpeg-dev libtiff4-dev libX11-dev libmtdev-dev;
   - sudo apt-get -y install python-setuptools build-essential libgl1-mesa-dev libgles2-mesa-dev;
   - sudo apt-get -y install xvfb pulseaudio;
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse'; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse'; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse'; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ trusty-updates main restricted universe multiverse'; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install -qq pkg-config; fi
   - sudo apt-get -y update
   - sudo apt-get -y install ubuntu-restricted-extras
@@ -100,19 +99,19 @@ matrix:
     - python: "3.5"
       env: TOXENV=typing PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
       sudo: required
-      dist: xenial
+      dist: trusty
       language: generic
       group: edge
     - python: "3.5"
       env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
       sudo: required
-      dist: xenial
+      dist: trusty
       language: generic
       group: edge
     - python: "pypy"
       env: TOXENV=pypy PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
       sudo: required
-      dist: xenial
+      dist: trusty
       language: generic
       group: edge
   allow_failures:
