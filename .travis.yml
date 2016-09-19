@@ -14,6 +14,12 @@ before_install:
   - export GSTREAMER=1.0
   - export ENABLE_PYTHON3=yes
   # from jhbuild
+  - export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
+  # JHBuild detects too many cores
+  - export MAKEFLAGS="-j4"
+  # JHBuild related variables
+  - export PREFIX="${HOME}/jhbuild"
+  - export JHBUILD="${HOME}/gnome"
   # - export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
   # - export MAKEFLAGS="-j4"
   # - export PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
