@@ -132,7 +132,7 @@ sed -e '/^includesdir/ s/$(libdir).*$/$(includedir)/' \
 sed -e '/^includedir/ s/=.*$/=@includedir@/' \
     -e 's/^Cflags: -I${includedir}/Cflags:/' \
     -i libffi.pc.in        &&
-./configure --prefix=/usr --disable-static &&
+./configure --prefix=$PYGTK_PREFIX --disable-static &&
 make && \
 sudo make install && \
 ldconfig
@@ -142,7 +142,7 @@ echo -e "\E[1m * Installing pcre...\E[0m"
 	curl --remote-name ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.39.tar.gz
 	tar -xvzf pcre-8.39.tar.gz
 	cd pcre-8.39
-	./configure --prefix=/usr --enable-utf
+	./configure --prefix=$PYGTK_PREFIX --enable-utf
 	make && sudo make install
 	ldconfig
 )
