@@ -135,7 +135,7 @@ sed -e '/^includedir/ s/=.*$/=@includedir@/' \
 ./configure --prefix=$PYGTK_PREFIX --disable-static &&
 make && \
 sudo make install && \
-ldconfig
+# ldconfig
 
 echo -e "\E[1m * Installing pcre...\E[0m"
 (   cd $CACHE
@@ -144,7 +144,7 @@ echo -e "\E[1m * Installing pcre...\E[0m"
 	cd pcre-8.39
 	./configure --prefix=$PYGTK_PREFIX --enable-utf
 	make && sudo make install
-	ldconfig
+	# ldconfig
 )
 
 
