@@ -105,6 +105,61 @@ fi
 #    cd gobject-introspection && git checkout 1.46.0 &&
 #    jhbuild buildone -n gobject-introspection)
 
+#
+# - (cd "${JHBUILD}" &&
+#    git clone --depth 1 https://github.com/GNOME/glib.git &&
+#    jhbuild buildone -n glib)
+
+
+# - curl -L "http://ftp.acc.umu.se/pub/gnome/sources/glib/2.32/glib-2.32.4.tar.xz" > glib-2.32.4.tar.xz
+# - tar xf glib-2.32.4.tar.xz
+# - cd glib-2.32.4
+# - ./configure --prefix=$VIRT_ROOT > /dev/null
+# - make > /dev/null
+# - make install > /dev/null
+# - cd $MAIN_DIR
+# - sudo apt-get install -qq libtheora-dev libogg-dev libvorbis-dev libasound2-dev libjack-dev
+
+# source: https://github.com/apache/celix/blob/master/Dockerfile.Android
+# source: http://www.linuxfromscratch.org/blfs/view/svn/general/libffi.html
+
+echo -e "\E[1m * Installing libffi...\E[0m"
+curl -L -O ftp://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz && \
+tar -xvzf libffi-3.2.1.tar.gz  && \
+cd libffi-3.2.1 && \
+sed -e '/^includesdir/ s/$(libdir).*$/$(includedir)/' \
+    -i include/Makefile.in &&
+sed -e '/^includedir/ s/=.*$/=@includedir@/' \
+    -e 's/^Cflags: -I${includedir}/Cflags:/' \
+    -i libffi.pc.in        &&
+./configure --prefix=/usr --disable-static &&
+make && \
+sudo make install && \
+ldconfig
+
+echo -e "\E[1m * Installing pcre...\E[0m"
+(   cd $CACHE
+	curl --remote-name ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.39.tar.gz
+	tar -xvzf pcre-8.39.tar.gz
+	cd pcre-8.39
+	./configure --prefix=/usr --enable-utf
+	make && sudo make install
+	ldconfig
+)
+
+
+echo -e "\E[1m * Installing glib...\E[0m"
+# Fetch, build, and install glib. v3.18.2
+(   cd $CACHE
+	git clone --depth=10 git://git.gnome.org/glib
+	(   cd glib*
+		# git reset --hard 7dc01c05fc07433161be74509b985647f6bedd19
+		./autogen.sh --prefix=$PYGTK_PREFIX
+		make
+		make install
+	)
+)
+
 # Test for gobject.
 echo -e "\E[1m * Checking for gobject...\E[0m"
 if ! python_module_installed gi; then
