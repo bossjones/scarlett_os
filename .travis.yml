@@ -47,6 +47,9 @@ before_install:
   - sudo apt-get -y update
   - sudo apt-get -y install ubuntu-restricted-extras
   - sudo apt-get -y install libfftw3-dev
+  - sudo apt-get install -qq python3-dev;
+  - sudo apt-get install -qq python3-cairo-dev;
+  - sudo apt-get install -qq python3-gi;
 
   #
   # - export PYGI_LOCATION=$(dpkg-query -L python3-gi | grep "packages/gi$")
@@ -183,8 +186,9 @@ install:
   # - file ${PYTHON_SITE_PACKAGES}/gi
   - ls -lta ${PYTHON_SITE_PACKAGES}
   - ls -lta ${PYTHON_SITE_PACKAGES}/gi
-  - pip install -U tox coveralls sphinx numpy
+  # - pip install -U tox coveralls sphinx numpy
+  - pip install -U coveralls sphinx numpy
   - env
-  - pip install ruamel.venvgtk
-script: tox -e ${TOXENV}
+  # - pip install ruamel.venvgtk
+script: python3 setup.py test
 after_success: coveralls

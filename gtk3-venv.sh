@@ -75,14 +75,45 @@ if ! python_module_installed cairo; then
     )
 fi
 
+# # Test for gobject-introspection
+# echo -e "\E[1m * Checking for cairo...\E[0m"
+# if ! python_module_installed cairo; then
+#     echo -e "\E[1m * Installing ${PYCAIRO_BASENAME}...\E[0m"
+#     # Fetch, build, and install pycairo/py2cairo.
+#     (   cd $CACHE
+#         if [[ $PYCAIRO_BASENAME == py2cairo ]]; then
+#             curl 'http://cairographics.org/releases/py2cairo-1.10.0.tar.bz2' > "py2cairo.tar.bz2"
+#             tar -xvf py2cairo.tar.bz2
+#             (   cd py2cairo*
+#                 touch ChangeLog
+#                 autoreconf -ivf
+#                 ./configure --prefix=$PYGTK_PREFIX
+#                 make
+#                 make install
+#             )
+#         else
+#             git clone --depth=10 git://git.cairographics.org/git/${PYCAIRO_BASENAME}
+#             (   cd ${PYCAIRO_BASENAME}*
+#                 python3 setup.py install
+#             )
+#         fi
+#     )
+# fi
+
+# (cd "${JHBUILD}" &&
+#    git clone https://github.com/GNOME/gobject-introspection.git &&
+#    cd gobject-introspection && git checkout 1.46.0 &&
+#    jhbuild buildone -n gobject-introspection)
+
 # Test for gobject.
 echo -e "\E[1m * Checking for gobject...\E[0m"
 if ! python_module_installed gi; then
     echo -e "\E[1m * Installing gobject...\E[0m"
-    # Fetch, build, and install gobject.
+    # Fetch, build, and install gobject. v3.18.2
     (   cd $CACHE
         git clone --depth=10 git://git.gnome.org/pygobject
         (   cd pygobject*
+		    git reset --hard 7dc01c05fc07433161be74509b985647f6bedd19
             # Fix include (reported at https://bugzilla.gnome.org/show_bug.cgi?id=746742).
             sed -i 's~^#include <pycairo/py3cairo.h>~#include <py3cairo.h>~' gi/pygi-foreign-cairo.c
             ./autogen.sh --prefix=$PYGTK_PREFIX

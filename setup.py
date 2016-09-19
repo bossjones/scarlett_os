@@ -1,10 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import sys
+import platform
+import re
+import warnings
+
+# Don't force people to install setuptools unless
+# we have to.
+try:
+    from setuptools import setup
+except ImportError:
+    from ez_setup import use_setuptools
+    use_setuptools()
+    from setuptools import setup
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
+from setuptools.command import install_lib
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -69,4 +83,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     cmdclass={'test': PyTest},
+    # cmdclass={"build_ext": custom_build_ext,
+    #           "doc": doc,
+    #           "test": test},
 )
