@@ -14,15 +14,15 @@
 # export PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
 #
 
-export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
-
-# JHBuild detects too many cores
-export MAKEFLAGS="-j4"
-
-# JHBuild related variables
-export PREFIX="${HOME}/jhbuild"
-export JHBUILD="${HOME}/gnome"
-export ENABLE_PYTHON3=yes
+# export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
+#
+# # JHBuild detects too many cores
+# export MAKEFLAGS="-j4"
+#
+# # JHBuild related variables
+# export PREFIX="${HOME}/jhbuild"
+# export JHBUILD="${HOME}/gnome"
+# export ENABLE_PYTHON3=yes
 
 sudo add-apt-repository ppa:miurahr/openresty-devel -y
 sudo apt-get update -qq
