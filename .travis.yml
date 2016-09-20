@@ -201,8 +201,9 @@ install:
   # - ln -s $PYGI_LOCATION "${PYTHON_SITE_PACKAGES}/gi"
   # - ln -s ${PYGI_LOCATION}/gi gi
   # - file ${PYTHON_SITE_PACKAGES}/gi
-  - ls -lta ${PYTHON_SITE_PACKAGES}
-  - ls -lta ${PYTHON_SITE_PACKAGES}/gi
+  # - ls -lta ${PYTHON_SITE_PACKAGES}
+  # - ls -lta ${PYTHON_SITE_PACKAGES}/gi
+  - jhbuild run python3 setup.py install
   # - pip install -U tox coveralls sphinx numpy
   - pip install -U coveralls sphinx numpy
   - env
