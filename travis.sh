@@ -35,6 +35,7 @@ echo "moduleset = 'gnome-world'"          >> ~/.jhbuildrc
 echo "interact = False"                   >> ~/.jhbuildrc
 echo "makeargs = '${MAKEFLAGS}'"          >> ~/.jhbuildrc
 echo "os.environ['CFLAGS'] = '${CFLAGS}'" >> ~/.jhbuildrc
+echo "os.environ['PYTHON'] = 'python3'"   >> ~/.jhbuildrc
 
 mkdir -p "${PREFIX}"
 mkdir -p "${JHBUILD}"
