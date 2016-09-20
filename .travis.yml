@@ -20,6 +20,15 @@ before_install:
   # JHBuild related variables
   - export PREFIX="${HOME}/jhbuild"
   - export JHBUILD="${HOME}/gnome"
+
+  # NOTE: taken from: jhbuild-session
+  - export PATH=${PREFIX}/bin:${PREFIX}/sbin:${PATH}
+  - export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
+  - export PYTHONPATH=${PREFIX}/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages
+  - export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:/usr/lib/pkgconfig
+  - export XDG_DATA_DIRS=${PREFIX}/share:/usr/share
+  - export XDG_CONFIG_DIRS=${PREFIX}/etc/xdg
+
   # - export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
   # - export MAKEFLAGS="-j4"
   # - export PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
