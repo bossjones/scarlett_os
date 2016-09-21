@@ -217,5 +217,5 @@ install:
   - pip install -U coveralls sphinx numpy
   - env
   # - pip install ruamel.venvgtk
-script: jhbuild run python3 setup.py test
+script: env; jhbuild run python3 setup.py test
 after_success: coveralls
