@@ -34,9 +34,9 @@ before_install:
   # - export PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
   # - export PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
   # - export PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-  - ls -lta $PKG_CONFIG_PATH
-  - ls -lta $VIRT_ROOT
-  - ls -lta $MAIN_DIR
+  # - ls -lta $PKG_CONFIG_PATH
+  # - ls -lta $VIRT_ROOT
+  # - ls -lta $MAIN_DIR
   - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:ricotz/testing; fi"
   - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3; fi"
   - sh -c "if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3-staging; fi"
