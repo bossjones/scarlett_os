@@ -49,6 +49,7 @@ def get_uniq_list(seq):
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
 
+
 def add_gi_packages():
     import os
     import sys
@@ -80,6 +81,9 @@ def add_gi_packages():
     print('python_version', python_version)
     print('global_path', global_path)
     print('global_sitepackages', global_sitepackages)
+    print('all_package_paths', all_package_paths)
+    print('package_list_with_dups', package_list_with_dups)
+    print('uniq_package_list', uniq_package_list)
 
     for package in packages:
         for pack_dir in uniq_package_list:
