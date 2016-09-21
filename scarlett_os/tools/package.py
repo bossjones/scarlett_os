@@ -44,10 +44,16 @@ def check_gi():
         add_gi_packages()
 
 
+def get_uniq_list(seq):
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if not (x in seen or seen_add(x))]
+
 def add_gi_packages():
     import os
     import sys
     from distutils.sysconfig import get_python_lib
+    import itertools
 
     dest_dir = get_python_lib()
 
@@ -55,10 +61,19 @@ def add_gi_packages():
 
     python_version = sys.version[:3]
     global_path = os.path.join('/usr/lib', 'python' + python_version)
+
+    if os.environ.get('PYTHONPATH'):
+        py_path = os.environ.get('PYTHONPATH')
+        py_paths = py_path.split(':')
+
     global_sitepackages = [os.path.join(global_path,
                                         'dist-packages'),  # for Debian-based
                            os.path.join(global_path,
                                         'site-packages')]  # for others
+
+    all_package_paths = [py_paths, global_sitepackages]
+    package_list_with_dups = list(itertools.chain.from_iterable(all_package_paths))
+    uniq_package_list = get_uniq_list(package_list_with_dups)
 
     print('dest_dir', dest_dir)
     print('packages', packages)
@@ -67,7 +82,7 @@ def add_gi_packages():
     print('global_sitepackages', global_sitepackages)
 
     for package in packages:
-        for pack_dir in global_sitepackages:
+        for pack_dir in uniq_package_list:
             src = os.path.join(pack_dir, package)
             dest = os.path.join(dest_dir, package)
             print('src', src)
