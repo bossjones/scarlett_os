@@ -10,6 +10,8 @@ export MAKEFLAGS="-j4"
 # JHBuild related variables
 export PREFIX="${HOME}/jhbuild"
 export JHBUILD="${HOME}/gnome"
+export PYTHON="python3"
+export PACKAGES="python3-gi python3-gi-cairo"
 
 # NOTE: taken from: jhbuild-session
 export PATH=${PREFIX}/bin:${PREFIX}/sbin:${PATH}
@@ -57,7 +59,7 @@ sudo apt-get install -qq cvs
 sudo apt-get update -q
 sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
 sudo apt-get install -qq build-essential
-sudo apt-get install -qq git flex
+sudo apt-get install -qq git
 sudo apt-get install -qq gettext xsltproc docbook-xml docbook-xsl
 sudo apt-get install -qq apt-file autopoint
 # install yacc / lex
