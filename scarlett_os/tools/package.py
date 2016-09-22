@@ -93,6 +93,7 @@ def add_gi_packages():
             print('dest', dest)
             if not os.path.exists(dest) and os.path.exists(src):
                 os.symlink(src, dest)
+                print('symlink made')
 
 
 def create_gi_symlinks():

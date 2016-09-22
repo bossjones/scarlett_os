@@ -82,8 +82,5 @@ setup(
     ],
     test_suite='tests',
     tests_require=test_requirements,
-    cmdclass={'test': PyTest},
-    # cmdclass={"build_ext": custom_build_ext,
-    #           "doc": doc,
-    #           "test": test},
+    cmdclass={'test': PyTest}
 )
