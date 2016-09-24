@@ -1,26 +1,5 @@
 #!/usr/bin/env bash
 
-# export MAIN_DIR=$(pwd)
-# export GSTREAMER=1.0
-# export ENABLE_PYTHON3=yes
-# # from jhbuild
-# export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
-# # JHBuild detects too many cores
-# export MAKEFLAGS="-j4"
-# # JHBuild related variables
-# export PREFIX="${HOME}/jhbuild"
-# export JHBUILD="${HOME}/gnome"
-# export PYTHON="python3"
-# export PACKAGES="python3-gi python3-gi-cairo"
-#
-# # NOTE: taken from: jhbuild-session
-# export PATH=${PREFIX}/bin:${PREFIX}/sbin:${PATH}
-# export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
-# export PYTHONPATH=${PREFIX}/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages
-# export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:/usr/lib/pkgconfig
-# export XDG_DATA_DIRS=${PREFIX}/share:/usr/share
-# export XDG_CONFIG_DIRS=${PREFIX}/etc/xdg
-
 if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:ricotz/testing; fi
 if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3; fi
 if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3-staging; fi
@@ -92,8 +71,8 @@ sudo pip3 install -I path.py==7.7.1
 # virtualenv
 export WORKON_HOME=${HOME}/.virtualenvs
 export PROJECT_HOME=${HOME}/dev
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+export VIRTUALENVWRAPPER_PYTHON=`which python3`
+export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
 source /usr/local/bin/virtualenvwrapper.sh
 export PYTHONSTARTUP=$HOME/.pythonrc
 export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
@@ -107,7 +86,7 @@ echo -e "\n[ Write to postactivate ]"
 cat << EOF > $HOME/.virtualenvs/scarlett_os/bin/postactivate
 # FOR VIRTUALENVS
 export GSTREAMER=1.0
-export PI_HOME=/home/vagrant
+export PI_HOME=$HOME
 export MAIN_DIR=$HOME/dev/bossjones-github/scarlett_os
 export VIRT_ROOT=$HOME/.virtualenvs/scarlett_os
 export WORKON_HOME=$HOME/.virtualenvs

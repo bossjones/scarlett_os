@@ -1,41 +1,37 @@
 #!/usr/bin/env bash
 
-# export MAIN_DIR=$(pwd)
-# export VIRT_ROOT=/home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION
-# export PKG_CONFIG_PATH=$VIRT_ROOT/lib/pkgconfig
-# export SCARLETT_CONFIG=$MAIN_DIR/tests/fixtures/.scarlett
-# # - export SCARLETT_HMM=$MAIN_DIR/tests/fixtures/model/hmm/en_US/hub4wsj_sc_8k
-# export SCARLETT_LM=$MAIN_DIR/tests/fixtures/lm/1602.lm
-# export SCARLETT_DICT=$MAIN_DIR/tests/fixtures/dict/1602.dic
-# export PYTHONIOENCODING=UTF8
-# export GSTREAMER=1.0
-# export PYTHON_VERSION=$(python -c "import sys; print('%s.%s' % sys.version_info[:2])")
-# export PYTHON_INC_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
-# export PYTHON_SITE_PACKAGES=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-#
-
-# export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
-#
-# # JHBuild detects too many cores
-# export MAKEFLAGS="-j4"
-#
-# # JHBuild related variables
-# export PREFIX="${HOME}/jhbuild"
-# export JHBUILD="${HOME}/gnome"
-# export ENABLE_PYTHON3=yes
-
-# sudo add-apt-repository ppa:miurahr/openresty-devel -y
-# sudo apt-get update -qq
 
 # Create a basic .jhbuildrc
-echo "import os"                           > ~/.jhbuildrc
-echo "prefix='${PREFIX}'"                 >> ~/.jhbuildrc
-echo "checkoutroot='${JHBUILD}'"          >> ~/.jhbuildrc
-echo "moduleset = 'gnome-world'"          >> ~/.jhbuildrc
-echo "interact = False"                   >> ~/.jhbuildrc
-echo "makeargs = '${MAKEFLAGS}'"          >> ~/.jhbuildrc
-echo "os.environ['CFLAGS'] = '${CFLAGS}'" >> ~/.jhbuildrc
-echo "os.environ['PYTHON'] = 'python3'"   >> ~/.jhbuildrc
+echo "import os"                                   > ~/.jhbuildrc
+echo "prefix='${PREFIX}'"                         >> ~/.jhbuildrc
+echo "checkoutroot='${JHBUILD}'"                  >> ~/.jhbuildrc
+echo "moduleset = 'gnome-world'"                  >> ~/.jhbuildrc
+echo "interact = False"                           >> ~/.jhbuildrc
+echo "makeargs = '${MAKEFLAGS}'"                  >> ~/.jhbuildrc
+echo "os.environ['CFLAGS'] = '${CFLAGS}'"         >> ~/.jhbuildrc
+echo "os.environ['PYTHON'] = 'python3'"           >> ~/.jhbuildrc
+echo "os.environ['GSTREAMER'] = '1.0'"            >> ~/.jhbuildrc
+echo "os.environ['ENABLE_PYTHON3'] = 'yes'"       >> ~/.jhbuildrc
+echo "os.environ['ENABLE_GTK'] = 'yes'"           >> ~/.jhbuildrc
+echo "os.environ['PYTHON_VERSION'] = '3.4'"       >> ~/.jhbuildrc
+echo "os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'" >> ~/.jhbuildrc
+echo "os.environ['MAKEFLAGS'] = '-j4'"            >> ~/.jhbuildrc
+echo "os.environ['PREFIX'] = '${HOME}/jhbuild'"   >> ~/.jhbuildrc
+echo "os.environ['JHBUILD'] = '${HOME}/gnome'"    >> ~/.jhbuildrc
+echo "os.environ['PATH'] = '${PREFIX}/bin:${PREFIX}/sbin:${PATH}'" >> ~/.jhbuildrc
+echo "os.environ['LD_LIBRARY_PATH'] = '${PREFIX}/lib:${LD_LIBRARY_PATH}'" >> ~/.jhbuildrc
+echo "os.environ['PYTHONPATH'] = '${PREFIX}/lib/python$PYTHON_VERSION/site-packages:/usr/lib/python$PYTHON_VERSION/site-packages'" >> ~/.jhbuildrc
+echo "os.environ['PKG_CONFIG_PATH'] = '${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:/usr/lib/pkgconfig'" >> ~/.jhbuildrc
+echo "os.environ['XDG_DATA_DIRS'] = '${PREFIX}/share:/usr/share'" >> ~/.jhbuildrc
+echo "os.environ['XDG_CONFIG_DIRS'] = '${PREFIX}/etc/xdg'"        >> ~/.jhbuildrc
+echo "os.environ['CC'] = 'gcc'"                                   >> ~/.jhbuildrc
+echo "os.environ['WORKON_HOME'] = '${HOME}/.virtualenvs'"                           >> ~/.jhbuildrc
+echo "os.environ['PROJECT_HOME'] = '${HOME}/dev'"                                   >> ~/.jhbuildrc
+echo "os.environ['VIRTUALENVWRAPPER_PYTHON'] = '/usr/bin/python3'"                  >> ~/.jhbuildrc
+echo "os.environ['VIRTUALENVWRAPPER_VIRTUALENV'] = '/usr/local/bin/virtualenv'"     >> ~/.jhbuildrc
+# source /usr/local/bin/virtualenvwrapper.sh
+echo "os.environ['PYTHONSTARTUP'] = '$HOME/.pythonrc'"                              >> ~/.jhbuildrc
+echo "os.environ['PIP_DOWNLOAD_CACHE'] = '$HOME/.pip/cache'"                        >> ~/.jhbuildrc
 
 mkdir -p "${PREFIX}"
 mkdir -p "${JHBUILD}"
@@ -139,18 +135,22 @@ if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
    jhbuild run make install);
 fi
 
-export WORKON_HOME=${HOME}/.virtualenvs
-export PROJECT_HOME=${HOME}/dev
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
-source /usr/local/bin/virtualenvwrapper.sh
-export PYTHONSTARTUP=$HOME/.pythonrc
-export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
-workon scarlett_os
+if [[ "${SKIP_ON_TRAVIS}" == 'yes' ]]; then
+   echo "[ THIS IS A TRAVIS BUILD SKIPPING ... ]"
+else:
+    export WORKON_HOME=${HOME}/.virtualenvs
+    export PROJECT_HOME=${HOME}/dev
+    export VIRTUALENVWRAPPER_PYTHON=`which python3`
+    export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
+    source /usr/local/bin/virtualenvwrapper.sh
+    export PYTHONSTARTUP=$HOME/.pythonrc
+    export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
+    workon scarlett_os
 
-mkdir -p $HOME/dev/bossjones-github/
-git clone https://github.com/bossjones/scarlett_os $HOME/dev/bossjones-github/scarlett_os
-cd $HOME/dev/bossjones-github/scarlett_os
-python3 setup.py install
-pip3 install -U coveralls sphinx numpy ipython
-python3 setup.py test
+    mkdir -p $HOME/dev/bossjones-github/
+    git clone https://github.com/bossjones/scarlett_os $HOME/dev/bossjones-github/scarlett_os
+    cd $HOME/dev/bossjones-github/scarlett_os
+    jhbuild run python3 setup.py install
+    jhbuild run pip3 install -U coveralls sphinx numpy ipython
+    jhbuild run python3 setup.py test
+fi
