@@ -51,7 +51,7 @@ sudo apt-get install -qq --no-install-recommends \
     libx{cb-util0,composite,randr,damage,ft2,i,t}-dev \
     {uuid,ppp,python-cairo}-dev \
     icc-profiles-free libxml-simple-perl subversion ruby gnome-doc-utils \
-    yelp-tools apt-file 
+    yelp-tools apt-file
 
 if [ "x${ENABLE_DISTCHECK}" == "xyes" ]; then
   sudo apt-get install -qq yelp-tools;
@@ -149,7 +149,7 @@ fi
 
 if [[ "${SKIP_ON_TRAVIS}" == 'yes' ]]; then
    echo "[ THIS IS A TRAVIS BUILD SKIPPING ... ]"
-else:
+else
     export WORKON_HOME=${HOME}/.virtualenvs
     export PROJECT_HOME=${HOME}/dev
     export VIRTUALENVWRAPPER_PYTHON=`which python3`

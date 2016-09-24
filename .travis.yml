@@ -86,7 +86,7 @@ before_install:
   - export PROJECT_HOME=${HOME}/dev
   - export VIRTUALENVWRAPPER_PYTHON=`which python3`
   - export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
-  - source /usr/local/bin/virtualenvwrapper.sh
+  - source /home/travis/virtualenv/python3.5.2/bin/virtualenvwrapper.sh
   - export PYTHONSTARTUP=$HOME/.pythonrc
   - export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
   - mkdir -p $WORKON_HOME

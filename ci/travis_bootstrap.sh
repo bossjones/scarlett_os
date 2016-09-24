@@ -73,7 +73,11 @@ export WORKON_HOME=${HOME}/.virtualenvs
 export PROJECT_HOME=${HOME}/dev
 export VIRTUALENVWRAPPER_PYTHON=`which python3`
 export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
-source /usr/local/bin/virtualenvwrapper.sh
+if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+    /home/travis/virtualenv/python3.5.2/bin/virtualenvwrapper.sh
+else
+    source /usr/local/bin/virtualenvwrapper.sh
+fi
 export PYTHONSTARTUP=$HOME/.pythonrc
 export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
 
