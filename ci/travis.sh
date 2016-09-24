@@ -114,13 +114,13 @@ fi
 # Need at least glib version 2.38
 (cd "${JHBUILD}" &&
  git clone --depth 1 https://github.com/GNOME/glib.git &&
- cd glib && git checkout tags/2.50.0 &&
+ cd glib && git checkout eaca4f4116801f99e30e42a857559e19a1e6f4ce &&
  jhbuild buildone -n glib)
 
 # Need at least gobject-introspection version 1.39
 (cd "${JHBUILD}" &&
  git clone https://github.com/GNOME/gobject-introspection.git &&
- cd gobject-introspection && git checkout tags/1.50.0 &&
+ cd gobject-introspection && git checkout cee2a4f215d5edf2e27b9964d3cfcb28a9d4941c &&
  jhbuild buildone -n gobject-introspection);
 
 # Need LGI from git master
@@ -139,14 +139,14 @@ fi
 
 # Need PyGObject built for Python 2
 if [ "x${ENABLE_PYTHON2}" == "xyes" ]; then
-  (cd "${JHBUILD}" && cd pygobject && git checkout tags/3.22.0 &&
+  (cd "${JHBUILD}" && cd pygobject && git checkout fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb &&
    jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python2 &&
    jhbuild run make install && jhbuild run git clean -xdf);
 fi
 
 # Need PyGObject built for Python 3
 if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
-  (cd "${JHBUILD}" && cd pygobject && git checkout tags/3.22.0 &&
+  (cd "${JHBUILD}" && cd pygobject && git checkout fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb &&
    jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python3 &&
    jhbuild run make install);
 fi
