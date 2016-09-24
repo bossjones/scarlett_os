@@ -24,5 +24,3 @@ EOF
 
 echo -e "\n[ Chmod +x postactivate ]"
 chmod +x $HOME/.virtualenvs/scarlett_os/bin/postactivate
-
-workon scarlett_os
