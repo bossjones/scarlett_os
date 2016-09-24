@@ -111,7 +111,7 @@ fi
 # Need at least glib version 2.38
 (cd "${JHBUILD}" &&
  git clone --depth 1 https://github.com/GNOME/glib.git &&
- cd glib && git clone 2.50.0 &&
+ cd glib && git checkout 2.50.0 &&
  jhbuild buildone -n glib)
 
 # Need at least gobject-introspection version 1.39
@@ -148,7 +148,10 @@ if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
    jhbuild run make install);
 fi
 
-# jhbuild 
+# jhbuild buildone -n gstreamer
+# jhbuild buildone -n gst-plugins-base
+# jhbuild buildone -n gst-plugins-bad
+# jhbuild buildone -n gst-plugins-good
 
 if [[ "${SKIP_ON_TRAVIS}" == 'yes' ]]; then
    echo "[ THIS IS A TRAVIS BUILD SKIPPING ... ]"
