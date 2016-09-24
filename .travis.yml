@@ -93,9 +93,9 @@ before_install:
   - mkvirtualenv scarlett_os
   - bash ./ci/set_postactivate.sh
   - workon scarlett_os
+  - pip install -U coveralls sphinx numpy ipython
   - bash ./ci/travis.sh
   - jhbuild run python3 setup.py install
-  - jhbuild run pip install -U coveralls sphinx numpy ipython
   # mkdir -p $HOME/dev/bossjones-github/
   # git clone https://github.com/bossjones/scarlett_os $HOME/dev/bossjones-github/scarlett_os
   # cd $HOME/dev/bossjones-github/scarlett_os
