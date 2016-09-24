@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 
-export MAIN_DIR=$(pwd)
-export GSTREAMER=1.0
-export ENABLE_PYTHON3=yes
-# from jhbuild
-export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
-# JHBuild detects too many cores
-export MAKEFLAGS="-j4"
-# JHBuild related variables
-export PREFIX="${HOME}/jhbuild"
-export JHBUILD="${HOME}/gnome"
-export PYTHON="python3"
-export PACKAGES="python3-gi python3-gi-cairo"
-
-# NOTE: taken from: jhbuild-session
-export PATH=${PREFIX}/bin:${PREFIX}/sbin:${PATH}
-export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
-export PYTHONPATH=${PREFIX}/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages
-export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:/usr/lib/pkgconfig
-export XDG_DATA_DIRS=${PREFIX}/share:/usr/share
-export XDG_CONFIG_DIRS=${PREFIX}/etc/xdg
+# export MAIN_DIR=$(pwd)
+# export GSTREAMER=1.0
+# export ENABLE_PYTHON3=yes
+# # from jhbuild
+# export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
+# # JHBuild detects too many cores
+# export MAKEFLAGS="-j4"
+# # JHBuild related variables
+# export PREFIX="${HOME}/jhbuild"
+# export JHBUILD="${HOME}/gnome"
+# export PYTHON="python3"
+# export PACKAGES="python3-gi python3-gi-cairo"
+#
+# # NOTE: taken from: jhbuild-session
+# export PATH=${PREFIX}/bin:${PREFIX}/sbin:${PATH}
+# export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
+# export PYTHONPATH=${PREFIX}/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages
+# export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:/usr/lib/pkgconfig
+# export XDG_DATA_DIRS=${PREFIX}/share:/usr/share
+# export XDG_CONFIG_DIRS=${PREFIX}/etc/xdg
 
 if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:ricotz/testing; fi
 if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3; fi
@@ -80,3 +80,54 @@ sudo apt-get install -qq --no-install-recommends \
     yelp-tools apt-file
 sudo apt-get install -qq apt-file
 sudo apt-file update
+sudo apt-get install wget -qq
+
+curl -s -q -L 'https://bootstrap.pypa.io/ez_setup.py' > ${HOME}/ez_setup.py
+curl -s -q -L 'https://bootstrap.pypa.io/get-pip.py' > ${HOME}/get-pip.py
+sudo python3 ${HOME}/ez_setup.py
+sudo python3 ${HOME}/get-pip.py
+sudo pip3 install virtualenv virtualenvwrapper
+sudo pip3 install -I path.py==7.7.1
+
+# virtualenv
+export WORKON_HOME=${HOME}/.virtualenvs
+export PROJECT_HOME=${HOME}/dev
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+source /usr/local/bin/virtualenvwrapper.sh
+export PYTHONSTARTUP=$HOME/.pythonrc
+export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
+
+mkdir -p $WORKON_HOME
+
+rmvirtualenv scarlett_os
+mkvirtualenv scarlett_os
+
+echo -e "\n[ Write to postactivate ]"
+cat << EOF > $HOME/.virtualenvs/scarlett_os/bin/postactivate
+# FOR VIRTUALENVS
+export GSTREAMER=1.0
+export PI_HOME=/home/vagrant
+export MAIN_DIR=$HOME/dev/bossjones-github/scarlett_os
+export VIRT_ROOT=$HOME/.virtualenvs/scarlett_os
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/dev
+
+
+# export PKG_CONFIG_PATH=$PI_HOME/.virtualenvs/scarlett_os/lib/pkgconfig
+export SCARLETT_CONFIG=$HOME/dev/bossjones-github/scarlett_os/tests/fixtures/.scarlett
+export SCARLETT_HMM=$HOME/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+export SCARLETT_LM=$HOME/dev/bossjones-github/scarlett_os/tests/fixtures/lm/1473.lm
+export SCARLETT_DICT=$HOME/dev/bossjones-github/scarlett_os/tests/fixtures/dict/1473.dic
+
+# for GST PLUGINS
+export LD_LIBRARY_PATH=$HOME/.virtualenvs/scarlett_os/lib
+export GST_PLUGIN_PATH=${PREFIX}/lib/gstreamer-1.0
+
+export PYTHON=/usr/bin/python3
+EOF
+
+echo -e "\n[ Chmod +x postactivate ]"
+chmod +x $HOME/.virtualenvs/scarlett_os/bin/postactivate
+
+workon scarlett_os

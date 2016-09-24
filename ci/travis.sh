@@ -24,8 +24,8 @@
 # export JHBUILD="${HOME}/gnome"
 # export ENABLE_PYTHON3=yes
 
-sudo add-apt-repository ppa:miurahr/openresty-devel -y
-sudo apt-get update -qq
+# sudo add-apt-repository ppa:miurahr/openresty-devel -y
+# sudo apt-get update -qq
 
 # Create a basic .jhbuildrc
 echo "import os"                           > ~/.jhbuildrc
@@ -75,7 +75,7 @@ if [ "x${ENABLE_LUA51}" == "xyes" ]; then
 fi
 
 if [ "x${ENABLE_PYTHON2}" == "xyes" ]; then
-  sudo apt-get install -qq python2-dev;
+  sudo apt-get install -qq python-dev;
   sudo apt-get install -qq python-cairo-dev;
   sudo apt-get install -qq python-gi-dev;
 fi
@@ -102,13 +102,14 @@ fi
 # Need at least glib version 2.38
 (cd "${JHBUILD}" &&
  git clone --depth 1 https://github.com/GNOME/glib.git &&
+ cd glib &&
  jhbuild buildone -n glib)
 
 # Need at least gobject-introspection version 1.39
 (cd "${JHBUILD}" &&
  git clone https://github.com/GNOME/gobject-introspection.git &&
- cd gobject-introspection && git checkout 1.46.0 &&
- jhbuild buildone -n gobject-introspection)
+ cd gobject-introspection &&
+ jhbuild buildone -n gobject-introspection);
 
 # Need LGI from git master
 if [ "x${ENABLE_LUA51}" == "xyes" ]; then
@@ -119,8 +120,7 @@ if [ "x${ENABLE_LUA51}" == "xyes" ]; then
    jhbuild run make install PREFIX="${PREFIX}");
 fi
 
-if [ "x${ENABLE_PYTHON2}" == "xyes" ] ||
-   [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
+if [ "x${ENABLE_PYTHON2}" == "xyes" ] || [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
   (cd "${JHBUILD}" &&
    git clone --depth 1 https://github.com/GNOME/pygobject.git);
 fi
@@ -139,19 +139,18 @@ if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
    jhbuild run make install);
 fi
 
-jhbuild run ./autogen.sh --prefix="${PREFIX}"
-  --enable-gtk-doc=${ENABLE_DISTCHECK:-no}
-  --enable-gtk=${ENABLE_GTK:-no}
-  --enable-lua5.1=${ENABLE_LUA51:-no}
-  --enable-luajit=${ENABLE_LUAJIT:-no}
-  --enable-python2=${ENABLE_PYTHON2:-no}
-  --enable-python3=${ENABLE_PYTHON3:-no} || (cat config.log; exit 1)
-jhbuild run make
+export WORKON_HOME=${HOME}/.virtualenvs
+export PROJECT_HOME=${HOME}/dev
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+source /usr/local/bin/virtualenvwrapper.sh
+export PYTHONSTARTUP=$HOME/.pythonrc
+export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
+workon scarlett_os
 
-# script:
-#   # Can only run when all options are enabled
-#   - if [ "x${ENABLE_DISTCHECK}" != "xyes" ]; then
-#       jhbuild run make check;
-#     else
-#       jhbuild run make distcheck;
-#     fi
+mkdir -p $HOME/dev/bossjones-github/
+git clone https://github.com/bossjones/scarlett_os $HOME/dev/bossjones-github/scarlett_os
+cd $HOME/dev/bossjones-github/scarlett_os
+python3 setup.py install
+pip3 install -U coveralls sphinx numpy ipython
+python3 setup.py test

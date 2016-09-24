@@ -181,7 +181,9 @@ install:
   # - echo $PYTHON_SITE_PACKAGES
   # - echo $PYGI_LOCATION
   # - bash $MAIN_DIR/gtk3-venv.sh
-  - bash $MAIN_DIR/travis.sh
+  - bash $MAIN_DIR/ci/travis_source.sh
+  - bash $MAIN_DIR/ci/travis_bootstrap.sh
+  - bash $MAIN_DIR/ci/travis.sh
   #
   # - cd $MAIN_DIR
   # - curl -L https://cairographics.org/releases/pycairo-1.10.0.tar.bz2 | tar xj
