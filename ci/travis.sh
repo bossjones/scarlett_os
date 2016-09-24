@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+export VIRTUALENVWRAPPER_PYTHON=`which python3`
+export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
+export VIRTUALENV_WRAPPER_SH=`which virtualenvwrapper.sh`
 
 # Create a basic .jhbuildrc
 echo "import os"                                   > ~/.jhbuildrc
@@ -27,8 +30,8 @@ echo "os.environ['XDG_CONFIG_DIRS'] = '${PREFIX}/etc/xdg'"        >> ~/.jhbuildr
 echo "os.environ['CC'] = 'gcc'"                                   >> ~/.jhbuildrc
 echo "os.environ['WORKON_HOME'] = '${HOME}/.virtualenvs'"                           >> ~/.jhbuildrc
 echo "os.environ['PROJECT_HOME'] = '${HOME}/dev'"                                   >> ~/.jhbuildrc
-echo "os.environ['VIRTUALENVWRAPPER_PYTHON'] = '/usr/bin/python3'"                  >> ~/.jhbuildrc
-echo "os.environ['VIRTUALENVWRAPPER_VIRTUALENV'] = '/usr/local/bin/virtualenv'"     >> ~/.jhbuildrc
+echo "os.environ['VIRTUALENVWRAPPER_PYTHON'] = '$VIRTUALENVWRAPPER_PYTHON'"                  >> ~/.jhbuildrc
+echo "os.environ['VIRTUALENVWRAPPER_VIRTUALENV'] = '$VIRTUALENVWRAPPER_VIRTUALENV'"     >> ~/.jhbuildrc
 # source /usr/local/bin/virtualenvwrapper.sh
 echo "os.environ['PYTHONSTARTUP'] = '$HOME/.pythonrc'"                              >> ~/.jhbuildrc
 echo "os.environ['PIP_DOWNLOAD_CACHE'] = '$HOME/.pip/cache'"                        >> ~/.jhbuildrc
@@ -111,13 +114,13 @@ fi
 # Need at least glib version 2.38
 (cd "${JHBUILD}" &&
  git clone --depth 1 https://github.com/GNOME/glib.git &&
- cd glib && git checkout 2.50.0 &&
+ cd glib && git checkout tags/2.50.0 &&
  jhbuild buildone -n glib)
 
 # Need at least gobject-introspection version 1.39
 (cd "${JHBUILD}" &&
  git clone https://github.com/GNOME/gobject-introspection.git &&
- cd gobject-introspection && git checkout 1.50.0 &&
+ cd gobject-introspection && git checkout tags/1.50.0 &&
  jhbuild buildone -n gobject-introspection);
 
 # Need LGI from git master
@@ -136,14 +139,14 @@ fi
 
 # Need PyGObject built for Python 2
 if [ "x${ENABLE_PYTHON2}" == "xyes" ]; then
-  (cd "${JHBUILD}" && cd pygobject && git checkout 3.22.0 &&
+  (cd "${JHBUILD}" && cd pygobject && git checkout tags/3.22.0 &&
    jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python2 &&
    jhbuild run make install && jhbuild run git clean -xdf);
 fi
 
 # Need PyGObject built for Python 3
 if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
-  (cd "${JHBUILD}" && cd pygobject && git checkout 3.22.0 &&
+  (cd "${JHBUILD}" && cd pygobject && git checkout tags/3.22.0 &&
    jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python3 &&
    jhbuild run make install);
 fi
@@ -160,7 +163,7 @@ else
     export PROJECT_HOME=${HOME}/dev
     export VIRTUALENVWRAPPER_PYTHON=`which python3`
     export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
-    source /usr/local/bin/virtualenvwrapper.sh
+    source $VIRTUALENV_WRAPPER_SH
     export PYTHONSTARTUP=$HOME/.pythonrc
     export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
     workon scarlett_os
