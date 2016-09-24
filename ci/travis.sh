@@ -95,9 +95,10 @@ if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
 fi
 
 # Get JHBuild
+# source: https://github.com/GNOME/jhbuild/commit/86d958b6778da649b559815c0a0dbe6a5d1a8cd4
 (cd "${JHBUILD}" &&
  git clone --depth 1 https://github.com/GNOME/jhbuild.git &&
- cd jhbuild && ./autogen.sh --prefix=/usr/local &&
+ cd jhbuild && git checkout 86d958b6778da649b559815c0a0dbe6a5d1a8cd4 && ./autogen.sh --prefix=/usr/local &&
  make && sudo make install)
 
 # Need a gtk-doc that can handle virtual/rename-to function annotations
@@ -110,13 +111,13 @@ fi
 # Need at least glib version 2.38
 (cd "${JHBUILD}" &&
  git clone --depth 1 https://github.com/GNOME/glib.git &&
- cd glib &&
+ cd glib && git clone 2.50.0 &&
  jhbuild buildone -n glib)
 
 # Need at least gobject-introspection version 1.39
 (cd "${JHBUILD}" &&
  git clone https://github.com/GNOME/gobject-introspection.git &&
- cd gobject-introspection &&
+ cd gobject-introspection && git checkout 1.50.0 &&
  jhbuild buildone -n gobject-introspection);
 
 # Need LGI from git master
@@ -135,17 +136,19 @@ fi
 
 # Need PyGObject built for Python 2
 if [ "x${ENABLE_PYTHON2}" == "xyes" ]; then
-  (cd "${JHBUILD}" && cd pygobject &&
+  (cd "${JHBUILD}" && cd pygobject && git checkout 3.22.0 &&
    jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python2 &&
    jhbuild run make install && jhbuild run git clean -xdf);
 fi
 
 # Need PyGObject built for Python 3
 if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
-  (cd "${JHBUILD}" && cd pygobject &&
+  (cd "${JHBUILD}" && cd pygobject && git checkout 3.22.0 &&
    jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python3 &&
    jhbuild run make install);
 fi
+
+# jhbuild 
 
 if [[ "${SKIP_ON_TRAVIS}" == 'yes' ]]; then
    echo "[ THIS IS A TRAVIS BUILD SKIPPING ... ]"

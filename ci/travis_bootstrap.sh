@@ -68,6 +68,9 @@ sudo python3 ${HOME}/get-pip.py
 sudo pip3 install virtualenv virtualenvwrapper
 sudo pip3 install -I path.py==7.7.1
 
+# jhbuilder and gstreamer need this it seems
+sudo pip3 install meson
+
 # virtualenv
 export WORKON_HOME=${HOME}/.virtualenvs
 export PROJECT_HOME=${HOME}/dev
