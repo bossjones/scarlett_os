@@ -78,8 +78,8 @@ before_install:
   # curl -s -q -L 'https://bootstrap.pypa.io/get-pip.py' > ${HOME}/get-pip.py
   # sudo python3 ${HOME}/ez_setup.py
   # sudo python3 ${HOME}/get-pip.py
-  - sudo pip3 install virtualenv virtualenvwrapper
-  - sudo pip3 install -I path.py==7.7.1
+  - sudo pip install virtualenv virtualenvwrapper
+  - sudo pip install -I path.py==7.7.1
 
   # virtualenv
   - export WORKON_HOME=${HOME}/.virtualenvs
