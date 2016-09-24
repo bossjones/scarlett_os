@@ -40,6 +40,18 @@ sudo apt-get install -qq gnome-common
 sudo apt-get install -qq gtk-doc-tools
 sudo apt-get install -qq libgtk-3-dev
 sudo apt-get install -qq libgirepository1.0-dev
+sudo apt-get install -qq --no-install-recommends \
+    build-essential docbook-xsl flex bison cvs gperf cmake valac g++ \
+    lib{pam0g,iw,db,gdbm,png12,ffi,tiff,boost-signals,ldap2}-dev \
+    lib{vorbis,gl1-mesa,unistring,quvi,icu,neon27,usb-1.0-0,sasl2}-dev \
+    lib{asound2,ncurses5,nss3,udev,usb,acl1,polkit-gobject-1,cairo}-dev \
+    lib{oauth,nl-route-3,nl-genl-3,cups2,rsvg2,systemd-login}-dev \
+    lib{dvdread,soundtouch,wnck-3,avahi-gobject}-dev \
+    libtasn1-3-bin \
+    libx{cb-util0,composite,randr,damage,ft2,i,t}-dev \
+    {uuid,ppp,python-cairo}-dev \
+    icc-profiles-free libxml-simple-perl subversion ruby gnome-doc-utils \
+    yelp-tools apt-file 
 
 if [ "x${ENABLE_DISTCHECK}" == "xyes" ]; then
   sudo apt-get install -qq yelp-tools;

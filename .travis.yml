@@ -19,7 +19,7 @@ before_install:
   # NOTE: taken from: jhbuild-session
   - export PATH=${PREFIX}/bin:${PREFIX}/sbin:${PATH}
   - export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
-  - export PYTHONPATH=${PREFIX}/lib/python$PYTHON_VERSION/site-packages:/usr/lib/python$PYTHON_VERSION/site-packages
+  - export PYTHONPATH=${PREFIX}/lib/python${PYTHON_VERSION}/site-packages:/usr/lib/python${PYTHON_VERSION}/site-packages
   - export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:/usr/lib/pkgconfig
   - export XDG_DATA_DIRS=${PREFIX}/share:/usr/share
   - export XDG_CONFIG_DIRS=${PREFIX}/etc/xdg
@@ -70,18 +70,6 @@ before_install:
   - sudo apt-get install -qq byacc flex
   - sudo apt-get install -qq bison
   - sudo apt-get install -qq docbook-xsl build-essential git-core python-libxml2
-  - ( sudo apt-get install -qq --no-install-recommends \
-      build-essential docbook-xsl flex bison cvs gperf cmake valac g++ \
-      lib{pam0g,iw,db,gdbm,png12,ffi,tiff,boost-signals,ldap2}-dev \
-      lib{vorbis,gl1-mesa,unistring,quvi,icu,neon27,usb-1.0-0,sasl2}-dev \
-      lib{asound2,ncurses5,nss3,udev,usb,acl1,polkit-gobject-1,cairo}-dev \
-      lib{oauth,nl-route-3,nl-genl-3,cups2,rsvg2,systemd-login}-dev \
-      lib{dvdread,soundtouch,wnck-3,avahi-gobject}-dev \
-      libtasn1-3-bin \
-      libx{cb-util0,composite,randr,damage,ft2,i,t}-dev \
-      {uuid,ppp,python-cairo}-dev \
-      icc-profiles-free libxml-simple-perl subversion ruby gnome-doc-utils \
-      yelp-tools apt-file )
   - sudo apt-get install -qq apt-file
   - sudo apt-file update
   - sudo apt-get install wget -qq
