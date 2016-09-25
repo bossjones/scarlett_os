@@ -41,7 +41,7 @@ class TestScarlett_os(unittest.TestCase):
 
         assert GObject.pygobject_version == (3, 22, 0)
         # assert Gst.version_string() == 'GStreamer 1.8.2'
-        assert Gst.version_string() == 'GStreamer 1.4.2'
+        assert Gst.version_string() == 'GStreamer 1.2.4'
 
     def test_command_line_interface(self):
         runner = CliRunner()
