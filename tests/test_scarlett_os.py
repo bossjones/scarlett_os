@@ -40,8 +40,8 @@ class TestScarlett_os(unittest.TestCase):
         Gst.debug_set_default_threshold(1)
 
         assert GObject.pygobject_version == (3, 22, 0)
-        assert Gst.version_string() == 'GStreamer 1.8.2'
-        # assert Gst.version_string() == 'GStreamer 1.4.2'
+        # assert Gst.version_string() == 'GStreamer 1.8.2'
+        assert Gst.version_string() == 'GStreamer 1.4.2'
 
     def test_command_line_interface(self):
         runner = CliRunner()

@@ -143,5 +143,5 @@ cache:
 install:
   - sudo apt-get update -q
   - sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
-script: env; jhbuild run python3 setup.py test
+script: jhbuild run python3 setup.py test
 after_success: coveralls
