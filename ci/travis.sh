@@ -100,20 +100,20 @@ fi
 # Get JHBuild
 # source: https://github.com/GNOME/jhbuild/commit/86d958b6778da649b559815c0a0dbe6a5d1a8cd4
 (cd "${JHBUILD}" &&
- git clone --depth 1 https://github.com/GNOME/jhbuild.git &&
+ git clone https://github.com/GNOME/jhbuild.git &&
  cd jhbuild && git checkout 86d958b6778da649b559815c0a0dbe6a5d1a8cd4 && ./autogen.sh --prefix=/usr/local &&
  make && sudo make install)
 
 # Need a gtk-doc that can handle virtual/rename-to function annotations
 if [ "x${ENABLE_DISTCHECK}" == "xyes" ]; then
   (cd "${JHBUILD}" &&
-   git clone --depth 1 https://github.com/GNOME/gtk-doc.git &&
+   git clone https://github.com/GNOME/gtk-doc.git &&
    jhbuild buildone -n gtk-doc);
 fi
 
 # Need at least glib version 2.38
 (cd "${JHBUILD}" &&
- git clone --depth 1 https://github.com/GNOME/glib.git &&
+ git clone https://github.com/GNOME/glib.git &&
  cd glib && git checkout eaca4f4116801f99e30e42a857559e19a1e6f4ce &&
  jhbuild buildone -n glib)
 
@@ -126,7 +126,7 @@ fi
 # Need LGI from git master
 if [ "x${ENABLE_LUA51}" == "xyes" ]; then
   (cd "${JHBUILD}" &&
-   git clone --depth 1 https://github.com/pavouk/lgi.git && cd lgi &&
+   git clone https://github.com/pavouk/lgi.git && cd lgi &&
    jhbuild run make PREFIX="${PREFIX}"
                     CFLAGS="${CFLAGS} -I/usr/include/lua5.1" &&
    jhbuild run make install PREFIX="${PREFIX}");
@@ -134,7 +134,7 @@ fi
 
 if [ "x${ENABLE_PYTHON2}" == "xyes" ] || [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
   (cd "${JHBUILD}" &&
-   git clone --depth 1 https://github.com/GNOME/pygobject.git);
+   git clone https://github.com/GNOME/pygobject.git);
 fi
 
 # Need PyGObject built for Python 2
