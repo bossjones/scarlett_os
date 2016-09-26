@@ -97,6 +97,8 @@ if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
   sudo apt-get install -qq python3-gi;
 fi
 
+sudo apt-get install yasm nasm -qq
+
 # Get JHBuild
 # source: https://github.com/GNOME/jhbuild/commit/86d958b6778da649b559815c0a0dbe6a5d1a8cd4
 (cd "${JHBUILD}" &&
@@ -132,6 +134,7 @@ if [ "x${ENABLE_LUA51}" == "xyes" ]; then
    jhbuild run make install PREFIX="${PREFIX}");
 fi
 
+
 if [ "x${ENABLE_PYTHON2}" == "xyes" ] || [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
   (cd "${JHBUILD}" &&
    git clone https://github.com/GNOME/pygobject.git);
@@ -151,10 +154,62 @@ if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
    jhbuild run make install);
 fi
 
-# jhbuild buildone -n gstreamer
-# jhbuild buildone -n gst-plugins-base
-# jhbuild buildone -n gst-plugins-bad
-# jhbuild buildone -n gst-plugins-good
+
+cd "${JHBUILD}" && \
+curl -L "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.8.2.tar.xz" > gstreamer-1.8.2.tar.xz && \
+tar -xJf gstreamer-1.8.2.tar.xz && \
+cd gstreamer-1.8.2 && \
+jhbuild run ./configure --prefix="${PREFIX}" && \
+jhbuild run make -j4 && \
+jhbuild run make install
+
+cd "${JHBUILD}" && \
+curl -L "https://gstreamer.freedesktop.org/src/orc/orc-0.4.25.tar.xz" > orc-0.4.25.tar.xz && \
+tar -xJf orc-0.4.25.tar.xz && \
+cd orc-0.4.25 && \
+jhbuild run ./configure --prefix="${PREFIX}" && \
+jhbuild run make -j4 && \
+jhbuild run make install
+
+cd "${JHBUILD}" && \
+curl -L "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.8.2.tar.xz" > gst-plugins-base-1.8.2.tar.xz && \
+tar -xJf gst-plugins-base-1.8.2.tar.xz && \
+cd gst-plugins-base-1.8.2 && \
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc --with-x && \
+jhbuild run make -j4 && \
+jhbuild run make install
+
+cd "${JHBUILD}" && \
+curl -L "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.8.2.tar.xz" > gst-plugins-good-1.8.2.tar.xz && \
+tar -xJf gst-plugins-good-1.8.2.tar.xz && \
+cd gst-plugins-good-1.8.2 && \
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc --with-libv4l2 --with-x && \
+jhbuild run make -j4 && \
+jhbuild run make install
+
+cd "${JHBUILD}" && \
+curl -L "http://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.8.2.tar.xz" > gst-plugins-ugly-1.8.2.tar.xz && \
+tar -xJf gst-plugins-ugly-1.8.2.tar.xz && \
+cd gst-plugins-ugly-1.8.2 && \
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc && \
+jhbuild run make -j4 && \
+jhbuild run make install
+
+cd "${JHBUILD}" && \
+curl -L "http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.8.2.tar.xz" > gst-plugins-bad-1.8.2.tar.xz && \
+tar -xJf gst-plugins-bad-1.8.2.tar.xz && \
+cd gst-plugins-bad-1.8.2 && \
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc && \
+jhbuild run make -j4 && \
+jhbuild run make install
+
+cd "${JHBUILD}" && \
+curl -L "http://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.8.2.tar.xz" > gst-libav-1.8.2.tar.xz && \
+tar -xJf gst-libav-1.8.2.tar.xz && \
+cd gst-libav-1.8.2 && \
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc && \
+jhbuild run make -j4 && \
+jhbuild run make install
 
 if [[ "${SKIP_ON_TRAVIS}" == 'yes' ]]; then
    echo "[ THIS IS A TRAVIS BUILD SKIPPING ... ]"
