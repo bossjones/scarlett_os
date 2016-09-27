@@ -211,6 +211,38 @@ jhbuild run ./configure --prefix="${PREFIX}" --enable-orc && \
 jhbuild run make -j4 && \
 jhbuild run make install
 
+#
+# (cd "${JHBUILD}" &&
+#  git clone https://github.com/GNOME/gobject-introspection.git &&
+#  cd gobject-introspection && git checkout cee2a4f215d5edf2e27b9964d3cfcb28a9d4941c &&
+#  jhbuild buildone -n gobject-introspection);
+
+( cd $JHBUILD &&
+curl -L "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz" > gst-plugins-espeak-0.4.0.tar.gz &&
+tar xvf gst-plugins-espeak-0.4.0.tar.gz &&
+rm -rfv gst-plugins-espeak-0.4.0 &&
+mv -fv bossjones-gst-plugins-espeak-0-4-0-0.4.1 gst-plugins-espeak-0.4.0 &&
+cd gst-plugins-espeak-0.4.0 &&
+jhbuild run ./configure --prefix="${PREFIX}" &&
+jhbuild run make &&
+jhbuild run make install );
+
+( cd $JHBUILD && git clone https://github.com/cmusphinx/sphinxbase.git &&
+cd sphinxbase && git checkout 74370799d5b53afc5b5b94a22f5eff9cb9907b97 &&
+cd $JHBUILD/sphinxbase &&
+jhbuild run ./autogen.sh --prefix="${PREFIX}" &&
+jhbuild run ./configure --prefix="${PREFIX}" &&
+jhbuild run make clean all &&
+jhbuild run make install );
+
+( cd $JHBUILD && git clone https://github.com/cmusphinx/pocketsphinx.git &&
+cd pocketsphinx && git checkout 68ef5dc6d48d791a747026cd43cc6940a9e19f69 &&
+jhbuild run ./autogen.sh --prefix="${PREFIX}" &&
+jhbuild run ./configure --prefix="${PREFIX}" &&
+jhbuild run make clean all &&
+jhbuild run make install );
+
+
 if [[ "${SKIP_ON_TRAVIS}" == 'yes' ]]; then
    echo "[ THIS IS A TRAVIS BUILD SKIPPING ... ]"
 else
