@@ -139,7 +139,7 @@ matrix:
 cache:
   directories:
     - $HOME/.cache/pip
-    - $HOME/virtualenv/python3.5.0/lib/python3.5/site-packages
+    - $HOME/virtualenv/python3.5.2/lib/python3.5/site-packages
 install:
   - sudo apt-get update -q
   - sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
