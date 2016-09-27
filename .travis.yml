@@ -10,6 +10,7 @@ before_install:
   - export ENABLE_PYTHON2=yes
   - export ENABLE_PYTHON3=yes
   - export ENABLE_GTK=yes
+  - export PYTHON_VERSION_MAJOR=3
   - export PYTHON_VERSION=3.5
   # from jhbuild
   - export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"

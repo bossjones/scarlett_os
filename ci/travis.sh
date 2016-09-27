@@ -12,11 +12,11 @@ echo "moduleset = 'gnome-world'"                  >> ~/.jhbuildrc
 echo "interact = False"                           >> ~/.jhbuildrc
 echo "makeargs = '${MAKEFLAGS}'"                  >> ~/.jhbuildrc
 echo "os.environ['CFLAGS'] = '${CFLAGS}'"         >> ~/.jhbuildrc
-echo "os.environ['PYTHON'] = 'python3'"           >> ~/.jhbuildrc
+echo "os.environ['PYTHON'] = 'python${PYTHON_VERSION_MAJOR}'"           >> ~/.jhbuildrc
 echo "os.environ['GSTREAMER'] = '1.0'"            >> ~/.jhbuildrc
 echo "os.environ['ENABLE_PYTHON3'] = 'yes'"       >> ~/.jhbuildrc
 echo "os.environ['ENABLE_GTK'] = 'yes'"           >> ~/.jhbuildrc
-echo "os.environ['PYTHON_VERSION'] = '3.4'"       >> ~/.jhbuildrc
+echo "os.environ['PYTHON_VERSION'] = '${PYTHON_VERSION}'"       >> ~/.jhbuildrc
 echo "os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'" >> ~/.jhbuildrc
 echo "os.environ['MAKEFLAGS'] = '-j4'"            >> ~/.jhbuildrc
 echo "os.environ['PREFIX'] = '${HOME}/jhbuild'"   >> ~/.jhbuildrc
@@ -103,8 +103,11 @@ sudo apt-get install yasm nasm -qq
 # source: https://github.com/GNOME/jhbuild/commit/86d958b6778da649b559815c0a0dbe6a5d1a8cd4
 (cd "${JHBUILD}" &&
  git clone https://github.com/GNOME/jhbuild.git &&
- cd jhbuild && git checkout 86d958b6778da649b559815c0a0dbe6a5d1a8cd4 && ./autogen.sh --prefix=/usr/local &&
- make && sudo make install)
+ cd jhbuild &&
+ git checkout 86d958b6778da649b559815c0a0dbe6a5d1a8cd4 &&
+ ./autogen.sh --prefix=/usr/local > /dev/null &&
+ make > /dev/null &&
+ sudo make install > /dev/null )
 
 # Need a gtk-doc that can handle virtual/rename-to function annotations
 if [ "x${ENABLE_DISTCHECK}" == "xyes" ]; then
@@ -116,13 +119,15 @@ fi
 # Need at least glib version 2.38
 (cd "${JHBUILD}" &&
  git clone https://github.com/GNOME/glib.git &&
- cd glib && git checkout eaca4f4116801f99e30e42a857559e19a1e6f4ce &&
+ cd glib &&
+ git checkout eaca4f4116801f99e30e42a857559e19a1e6f4ce &&
  jhbuild buildone -n glib)
 
 # Need at least gobject-introspection version 1.39
 (cd "${JHBUILD}" &&
  git clone https://github.com/GNOME/gobject-introspection.git &&
- cd gobject-introspection && git checkout cee2a4f215d5edf2e27b9964d3cfcb28a9d4941c &&
+ cd gobject-introspection &&
+ git checkout cee2a4f215d5edf2e27b9964d3cfcb28a9d4941c &&
  jhbuild buildone -n gobject-introspection);
 
 # Need LGI from git master
@@ -143,15 +148,16 @@ fi
 # Need PyGObject built for Python 2
 if [ "x${ENABLE_PYTHON2}" == "xyes" ]; then
   (cd "${JHBUILD}" && cd pygobject && git checkout fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb &&
-   jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python2 &&
-   jhbuild run make install && jhbuild run git clean -xdf);
+   jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python2 > /dev/null &&
+   jhbuild run make install > /dev/null &&
+   jhbuild run git clean -xdf > /dev/null);
 fi
 
 # Need PyGObject built for Python 3
 if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
   (cd "${JHBUILD}" && cd pygobject && git checkout fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb &&
-   jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python3 &&
-   jhbuild run make install);
+   jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python3 > /dev/null &&
+   jhbuild run make install > /dev/null);
 fi
 
 
@@ -159,63 +165,57 @@ cd "${JHBUILD}" && \
 curl -L "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.8.2.tar.xz" > gstreamer-1.8.2.tar.xz && \
 tar -xJf gstreamer-1.8.2.tar.xz && \
 cd gstreamer-1.8.2 && \
-jhbuild run ./configure --prefix="${PREFIX}" && \
-jhbuild run make -j4 && \
-jhbuild run make install
+jhbuild run ./configure --prefix="${PREFIX}" > /dev/null && \
+jhbuild run make -j4  > /dev/null && \
+jhbuild run make install > /dev/null
 
 cd "${JHBUILD}" && \
 curl -L "https://gstreamer.freedesktop.org/src/orc/orc-0.4.25.tar.xz" > orc-0.4.25.tar.xz && \
 tar -xJf orc-0.4.25.tar.xz && \
 cd orc-0.4.25 && \
-jhbuild run ./configure --prefix="${PREFIX}" && \
-jhbuild run make -j4 && \
-jhbuild run make install
+jhbuild run ./configure --prefix="${PREFIX}" > /dev/null && \
+jhbuild run make -j4  > /dev/null && \
+jhbuild run make install > /dev/null
 
 cd "${JHBUILD}" && \
 curl -L "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.8.2.tar.xz" > gst-plugins-base-1.8.2.tar.xz && \
 tar -xJf gst-plugins-base-1.8.2.tar.xz && \
 cd gst-plugins-base-1.8.2 && \
-jhbuild run ./configure --prefix="${PREFIX}" --enable-orc --with-x && \
-jhbuild run make -j4 && \
-jhbuild run make install
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc --with-x > /dev/null && \
+jhbuild run make -j4  > /dev/null && \
+jhbuild run make install > /dev/null
 
 cd "${JHBUILD}" && \
 curl -L "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.8.2.tar.xz" > gst-plugins-good-1.8.2.tar.xz && \
 tar -xJf gst-plugins-good-1.8.2.tar.xz && \
 cd gst-plugins-good-1.8.2 && \
-jhbuild run ./configure --prefix="${PREFIX}" --enable-orc --with-libv4l2 --with-x && \
-jhbuild run make -j4 && \
-jhbuild run make install
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc --with-libv4l2 --with-x  > /dev/null && \
+jhbuild run make -j4  > /dev/null && \
+jhbuild run make install > /dev/null
 
 cd "${JHBUILD}" && \
 curl -L "http://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.8.2.tar.xz" > gst-plugins-ugly-1.8.2.tar.xz && \
 tar -xJf gst-plugins-ugly-1.8.2.tar.xz && \
 cd gst-plugins-ugly-1.8.2 && \
-jhbuild run ./configure --prefix="${PREFIX}" --enable-orc && \
-jhbuild run make -j4 && \
-jhbuild run make install
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc  > /dev/null && \
+jhbuild run make -j4  > /dev/null && \
+jhbuild run make install > /dev/null
 
 cd "${JHBUILD}" && \
 curl -L "http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.8.2.tar.xz" > gst-plugins-bad-1.8.2.tar.xz && \
 tar -xJf gst-plugins-bad-1.8.2.tar.xz && \
 cd gst-plugins-bad-1.8.2 && \
-jhbuild run ./configure --prefix="${PREFIX}" --enable-orc && \
-jhbuild run make -j4 && \
-jhbuild run make install
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc  > /dev/null && \
+jhbuild run make -j4  > /dev/null && \
+jhbuild run make install > /dev/null
 
 cd "${JHBUILD}" && \
 curl -L "http://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.8.2.tar.xz" > gst-libav-1.8.2.tar.xz && \
 tar -xJf gst-libav-1.8.2.tar.xz && \
 cd gst-libav-1.8.2 && \
-jhbuild run ./configure --prefix="${PREFIX}" --enable-orc && \
-jhbuild run make -j4 && \
-jhbuild run make install
-
-#
-# (cd "${JHBUILD}" &&
-#  git clone https://github.com/GNOME/gobject-introspection.git &&
-#  cd gobject-introspection && git checkout cee2a4f215d5edf2e27b9964d3cfcb28a9d4941c &&
-#  jhbuild buildone -n gobject-introspection);
+jhbuild run ./configure --prefix="${PREFIX}" --enable-orc  > /dev/null && \
+jhbuild run make -j4  > /dev/null && \
+jhbuild run make install > /dev/null
 
 ( cd $JHBUILD &&
 curl -L "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz" > gst-plugins-espeak-0.4.0.tar.gz &&
@@ -223,24 +223,28 @@ tar xvf gst-plugins-espeak-0.4.0.tar.gz &&
 rm -rfv gst-plugins-espeak-0.4.0 &&
 mv -fv bossjones-gst-plugins-espeak-0-4-0-0.4.1 gst-plugins-espeak-0.4.0 &&
 cd gst-plugins-espeak-0.4.0 &&
-jhbuild run ./configure --prefix="${PREFIX}" &&
-jhbuild run make &&
-jhbuild run make install );
+jhbuild run ./configure --prefix="${PREFIX}" > /dev/null &&
+jhbuild run make > /dev/null &&
+jhbuild run make install > /dev/null);
 
-( cd $JHBUILD && git clone https://github.com/cmusphinx/sphinxbase.git &&
-cd sphinxbase && git checkout 74370799d5b53afc5b5b94a22f5eff9cb9907b97 &&
+( cd $JHBUILD &&
+git clone https://github.com/cmusphinx/sphinxbase.git &&
+cd sphinxbase &&
+git checkout 74370799d5b53afc5b5b94a22f5eff9cb9907b97 &&
 cd $JHBUILD/sphinxbase &&
-jhbuild run ./autogen.sh --prefix="${PREFIX}" &&
-jhbuild run ./configure --prefix="${PREFIX}" &&
-jhbuild run make clean all &&
-jhbuild run make install );
+jhbuild run ./autogen.sh --prefix="${PREFIX}" > /dev/null &&
+jhbuild run ./configure --prefix="${PREFIX}" > /dev/null &&
+jhbuild run make clean all > /dev/null &&
+jhbuild run make install > /dev/null);
 
-( cd $JHBUILD && git clone https://github.com/cmusphinx/pocketsphinx.git &&
-cd pocketsphinx && git checkout 68ef5dc6d48d791a747026cd43cc6940a9e19f69 &&
-jhbuild run ./autogen.sh --prefix="${PREFIX}" &&
-jhbuild run ./configure --prefix="${PREFIX}" &&
-jhbuild run make clean all &&
-jhbuild run make install );
+( cd $JHBUILD &&
+git clone https://github.com/cmusphinx/pocketsphinx.git &&
+cd pocketsphinx &&
+git checkout 68ef5dc6d48d791a747026cd43cc6940a9e19f69 &&
+jhbuild run ./autogen.sh --prefix="${PREFIX}" > /dev/null &&
+jhbuild run ./configure --prefix="${PREFIX}" > /dev/null &&
+jhbuild run make clean all > /dev/null &&
+jhbuild run make install > /dev/null );
 
 
 if [[ "${SKIP_ON_TRAVIS}" == 'yes' ]]; then

@@ -17,7 +17,7 @@ export SCARLETT_DICT=$HOME/dev/bossjones-github/scarlett_os/tests/fixtures/dict/
 
 # for GST PLUGINS
 export LD_LIBRARY_PATH=$HOME/.virtualenvs/scarlett_os/lib
-export GST_PLUGIN_PATH=${PREFIX}/lib/gstreamer-1.0
+export GST_PLUGIN_PATH=${PREFIX}/lib/gstreamer-$GSTREAMER
 
 export PYTHON=/usr/bin/python3
 EOF
