@@ -73,7 +73,8 @@ before_install:
 - sudo apt-file update
 - sudo apt-get install wget -qq
 - pip install virtualenv virtualenvwrapper
-- export VIRTUALENV_WRAPPER_SH=/usr/local/bin/virtualenvwrapper.sh
+- sudo pip install --upgrade virtualenvwrapper
+- export VIRTUALENV_WRAPPER_SH=`which virtualenvwrapper.sh`
 - export VIRTUALENVWRAPPER_PYTHON=`which python3`
 - export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
 - pip install -I path.py==7.7.1
