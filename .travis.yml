@@ -1,3 +1,28 @@
+matrix:
+  fast_finish: true
+  include:
+  - python: '3.5'
+    env: TOXENV=typing PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
+    sudo: required
+    dist: trusty
+    language: python
+    group: edge
+  - python: '3.5'
+    env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
+    sudo: required
+    dist: trusty
+    language: python
+    group: edge
+  allow_failures:
+  - python: '3.5'
+    env: TOXENV=typing
+
+cache:
+  apt: true
+  directories:
+  - "$HOME/.cache/pip"
+  - "$HOME/virtualenv/python3.5.2/lib/python3.5/site-packages"
+
 before_install:
 - export SKIP_ON_TRAVIS=yes
 - export CURRENT_DIR=$(pwd)
@@ -83,7 +108,7 @@ before_install:
 - export VIRTUALENVWRAPPER_PYTHON=`which python3`
 - export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
 - env
-- source $VIRTUALENV_WRAPPER_SH
+- travis_retry source $VIRTUALENV_WRAPPER_SH
 - export PYTHONSTARTUP=$HOME/.pythonrc
 - export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
 - mkdir -p $WORKON_HOME
@@ -93,6 +118,15 @@ before_install:
 - pip install -U coveralls sphinx numpy ipython
 - bash ./ci/travis.sh
 - jhbuild run python3 setup.py install
+
+install:
+- sudo apt-get update -q
+- sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
+
+script: jhbuild run python3 setup.py test
+
+after_success: coveralls
+
 deploy:
   distributions: sdist bdist_wheel
   provider: pypi
@@ -103,33 +137,10 @@ deploy:
     condition: "$TOXENV == py27"
     repo: bossjones/scarlett_os
     tags: true
-matrix:
-  fast_finish: true
-  include:
-  - python: '3.5'
-    env: TOXENV=typing PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
-    sudo: required
-    dist: trusty
-    language: python
-    group: edge
-  - python: '3.5'
-    env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
-    sudo: required
-    dist: trusty
-    language: python
-    group: edge
-  allow_failures:
-  - python: '3.5'
-    env: TOXENV=typing
-cache:
-  directories:
-  - "$HOME/.cache/pip"
-  - "$HOME/virtualenv/python3.5.2/lib/python3.5/site-packages"
-install:
-- sudo apt-get update -q
-- sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
-script: jhbuild run python3 setup.py test
-after_success: coveralls
+
 notifications:
   slack:
-    secure: arS7e7IDG80ukrrjy4fVfNDh5Yqrz4mxmduWqJU2zHzwxL0QkJWnhncWBpTgXr06MVgWYwq/YnoCGZ+wcWHkYzsqDHWtFI0JguZuJcFAWV5l7PWOxcUUh731hipRcgkZIH03pqnfZTbN3kkNTvFcTL9NG92ZOYd/ZSQeCnNPF9T2PUjn5LnPNwOxJSVAdmvz7CoLJWIR6vF9ojoxZdMj1RhV4b1C9orP3pBh3V3sVc5ExX6cUePXJtkvb51fXwdCsGNA22xZrDfbxCoOXfMmgDuN/7W/DVPPyaZCInYQl2B/oLF+3TOqUZ8STM3BPDIBjxgPRBdULIqeaQJNNJ9rfQ6h+YhvCWDmZD5ugdTQkGCSX2hR4TGMnS9v/nu5KKSalQEkNOfcqZUSTRVHKL800arEwja2avRGu9KBlijg79r/k2EILb7sPfleeS0+eLKIYTBVyQvuiqo31NcZ4Yun9ykQlTJW0n1NiVrLRVHbCIScrHwyH8pI4ts6PbwtUO8HWWDXEUSZRipc14ckZBzqB6ozAAwtF4fStnHC5rkd1sRreZalLKsZxaVpsX0mspZfSLfz6eV34vnDs9Xv0+tPuW0X0P1/FZIykvjDrmoM8s5TD1xzES9zRslhWxK2yv0a5OaryWvicQKcCwg8zwdiCTAwq1wBNkYzrtTnTN9QnRA=
+    on_success: change
+    on_failure: always
+    rooms:
+      secure: arS7e7IDG80ukrrjy4fVfNDh5Yqrz4mxmduWqJU2zHzwxL0QkJWnhncWBpTgXr06MVgWYwq/YnoCGZ+wcWHkYzsqDHWtFI0JguZuJcFAWV5l7PWOxcUUh731hipRcgkZIH03pqnfZTbN3kkNTvFcTL9NG92ZOYd/ZSQeCnNPF9T2PUjn5LnPNwOxJSVAdmvz7CoLJWIR6vF9ojoxZdMj1RhV4b1C9orP3pBh3V3sVc5ExX6cUePXJtkvb51fXwdCsGNA22xZrDfbxCoOXfMmgDuN/7W/DVPPyaZCInYQl2B/oLF+3TOqUZ8STM3BPDIBjxgPRBdULIqeaQJNNJ9rfQ6h+YhvCWDmZD5ugdTQkGCSX2hR4TGMnS9v/nu5KKSalQEkNOfcqZUSTRVHKL800arEwja2avRGu9KBlijg79r/k2EILb7sPfleeS0+eLKIYTBVyQvuiqo31NcZ4Yun9ykQlTJW0n1NiVrLRVHbCIScrHwyH8pI4ts6PbwtUO8HWWDXEUSZRipc14ckZBzqB6ozAAwtF4fStnHC5rkd1sRreZalLKsZxaVpsX0mspZfSLfz6eV34vnDs9Xv0+tPuW0X0P1/FZIykvjDrmoM8s5TD1xzES9zRslhWxK2yv0a5OaryWvicQKcCwg8zwdiCTAwq1wBNkYzrtTnTN9QnRA=
