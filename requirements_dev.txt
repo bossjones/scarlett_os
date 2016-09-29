@@ -18,5 +18,5 @@ coveralls>=1.1
 
 # data science
 ipython
-gnureadline
+gnureadline==6.3.3
 pytest
