@@ -19,4 +19,4 @@ coveralls>=1.1
 # data science
 ipython
 gnureadline
-pytest
+pytest==3.0.3
