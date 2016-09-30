@@ -145,8 +145,6 @@ RUN cd /usr/local/bin \
 	&& ln -s python3-config python-config \
     && pip3 install virtualenv virtualenvwrapper ipython numpy tox coveralls
 
-# RUN pip3 install virtualenv virtualenvwrapper ipython numpy tox coveralls
-
 ENV PYTHON_VERSION_MAJOR '3'
 ENV GSTREAMER '1.0'
 ENV USER 'pi'
@@ -175,21 +173,24 @@ ENV PIP_DOWNLOAD_CACHE '${USER_HOME}/.pip/cache'
 ENV WORKON_HOME '${VIRT_ROOT}'
 
 RUN set -xe \
-    && useradd -U -d ${PI_HOME} -m -r -G adm,sudo,dip,plugdev,tty,audio ${USER} \
-    && usermod -a -G ${USER} ${USER} \
     && mkdir -p ${MAIN_DIR} \
-    && mkdir -p ${PI_HOME}/dev/${GITHUB_REPO_ORG}-github \
+    && mkdir -p ${PI_HOME}/dev/${GITHUB_REPO_ORG}-github
+
+RUN set -xe \
     && chown -hR ${USER}:${USER} ${PI_HOME}/dev/${GITHUB_REPO_ORG}-github \
     && chown -hR ${USER}:${USER} ${MAIN_DIR} \
+
+RUN set -xe \
+    && useradd -U -d ${PI_HOME} -m -r -G adm,sudo,dip,plugdev,tty,audio ${USER} \
+    && usermod -a -G ${USER} ${USER} \
     && echo '${USER}     ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
-    && echo '%${USER}     ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
-    && chown -hR ${USER}:${USER} /usr/local/lib/python3.5/site-packages
+    && echo '%${USER}     ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+    # && chown -hR ${USER}:${USER} /usr/local/lib/python3.5/site-packages
 
 COPY ./dotfiles/.bashrc /home/pi/.bashrc
 COPY ./dotfiles/.profile /home/pi/.profile
 
 RUN set -xe \
-    && chown -hR ${USER}:${USER} ${MAIN_DIR} \
     && apt-get autoclean -y \
     && apt-get autoremove -y \
     && rm -rf /tmp/* /var/tmp/* \
@@ -198,60 +199,18 @@ RUN set -xe \
 # Layer customizations over existing structure
 COPY ./container/root /
 
-# USER ${USER}
-
 # Ensure application code makes it into the /app directory
 COPY ./ /home/pi/dev/bossjones-github/scarlett_os/
 
 RUN ls -lta /home/pi/dev/bossjones-github/scarlett_os/ && \
     bash -c "source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv --system-site-packages ${GITHUB_REPO_NAME}"
 
-# RUN bash -c "source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv --system-site-packages ${GITHUB_REPO_NAME}"
-
 COPY ./postactivate /home/pi/.virtualenvs/scarlett_os/postactivate
-
-# RUN bash -c "/usr/sbin/sudo chown -hR ${USER}:${USER} /home/pi/.virtualenvs/scarlett_os/postactivate"
-
-# RUN bash -c "source /usr/local/bin/virtualenvwrapper.sh && workon ${GITHUB_REPO_NAME} && pip install -r /home/pi/home/pi/dev/bossjones-github/scarlett_os/requirements.txt"
 
 RUN set -xe \
     && chown -hR ${USER}:${USER} ${PI_HOME}/dev/${GITHUB_REPO_ORG}-github \
     && chown -hR ${USER}:${USER} ${MAIN_DIR} \
     && chown -hR ${USER}:${USER} /usr/local/lib/python3.5/site-packages \
     && chown -R ${USER}:${USER} /home/pi/.virtualenvs
-#
-# RUN sudo su - ${USER} -c "source /usr/local/bin/virtualenvwrapper.sh && workon ${GITHUB_REPO_NAME} && pip install -r /home/pi/home/pi/dev/bossjones-github/scarlett_os/requirements_dev.txt"
 
-# # virtualenv python runtime
-# RUN sudo su - rdash -c "echo 'export WORKON_HOME=${WORKON_HOME}' >> /home/rdash/.profile"
-# RUN sudo su - rdash -c "echo 'export PROJECT_HOME=${PROJECT_HOME}' >> /home/rdash/.profile"
-# RUN sudo su - rdash -c "echo 'source /usr/local/bin/virtualenvwrapper.sh' >> /home/rdash/.profile"
-# RUN sudo su - rdash -c "mkvirtualenv rdash"
-# # RUN sudo su - rdash -c "mkproject rdash"
-# RUN sudo su - rdash -c "echo 'workon rdash' >> /home/rdash/.profile"
-#
-# # Add source code
-#
-# #ADD . ${PROJECT_HOME}
-# RUN git clone https://github.com/adysuciu/rdash-django.git ${PROJECT_HOME}
-#
-# # Environment info
-# ADD rdash/.env ${PROJECT_HOME}/rdash/.env
-#
-# RUN chown -R rdash:users ${PROJECT_HOME}
-# RUN chmod 755 ${PROJECT_HOME}/manage.py
-#
-# # Install django and dependencies
-# RUN sudo su - rdash -c "${WORKON_HOME}/rdash/bin/pip install -r ${PROJECT_HOME}/requirements.txt"
-# RUN sudo su - rdash -c 'echo {\"registry\":\"http://bower.herokuapp.com\"} > /home/rdash/.bowerrc'
-# RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py bower_install"
-# RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py collectstatic --noinput"
-# #RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py compilemessages"
-# RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py makemigrations"
-# RUN sudo su - rdash -c "python ${PROJECT_HOME}/manage.py migrate"
-#
-# ENTRYPOINT ["sudo","su","-","rdash"]
-
-# CMD ["/bin/bash", "/run.sh"]
-# ENTRYPOINT ["ls", "-lta", "/home/pi/dev/bossjones-github/scarlett_os/"]
 ENTRYPOINT ["file","/bin/bash"]
