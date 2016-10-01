@@ -5,6 +5,8 @@ omit =
     */python?.?/*
     */site-packages/nose/*
     */test/*
+    scarlett_os/__main__.py
+    scarlett_os/scripts/*.py
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -22,4 +24,5 @@ exclude_lines =
     # From old Scarlett repo
     assert False
     raise NotImplementedError
+    raise AssertionError
     if __name__ == .__main__.:

@@ -58,7 +58,7 @@ test: ## run tests quickly with the default Python
 		python setup.py test
 
 test-all: ## run tests on every Python version with tox
-	tox
+	python setup.py test
 
 coverage: ## check code coverage quickly with the default Python
 
@@ -67,6 +67,12 @@ coverage: ## check code coverage quickly with the default Python
 		coverage report -m
 		coverage html
 		$(BROWSER) htmlcov/index.html
+
+coverage-no-html: ## check code coverage quickly with the default Python
+
+	coverage run --source scarlett_os setup.py test
+
+	coverage report -m
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/scarlett_os.rst
