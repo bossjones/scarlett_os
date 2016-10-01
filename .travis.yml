@@ -52,51 +52,51 @@ before_install:
 - if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3-staging;
   fi
 - sudo add-apt-repository -y ppa:pitti/systemd-semaphore
-- sudo apt-get update -qq
-- sudo apt-get update -qq
-- sudo apt-get install -y libz-dev libbz2-dev gstreamer$GSTREAMER-tools libgstreamer$GSTREAMER-dev
+- travis_retry sudo apt-get update -qq
+- travis_retry sudo apt-get update -qq
+- travis_retry sudo apt-get install -y libz-dev libbz2-dev gstreamer$GSTREAMER-tools libgstreamer$GSTREAMER-dev
   libgstreamer-plugins-base$GSTREAMER-dev libgstreamer-plugins-bad$GSTREAMER-dev
-- if [ '$GSTREAMER' = '1.0'   ]; then sudo apt-get install -y libgstreamer-plugins-good$GSTREAMER-dev;
+- if [ '$GSTREAMER' = '1.0'   ]; then travis_retry sudo apt-get install -y libgstreamer-plugins-good$GSTREAMER-dev;
   fi
-- sudo apt-get update -qq
-- sudo apt-get install -y gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0 graphviz-dev
+- travis_retry sudo apt-get update -qq
+- travis_retry sudo apt-get install -y gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0 graphviz-dev
   gstreamer1.0-plugins-good gstreamer1.0-plugins-bad python-gst-1.0
-- sudo apt-get install -qq python3-gi
-- sudo apt-get install -qq python-gst-1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad
+- travis_retry sudo apt-get install -qq python3-gi
+- travis_retry sudo apt-get install -qq python-gst-1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad
   gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-libav libsndfile1-dev
   libasound2-dev libgstreamer-plugins-base1.0-dev python-numpy python-scipy
-- sudo apt-get -y install automake gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0
+- travis_retry sudo apt-get -y install automake gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0
   gstreamer1.0-libav gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-good
   gstreamer1.0-plugins-ugly gstreamer1.0-tools libasound2-dev libgstreamer-plugins-base1.0-dev
   libsndfile1-dev python python-dev python-gi python-gst-1.0 python-gst-1.0 python-imaging
   python-lxml python-numpy python-scipy python-virtualenv python3-gi
-- sudo apt-get -y install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev
+- travis_retry sudo apt-get -y install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev
   gnome-common;
-- sudo apt-get -y install libgstreamer1.0-dev gstreamer1.0-alsa gstreamer1.0-plugins-base;
-- sudo apt-get -y install python-dev libsmpeg-dev libswscale-dev libavformat-dev libavcodec-dev
+- travis_retry sudo apt-get -y install libgstreamer1.0-dev gstreamer1.0-alsa gstreamer1.0-plugins-base;
+- travis_retry sudo apt-get -y install python-dev libsmpeg-dev libswscale-dev libavformat-dev libavcodec-dev
   libjpeg-dev libtiff4-dev libX11-dev libmtdev-dev;
-- sudo apt-get -y install python-setuptools build-essential libgl1-mesa-dev libgles2-mesa-dev;
-- sudo apt-get -y install xvfb pulseaudio;
+- travis_retry sudo apt-get -y install python-setuptools build-essential libgl1-mesa-dev libgles2-mesa-dev;
+- travis_retry sudo apt-get -y install xvfb pulseaudio;
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/
   trusty main restricted universe multiverse'; fi
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/
   trusty-updates main restricted universe multiverse'; fi
-- if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then travis_retry sudo apt-get update -qq; travis_retry sudo apt-get install
   -qq pkg-config; fi
-- sudo apt-get -y update
-- sudo apt-get -y install ubuntu-restricted-extras
-- sudo apt-get -y install libfftw3-dev
-- sudo apt-get install -qq python3-dev python3-cairo-dev python3-gi gnome-common gtk-doc-tools
+- travis_retry sudo apt-get -y update
+- travis_retry sudo apt-get -y install ubuntu-restricted-extras
+- travis_retry sudo apt-get -y install libfftw3-dev
+- travis_retry sudo apt-get install -qq python3-dev python3-cairo-dev python3-gi gnome-common gtk-doc-tools
   libgtk-3-dev libgirepository1.0-dev libmount-dev cvs;
-- sudo apt-get update -q
-- sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
-- sudo apt-get install -qq build-essential git
-- sudo apt-get install -qq gettext xsltproc docbook-xml docbook-xsl
-- sudo apt-get install -qq bison docbook-xsl build-essential git-core python-libxml2
+- travis_retry sudo apt-get update -q
+- travis_retry sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
+- travis_retry sudo apt-get install -qq build-essential git
+- travis_retry sudo apt-get install -qq gettext xsltproc docbook-xml docbook-xsl
+- travis_retry sudo apt-get install -qq bison docbook-xsl build-essential git-core python-libxml2
   byacc flex apt-file autopoint
-- sudo apt-get install -qq apt-file
+- travis_retry sudo apt-get install -qq apt-file
 - sudo apt-file update
-- sudo apt-get install wget -qq
+- travis_retry sudo apt-get install wget -qq
 - pip install virtualenv virtualenvwrapper
 - sudo pip install --upgrade virtualenvwrapper
 - export VIRTUALENV_WRAPPER_SH=`which virtualenvwrapper.sh`
@@ -120,8 +120,8 @@ before_install:
 - jhbuild run python3 setup.py install
 
 install:
-- sudo apt-get update -q
-- sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
+- travis_retry sudo apt-get update -q
+- travis_retry sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
 
 script: jhbuild run python3 setup.py test
 
