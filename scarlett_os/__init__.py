@@ -17,6 +17,9 @@ __version__ = '0.1.0'
 # source: timeside
 
 from .tools import package as ts_package
+from .tools import verify as ts_verify
+
+ts_verify.check_python3_installed()
 
 # Check Availability of Gstreamer python bindings
 ts_package.check_gi()

@@ -102,8 +102,7 @@ sudo apt-get install yasm nasm -qq
 # Get JHBuild
 # source: https://github.com/GNOME/jhbuild/commit/86d958b6778da649b559815c0a0dbe6a5d1a8cd4
 (cd "${JHBUILD}" &&
- git clone https://github.com/GNOME/jhbuild.git &&
- cd jhbuild &&
+ if test ! -d "${JHBUILD}/jhbuild"; then git clone https://github.com/GNOME/jhbuild.git && cd jhbuild; else echo "exists" && cd jhbuild; fi &&
  git checkout 86d958b6778da649b559815c0a0dbe6a5d1a8cd4 &&
  ./autogen.sh --prefix=/usr/local > /dev/null &&
  make > /dev/null &&
@@ -133,7 +132,8 @@ fi
 # Need LGI from git master
 if [ "x${ENABLE_LUA51}" == "xyes" ]; then
   (cd "${JHBUILD}" &&
-   git clone https://github.com/pavouk/lgi.git && cd lgi &&
+   git clone https://github.com/pavouk/lgi.git &&
+   cd lgi &&
    jhbuild run make PREFIX="${PREFIX}"
                     CFLAGS="${CFLAGS} -I/usr/include/lua5.1" &&
    jhbuild run make install PREFIX="${PREFIX}");
@@ -155,7 +155,9 @@ fi
 
 # Need PyGObject built for Python 3
 if [ "x${ENABLE_PYTHON3}" == "xyes" ]; then
-  (cd "${JHBUILD}" && cd pygobject && git checkout fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb &&
+  (cd "${JHBUILD}" &&
+   cd pygobject &&
+   git checkout fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb &&
    jhbuild run ./autogen.sh --prefix="${PREFIX}" --with-python=python3 > /dev/null &&
    jhbuild run make install > /dev/null);
 fi

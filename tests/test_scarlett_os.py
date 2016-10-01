@@ -18,8 +18,8 @@ from click.testing import CliRunner
 from scarlett_os import scarlett_os
 from scarlett_os import cli
 
-import lsb_release
-ubuntu_version = lsb_release.get_lsb_information()
+import platform
+ubuntu_version = platform.platform().split('-')
 
 class TestScarlett_os(unittest.TestCase):
 
@@ -40,7 +40,7 @@ class TestScarlett_os(unittest.TestCase):
         Gst.debug_set_active(True)
         Gst.debug_set_default_threshold(1)
 
-        if ubuntu_version['CODENAME'] is 'trusty':
+        if ubuntu_version[8] is 'trusty':
             assert GObject.pygobject_version == (3, 22, 0)
         else:
             assert GObject.pygobject_version == (3, 20, 0)
