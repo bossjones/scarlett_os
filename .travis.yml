@@ -114,14 +114,12 @@ before_install:
 - export PYTHONSTARTUP=$HOME/.pythonrc
 - export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
 - mkdir -p $WORKON_HOME
-- mkvirtualenv scarlett_os
-- bash ./ci/set_postactivate.sh
+- travis_retry mkvirtualenv scarlett_os
+- travis_retry bash ./ci/set_postactivate.sh
 - workon scarlett_os
-- pip install -U coveralls sphinx numpy ipython
-- bash ./ci/travis.sh
-- jhbuild run pip install -r requirements.txt
-- jhbuild run pip install -r requirements_dev.txt
-- jhbuild run python3 setup.py install
+- travis_retry pip install -U coveralls sphinx numpy ipython
+- travis_retry bash ./ci/travis.sh
+- travis_retry jhbuild run python3 setup.py install
 
 install:
 - travis_retry sudo apt-get update -q
