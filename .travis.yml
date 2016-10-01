@@ -118,6 +118,8 @@ before_install:
 - workon scarlett_os
 - pip install -U coveralls sphinx numpy ipython
 - bash ./ci/travis.sh
+- jhbuild run pip install -r requirements.txt
+- jhbuild run pip install -r requirements_dev.txt
 - jhbuild run python3 setup.py install
 
 install:
