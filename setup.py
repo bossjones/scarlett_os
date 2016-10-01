@@ -6,6 +6,9 @@ import sys
 import platform
 import re
 import warnings
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
 
 # Don't force people to install setuptools unless
 # we have to.
@@ -26,15 +29,42 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [
-    'Click>=6.0',
-    # TODO: put package requirements here
-]
+static = {}
 
-test_requirements = [
-    'pytest',
-    'coverage'
-]
+for root, dirs, files in os.walk('static'):
+    for filename in files:
+        filepath = os.path.join(root, filename)
+
+        if root not in static:
+            static[root] = []
+
+        static[root].append(filepath)
+
+# Might use this later
+try:
+    here = os.path.abspath(os.path.dirname(__file__))
+except:
+    pass
+
+
+def read_requirements(filename):
+    content = open(os.path.join(here, filename)).read()
+    requirements = map(lambda r: r.strip(), content.splitlines())
+    return requirements
+
+
+requirements = read_requirements('requirements.txt')
+test_requirements = read_requirements('requirements_dev.txt')
+
+# requirements = [
+#     'Click>=6.0',
+#     # TODO: put package requirements here
+# ]
+#
+# test_requirements = [
+#     'pytest',
+#     'coverage'
+# ]
 
 
 # Pytest
