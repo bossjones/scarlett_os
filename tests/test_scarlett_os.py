@@ -11,6 +11,7 @@ Tests for `scarlett_os` module.
 
 import sys
 import unittest
+import pytest
 import click
 from contextlib import contextmanager
 from click.testing import CliRunner
@@ -20,6 +21,28 @@ from scarlett_os import cli
 
 import platform
 ubuntu_version = platform.platform().split('-')
+
+
+# from IPython.core.debugger import Tracer  # NOQA
+# from IPython.core import ultratb
+# import traceback
+#
+# import logging
+# logger = logging.getLogger('scarlettlogger')
+# # from pydbus import SessionBus
+# # from pydbus.green import sleep
+#
+# sys.excepthook = ultratb.FormattedTB(mode='Verbose',
+#                                      color_scheme='Linux',
+#                                      call_pdb=True,
+#                                      ostream=sys.__stdout__)
+
+# @pytest.fixture
+# def runner():
+#     """
+#     Click's test helper.
+#     """
+#     return CliRunner()
 
 class TestScarlett_os(unittest.TestCase):
 
@@ -53,7 +76,8 @@ class TestScarlett_os(unittest.TestCase):
         assert 'scarlett_os.cli.main' in result.output
         help_result = runner.invoke(cli.main, ['--help'])
         assert help_result.exit_code == 0
-        assert '--help  Show this message and exit.' in help_result.output
+        print(help_result.output)
+        assert 'dbus_server|listener|tasker|check_all_services' in help_result.output
 
 
 if __name__ == '__main__':
