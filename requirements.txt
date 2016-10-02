@@ -2,4 +2,4 @@ pydbus==0.5.1
 colorlog
 click==6.6
 psutil==4.3.0
-pytest==3.0.3
+wheel
