@@ -62,9 +62,6 @@ def read_requirements(filename):
     return requirements
 
 
-requirements = read_requirements('requirements.txt')
-# test_requirements = read_requirements('requirements_dev.txt')
-
 requirements = [
     'Click>=6.0',
     'pydbus>=0.5.0',

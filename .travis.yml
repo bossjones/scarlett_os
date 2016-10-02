@@ -23,8 +23,8 @@ cache:
   - "$HOME/.cache/pip"
   - "$HOME/virtualenv/python3.5.2/lib/python3.5/site-packages"
   - "$HOME/.ccache"
-  - "${PREFIX}"
-  - "${JHBUILD}"
+  - "${HOME}/jhbuild"
+  - "${HOME}/gnome"
 
 
 before_install:
@@ -99,8 +99,10 @@ before_install:
 - travis_retry sudo apt-get install -qq bison docbook-xsl build-essential git-core python-libxml2
   byacc flex apt-file autopoint
 - travis_retry sudo apt-get install gcc automake autoconf libtool bison swig python-dev libpulse-dev -y
-- travis_retry sudo apt-get install -qq apt-file
-- sudo apt-file update
+# NOTE: We only need this for sysdeps
+# - travis_retry sudo apt-get install -qq apt-file
+# - sudo apt-file update
+- python -c "import platform;print(platform.platform().split('-'))"
 - travis_retry sudo apt-get install wget -qq
 - pip install virtualenv virtualenvwrapper
 - sudo pip install --upgrade virtualenvwrapper

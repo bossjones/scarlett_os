@@ -21,6 +21,8 @@ from scarlett_os import cli
 
 import platform
 ubuntu_version = platform.platform().split('-')
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 
 # from IPython.core.debugger import Tracer  # NOQA
@@ -44,6 +46,13 @@ ubuntu_version = platform.platform().split('-')
 #     """
 #     return CliRunner()
 
+
+# @pytest.fixture
+# def ubuntu_version():
+#     """ubuntu_version."""
+#     return ubuntu_version
+
+
 class TestScarlett_os(unittest.TestCase):
 
     def setUp(self):
@@ -62,6 +71,8 @@ class TestScarlett_os(unittest.TestCase):
         Gst.init(None)
         Gst.debug_set_active(True)
         Gst.debug_set_default_threshold(1)
+
+        pp.pprint(ubuntu_version)
 
         if ubuntu_version[8] is 'trusty':
             assert GObject.pygobject_version == (3, 22, 0)
