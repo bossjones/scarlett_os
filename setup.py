@@ -65,15 +65,33 @@ def read_requirements(filename):
 requirements = read_requirements('requirements.txt')
 # test_requirements = read_requirements('requirements_dev.txt')
 
-# requirements = [
-#     'Click>=6.0',
-#     # TODO: put package requirements here
-# ]
-#
+requirements = [
+    'Click>=6.0',
+    'pydbus>=0.5.0',
+    'colorlog>=2.7',
+    'psutil>=4.3.0'
+]
+
 
 test_requirements = [
-    'pytest',
-    'coverage'
+    'pytest>=3.0',
+    'pip>=7.0',
+    'bumpversion>=0.5.3',
+    'wheel>=0.29.0',
+    'watchdog>=0.8.3',
+    'flake8>=2.6.2',
+    'flake8-docstrings>=0.2.8',
+    'coverage>=4.1',
+    'Sphinx>=1.4.5',
+    'cryptography==1.5.2',
+    'PyYAML>=3.11',
+    'pydocstyle>=1.0.0',
+    'mypy-lang>=0.4',
+    'pylint>=1.5.6',
+    'coveralls>=1.1',
+    'ipython>=5.1.0',
+    'gnureadline>=6.3.0'
+
 ]
 
 
