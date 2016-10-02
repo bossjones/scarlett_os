@@ -74,7 +74,7 @@ class TestScarlett_os(unittest.TestCase):
 
         pp.pprint(ubuntu_version)
 
-        if ubuntu_version[8] is 'trusty':
+        if'trusty' in ubuntu_version or 'jessie' in ubuntu_version:
             assert GObject.pygobject_version == (3, 22, 0)
         else:
             assert GObject.pygobject_version == (3, 20, 0)
