@@ -13,15 +13,17 @@ import sys
 import unittest
 import pytest
 import click
+import importlib
 from contextlib import contextmanager
 from click.testing import CliRunner
 
 from scarlett_os import scarlett_os
 from scarlett_os import cli
+from scarlett_os.tools import verify
 
-import platform
-ubuntu_version = platform.platform().split('-')
 import pprint
+
+ubuntu_version = verify.get_current_os()
 pp = pprint.PrettyPrinter(indent=4)
 
 
@@ -61,8 +63,23 @@ class TestScarlett_os(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_000_something(self):
-        pass
+    def test_imports_something(self):
+        assert importlib.util.find_spec("platform") is not None
+        assert importlib.util.find_spec("scarlett_os.logger") is not None
+        assert importlib.util.find_spec("logging") is not None
+        pp.pprint(dir(scarlett_os))
+    #     [   '__builtins__',
+    # '__cached__',
+    # '__doc__',
+    # '__file__',
+    # '__loader__',
+    # '__name__',
+    # '__package__',
+    # '__spec__']
+        print(scarlett_os.__name__)
+        print(scarlett_os.__package__)
+        print(scarlett_os.__file__)
+        assert scarlett_os.main.platform is not None
 
     def test_gstreamer_versions(self):
         import gi
@@ -74,7 +91,7 @@ class TestScarlett_os(unittest.TestCase):
 
         pp.pprint(ubuntu_version)
 
-        if'trusty' in ubuntu_version or 'jessie' in ubuntu_version:
+        if 'trusty' in ubuntu_version or 'jessie' in ubuntu_version:
             assert GObject.pygobject_version == (3, 22, 0)
         else:
             assert GObject.pygobject_version == (3, 20, 0)

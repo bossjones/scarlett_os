@@ -35,31 +35,31 @@ except ImportError:
     sys.exit(1)
 
 
-def main():
-    """Main entry point for ScarlettOS.
-
-    Select the mode (standalone, client or server)
-    Run it...
-    """
-
-    # TODO: Grabe values from cli, setup correct logging.
-    # TODO: For now we'll default to scarlett_os.logger
-
-    import platform
-    import scarlett_os.logger
-    import logging
-    logger = logging.getLogger('scarlettlogger')
-
-    # Log ScarlettOS and PSutil version
-    logger.info('Start ScarlettOS {}'.format(__version__))
-    logger.info('{} {} and PSutil {} detected'.format(
-        platform.python_implementation(),
-        platform.python_version(),
-        psutil_version))
-
-    # Share global var
-    global core, dbus_server, listener, tasker, check_all_services
-
-    # Create the ScarlettOS main instance
-    # source: Glances
-    # core = ScarlettOSMain()
+# def main():
+#     """Main entry point for ScarlettOS.
+#
+#     Select the mode (standalone, client or server)
+#     Run it...
+#     """
+#
+#     # TODO: Grabe values from cli, setup correct logging.
+#     # TODO: For now we'll default to scarlett_os.logger
+#
+#     import platform
+#     import scarlett_os.logger
+#     import logging
+#     logger = logging.getLogger('scarlettlogger')
+#
+#     # Log ScarlettOS and PSutil version
+#     logger.info('Start ScarlettOS {}'.format(__version__))
+#     logger.info('{} {} and PSutil {} detected'.format(
+#         platform.python_implementation(),
+#         platform.python_version(),
+#         psutil_version))
+#
+#     # Share global var
+#     global core, dbus_server, listener, tasker, check_all_services
+#
+#     # Create the ScarlettOS main instance
+#     # source: Glances
+#     # core = ScarlettOSMain()

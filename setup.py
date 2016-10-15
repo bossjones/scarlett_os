@@ -64,9 +64,11 @@ def read_requirements(filename):
 
 requirements = [
     'Click>=6.0',
+    'click-plugins',
     'pydbus>=0.5.0',
     'colorlog>=2.7',
-    'psutil>=4.3.0'
+    'psutil>=4.3.0',
+    'six'
 ]
 
 
@@ -122,11 +124,33 @@ setup(
     ],
     package_dir={'scarlett_os':
                  'scarlett_os'},
-    entry_points={
-        'console_scripts': [
-            'scarlett_os=scarlett_os.cli:main'
-        ]
-    },
+    #              ,
+    # entry_points={
+    #     'console_scripts': [
+    #         'hass = homeassistant.__main__:main'
+    #     ]
+    # },
+    # entry_points={
+    #     'console_scripts': [
+    #         'scarlett_os=scarlett_os.cli:main'
+    #     ]
+    # },
+    # source: mapbox-cli-py
+    entry_points="""
+    [console_scripts]
+    scarlett_os=scarlett_os.scripts.cli:main_group
+
+    [scarlett_os.scarlett_os_commands]
+    config=scarlett_os.scripts.config:config
+    """,
+    # geocoding=mapboxcli.scripts.geocoding:geocoding
+    # directions=mapboxcli.scripts.directions:directions
+    # distance=mapboxcli.scripts.distance:distance
+    # mapmatching=mapboxcli.scripts.mapmatching:match
+    # upload=mapboxcli.scripts.uploads:upload
+    # staticmap=mapboxcli.scripts.static:staticmap
+    # surface=mapboxcli.scripts.surface:surface
+    # dataset=mapboxcli.scripts.datasets:datasets
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",

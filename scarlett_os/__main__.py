@@ -8,6 +8,8 @@
 # $ python -m scarlett_os
 
 import scarlett_os
+import scarlett_os.cli
+
 
 if __name__ == '__main__':
-    scarlett_os.main()
+    scarlett_os.cli.main()
