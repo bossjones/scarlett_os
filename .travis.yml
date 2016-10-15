@@ -128,7 +128,6 @@ before_install:
 - workon scarlett_os
 - travis_retry pip install -U coveralls sphinx numpy ipython
 - travis_retry bash ./ci/travis.sh
-- travis_retry jhbuild run pip install -U coveralls sphinx numpy
 - travis_retry jhbuild run python3 setup.py install
 
 install:
@@ -136,7 +135,7 @@ install:
 - travis_retry sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
 
 script:
-- jhbuild run coverage run --source=scarlett_os setup.py test
+- jhbuild run python3 setup.py install
 
 after_success:
 - coveralls

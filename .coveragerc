@@ -5,6 +5,8 @@ omit =
     */python?.?/*
     */site-packages/nose/*
     */test/*
+    */pygobject-3.20.1/*
+    */site-packages/*
     scarlett_os/__main__.py
     scarlett_os/scripts/*.py
 

@@ -151,6 +151,9 @@ setup(
     # staticmap=mapboxcli.scripts.static:staticmap
     # surface=mapboxcli.scripts.surface:surface
     # dataset=mapboxcli.scripts.datasets:datasets
+    extras_require={
+        'test': ['coveralls', 'pytest>=3.0', 'pytest-cov'],
+    },
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",

@@ -53,6 +53,13 @@ clean-test: ## remove test and coverage artifacts
 lint: ## check style with flake8
 	flake8 scarlett_os tests
 
+pytest-install-test-deps: clean
+	pip install -e .[test]
+	python setup.py install
+
+pytest-run:
+	py.test
+
 test: ## run tests quickly with the default Python
 
 		python setup.py test
