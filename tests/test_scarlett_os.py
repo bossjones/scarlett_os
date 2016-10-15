@@ -17,8 +17,8 @@ import importlib
 from contextlib import contextmanager
 from click.testing import CliRunner
 
-from scarlett_os import scarlett_os
-from scarlett_os import cli
+import scarlett_os
+from scarlett_os.scripts.cli import main_group
 from scarlett_os.tools import verify
 
 import pprint
@@ -68,18 +68,9 @@ class TestScarlett_os(unittest.TestCase):
         assert importlib.util.find_spec("scarlett_os.logger") is not None
         assert importlib.util.find_spec("logging") is not None
         pp.pprint(dir(scarlett_os))
-    #     [   '__builtins__',
-    # '__cached__',
-    # '__doc__',
-    # '__file__',
-    # '__loader__',
-    # '__name__',
-    # '__package__',
-    # '__spec__']
         print(scarlett_os.__name__)
         print(scarlett_os.__package__)
         print(scarlett_os.__file__)
-        assert scarlett_os.main.platform is not None
 
     def test_gstreamer_versions(self):
         import gi
@@ -96,16 +87,6 @@ class TestScarlett_os(unittest.TestCase):
         else:
             assert GObject.pygobject_version == (3, 20, 0)
         assert Gst.version_string() == 'GStreamer 1.8.2'
-
-    def test_command_line_interface(self):
-        runner = CliRunner()
-        result = runner.invoke(cli.main)
-        assert result.exit_code == 0
-        assert 'scarlett_os.cli.main' in result.output
-        help_result = runner.invoke(cli.main, ['--help'])
-        assert help_result.exit_code == 0
-        print(help_result.output)
-        assert 'dbus_server|listener|tasker|check_all_services' in help_result.output
 
 
 if __name__ == '__main__':

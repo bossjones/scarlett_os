@@ -53,10 +53,8 @@ def read_config(cfg):
 )
 @click.option(
     '--mode',
-    '-m'
-    type=click.Choice(
-        ['dbus_server', 'listener', 'tasker', 'check_all_services']
-    ),
+    '-m',
+    type=click.Choice(['dbus_server', 'listener', 'tasker', 'check_all_services']),
     help="ScarlettOS type",
     default='check_all_services'
 )
