@@ -102,6 +102,10 @@ before_install:
 # NOTE: We only need this for sysdeps
 # - travis_retry sudo apt-get install -qq apt-file
 # - sudo apt-file update
+# ubuntu 16.04 says:
+# ['Linux', '4.4.0', '38', 'generic', 'x86_64', 'with', 'Ubuntu', '16.04', 'xenial']
+# travis says
+# ['Linux', '4.4.0', '38', 'generic', 'x86_64', 'with', 'debian', 'jessie', 'sid']
 - python -c "import platform;print(platform.platform().split('-'))"
 - travis_retry sudo apt-get install wget -qq
 - pip install virtualenv virtualenvwrapper
@@ -124,15 +128,18 @@ before_install:
 - workon scarlett_os
 - travis_retry pip install -U coveralls sphinx numpy ipython
 - travis_retry bash ./ci/travis.sh
+- travis_retry jhbuild run pip install -U coveralls sphinx numpy
 - travis_retry jhbuild run python3 setup.py install
 
 install:
 - travis_retry sudo apt-get update -q
 - travis_retry sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
 
-script: jhbuild run python3 setup.py test
+script:
+- jhbuild run coverage run --source=scarlett_os setup.py test
 
-after_success: coveralls
+after_success:
+- coveralls
 
 deploy:
   distributions: sdist bdist_wheel
