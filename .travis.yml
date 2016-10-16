@@ -136,6 +136,7 @@ install:
 - travis_retry sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
 
 script:
+- jhbuild run pip install -e .[test]
 - jhbuild run python3 coverage run ./setup.py test
 
 after_success:
