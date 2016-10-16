@@ -68,7 +68,8 @@ requirements = [
     'pydbus>=0.5.0',
     'colorlog>=2.7',
     'psutil>=4.3.0',
-    'six'
+    'six',
+    'Fabric3==1.12.post1'
 ]
 
 

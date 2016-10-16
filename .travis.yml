@@ -23,8 +23,8 @@ cache:
   - "$HOME/.cache/pip"
   - "$HOME/virtualenv/python3.5.2/lib/python3.5/site-packages"
   - "$HOME/.ccache"
-  - "${HOME}/jhbuild"
-  - "${HOME}/gnome"
+  - "$HOME/jhbuild"
+  - "$HOME/gnome"
 
 
 before_install:
@@ -136,7 +136,7 @@ install:
 - travis_retry sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
 
 script:
-- jhbuild run pip install -e .[test]
+# - jhbuild run pip install -e .[test]
 - jhbuild run python3 coverage run ./setup.py test
 
 after_success:
