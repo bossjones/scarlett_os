@@ -155,12 +155,18 @@ def clean_build():
 
 
 def bootstrap_travisci():
-    with prefix('mkvirtualenv --python=`which python3.5` scarlett_os'):
-        run('mkdir -p /home/vagrant/dev/bossjones-github/scarlett_os')
-        run('which python')
-        # with cd('/home/vagrant/dev/bossjones-github/scarlett_os'):
-        #     # run: travis-build step
-        #     pass
+    with prefix('export VIRTUALENV_WRAPPER_SH=`which virtualenvwrapper.sh`'):
+        with prefix('export VIRTUALENVWRAPPER_PYTHON=`which python3.5`'):
+            with prefix('export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`'):
+                with prefix('export WORKON_HOME=${HOME}/.virtualenvs'):
+                    with prefix('export PROJECT_HOME=${HOME}/dev'):
+                        with prefix('source $VIRTUALENV_WRAPPER_SH'):
+                            with prefix('export PYTHONSTARTUP=$HOME/.pythonrc'):
+                                with prefix('export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache'):
+                                        with prefix('mkvirtualenv --python=`which python3.5` scarlett_os'):
+                                            run('mkdir -p /home/vagrant/dev/bossjones-github/scarlett_os')
+                                            with prefix('workon scarlett_os'):
+                                                run('which python')
 
 
 def read_yaml():
