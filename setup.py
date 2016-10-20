@@ -69,7 +69,8 @@ requirements = [
     'colorlog>=2.7',
     'psutil>=4.3.0',
     'six',
-    'Fabric3==1.12.post1'
+    'Fabric3==1.12.post1',
+    'PyYAML>=3.0'
 ]
 
 

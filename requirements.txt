@@ -3,3 +3,4 @@ colorlog>=2.7
 click>=6.0
 psutil>=4.3.0
 Fabric3==1.12.post1
+PyYAML>=3.0

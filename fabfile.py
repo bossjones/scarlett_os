@@ -7,13 +7,20 @@ import sys
 import os
 import pprint
 import re
-# import string
+import string
 # import collections
 import time
+from fabric.operations import sudo, os
 from fabric.api import abort, cd, env, get, hide, hosts, local, prompt, \
-    put, require, roles, run, runs_once, settings, show, sudo, warn
-from fabric.contrib.project import rsync_project
+    put, require, roles, run, runs_once, settings, show, sudo, warn, prefix
+from fabric.contrib.project import rsync_project, upload_project
+from fabric.contrib.files import append, sed
 from textwrap import dedent
+import yaml
+import csv
+
+pp = pprint.PrettyPrinter(indent=4, width=80)
+
 # from fabric.operations import run, put
 # from fabric.contrib.files import exists
 # from fabric.operations import reboot
@@ -22,21 +29,15 @@ from textwrap import dedent
 # from fabric.tasks import execute
 # from fabric.contrib.files import exists, sed
 
-# env.remote_interrupt = True
-# env.use_ssh_config = True
-# #env.gateway          = FABRIC_JUMPSERVER
-# #env.disable_known_hosts = True
-# #env.reject_unknown_hosts = False
-# env.forward_agent = False
-# env.keepalive = 60
-# env.key_filename = FABRIC_KEY_FILENAME
-# env.parallel = True
-# env.sudo_user = FABRIC_USER
-# env.user = FABRIC_USER
-# env.abort_on_prompts = True
-
-pp = pprint.PrettyPrinter(indent=4, width=80)
 VM_PATTERN = 'travis-ci/ubuntu1404'
+USER = "vagrant"
+HOME = "/home/{}".format(USER)
+WORKON_HOME = "{}/.virtualenvs".format(HOME)
+PROJECT_HOME = "{}/dev".format(HOME)
+REPO_NAME = "scarlett_os"
+REPO_ORG = "bossjones"
+VENV_NAME = "{}".format(REPO_NAME)
+PATH_TO_PROJECT = "{}/{}-github/{}".format(PROJECT_HOME, REPO_ORG, REPO_NAME)
 
 
 def vagrant():
@@ -47,7 +48,7 @@ def vagrant():
     platforms.
     """
 
-    global VM_PATTERN
+    # global VM_PATTERN
     # change from the default user to 'vagrant'
     vagrant_ssh_config = local("cd $HOME/dev/{0} && vagrant ssh-config".format(VM_PATTERN), capture=True)
 
@@ -88,12 +89,124 @@ def vagrant():
 
 
 def uname():
-    result = run('uname -a')
+    """Testing vagrant connections with uname -a."""
+    run('uname -a')
 
 
-# def copy():
-#
-#
-# def pack(loc):
-#
-#     rsync_project()
+def deploy():
+    rsync_project(local_dir='.',
+                  remote_dir='/home/vagrant/dev/bossjones-github/scarlett_os/',
+                  exclude=['*.git',
+                           '*.pyc',
+                           '*.vagrant',
+                           '*.vendor',
+                           '.Python',
+                           'env/',
+                           'build/',
+                           'develop-eggs/',
+                           'dist/',
+                           'downloads/',
+                           'eggs/',
+                           '.eggs/',
+                           'lib/',
+                           'lib64/',
+                           'parts/',
+                           'sdist/',
+                           'var/',
+                           '*.egg-info/',
+                           '.installed.cfg',
+                           '*.egg',
+                           '.tox/',
+                           '.bundle/',
+                           '.cache/',
+                           '__pycache__/'
+                           ],
+                  ssh_opts='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+                  )
+
+
+def clean_build():
+    """Nuke all testing directories before we get started."""
+    with prefix('workon scarlett_os'), cd('/home/vagrant'):
+        run('rm -rfv /home/vagrant/dev/bossjones-github/scarlett_os')
+        run('rm -rfv /home/vagrant/gnome')
+        run('rm -rfv /home/vagrant/jhbuild')
+        run('rm -rfv /home/vagrant/jhbuild')
+
+
+def bootstrap_travisci():
+    with prefix('mkvirtualenv --python=`which python3` scarlett_os'):
+        run('mkdir -p /home/vagrant/dev/bossjones-github/scarlett_os')
+        with cd('/home/vagrant/dev/bossjones-github/scarlett_os'):
+            # run: travis-build step
+            pass
+
+
+def read_yaml():
+    with cd('/home/vagrant/dev/bossjones-github/scarlett_os'):
+        with open('.travis.yml', 'r') as f:
+            travis_config = yaml.safe_load(f)
+            print(yaml.dump(travis_config))
+            travis_lines = ['#!/bin/bash',
+                            'set -e',
+                            'set -x'
+                            ]
+
+            matrix = travis_config['matrix']['include']
+            print('****************************matrix****************************')
+            for line in matrix:
+                print(line)
+                split_line = line['env'].split(" ")
+                print(split_line)
+                for l in split_line:
+                    travis_lines.append("export {}".format(l))
+
+            before_install = travis_config['before_install']
+            print(before_install)
+            print('****************************before_install****************************')
+            for line in before_install:
+                line = re.sub('travis_retry ', '', line)
+                line = re.sub('pip install', 'pip3.5 install', line)
+                line = re.sub('pip install -I path.py==7.7.1', '', line)
+                line = re.sub('which python3', 'which python3.5', line)
+                travis_lines.append(line)
+                print(line)
+
+            install = travis_config['install']
+            print('****************************install****************************')
+            for line in install:
+                line = re.sub('travis_retry ', '', line)
+                travis_lines.append(line)
+                print(line)
+
+            print('****************************travis_lines****************************')
+            print(travis_lines)
+
+            run('rm /home/vagrant/test_travis.sh')
+            append('/home/vagrant/test_travis.sh', travis_lines)
+            print('****************************patch test_travis****************************')
+            sed('/home/vagrant/test_travis.sh', 'travis_retry ', '')
+            sed('/home/vagrant/test_travis.sh', 'pip install', 'pip3.5 install')
+            sed('/home/vagrant/test_travis.sh', 'pip install -I path.py==7.7.1', '')
+            sed('/home/vagrant/test_travis.sh', 'which python3', 'which python3.5')
+            sed('/home/vagrant/test_travis.sh', '/usr/bin/python3', '/usr/local/bin/python3.5')
+            print('****************************patch test_travis****************************')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'travis_retry ', '')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'pip install', 'pip3.5 install')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'pip install -I path.py==7.7.1', '')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'which python3', 'which python3.5')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', '/usr/bin/python3', '/usr/local/bin/python3.5')
+            print('****************************patch test_travis****************************')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'travis_retry ', '')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'pip install', 'pip3.5 install')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'pip install -I path.py==7.7.1', '')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'which python3', 'which python3.5')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', '/usr/bin/python3', '/usr/local/bin/python3.5')
+            print('****************************final-travis-script****************************')
+            run('cat /home/vagrant/test_travis.sh')
+            run('chmod +x /home/vagrant/test_travis.sh')
+
+
+def run_travis():
+    with cd('/home/vagrant/dev/bossjones-github/scarlett_os'):
+        run('/home/vagrant/test_travis.sh')
