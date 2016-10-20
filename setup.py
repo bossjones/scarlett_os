@@ -24,7 +24,7 @@ from setuptools.command.test import test as TestCommand
 from setuptools.command import install_lib
 
 PACKAGE_NAME = 'scarlett_os'
-MINIMUM_PYTHON_VERSION = 3, 5
+MINIMUM_PYTHON_VERSION = 3, 4
 
 
 def check_python_version():
@@ -167,6 +167,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
