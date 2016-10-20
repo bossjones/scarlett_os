@@ -127,19 +127,40 @@ def deploy():
 
 def clean_build():
     """Nuke all testing directories before we get started."""
-    with prefix('workon scarlett_os'), cd('/home/vagrant'):
-        run('rm -rfv /home/vagrant/dev/bossjones-github/scarlett_os')
-        run('rm -rfv /home/vagrant/gnome')
-        run('rm -rfv /home/vagrant/jhbuild')
-        run('rm -rfv /home/vagrant/jhbuild')
+    # export WORKON_HOME=${HOME}/.virtualenvs
+    # export PROJECT_HOME=${HOME}/dev
+    # export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+    # export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+    # source /usr/local/bin/virtualenvwrapper.sh
+    # export PYTHONSTARTUP=$HOME/.pythonrc
+    # export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
+    ################################################################################
+
+    with prefix('export VIRTUALENV_WRAPPER_SH=`which virtualenvwrapper.sh`'):
+        with prefix('export VIRTUALENVWRAPPER_PYTHON=`which python3.5`'):
+            with prefix('export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`'):
+                with prefix('export WORKON_HOME=${HOME}/.virtualenvs'):
+                    with prefix('export PROJECT_HOME=${HOME}/dev'):
+                        with prefix('source $VIRTUALENV_WRAPPER_SH'):
+                            with prefix('export PYTHONSTARTUP=$HOME/.pythonrc'):
+                                with prefix('export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache'):
+                                    with prefix('workon scarlett_os'):
+                                        with cd('/home/vagrant'):
+                                            sudo('pip3.5 install virtualenv virtualenvwrapper')
+                                            run('rm -rf /home/vagrant/dev/bossjones-github/scarlett_os')
+                                            run('rm -rf /home/vagrant/gnome')
+                                            run('rm -rf /home/vagrant/jhbuild')
+                                            with prefix('deactivate'):
+                                                run('rmvirtualenv scarlett_os')
 
 
 def bootstrap_travisci():
-    with prefix('mkvirtualenv --python=`which python3` scarlett_os'):
+    with prefix('mkvirtualenv --python=`which python3.5` scarlett_os'):
         run('mkdir -p /home/vagrant/dev/bossjones-github/scarlett_os')
-        with cd('/home/vagrant/dev/bossjones-github/scarlett_os'):
-            # run: travis-build step
-            pass
+        run('which python')
+        # with cd('/home/vagrant/dev/bossjones-github/scarlett_os'):
+        #     # run: travis-build step
+        #     pass
 
 
 def read_yaml():
@@ -149,7 +170,8 @@ def read_yaml():
             print(yaml.dump(travis_config))
             travis_lines = ['#!/bin/bash',
                             'set -e',
-                            'set -x'
+                            'set -x',
+                            'export DEBIAN_FRONTEND=noninteractive'
                             ]
 
             matrix = travis_config['matrix']['include']
@@ -165,10 +187,10 @@ def read_yaml():
             print(before_install)
             print('****************************before_install****************************')
             for line in before_install:
-                line = re.sub('travis_retry ', '', line)
-                line = re.sub('pip install', 'pip3.5 install', line)
-                line = re.sub('pip install -I path.py==7.7.1', '', line)
-                line = re.sub('which python3', 'which python3.5', line)
+                # line = re.sub('travis_retry ', '', line)
+                # line = re.sub('pip install', 'pip3.5 install', line)
+                # line = re.sub('pip install -I path.py==7.7.1', '', line)
+                # line = re.sub('which python3', 'which python3.5', line)
                 travis_lines.append(line)
                 print(line)
 
@@ -190,18 +212,21 @@ def read_yaml():
             sed('/home/vagrant/test_travis.sh', 'pip install -I path.py==7.7.1', '')
             sed('/home/vagrant/test_travis.sh', 'which python3', 'which python3.5')
             sed('/home/vagrant/test_travis.sh', '/usr/bin/python3', '/usr/local/bin/python3.5')
+            sed('/home/vagrant/test_travis.sh', 'PYTHON="python3"', 'PYTHON="python3.5"')
             print('****************************patch test_travis****************************')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'travis_retry ', '')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'pip install', 'pip3.5 install')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'pip install -I path.py==7.7.1', '')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'which python3', 'which python3.5')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', '/usr/bin/python3', '/usr/local/bin/python3.5')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'PYTHON="python3"', 'PYTHON="python3.5"')
             print('****************************patch test_travis****************************')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'travis_retry ', '')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'pip install', 'pip3.5 install')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'pip install -I path.py==7.7.1', '')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'which python3', 'which python3.5')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', '/usr/bin/python3', '/usr/local/bin/python3.5')
+            sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/travis.sh', 'PYTHON="python3"', 'PYTHON="python3.5"')
             print('****************************final-travis-script****************************')
             run('cat /home/vagrant/test_travis.sh')
             run('chmod +x /home/vagrant/test_travis.sh')
@@ -210,3 +235,10 @@ def read_yaml():
 def run_travis():
     with cd('/home/vagrant/dev/bossjones-github/scarlett_os'):
         run('/home/vagrant/test_travis.sh')
+
+
+# fab vagrant clean_build
+# fab vagrant bootstrap_travisci
+# fab vagrant deploy
+# fab vagrant read_yaml
+# fab vagrant run_travis
