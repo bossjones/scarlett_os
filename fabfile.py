@@ -175,7 +175,6 @@ def read_yaml():
             travis_config = yaml.safe_load(f)
             print(yaml.dump(travis_config))
             travis_lines = ['#!/bin/bash',
-                            'set -e',
                             'set -x',
                             'export DEBIAN_FRONTEND=noninteractive'
                             ]
@@ -193,10 +192,38 @@ def read_yaml():
             print(before_install)
             print('****************************before_install****************************')
             for line in before_install:
+                line = re.sub('mkvirtualenv scarlett_os', '', line)
                 # line = re.sub('travis_retry ', '', line)
                 # line = re.sub('pip install', 'pip3.5 install', line)
                 # line = re.sub('pip install -I path.py==7.7.1', '', line)
                 # line = re.sub('which python3', 'which python3.5', line)
+                #############################################################################
+                # export TOXENV=typing
+                # export PYTHON="python3.5"
+                # export PACKAGES="python3-gi
+                # export python3-gi-cairo"
+                # export TOXENV=py35
+                # export SKIP_ON_TRAVIS=yes
+                # export CURRENT_DIR=$(pwd)
+                # export GSTREAMER=1.0
+                # export ENABLE_PYTHON2=yes
+                # export ENABLE_PYTHON3=yes
+                # export ENABLE_GTK=yes
+                # export PYTHON_VERSION_MAJOR=3
+                # export PYTHON_VERSION=3.5
+                # export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
+                # export MAKEFLAGS="-j4"
+                # export PREFIX="${HOME}/jhbuild"
+                # export JHBUILD="${HOME}/gnome"
+                # export PATH=${PREFIX}/bin:${PREFIX}/sbin:${PATH}
+                # export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
+                # export PYTHONPATH=${PREFIX}/lib/python${PYTHON_VERSION}/site-packages:/usr/lib/python${PYTHON_VERSION}/site-packages
+                # export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:/usr/lib/pkgconfig
+                # export XDG_DATA_DIRS=${PREFIX}/share:/usr/share
+                # export XDG_CONFIG_DIRS=${PREFIX}/etc/xdg
+                # export PACKAGES="python3-gi python3-gi-cairo"
+                # export CC=gcc
+                #############################################################################
                 travis_lines.append(line)
                 print(line)
 
@@ -219,6 +246,7 @@ def read_yaml():
             sed('/home/vagrant/test_travis.sh', 'which python3', 'which python3.5')
             sed('/home/vagrant/test_travis.sh', '/usr/bin/python3', '/usr/local/bin/python3.5')
             sed('/home/vagrant/test_travis.sh', 'PYTHON="python3"', 'PYTHON="python3.5"')
+            sed('/home/vagrant/test_travis.sh', 'pip3.5 install -I path.py==7.7.1', '')
             print('****************************patch test_travis****************************')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'travis_retry ', '')
             sed('/home/vagrant/dev/bossjones-github/scarlett_os/ci/set_postactivate.sh', 'pip install', 'pip3.5 install')
