@@ -276,3 +276,19 @@ def run_travis():
 # fab vagrant deploy
 # fab vagrant read_yaml
 # fab vagrant run_travis
+# fab vagrant retest_travis
+
+def retest_travis():
+    with prefix('export VIRTUALENV_WRAPPER_SH=`which virtualenvwrapper.sh`'):
+        with prefix('export VIRTUALENVWRAPPER_PYTHON=`which python3.5`'):
+            with prefix('export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`'):
+                with prefix('export WORKON_HOME=${HOME}/.virtualenvs'):
+                    with prefix('export PROJECT_HOME=${HOME}/dev'):
+                        with prefix('source $VIRTUALENV_WRAPPER_SH'):
+                            with prefix('export PYTHONSTARTUP=$HOME/.pythonrc'):
+                                with prefix('export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache'):
+                                    with prefix('workon scarlett_os'):
+                                        with cd('/home/vagrant/dev/bossjones-github/scarlett_os'):
+                                            run('jhbuild run python setup.py install')
+                                            run('jhbuild run -- pip install -e .[test]')
+                                            run('jhbuild run -- coverage run -- setup.py test')

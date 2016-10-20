@@ -129,6 +129,7 @@ before_install:
 - travis_retry pip install -U coveralls sphinx numpy ipython
 - travis_retry bash ./ci/travis.sh
 - travis_retry jhbuild run python3 setup.py install
+- travis_retry jhbuild run -- pip install -e .[test]
 
 install:
 - travis_retry pip install -U coveralls sphinx numpy ipython
@@ -136,8 +137,7 @@ install:
 - travis_retry sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
 
 script:
-# - jhbuild run pip install -e .[test]
-- jhbuild run python3 coverage run ./setup.py test
+- jhbuild run -- coverage run -- setup.py test
 
 after_success:
 - coveralls
