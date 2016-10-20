@@ -31,7 +31,7 @@ before_install:
 - export SKIP_ON_TRAVIS=yes
 - export CURRENT_DIR=$(pwd)
 - export GSTREAMER=1.0
-- export ENABLE_PYTHON2=yes
+# - export ENABLE_PYTHON2=yes
 - export ENABLE_PYTHON3=yes
 - export ENABLE_GTK=yes
 - export PYTHON_VERSION_MAJOR=3
