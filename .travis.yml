@@ -126,10 +126,10 @@ before_install:
 - travis_retry mkvirtualenv scarlett_os
 - travis_retry bash ./ci/set_postactivate.sh
 - workon scarlett_os
-- travis_retry pip install -U coveralls sphinx numpy ipython
+- travis_retry pip install -U coveralls sphinx numpy ipython pytest-cov
 - travis_retry bash ./ci/travis.sh
+# - travis_retry jhbuild run -- pip install -e .[test]
 - travis_retry jhbuild run python3 setup.py install
-- travis_retry jhbuild run -- pip install -e .[test]
 
 install:
 - travis_retry pip install -U coveralls sphinx numpy ipython
