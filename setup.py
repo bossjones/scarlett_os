@@ -24,13 +24,19 @@ from setuptools.command.test import test as TestCommand
 from setuptools.command import install_lib
 
 PACKAGE_NAME = 'scarlett_os'
-MINIMUM_PYTHON_VERSION = 3, 4
+MINIMUM_PYTHON_VERSION = 3, 0
 
 
-def check_python_version():
-    """Exit when the Python version is too low."""
-    if sys.version_info < MINIMUM_PYTHON_VERSION:
-        sys.exit("Python {}.{}+ is required.".format(*MINIMUM_PYTHON_VERSION))
+print('Current Python Version, B: {}'.format(sys.version_info))
+#
+# def check_python_version():
+#     """Exit when the Python version is too low."""
+#     if sys.version_info < (3, 4) <= sys.version_info < (3, 5):
+#         print('ScarlettOS requires at least Python 3.5 or 3.4 to run.')
+#         sys.exit(1)
+#     # if sys.version_info < MINIMUM_PYTHON_VERSION:
+#     #     print("Using version: ")
+#     #     sys.exit("Python {}.{}+ is required. Using {}".format(*MINIMUM_PYTHON_VERSION))
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -110,7 +116,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-check_python_version()
+# check_python_version()
 
 
 setup(
