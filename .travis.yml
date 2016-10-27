@@ -45,7 +45,7 @@ cache:
 install:
   - travis_retry docker-compose pull
   # set containers as privileged to bypass Travis environment limitations
-  # - 'sed -i "/build/a \ \ privileged: true" docker-compose.yml'
+  - 'sed -i "/build: ./a \ \ privileged: true" docker-compose.yml'
   - travis_retry docker-compose -f docker-compose.yml -f ci/build.yml build
 
 script:
