@@ -11,7 +11,8 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     && jhbuild run -- pip install -e .[test] \
     && jhbuild run -- coverage run -- setup.py test \
     && jhbuild run -- pip install coveralls \
-    && touch .coverage
+    && touch .coverage \
+    && sudo chmod 777 .coverage
 
 COPY ./container/root /
 
