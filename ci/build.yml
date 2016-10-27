@@ -2,6 +2,3 @@
 
 scarlett_master:
   build: .
-
-# worker:
-#   build: .
