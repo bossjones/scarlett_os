@@ -16,8 +16,10 @@ services:
     extends:
       service: scarlett_master
     volumes_from:
-      - scarlett_master
+      - scarlett_master:rw
     command: "jhbuild run -- py.test --cov scarlett_os --cov-report term-missing"
+    # command: "jhbuild run -- python setup.py test"
+    # command: "ls -lta"
     # command: jhbuild run -- coverage run -- setup.py test
     # command: env
   # unit:
