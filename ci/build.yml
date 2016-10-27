@@ -1,0 +1,7 @@
+# -*- coding: utf-8 -*-
+
+scarlett_master:
+  build: .
+
+# worker:
+#   build: .
