@@ -49,7 +49,8 @@ install:
   - travis_retry docker-compose -f docker-compose.yml -f ci/build.yml build
 
 script:
-  - "docker-compose -f docker-compose.test.yml run --rm ${TEST_TARGET}"
+  #- "docker-compose -f docker-compose.test.yml run --rm ${TEST_TARGET}"
+  - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test
 
 after_success:
   - mv .coverage .coverage.tests
