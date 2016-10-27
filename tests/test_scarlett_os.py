@@ -81,8 +81,14 @@ class TestScarlett_os(unittest.TestCase):
         Gst.debug_set_default_threshold(1)
 
         pp.pprint(ubuntu_version)
+        # ubuntu 16.04 says:
+        # ['Linux', '4.4.0', '38', 'generic', 'x86_64', 'with', 'Ubuntu', '16.04', 'xenial']
+        # travis says
+        # ['Linux', '4.4.0', '38', 'generic', 'x86_64', 'with', 'debian', 'jessie', 'sid']
+        # docker says:
+        # ['Linux', '4.4.17', 'boot2docker', 'x86_64', 'with', 'debian', 'stretch', 'sid']
 
-        if 'trusty' in ubuntu_version or 'jessie' in ubuntu_version:
+        if 'trusty' in ubuntu_version or 'jessie' in ubuntu_version or 'stretch' in ubuntu_version:
             assert GObject.pygobject_version == (3, 22, 0)
         else:
             assert GObject.pygobject_version == (3, 20, 0)

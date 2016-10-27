@@ -1,0 +1,132 @@
+version: '2'
+
+services:
+  scarlett_master:
+    build: .
+    environment:
+      SERVER_LOG_MINIMAL: 1
+      SERVER_APP_NAME: jhbuild-scarlett-os
+      S6_KILL_FINISH_MAXTIME: 1
+      S6_KILL_GRACETIME: 1
+      SERVER_WORKER_PROCESSES: 1
+    volumes:
+    - ./:/home/pi/dev/bossjones-github/scarlett_os
+
+  default:
+    extends:
+      service: scarlett_master
+    volumes_from:
+      - scarlett_master
+    command: "jhbuild run -- py.test --cov scarlett_os --cov-report term-missing"
+    # command: jhbuild run -- coverage run -- setup.py test
+    # command: env
+  # unit:
+  #   extends:
+  #     service: scarlett_master
+  #   volumes_from:
+  #     - scarlett_master
+  #   command: py.test tests/unit
+  # disambiguation:
+  #   extends:
+  #     service: scarlett_master
+  #   command: py.test tests/integration/disambiguation
+  #   volumes_from:
+  #     - scarlett_master
+  #   links:
+  #     - database
+  #     - indexer
+  #     - rabbitmq
+  #     - redis
+  #   depends_on:
+  #     - worker
+  # workflows:
+  #   extends:
+  #     service: scarlett_master
+  #   command: py.test tests/integration/workflows
+  #   volumes_from:
+  #     - scarlett_master
+  #   links:
+  #     - database
+  #     - indexer
+  #     - rabbitmq
+  #     - redis
+  #   depends_on:
+  #     - worker
+  # integration:
+  #   extends:
+  #     service: scarlett_master
+  #   command: py.test tests/integration --ignore tests/integration/disambiguation --ignore tests/integration/workflows
+  #   volumes_from:
+  #     - scarlett_master
+  #   links:
+  #     - database
+  #     - indexer
+  #     - rabbitmq
+  #     - redis
+  #   depends_on:
+  #     - worker
+  # acceptance:
+  #   extends:
+  #     service: scarlett_master
+  #   command: py.test --driver Remote --host selenium --port 4444 --capability browserName firefox --html=selenium-report.html tests/acceptance
+  #   volumes_from:
+  #     - scarlett_master
+  #   links:
+  #     - database
+  #     - indexer
+  #     - rabbitmq
+  #     - redis
+  #     - selenium
+  #   depends_on:
+  #     - web
+  #     - worker
+  #   environment:
+  #     - SERVER_NAME=web:5000
+  # web:
+  #   extends:
+  #     service: scarlett_master
+  #   command: gunicorn -b 0.0.0.0:5000 -t 3600 --access-logfile "-" inspirehep.wsgi_with_coverage
+  #   volumes_from:
+  #     - scarlett_master
+  #   links:
+  #     - database
+  #     - indexer
+  #     - rabbitmq
+  #     - redis
+  #   environment:
+  #     - APP_SERVER_NAME=web:5000
+  # worker:
+  #   container_name: inspirehep-test-worker
+  #   extends:
+  #     service: scarlett_master
+  #   command: celery worker -E -A inspirehep.celery --loglevel=INFO --purge
+  #   volumes_from:
+  #     - scarlett_master
+  #   links:
+  #     - database
+  #     - indexer
+  #     - rabbitmq
+  #     - redis
+  # redis:
+  #   container_name: inspirehep-test-redis
+  #   image: redis
+  # indexer:
+  #   container_name: inspirehep-test-indexer
+  #   extends:
+  #     file: services.yml
+  #     service: indexer
+  # rabbitmq:
+  #   container_name: inspirehep-test-rabbitmq
+  #   image: rabbitmq
+  # database:
+  #   container_name: inspirehep-test-database
+  #   extends:
+  #     file: services.yml
+  #     service: database
+  # selenium:
+  #   image: selenium/standalone-firefox:2.53.1-beryllium
+  # scarlett_master:
+  #   container_name: inspirehep-test-scarlett_master
+  #   extends:
+  #     file: services.yml
+  #     service: scarlett_master
