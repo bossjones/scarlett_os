@@ -10,9 +10,12 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     && jhbuild run python3 setup.py install \
     && jhbuild run -- pip install -e .[test] \
     && jhbuild run -- coverage run -- setup.py test \
-    && jhbuild run -- pip install coveralls
+    && jhbuild run -- pip install coveralls \
+    && jhbuild run coveralls
 
 COPY ./container/root /
+
+# RUN sudo touch .coverage
 
 ENTRYPOINT ["/docker_entrypoint.sh"]
 CMD true
