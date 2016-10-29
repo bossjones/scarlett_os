@@ -1,14 +1,14 @@
 matrix:
   fast_finish: true
   include:
+ #  - python: '3.5'
+ #    env: TOXENV=typing PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=typing DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.0-0~trusty DOCKER_COMPOSE_VERSION=1.8.0
+ #    sudo: required
+ #    dist: trusty
+ #    language: python
+ #    group: edge
   - python: '3.5'
-    env: TOXENV=typing PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
-    sudo: required
-    dist: trusty
-    language: python
-    group: edge
-  - python: '3.5'
-    env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo"
+    env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=default DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.0-0~trusty DOCKER_COMPOSE_VERSION=1.8.0
     sudo: required
     dist: trusty
     language: python
@@ -17,115 +17,50 @@ matrix:
   - python: '3.5'
     env: TOXENV=typing
 
+services:
+  - docker
+
+before_install:
+  - travis_retry pip install coveralls
+  # List available docker versions.
+  - apt-cache madison docker-engine
+  # Update Docker. See: https://graysonkoonce.com/managing-docker-and-docker-compose-versions-on-travis-ci/.
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+  # Add docker-compose at the version specified in ENV.
+  - sudo rm -f /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker-compose --version
+
 cache:
   apt: true
   directories:
   - "$HOME/.cache/pip"
   - "$HOME/virtualenv/python3.5.2/lib/python3.5/site-packages"
-
-before_install:
-- export SKIP_ON_TRAVIS=yes
-- export CURRENT_DIR=$(pwd)
-- export GSTREAMER=1.0
-- export ENABLE_PYTHON2=yes
-- export ENABLE_PYTHON3=yes
-- export ENABLE_GTK=yes
-- export PYTHON_VERSION_MAJOR=3
-- export PYTHON_VERSION=3.5
-- export CFLAGS="-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer"
-- export MAKEFLAGS="-j4"
-- export PREFIX="${HOME}/jhbuild"
-- export JHBUILD="${HOME}/gnome"
-- export PATH=${PREFIX}/bin:${PREFIX}/sbin:${PATH}
-- export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
-- export PYTHONPATH=${PREFIX}/lib/python${PYTHON_VERSION}/site-packages:/usr/lib/python${PYTHON_VERSION}/site-packages
-- export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:/usr/lib/pkgconfig
-- export XDG_DATA_DIRS=${PREFIX}/share:/usr/share
-- export XDG_CONFIG_DIRS=${PREFIX}/etc/xdg
-- export PYTHON="python3"
-- export PACKAGES="python3-gi python3-gi-cairo"
-- export CC=gcc
-- if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:ricotz/testing;
-  fi
-- if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3;
-  fi
-- if [ '$GSTREAMER' = '1.0'   ]; then sudo add-apt-repository -y ppa:gnome3-team/gnome3-staging;
-  fi
-- sudo add-apt-repository -y ppa:pitti/systemd-semaphore
-- sudo apt-get update -qq
-- sudo apt-get update -qq
-- sudo apt-get install -y libz-dev libbz2-dev gstreamer$GSTREAMER-tools libgstreamer$GSTREAMER-dev
-  libgstreamer-plugins-base$GSTREAMER-dev libgstreamer-plugins-bad$GSTREAMER-dev
-- if [ '$GSTREAMER' = '1.0'   ]; then sudo apt-get install -y libgstreamer-plugins-good$GSTREAMER-dev;
-  fi
-- sudo apt-get update -qq
-- sudo apt-get install -y gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0 graphviz-dev
-  gstreamer1.0-plugins-good gstreamer1.0-plugins-bad python-gst-1.0
-- sudo apt-get install -qq python3-gi
-- sudo apt-get install -qq python-gst-1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad
-  gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-libav libsndfile1-dev
-  libasound2-dev libgstreamer-plugins-base1.0-dev python-numpy python-scipy
-- sudo apt-get -y install automake gir1.2-gst-plugins-base-1.0 gir1.2-gstreamer-1.0
-  gstreamer1.0-libav gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-good
-  gstreamer1.0-plugins-ugly gstreamer1.0-tools libasound2-dev libgstreamer-plugins-base1.0-dev
-  libsndfile1-dev python python-dev python-gi python-gst-1.0 python-gst-1.0 python-imaging
-  python-lxml python-numpy python-scipy python-virtualenv python3-gi
-- sudo apt-get -y install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev
-  gnome-common;
-- sudo apt-get -y install libgstreamer1.0-dev gstreamer1.0-alsa gstreamer1.0-plugins-base;
-- sudo apt-get -y install python-dev libsmpeg-dev libswscale-dev libavformat-dev libavcodec-dev
-  libjpeg-dev libtiff4-dev libX11-dev libmtdev-dev;
-- sudo apt-get -y install python-setuptools build-essential libgl1-mesa-dev libgles2-mesa-dev;
-- sudo apt-get -y install xvfb pulseaudio;
-- if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/
-  trusty main restricted universe multiverse'; fi
-- if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/
-  trusty-updates main restricted universe multiverse'; fi
-- if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install
-  -qq pkg-config; fi
-- sudo apt-get -y update
-- sudo apt-get -y install ubuntu-restricted-extras
-- sudo apt-get -y install libfftw3-dev
-- sudo apt-get install -qq python3-dev python3-cairo-dev python3-gi gnome-common gtk-doc-tools
-  libgtk-3-dev libgirepository1.0-dev libmount-dev cvs;
-- sudo apt-get update -q
-- sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
-- sudo apt-get install -qq build-essential git
-- sudo apt-get install -qq gettext xsltproc docbook-xml docbook-xsl
-- sudo apt-get install -qq bison docbook-xsl build-essential git-core python-libxml2
-  byacc flex apt-file autopoint
-- sudo apt-get install -qq apt-file
-- sudo apt-file update
-- sudo apt-get install wget -qq
-- pip install virtualenv virtualenvwrapper
-- sudo pip install --upgrade virtualenvwrapper
-- export VIRTUALENV_WRAPPER_SH=`which virtualenvwrapper.sh`
-- export VIRTUALENVWRAPPER_PYTHON=`which python3`
-- export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
-- pip install -I path.py==7.7.1
-- export WORKON_HOME=${HOME}/.virtualenvs
-- export PROJECT_HOME=${HOME}/dev
-- export VIRTUALENVWRAPPER_PYTHON=`which python3`
-- export VIRTUALENVWRAPPER_VIRTUALENV=`which virtualenv`
-- env
-- travis_retry source $VIRTUALENV_WRAPPER_SH
-- export PYTHONSTARTUP=$HOME/.pythonrc
-- export PIP_DOWNLOAD_CACHE=$HOME/.pip/cache
-- mkdir -p $WORKON_HOME
-- mkvirtualenv scarlett_os
-- bash ./ci/set_postactivate.sh
-- workon scarlett_os
-- pip install -U coveralls sphinx numpy ipython
-- bash ./ci/travis.sh
-- jhbuild run python3 setup.py install
+  - "$HOME/.ccache"
+  - "$HOME/jhbuild"
+  - "$HOME/gnome"
 
 install:
-- sudo apt-get update -q
-- sudo apt-get install --no-install-recommends -y xvfb gir1.2-gtk-3.0 $(echo $PACKAGES)
+  - travis_retry docker-compose pull
+  # set containers as privileged to bypass Travis environment limitations
+  - 'sed -i "/build: ./a \ \ privileged: true" docker-compose.yml'
+  - travis_retry docker-compose -f docker-compose.yml -f ci/build.yml build
 
-script: jhbuild run python3 setup.py test
+script:
+  #- "docker-compose -f docker-compose.test.yml run --rm ${TEST_TARGET}"
+  - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test
 
-after_success: coveralls
+after_success:
+  - _USER=$(ls -lta | awk '{print $3}')
+  - _GROUP=$(ls -lta | awk '{print $4}')
+  - sudo chown $_USER:$_GROUP -R .
+  - mv .coverage .coverage.tests
+  - coverage combine
+  # Coverage report contains Docker paths. We replace them, so that we can run Coveralls.
+  - sed -i 's@\"/home/pi/dev/bossjones-github/scarlett_os/@'"\"$(pwd)/"'@g' .coverage
+  - coveralls
 
 deploy:
   distributions: sdist bdist_wheel

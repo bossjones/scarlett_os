@@ -53,20 +53,38 @@ clean-test: ## remove test and coverage artifacts
 lint: ## check style with flake8
 	flake8 scarlett_os tests
 
+pytest-install-test-deps: clean
+	pip install -e .[test]
+	python setup.py install
+
+pytest-run:
+	py.test
+
+jhbuild-run-test:
+	jhbuild run python setup.py install
+	jhbuild run -- pip install -e .[test]
+	jhbuild run -- coverage run -- setup.py test
+	jhbuild run -- coverage report -m
+
 test: ## run tests quickly with the default Python
+	python setup.py test
 
-		python setup.py test
-
-test-all: ## run tests on every Python version with tox
-	tox
+test-clean-all: ## run tests on every Python version with tox
+	pip install -e .[test]
+	python setup.py install
+	coverage run setup.py test
 
 coverage: ## check code coverage quickly with the default Python
-
 		coverage run --source scarlett_os setup.py test
-
 		coverage report -m
 		coverage html
 		$(BROWSER) htmlcov/index.html
+
+coverage-no-html: ## check code coverage quickly with the default Python
+
+	coverage run --source scarlett_os setup.py test
+
+	coverage report -m
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/scarlett_os.rst

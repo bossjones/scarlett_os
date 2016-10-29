@@ -1,8 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import logging
-logger = logging.getLogger('scarlett_os')
+logger = logging.getLogger('scarlettlogger')
 
 try:
     from colorlog import ColoredFormatter

@@ -63,6 +63,9 @@ def add_gi_packages():
     python_version = sys.version[:3]
     global_path = os.path.join('/usr/lib', 'python' + python_version)
 
+    # import sys
+    # sys.path
+
     if os.environ.get('PYTHONPATH'):
         py_path = os.environ.get('PYTHONPATH')
         py_paths = py_path.split(':')

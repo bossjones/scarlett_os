@@ -6,6 +6,9 @@ import sys
 import platform
 import re
 import warnings
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
 
 # Don't force people to install setuptools unless
 # we have to.
@@ -20,19 +23,82 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 from setuptools.command import install_lib
 
+PACKAGE_NAME = 'scarlett_os'
+MINIMUM_PYTHON_VERSION = 3, 0
+
+
+print('Current Python Version, B: {}'.format(sys.version_info))
+#
+# def check_python_version():
+#     """Exit when the Python version is too low."""
+#     if sys.version_info < (3, 4) <= sys.version_info < (3, 5):
+#         print('ScarlettOS requires at least Python 3.5 or 3.4 to run.')
+#         sys.exit(1)
+#     # if sys.version_info < MINIMUM_PYTHON_VERSION:
+#     #     print("Using version: ")
+#     #     sys.exit("Python {}.{}+ is required. Using {}".format(*MINIMUM_PYTHON_VERSION))
+
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
+static = {}
+
+for root, dirs, files in os.walk('static'):
+    for filename in files:
+        filepath = os.path.join(root, filename)
+
+        if root not in static:
+            static[root] = []
+
+        static[root].append(filepath)
+
+# Might use this later
+try:
+    here = os.path.abspath(os.path.dirname(__file__))
+except:
+    pass
+
+
+def read_requirements(filename):
+    content = open(os.path.join(here, filename)).read()
+    requirements = map(lambda r: r.strip(), content.splitlines())
+    return requirements
+
+
 requirements = [
     'Click>=6.0',
-    # TODO: put package requirements here
+    'click-plugins',
+    'pydbus>=0.5.0',
+    'colorlog>=2.7',
+    'psutil>=4.3.0',
+    'six',
+    'Fabric3==1.12.post1',
+    'PyYAML>=3.0'
 ]
 
+
 test_requirements = [
-    'pytest'
+    'pytest>=3.0',
+    'pip>=7.0',
+    'bumpversion>=0.5.3',
+    'wheel>=0.29.0',
+    'watchdog>=0.8.3',
+    'flake8>=2.6.2',
+    'flake8-docstrings>=0.2.8',
+    'coverage>=4.1',
+    'Sphinx>=1.4.5',
+    'cryptography==1.5.2',
+    'PyYAML>=3.11',
+    'pydocstyle>=1.0.0',
+    'mypy-lang>=0.4',
+    'pylint>=1.5.6',
+    'coveralls>=1.1',
+    'ipython>=5.1.0',
+    'gnureadline>=6.3.0'
+
 ]
 
 
@@ -49,6 +115,10 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
+
+# check_python_version()
+
+
 setup(
     name='scarlett_os',
     version='0.1.0',
@@ -62,10 +132,35 @@ setup(
     ],
     package_dir={'scarlett_os':
                  'scarlett_os'},
-    entry_points={
-        'console_scripts': [
-            'scarlett_os=scarlett_os.cli:main'
-        ]
+    #              ,
+    # entry_points={
+    #     'console_scripts': [
+    #         'hass = homeassistant.__main__:main'
+    #     ]
+    # },
+    # entry_points={
+    #     'console_scripts': [
+    #         'scarlett_os=scarlett_os.cli:main'
+    #     ]
+    # },
+    # source: mapbox-cli-py
+    entry_points="""
+    [console_scripts]
+    scarlett_os=scarlett_os.scripts.cli:main_group
+
+    [scarlett_os.scarlett_os_commands]
+    config=scarlett_os.scripts.config:config
+    """,
+    # geocoding=mapboxcli.scripts.geocoding:geocoding
+    # directions=mapboxcli.scripts.directions:directions
+    # distance=mapboxcli.scripts.distance:distance
+    # mapmatching=mapboxcli.scripts.mapmatching:match
+    # upload=mapboxcli.scripts.uploads:upload
+    # staticmap=mapboxcli.scripts.static:staticmap
+    # surface=mapboxcli.scripts.surface:surface
+    # dataset=mapboxcli.scripts.datasets:datasets
+    extras_require={
+        'test': ['coveralls', 'pytest>=3.0', 'pytest-cov'],
     },
     include_package_data=True,
     install_requires=requirements,
@@ -78,6 +173,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',

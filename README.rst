@@ -3,6 +3,7 @@ ScarlettOS
 ===============================
 
 
+
 .. image:: https://img.shields.io/pypi/v/scarlett_os.svg
         :target: https://pypi.python.org/pypi/scarlett_os
 
@@ -16,6 +17,11 @@ ScarlettOS
 .. image:: https://pyup.io/repos/github/bossjones/scarlett_os/shield.svg
      :target: https://pyup.io/repos/github/bossjones/scarlett_os/
      :alt: Updates
+
+.. image:: https://coveralls.io/repos/github/bossjones/scarlett_os/badge.svg?branch=master
+     :target: https://coveralls.io/github/bossjones/scarlett_os?branch=master
+     :alt: Coverage
+
 
 
 S.C.A.R.L.E.T.T is Tony Darks artificially programmed intelligent computer. She is programmed to speak with a female voice in a British accent.
@@ -37,4 +43,3 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-
