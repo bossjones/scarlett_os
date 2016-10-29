@@ -10,7 +10,7 @@ services:
       S6_KILL_GRACETIME: 1
       SERVER_WORKER_PROCESSES: 1
     volumes:
-    - ./:/home/pi/dev/bossjones-github/scarlett_os
+    - ./:/home/pi/dev/bossjones-github/scarlett_os:rw
 
   default:
     extends:

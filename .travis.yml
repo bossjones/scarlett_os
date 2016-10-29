@@ -53,6 +53,9 @@ script:
   - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test
 
 after_success:
+  - _USER=$(ls -lta | awk '{print $3}')
+  - _GROUP=$(ls -lta | awk '{print $4}')
+  - sudo chown $_USER:$_GROUP -R .
   - mv .coverage .coverage.tests
   - coverage combine
   # Coverage report contains Docker paths. We replace them, so that we can run Coveralls.
