@@ -3,6 +3,7 @@ ScarlettOS
 ===============================
 
 
+
 .. image:: https://img.shields.io/pypi/v/scarlett_os.svg
         :target: https://pypi.python.org/pypi/scarlett_os
 
