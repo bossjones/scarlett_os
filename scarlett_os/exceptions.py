@@ -4,6 +4,33 @@
 """Scarlett Exceptions Module."""
 
 
+class ScarlettError(Exception):
+    """General Home Assistant exception occurred."""
+
+    pass
+
+
+class InvalidEntityFormatError(ScarlettError):
+    """When an invalid formatted entity is encountered."""
+
+    pass
+
+
+class NoEntitySpecifiedError(ScarlettError):
+    """When no entity is specified."""
+
+    pass
+
+
+class TemplateError(ScarlettError):
+    """Error during template rendering."""
+
+    def __init__(self, exception):
+        """Initalize the error."""
+        super().__init__('{}: {}'.format(exception.__class__.__name__,
+                                         exception))
+
+
 class DecodeError(Exception):
     """The base exception class for all decoding errors raised by this package."""
 

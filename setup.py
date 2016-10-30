@@ -19,24 +19,23 @@ except ImportError:
     use_setuptools()
     from setuptools import setup
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 from setuptools.command import install_lib
+from scarlett_os.const import (__version__, PROJECT_PACKAGE_NAME,
+                               PROJECT_LICENSE, PROJECT_URL,
+                               PROJECT_EMAIL, PROJECT_DESCRIPTION,
+                               PROJECT_CLASSIFIERS, GITHUB_URL,
+                               PROJECT_AUTHOR)
 
-PACKAGE_NAME = 'scarlett_os'
-MINIMUM_PYTHON_VERSION = 3, 0
+HERE = os.path.abspath(os.path.dirname(__file__))
+DOWNLOAD_URL = ('{}/archive/'
+                '{}.zip'.format(GITHUB_URL, __version__))
 
+# PACKAGES = find_packages(exclude=['tests', 'tests.*'])
+PACKAGE_NAME = PROJECT_PACKAGE_NAME
 
 print('Current Python Version, B: {}'.format(sys.version_info))
-#
-# def check_python_version():
-#     """Exit when the Python version is too low."""
-#     if sys.version_info < (3, 4) <= sys.version_info < (3, 5):
-#         print('ScarlettOS requires at least Python 3.5 or 3.4 to run.')
-#         sys.exit(1)
-#     # if sys.version_info < MINIMUM_PYTHON_VERSION:
-#     #     print("Using version: ")
-#     #     sys.exit("Python {}.{}+ is required. Using {}".format(*MINIMUM_PYTHON_VERSION))
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -73,8 +72,11 @@ requirements = [
     'click-plugins',
     'pydbus>=0.5.0',
     'colorlog>=2.7',
+    'jinja2>=2.8',
+    'typing>=3,<4',
     'psutil>=4.3.0',
     'six',
+    'voluptuous==0.9.2',
     'Fabric3==1.12.post1',
     'PyYAML>=3.0'
 ]
@@ -104,6 +106,7 @@ test_requirements = [
 
 # Pytest
 class PyTest(TestCommand):
+
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = ['tests', '--ignore', 'tests/sandbox', '--verbose']
@@ -120,13 +123,14 @@ class PyTest(TestCommand):
 
 
 setup(
-    name='scarlett_os',
-    version='0.1.0',
-    description="S.C.A.R.L.E.T.T is Tony Darks artificially programmed intelligent computer. She is programmed to speak with a female voice in a British accent.",
+    name=PROJECT_PACKAGE_NAME,
+    version=__version__,
+    description=PROJECT_DESCRIPTION,
     long_description=readme + '\n\n' + history,
-    author="Malcolm Jones",
-    author_email='bossjones@theblacktonystark.com',
-    url='https://github.com/bossjones/scarlett_os',
+    author=PROJECT_AUTHOR,
+    author_email=PROJECT_EMAIL,
+    url=PROJECT_URL,
+    download_url=DOWNLOAD_URL,
     packages=[
         'scarlett_os',
     ],
@@ -135,7 +139,7 @@ setup(
     #              ,
     # entry_points={
     #     'console_scripts': [
-    #         'hass = homeassistant.__main__:main'
+    #         'hass = scarlett_os.__main__:main'
     #     ]
     # },
     # entry_points={
@@ -164,18 +168,10 @@ setup(
     },
     include_package_data=True,
     install_requires=requirements,
-    license="MIT license",
+    license=PROJECT_LICENSE,
     zip_safe=False,
     keywords='scarlett_os',
-    classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-    ],
+    classifiers=PROJECT_CLASSIFIERS,
     test_suite='tests',
     tests_require=test_requirements,
     cmdclass={'test': PyTest}

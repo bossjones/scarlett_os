@@ -1,5 +1,15 @@
+"""Setup logging."""
+
+from __future__ import absolute_import, unicode_literals
+
 import logging
-logger = logging.getLogger('scarlettlogger')
+import logging.config
+import logging.handlers
+
+# import platform
+# # logger = logging.getLogger('scarlettlogger')
+
+logger = logging.getLogger(__name__)
 
 try:
     from colorlog import ColoredFormatter
@@ -14,7 +24,8 @@ try:
             'INFO': 'green',
             'WARNING': 'yellow',
             'ERROR': 'red',
-            'CRITICAL': 'red',
+            'CRITICAL': 'bold_red',
+            'TRACE': 'purple'
         },
         secondary_log_colors={
             'message': {
