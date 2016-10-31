@@ -23,7 +23,6 @@ ts_package.check_gi()
 del ts_package
 del absolute_import
 
-# Import psutil
 try:
     from psutil import __version__ as psutil_version
 except ImportError:
