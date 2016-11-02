@@ -1,5 +1,4 @@
 """Module to help with parsing and generating configuration files."""
-import asyncio
 import logging
 import os
 import shutil
@@ -182,24 +181,6 @@ def create_default_config(config_dir, detect_location=True):
         return None
 
 
-@asyncio.coroutine
-def async_hass_config_yaml(hass):
-    """Load YAML from hass config File.
-
-    This function allow component inside asyncio loop to reload his config by
-    self.
-
-    This method is a coroutine.
-    """
-    def _load_hass_yaml_config():
-        path = find_config_file(hass.config.config_dir)
-        conf = load_yaml_config_file(path)
-        return conf
-
-    conf = yield from hass.loop.run_in_executor(None, _load_hass_yaml_config)
-    return conf
-
-
 def find_config_file(config_dir):
     """Look in given directory for supported configuration files.
 
@@ -226,12 +207,12 @@ def load_yaml_config_file(config_path):
     return conf_dict
 
 
-def process_ha_config_upgrade(hass):
+def process_ha_config_upgrade(ss):
     """Upgrade config if necessary.
 
     This method needs to run in an executor.
     """
-    version_path = hass.config.path(VERSION_FILE)
+    version_path = ss.config.path(VERSION_FILE)
 
     try:
         with open(version_path, 'rt') as inp:
@@ -246,107 +227,9 @@ def process_ha_config_upgrade(hass):
     logger.info('Upgrading config directory from %s to %s', conf_version,
                  __version__)
 
-    lib_path = hass.config.path('deps')
+    lib_path = ss.config.path('deps')
     if os.path.isdir(lib_path):
         shutil.rmtree(lib_path)
 
     with open(version_path, 'wt') as outp:
         outp.write(__version__)
-
-
-@asyncio.coroutine
-def async_process_ha_core_config(hass, config):
-    """Process the [scarlett_os] section from the config.
-
-    This method is a coroutine.
-    """
-    # pylint: disable=too-many-branches
-    config = CORE_CONFIG_SCHEMA(config)
-    hac = hass.config
-
-    def set_time_zone(time_zone_str):
-        """Helper method to set time zone."""
-        if time_zone_str is None:
-            return
-
-        time_zone = date_utility.get_time_zone(time_zone_str)
-
-        if time_zone:
-            hac.time_zone = time_zone
-            date_utility.set_default_time_zone(time_zone)
-        else:
-            logger.error('Received invalid time zone %s', time_zone_str)
-
-    for key, attr in ((CONF_LATITUDE, 'latitude'),
-                      (CONF_LONGITUDE, 'longitude'),
-                      (CONF_NAME, 'location_name'),
-                      (CONF_ELEVATION, 'elevation')):
-        if key in config:
-            setattr(hac, attr, config[key])
-
-    if CONF_TIME_ZONE in config:
-        set_time_zone(config.get(CONF_TIME_ZONE))
-
-    set_customize(config.get(CONF_CUSTOMIZE) or {})
-
-    if CONF_UNIT_SYSTEM in config:
-        if config[CONF_UNIT_SYSTEM] == CONF_UNIT_SYSTEM_IMPERIAL:
-            hac.units = IMPERIAL_SYSTEM
-        else:
-            hac.units = METRIC_SYSTEM
-    elif CONF_TEMPERATURE_UNIT in config:
-        unit = config[CONF_TEMPERATURE_UNIT]
-        if unit == TEMP_CELSIUS:
-            hac.units = METRIC_SYSTEM
-        else:
-            hac.units = IMPERIAL_SYSTEM
-        logger.warning("Found deprecated temperature unit in core config, "
-                        "expected unit system. Replace '%s: %s' with "
-                        "'%s: %s'", CONF_TEMPERATURE_UNIT, unit,
-                        CONF_UNIT_SYSTEM, hac.units.name)
-
-    # Shortcut if no auto-detection necessary
-    if None not in (hac.latitude, hac.longitude, hac.units,
-                    hac.time_zone, hac.elevation):
-        return
-
-    discovered = []
-
-    # If we miss some of the needed values, auto detect them
-    if None in (hac.latitude, hac.longitude, hac.units,
-                hac.time_zone):
-        info = yield from hass.loop.run_in_executor(
-            None, loc_utility.detect_location_info)
-
-        if info is None:
-            logger.error('Could not detect location information')
-            return
-
-        if hac.latitude is None and hac.longitude is None:
-            hac.latitude, hac.longitude = (info.latitude, info.longitude)
-            discovered.append(('latitude', hac.latitude))
-            discovered.append(('longitude', hac.longitude))
-
-        if hac.units is None:
-            hac.units = METRIC_SYSTEM if info.use_metric else IMPERIAL_SYSTEM
-            discovered.append((CONF_UNIT_SYSTEM, hac.units.name))
-
-        if hac.location_name is None:
-            hac.location_name = info.city
-            discovered.append(('name', info.city))
-
-        if hac.time_zone is None:
-            set_time_zone(info.time_zone)
-            discovered.append(('time_zone', info.time_zone))
-
-    if hac.elevation is None and hac.latitude is not None and \
-       hac.longitude is not None:
-        elevation = yield from hass.loop.run_in_executor(
-            None, loc_utility.elevation, hac.latitude, hac.longitude)
-        hac.elevation = elevation
-        discovered.append(('elevation', elevation))
-
-    if discovered:
-        logger.warning(
-            'Incomplete core config. Auto detected %s',
-            ', '.join('{}: {}'.format(key, val) for key, val in discovered))

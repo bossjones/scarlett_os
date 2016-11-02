@@ -36,7 +36,7 @@ def get_test_scarlett_os(num_threads=None):
         orig_num_threads = s.MIN_WORKER_THREAD
         s.MIN_WORKER_THREAD = num_threads
 
-    ss = loop.run_until_complete(async_test_scarlett_os(loop))
+    ss = s.ScarlettSystem()
 
     if num_threads:
         s.MIN_WORKER_THREAD = orig_num_threads

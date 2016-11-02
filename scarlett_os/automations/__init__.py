@@ -7,7 +7,6 @@ Component design guidelines:
   format "<DOMAIN>.<OBJECT_ID>".
 - Each component should publish services only under its own domain.
 """
-# import asyncio
 import itertools as it
 import logging
 

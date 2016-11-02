@@ -5,7 +5,7 @@
 
 
 class ScarlettError(Exception):
-    """General Home Assistant exception occurred."""
+    """General ScarlettOS exception occurred."""
 
     pass
 
@@ -76,7 +76,7 @@ class MetadataMissingError(GStreamerError):
 
 
 class IncompleteGStreamerError(GStreamerError):
-    """Raised when necessary components of GStreamer (namely, the
+    """Raised when necessary automations of GStreamer (namely, the
     principal plugin packages) are missing.
     """
 

@@ -21,6 +21,6 @@
 #     ]
 #
 #
-# def setup_platform(hass, config, add_devices_callback, discovery_info=None):
+# def setup_platform(ss, config, add_devices_callback, discovery_info=None):
 #     """Find and return test switches."""
 #     add_devices_callback(DEVICES)

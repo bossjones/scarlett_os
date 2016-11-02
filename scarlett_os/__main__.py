@@ -27,7 +27,7 @@
 
 
 # put this inside a bootstrap module
-# 
+#
 # def enable_logging(hass: core.HomeAssistant, verbose: bool=False,
 #                    log_rotate_days=None) -> None:
 #     """Setup the logging.

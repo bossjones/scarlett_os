@@ -5,7 +5,6 @@ ScarlettOS is a Home Automation framework for observing the state
 of entities and react to changes.
 """
 # pylint: disable=unused-import, too-many-lines
-import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import enum
 import logging

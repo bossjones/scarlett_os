@@ -99,7 +99,9 @@ test_requirements = [
     'pylint>=1.5.6',
     'coveralls>=1.1',
     'ipython>=5.1.0',
-    'gnureadline>=6.3.0'
+    'gnureadline>=6.3.0',
+    'requests_mock>=1.0',
+    'mock-open>=1.3.1'
 
 ]
 
@@ -139,7 +141,7 @@ setup(
     #              ,
     # entry_points={
     #     'console_scripts': [
-    #         'hass = scarlett_os.__main__:main'
+    #         'ss = scarlett_os.__main__:main'
     #     ]
     # },
     # entry_points={
