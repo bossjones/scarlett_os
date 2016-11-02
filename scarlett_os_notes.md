@@ -1,5 +1,10 @@
 ### Folders:
 
+# NOTE:
+
+`ha = s`
+`hass = ss`
+
 ```
 scarlett_os/brain/
   - Store all commands asked of scarlett, command processing?
@@ -54,7 +59,7 @@ scarlett_os/static/ir_commands
   - text files full of IR codes
 
 scarlett_os/automations/
-  - AKA components or features
+  - AKA automations or features
   - hue lights
   - ir reciever / emitter
   - weather
@@ -93,7 +98,7 @@ __init__.py
 
 __main__.py
   - This wraps the entire program, leverages cli.py and starts the scarlett daemon
-  - eg. https://github.com/home-assistant/home-assistant/blob/dev/homeassistant/__main__.py
+  - eg. https://github.com/home-assistant/home-assistant/blob/dev/scarlett_os/__main__.py
   - verifies mode(env/fileconfig)
   - verifies version of python
   - verifies version of gst/gtk
@@ -114,10 +119,10 @@ ext.py
 
 remote.py
   - scarlett that forwards information to somewhere else, or listens to info from elsewhere
-  - example: https://github.com/home-assistant/home-assistant/blob/dev/homeassistant/remote.py
+  - example: https://github.com/home-assistant/home-assistant/blob/dev/scarlett_os/remote.py
 
 core.py - Where we define what the Scarlett System Object is.
-  - https://github.com/home-assistant/home-assistant/blob/dev/homeassistant/core.py
+  - https://github.com/home-assistant/home-assistant/blob/dev/scarlett_os/core.py
   - Similar to locustio, this is were we define what a master/slave/local scarlett system looks like ( Management Component )
 
 consts.py
@@ -151,7 +156,7 @@ Looking at this example:
 def setup_and_run_hass(config_dir: str,
                        args: argparse.Namespace) -> Optional[int]:
     """Setup HASS and run."""
-    from homeassistant import bootstrap
+    from scarlett_os import bootstrap
 ```
 
 What does the -> mean?
