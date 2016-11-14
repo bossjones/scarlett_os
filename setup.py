@@ -101,7 +101,8 @@ test_requirements = [
     'ipython>=5.1.0',
     'gnureadline>=6.3.0',
     'requests_mock>=1.0',
-    'mock-open>=1.3.1'
+    'mock-open>=1.3.1',
+    'mock'
 
 ]
 

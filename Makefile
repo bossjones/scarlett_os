@@ -74,6 +74,13 @@ test-clean-all: ## run tests on every Python version with tox
 	python setup.py install
 	coverage run setup.py test
 
+test-docker:
+	sudo chown -R vagrant:vagrant *
+	grep -q -F 'privileged: true' docker-compose.yml || sed -i "/build: ./a \ \ privileged: true" docker-compose.yml
+	docker-compose -f docker-compose.yml -f ci/build.yml build
+	docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test
+	sudo chown -R vagrant:vagrant *
+
 coverage: ## check code coverage quickly with the default Python
 		coverage run --source scarlett_os setup.py test
 		coverage report -m
@@ -108,6 +115,11 @@ dist: clean ## builds source and wheel package
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+install-all:
+	pip install -r requirements.txt
+	python setup.py install
+	pip install -e .[test]
 
 setup-venv:
 	mkvirtualenv --python=/usr/local/bin/python3 scarlett-os-venv
