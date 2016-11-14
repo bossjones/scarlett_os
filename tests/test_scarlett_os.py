@@ -26,6 +26,7 @@ import pprint
 ubuntu_version = verify.get_current_os()
 pp = pprint.PrettyPrinter(indent=4)
 
+from scarlett_os.internal.gi import Gst, GLib, GObject
 
 # from IPython.core.debugger import Tracer  # NOQA
 # from IPython.core import ultratb
@@ -73,13 +74,7 @@ class TestScarlett_os(unittest.TestCase):
         print(scarlett_os.__file__)
 
     def test_gstreamer_versions(self):
-        import gi
-        gi.require_version('Gst', '1.0')
-        from gi.repository import GObject, Gst, GLib, Gio  # NOQA
         Gst.init(None)
-        Gst.debug_set_active(True)
-        Gst.debug_set_default_threshold(1)
-
         pp.pprint(ubuntu_version)
         # ubuntu 16.04 says:
         # ['Linux', '4.4.0', '38', 'generic', 'x86_64', 'with', 'Ubuntu', '16.04', 'xenial']

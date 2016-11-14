@@ -7,7 +7,12 @@ import textwrap
 try:
     import gi
     gi.require_version('Gst', '1.0')
-    from gi.repository import GLib, GObject, Gst
+    from gi.repository import GLib, GObject, Gst, Gio
+    # Initalize for threads
+    # NOTE: We might not want to put this here
+    Gst.init(None)
+    Gst.debug_set_active(True)
+    Gst.debug_set_default_threshold(1)
 except ImportError:
     print(textwrap.dedent("""
         ERROR: A GObject Python package was not found.
@@ -40,4 +45,5 @@ __all__ = [
     'Gst',
     'GstPbutils',
     'gi',
+    'Gio'
 ]

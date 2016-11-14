@@ -212,3 +212,115 @@ def get_age(date: dt.datetime) -> str:
         return formatn(minute, 'minute')
 
     return formatn(second, 'second') if second > 0 else "0 seconds"
+
+
+def parse_time_i(timestr, err=(ValueError, re.error)):
+    """Parse a time string in hh:mm:ss, mm:ss, or ss format."""
+    if timestr[0:1] == "-":
+        m = -1
+        timestr = timestr[1:]
+    else:
+        m = 1
+    try:
+        return m * reduce(lambda s, a: s * 60 + int(a),
+                          re.split(r":|\.", timestr), 0)
+    except err:
+        return 0
+
+
+def validate_query_date(datestr):  # NOQA
+    """Validates a user provided date that can be compared using date_key().
+
+    Returns True id the date is valid.
+    """
+
+    parts = datestr.split("-")
+    if len(parts) > 3:
+        return False
+
+    if len(parts) > 2:
+        try:
+            v = int(parts[2])
+        except ValueError:
+            return False
+        else:
+            if not 1 <= v <= 31:
+                return False
+
+    if len(parts) > 1:
+        try:
+            v = int(parts[1])
+        except ValueError:
+            return False
+        else:
+            if not 1 <= v <= 12:
+                return False
+
+    try:
+        int(parts[0])
+    except ValueError:
+        return False
+
+    return True
+
+
+def date_key(datestr):  # NOQA
+    """Parse a date format y-m-d and returns an undefined integer that
+    can only be used to compare dates.
+
+    In case the date string is invalid the returned value is undefined.
+    """
+
+    # this basically does "2001-02-03" -> 20010203
+
+    default = [0, 1, 1]
+    parts = datestr.split("-")
+    parts += default[len(parts):]
+
+    value = 0
+    for d, p, m in zip(default, parts, (10000, 100, 1)):
+        try:
+            value += int(p) * m
+        except ValueError:
+            # so that "2003-01-" is equal to "2003-01" ..
+            value += d * m
+    return value
+
+
+def parse_date(datestr):  # NOQA
+    """Parses yyyy-mm-dd date format and returns unix time.
+
+    Raises ValueError in case the input couldn't be parsed.
+    """
+
+    import time
+
+    try:
+        frmt = ["%Y", "%Y-%m", "%Y-%m-%d"][datestr.count("-")]
+    except IndexError:
+        raise ValueError
+
+    return time.mktime(time.strptime(datestr, frmt))
+
+
+def format_time(time):
+    """Turn a time value in seconds into hh:mm:ss or mm:ss."""
+
+    if time < 0:
+        time = abs(time)
+        prefix = "-"
+    else:
+        prefix = ""
+    if time >= 3600:  # 1 hour
+        # time, in hours:minutes:seconds
+        return "%s%d:%02d:%02d" % (prefix, time // 3600,
+                                   (time % 3600) // 60, time % 60)
+    else:
+        # time, in minutes:seconds
+        return "%s%d:%02d" % (prefix, time // 60, time % 60)
+
+
+def format_time_display(time):
+    """Like format_time, but will use RATIO instead of a colon to separate"""
+
+    return format_time(time).replace(":", u"\u2236")
