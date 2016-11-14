@@ -86,67 +86,6 @@ class DepsTest(unittest.TestCase):
 
     @mock.patch('pkg_resources.get_distribution')
     def test_pkg_info(self, get_distribution_mock):
-        # {'_ep_map': {},
-        #  '_key': 'pydbus',
-        #  '_provider': <pkg_resources.PathMetadata at 0x7f329dba37b8>,
-        #  '_version': '0.5.1',
-        #  'location': '/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages',
-        #  'platform': None,
-        #  'precedence': -1,
-        #  'project_name': 'pydbus',
-        #  'py_version': None}
-
-        #        {'_ep_map': {},
-        # '_key': 'colorlog',
-        # '_provider': <pkg_resources.PathMetadata at 0x7f329dba39e8>,
-        # '_version': '2.7.0',
-        # 'location': '/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages',
-        # 'platform': None,
-        # 'precedence': -1,
-        # 'project_name': 'colorlog',
-        # 'py_version': None}
-
-        # {'_ep_map': {},
-        #  '_key': 'click',
-        #  '_provider': <pkg_resources.PathMetadata at 0x7f329db287b8>,
-        #  '_version': '6.6',
-        #  'location': '/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages',
-        #  'platform': None,
-        #  'precedence': -1,
-        #  'project_name': 'click',
-        #  'py_version': None}
-
-        # {'_ep_map': {},
-        #  '_key': 'psutil',
-        #  '_provider': <pkg_resources.PathMetadata at 0x7f329db2d208>,
-        #  '_version': '4.3.1',
-        #  'location': '/usr/local/lib/python3.5/dist-packages',
-        #  'platform': None,
-        #  'precedence': -1,
-        #  'project_name': 'psutil',
-        #  'py_version': None}
-
-        # {'_ep_map': {},
-        #  '_key': 'pyyaml',
-        #  '_provider': <pkg_resources.PathMetadata at 0x7f329db28940>,
-        #  '_version': '3.11',
-        #  'location': '/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages',
-        #  'platform': None,
-        #  'precedence': -1,
-        #  'project_name': 'PyYAML',
-        #  'py_version': None}
-
-        # {'_ep_map': {'console_scripts': {'scarlett_os': EntryPoint.parse('scarlett_os = scarlett_os.scripts.cli:main_group')},
-        #   'scarlett_os.scarlett_os_commands': {'config': EntryPoint.parse('config = scarlett_os.scripts.config:config')}},
-        #  '_key': 'scarlett-os',
-        #  '_provider': <pkg_resources.PathMetadata at 0x7f329db5c438>,
-        #  '_version': '0.1.0',
-        #  'location': '/home/pi/dev/bossjones-github/scarlett_os',
-        #  'platform': None,
-        #  'precedence': -1,
-        #  'project_name': 'scarlett-os',
-        #  'py_version': None}
-
         # NOTE: To find out requirements, run this pkg_resources.get_distribution("pydbus").requires()
         dist_scarlett_os = mock.Mock()
         dist_scarlett_os.project_name = PROJECT_PACKAGE_NAME
@@ -173,18 +112,6 @@ class DepsTest(unittest.TestCase):
         dist_click.version = '6.6'
         dist_click.location = '/tmp/example/click'
         dist_click.requires.return_value = []
-
-        # dist_mopidy = mock.Mock()
-        # dist_mopidy.project_name = PROJECT_NAME
-        # dist_mopidy.version = '0.5.1'
-        # dist_mopidy.location = '/tmp/example/scarlett_os'
-        # dist_mopidy.requires.return_value = ['Pykka']
-        #
-        # dist_pykka = mock.Mock()
-        # dist_pykka.project_name = 'Pykka'
-        # dist_pykka.version = '1.1'
-        # dist_pykka.location = '/tmp/example/pykka'
-        # dist_pykka.requires.return_value = ['setuptools']
 
         #  pkg_resources.get_distribution("setuptools").__dict__
         dist_setuptools = mock.Mock()
