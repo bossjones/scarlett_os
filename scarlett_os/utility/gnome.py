@@ -5,7 +5,7 @@
 from __future__ import with_statement, division
 
 from scarlett_os.compat import *
-from scarlett_os.internal.gi import GObject, Glib, gi
+from scarlett_os.internal.gi import GObject, GLib, gi
 
 import logging
 logger = logging.getLogger(__name__)
