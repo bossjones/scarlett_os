@@ -4,7 +4,7 @@
 
 from __future__ import with_statement, division
 
-from scarlett_os.compat import *
+from scarlett_os.compat import *  # NOQA
 from scarlett_os.internal.gi import GObject, GLib, gi
 
 import logging
@@ -369,7 +369,7 @@ def abort_on_exception(func):  # NOQA
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except Exception, e:
+        except Exception as e:
             thread_object = args[0]
             exc_type, exc_value, exc_tb = exc_info = sys.exc_info()
             filename, line_num, func_name, text = traceback.extract_tb(exc_tb)[-1]
