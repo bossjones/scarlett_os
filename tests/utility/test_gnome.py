@@ -9,9 +9,6 @@ from scarlett_os.compat import text_type, PY2
 from scarlett_os.internal.gi import Gst, GLib, GObject
 # from scarlett_os.utility.gnome import *
 
-import importlib
-from contextlib import contextmanager
-
 from scarlett_os.utility import gnome
 
 
