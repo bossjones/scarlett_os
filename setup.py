@@ -175,7 +175,7 @@ setup(
     # surface=mapboxcli.scripts.surface:surface
     # dataset=mapboxcli.scripts.datasets:datasets
     extras_require={
-        'test': ['coveralls', 'pytest>=3.0', 'pytest-cov'],
+        'test': test_requirements,
     },
     include_package_data=True,
     install_requires=requirements,
