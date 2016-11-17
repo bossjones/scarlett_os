@@ -84,6 +84,9 @@ requirements = [
 
 test_requirements = [
     'pytest>=3.0',
+    'pytest-timeout>=1.0.0',
+    'pytest-catchlog>=1.2.2',
+    'pytest-cov>=2.3.1',
     'pip>=7.0',
     'bumpversion>=0.5.3',
     'wheel>=0.29.0',
@@ -102,23 +105,28 @@ test_requirements = [
     'gnureadline>=6.3.0',
     'requests_mock>=1.0',
     'mock-open>=1.3.1',
-    'mock'
-
+    'mock',
+    'pytest-benchmark[histogram]>=3.0.0rc1'
 ]
 
 
 # Pytest
 class PyTest(TestCommand):
 
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.pytest_args = []
+
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = ['tests', '--ignore', 'tests/sandbox', '--verbose']
+        # self.test_args = []
         self.test_suite = True
 
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
         import pytest
-        errno = pytest.main(self.test_args)
+        errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
 

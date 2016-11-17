@@ -1,10 +1,11 @@
-from __future__ import absolute_import, unicode_literals
+# from __future__ import absolute_import, unicode_literals
 
 import platform
 import sys
 import unittest
 
-import mock
+# import mock
+import unittest.mock as mock
 
 import pkg_resources
 
