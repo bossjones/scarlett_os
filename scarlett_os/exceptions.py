@@ -84,3 +84,15 @@ class IncompleteGStreamerError(GStreamerError):
         super(IncompleteGStreamerError, self).__init__(
             'missing GStreamer base plugins'
         )
+
+
+class MainRunnerError(Exception):
+    pass
+
+
+class MainRunnerAbortedError(MainRunnerError):
+    pass
+
+
+class MainRunnerTimeoutError(MainRunnerError):
+    pass

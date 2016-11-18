@@ -25,7 +25,7 @@ before_install:
   # List available docker versions.
   - apt-cache madison docker-engine
   # Update Docker. See: https://graysonkoonce.com/managing-docker-and-docker-compose-versions-on-travis-ci/.
-  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker-engine=${DOCKER_VERSION}
   # Add docker-compose at the version specified in ENV.
   - sudo rm -f /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
@@ -50,7 +50,7 @@ install:
 
 script:
   #- "docker-compose -f docker-compose.test.yml run --rm ${TEST_TARGET}"
-  - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test
+  - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
 
 after_success:
   - _USER=$(ls -lta | awk '{print $3}')

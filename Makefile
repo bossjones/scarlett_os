@@ -1,3 +1,18 @@
+project := scarlett_os
+projects := scarlett_os
+flake8 := flake8
+COV_DIRS := $(projects:%=--cov %)
+# [-s] per-test capturing method: one of fd|sys|no. shortcut for --capture=no.
+# [--tb short] traceback print mode (auto/long/short/line/native/no).
+# [--cov-config=path]     config file for coverage, default: .coveragerc
+# [--cov=[path]] coverage reporting with distributed testing support. measure coverage for filesystem path (multi-allowed)
+pytest_args := -s --tb short --cov-config .coveragerc $(COV_DIRS) tests
+pytest := py.test $(pytest_args)
+sources := $(shell find $(projects) tests -name '*.py' | grep -v version.py | grep -v thrift_gen)
+
+test_args := --cov-report term-missing --cov-report xml --junitxml junit.xml
+cover_args := --cov-report html
+
 .PHONY: clean clean-test clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
@@ -31,6 +46,14 @@ list:
 
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
+.PHONY: bootstrap
+bootstrap:
+	[ "$$VIRTUAL_ENV" != "" ]
+	rm -rf *.egg-info || true
+	pip install -r requirements.txt
+	pip install -r requirements_dev.txt
+	python setup.py install
+	pip install -e .[test]
 
 clean-build: ## remove build artifacts
 	rm -fr build/
@@ -59,6 +82,7 @@ pytest-install-test-deps: clean
 
 pytest-run:
 	py.test
+	# py.test -v --timeout=30 --duration=10 --cov --cov-report=
 
 jhbuild-run-test:
 	jhbuild run python setup.py install
@@ -74,8 +98,40 @@ test-clean-all: ## run tests on every Python version with tox
 	python setup.py install
 	coverage run setup.py test
 
+test-docker:
+	sudo chown -R vagrant:vagrant *
+	grep -q -F 'privileged: true' docker-compose.yml || sed -i "/build: ./a \ \ privileged: true" docker-compose.yml
+	docker-compose -f docker-compose.yml -f ci/build.yml build
+	docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test
+	sudo chown -R vagrant:vagrant *
+
+.PHONY: test-perf
+test-perf:
+	$(pytest) $(test_args) --benchmark-only
+
+.PHONY: jenkins
+jenkins: bootstrap
+	$(pytest) $(test_args) --benchmark-skip
+
+.PHONY: test-travis
+test-travis:
+	$(pytest) $(test_args) --benchmark-skip
+
+.PHONY: cover
+cover:
+	$(pytest) $(cover_args) --benchmark-skip
+	$(BROWSER) htmlcov/index.html
+
+.PHONY: shell
+shell:
+	ipython
+
 coverage: ## check code coverage quickly with the default Python
-		coverage run --source scarlett_os setup.py test
+		# coverage run --source scarlett_os setup.py test
+		coverage run --source=scarlett_os/ setup.py test
+		# defined inside of setup.cfg:
+		# --cov=scarlett_os --cov-report term-missing tests/
+		# coverage run --source=scarlett_os/ --include=scarlett_os setup.py test
 		coverage report -m
 		coverage html
 		$(BROWSER) htmlcov/index.html
@@ -108,6 +164,11 @@ dist: clean ## builds source and wheel package
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+install-all:
+	pip install -r requirements.txt
+	python setup.py install
+	pip install -e .[test]
 
 setup-venv:
 	mkvirtualenv --python=/usr/local/bin/python3 scarlett-os-venv
