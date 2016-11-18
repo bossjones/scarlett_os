@@ -10,6 +10,7 @@ pytest_args := -s --tb short --cov-config .coveragerc $(COV_DIRS) tests
 pytest := py.test $(pytest_args)
 sources := $(shell find $(projects) tests -name '*.py' | grep -v version.py | grep -v thrift_gen)
 
+test_args_no_xml := --cov-report term-missing
 test_args := --cov-report term-missing --cov-report xml --junitxml junit.xml
 cover_args := --cov-report html
 
@@ -115,7 +116,7 @@ jenkins: bootstrap
 
 .PHONY: test-travis
 test-travis:
-	$(pytest) $(test_args) --benchmark-skip
+	$(pytest) $(test_args_no_xml) --benchmark-skip
 
 .PHONY: cover
 cover:
