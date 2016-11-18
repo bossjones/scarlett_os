@@ -113,6 +113,10 @@ test-perf:
 jenkins: bootstrap
 	$(pytest) $(test_args) --benchmark-skip
 
+.PHONY: test-travis
+test-travis:
+	$(pytest) $(test_args) --benchmark-skip
+
 .PHONY: cover
 cover:
 	$(pytest) $(cover_args) --benchmark-skip
