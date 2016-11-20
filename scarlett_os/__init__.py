@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Main Module for scarlett_os."""
 
 # For the first problem, it is proposed that parentheses be permitted to enclose multiple
 # names, thus allowing Python's standard mechanisms for multi-line values to apply.
