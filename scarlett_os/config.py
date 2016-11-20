@@ -5,7 +5,7 @@ import shutil
 from types import MappingProxyType
 
 # pylint: disable=unused-import
-from typing import Any, Tuple  # NOQA
+from typing import Any, Tuple  # noqa
 
 import voluptuous as vol
 

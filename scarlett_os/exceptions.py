@@ -1,4 +1,4 @@
-#!/usr/bin/env python  # NOQA
+#!/usr/bin/env python  # noqa
 # -*- coding: utf-8 -*-
 
 """Scarlett Exceptions Module."""

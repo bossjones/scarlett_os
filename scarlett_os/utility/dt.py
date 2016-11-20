@@ -3,7 +3,7 @@ import datetime as dt
 import re
 
 # pylint: disable=unused-import
-from typing import Any, Union, Optional, Tuple  # NOQA
+from typing import Any, Union, Optional, Tuple  # noqa
 
 import pytz
 
@@ -228,7 +228,7 @@ def parse_time_i(timestr, err=(ValueError, re.error)):
         return 0
 
 
-def validate_query_date(datestr):  # NOQA
+def validate_query_date(datestr):  # noqa
     """Validates a user provided date that can be compared using date_key().
 
     Returns True id the date is valid.
@@ -264,7 +264,7 @@ def validate_query_date(datestr):  # NOQA
     return True
 
 
-def date_key(datestr):  # NOQA
+def date_key(datestr):  # noqa
     """Parse a date format y-m-d and returns an undefined integer that
     can only be used to compare dates.
 
@@ -287,7 +287,7 @@ def date_key(datestr):  # NOQA
     return value
 
 
-def parse_date(datestr):  # NOQA
+def parse_date(datestr):  # noqa
     """Parses yyyy-mm-dd date format and returns unix time.
 
     Raises ValueError in case the input couldn't be parsed.

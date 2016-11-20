@@ -5,7 +5,9 @@
 from __future__ import with_statement, division
 
 from scarlett_os.compat import *
-from scarlett_os.utility import compat as s_utility_compat
+from scarlett_os.internal.gi import Gst
+# from scarlett_os.utility import compat as s_utility_compat
+from gettext import gettext as _
 
 
 def format_bitrate(value):

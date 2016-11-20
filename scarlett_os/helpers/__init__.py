@@ -8,7 +8,7 @@ from scarlett_os.const import CONF_PLATFORM
 # Typing Imports and TypeAlias
 # pylint: disable=using-constant-test,unused-import,wrong-import-order
 if False:
-    from logging import Logger  # NOQA
+    from logging import Logger  # noqa
 
 # pylint: disable=invalid-name
 ConfigType = Dict[str, Any]

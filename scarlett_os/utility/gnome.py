@@ -4,8 +4,11 @@
 
 from __future__ import with_statement, division
 
-from scarlett_os.compat import *  # NOQA
+from scarlett_os.compat import PY2, text_type, urlparse  # noqa
 from scarlett_os.internal.gi import GObject, GLib, gi
+
+import contextlib
+from functools import wraps
 
 import logging
 logger = logging.getLogger(__name__)
@@ -15,13 +18,13 @@ logger = logging.getLogger(__name__)
 ########################################################################################################################
 
 if PY2:
-    def gdecode(s):  # NOQA
+    def gdecode(s):  # noqa
         """Returns unicode for the glib text type"""
 
         assert isinstance(s, bytes)
         return s.decode("utf-8")
 else:
-    def gdecode(s):  # NOQA
+    def gdecode(s):  # noqa
         """Returns unicode for the glib text type"""
 
         assert isinstance(s, text_type)
@@ -88,7 +91,7 @@ class DeferredSignal(object):
     """
 
     def __init__(self, func, timeout=None, owner=None, priority=None):
-        """timeout in milliseconds"""
+        """Timeout in milliseconds"""
 
         self.func = func
         self.dirty = False
@@ -335,7 +338,7 @@ class MainRunner(object):
 def re_escape(string, BAD="/.^$*+-?{,\\[]|()<>#=!:"):
     """A re.escape which also works with unicode"""
 
-    needs_escape = lambda c: (c in BAD and "\\" + c) or c  # NOQA
+    needs_escape = lambda c: (c in BAD and "\\" + c) or c  # noqa
     return type(string)().join(map(needs_escape, string))
 
 
@@ -354,8 +357,8 @@ class _IdleObject(GObject.GObject):
         GObject.idle_add(GObject.GObject.emit, self, *args)
 
 
-# source: https://github.com/hpcgam/dicomimport/blob/1f265b1a5c9e631a536333633893ab525da87f16/doc-dcm/SAMPLEZ/nostaples/utils/scanning.py  # NOQA
-def abort_on_exception(func):  # NOQA
+# source: https://github.com/hpcgam/dicomimport/blob/1f265b1a5c9e631a536333633893ab525da87f16/doc-dcm/SAMPLEZ/nostaples/utils/scanning.py  # noqa
+def abort_on_exception(func):  # noqa
     """
     This function decorator wraps the run() method of a thread
     so that any exceptions in that thread will be logged and

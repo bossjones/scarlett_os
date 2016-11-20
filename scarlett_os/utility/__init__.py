@@ -14,7 +14,7 @@ from types import MappingProxyType
 
 from typing import Any, Optional, TypeVar, Callable, Sequence, KeysView, Union
 
-from .dt import as_local, utcnow
+from scarlett_os.dt import as_local, utcnow
 
 T = TypeVar('T')
 U = TypeVar('U')
