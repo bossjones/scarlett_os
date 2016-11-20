@@ -175,6 +175,12 @@ STATE_LOCKED = 'locked'
 STATE_UNLOCKED = 'unlocked'
 STATE_UNAVAILABLE = 'unavailable'
 
+# ##### SCARLETT CONFIGS #######
+SCARLETT_CANCEL = "pi-cancel"
+SCARLETT_LISTENING = "pi-listening"
+SCARLETT_RESPONSE = "pi-response"
+SCARLETT_FAILED = "pi-response2"
+
 # #### STATE AND EVENT ATTRIBUTES ####
 # Attribution
 ATTR_ATTRIBUTION = 'attribution'
