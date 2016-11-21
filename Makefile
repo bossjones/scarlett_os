@@ -103,7 +103,7 @@ test-docker:
 	sudo chown -R vagrant:vagrant *
 	grep -q -F 'privileged: true' docker-compose.yml || sed -i "/build: ./a \ \ privileged: true" docker-compose.yml
 	docker-compose -f docker-compose.yml -f ci/build.yml build
-	docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test
+	docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
 	sudo chown -R vagrant:vagrant *
 
 .PHONY: test-perf
