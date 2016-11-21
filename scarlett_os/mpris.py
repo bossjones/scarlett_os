@@ -52,11 +52,6 @@ pp = pprint.PrettyPrinter(indent=4)
 import logging
 logger = logging.getLogger(__name__)
 
-# TODO: Move this to a base audio class or something like that
-QUEUE_SIZE = 10
-BUFFER_SIZE = 10
-SENTINEL = '__GSTDEC_SENTINEL__'
-
 # An in-memory stream for text. It inherits TextIOWrapper.
 try:
     from StringIO import StringIO
@@ -84,24 +79,6 @@ from scarlett_os.utility.gnome import abort_on_exception, _IdleObject
 from scarlett_os.const import (SCARLETT_CANCEL, SCARLETT_LISTENING,
                                SCARLETT_RESPONSE, SCARLETT_FAILED)
 
-# from enum import Enum
-#
-# class ScarlettSignals:
-#     """Enum of Player Types."""
-#     SCARLETT_CANCEL = "pi-cancel"
-#     SCARLETT_LISTENING = "pi-listening"
-#     SCARLETT_RESPONSE = "pi-response"
-#     SCARLETT_FAILED = "pi-response2"
-
-from IPython.core.debugger import Tracer  # noqa
-from IPython.core import ultratb
-
-sys.excepthook = ultratb.FormattedTB(mode='Verbose',
-                                     color_scheme='Linux',
-                                     call_pdb=True,
-                                     ostream=sys.__stdout__)
-
-
 gst = Gst
 HERE = os.path.dirname(__file__)
 loop = GObject.MainLoop()
@@ -111,11 +88,17 @@ class Server(object):  # noqa
     def __repr__(self):
         return '<Server>'
 
-    def __init__(self, bus, path):
+    def __init__(self, bus, path, dbus_xml=None):
         super(Server, self).__init__()
         method_outargs = {}
         method_inargs = {}
-        for interface in Gio.DBusNodeInfo.new_for_xml(self.__doc__).interfaces:
+
+        if dbus_xml:
+            __xml = dbus_xml
+        else:
+            __xml = self.__doc__
+
+        for interface in Gio.DBusNodeInfo.new_for_xml(__xml).interfaces:
 
             for method in interface.methods:
                 method_outargs[method.name] = '(' + ''.join([arg.signature for arg in method.out_args]) + ')'
@@ -244,13 +227,20 @@ class ScarlettListener(_IdleObject, Server):  # noqa
     LISTENER_EVENTS_IFACE = 'org.scarlett.Listener.event'
 
     def __repr__(self):  # noqa
-        return '<ScarlettListener>'
+        return "<ScarlettListener({}, {})>".format(str(self.address), str(self.path))
 
     @abort_on_exception
     def __init__(self, bus, path):
         _IdleObject.__init__(self)
 
+        # Synchronously connects to the message bus specified by bus_type
         self.con = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+        self.bus_conn = bus
+        self.path = path
+        self.address = 'org.scarlett'
+
+        # Starts acquiring name on the bus specified by bus_type and calls name_acquired_handler and name_lost_handler when the name is acquired respectively lost.
+        # Callbacks will be invoked in the thread-default main loop of the thread you are calling this function from.
         Gio.bus_own_name_on_connection(self.con,
                                        'org.scarlett',
                                        Gio.BusNameOwnerFlags.NONE,

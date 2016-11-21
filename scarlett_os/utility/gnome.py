@@ -5,9 +5,16 @@
 from __future__ import with_statement, division
 
 from scarlett_os.compat import PY2, text_type, urlparse  # noqa
-from scarlett_os.internal.gi import GObject, GLib, gi
+from scarlett_os.internal.gi import GObject, Gst, GLib, gi, _gst_available
+from scarlett_os.exceptions import MainRunnerError, MainRunnerAbortedError, DecodeError, NoBackendError
 
+
+import sys
+import os
 import contextlib
+import threading
+import traceback
+import time
 from functools import wraps
 
 import logging
