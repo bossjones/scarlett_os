@@ -6,7 +6,7 @@ test_mpris
 ----------------------------------
 """
 
-
+import os
 import sys
 import unittest
 
@@ -19,9 +19,15 @@ bus = SessionBus()
 bus.own_name(name='org.scarlett')
 
 
+DBUS_SESSION_BUS_ADDRESS = os.getenv("DBUS_SESSION_BUS_ADDRESS")
+
+
 class TestScarlettListener(unittest.TestCase):
 
     def setUp(self):
+        """
+        Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. The default implementation does nothing.
+        """
         self.sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
 
     def test_scarlett_listener_interfaces(self):
@@ -34,15 +40,17 @@ class TestScarlettListener(unittest.TestCase):
         self.assertTrue(isinstance(self.sl.bus_conn, Gio.DBusConnection))
         self.assertEqual(self.sl.path, '/org/scarlett/Listener')
 
-        self.assertEqual(len(self.sl.dbus_stack), 2)
-        self.assertEqual(self.sl._message, 'This is the DBusServer')
-        self.assertEqual(self.sl._status_ready, '  ScarlettListener is ready')
-        self.assertEqual(self.sl._status_kw_match, "  ScarlettListener caught a keyword match")
-        self.assertEqual(self.sl._status_cmd_match, "  ScarlettListener caught a command match")
-        self.assertEqual(self.sl._status_stt_failed, "  ScarlettListener hit Max STT failures")
-        self.assertEqual(self.sl._status_cmd_start, "  ScarlettListener emitting start command")
-        self.assertEqual(self.sl._status_cmd_fin, "  ScarlettListener Emitting Command run finish")
-        self.assertEqual(self.sl._status_cmd_cancel, "  ScarlettListener cancel speech Recognition")
+        # NOTE: these are all private. We need a getter function
+        # self.assertTrue(type(self.sl.dbus_stack), list)
+        # self.assertEqual(self.sl._message, 'This is the DBusServer')
+        # self.assertEqual(self.sl._status_ready, '  ScarlettListener is ready')
+        # self.assertEqual(self.sl._status_kw_match, "  ScarlettListener caught a keyword match")
+        # self.assertEqual(self.sl._status_cmd_match, "  ScarlettListener caught a command match")
+        # self.assertEqual(self.sl._status_stt_failed, "  ScarlettListener hit Max STT failures")
+        # self.assertEqual(self.sl._status_cmd_start, "  ScarlettListener emitting start command")
+        # self.assertEqual(self.sl._status_cmd_fin, "  ScarlettListener Emitting Command run finish")
+        # self.assertEqual(self.sl._status_cmd_cancel, "  ScarlettListener cancel speech Recognition")
 
-    def test_scarlett_listener_proxy(self):
-        pass
+    def test_scarlett_listener_emit_methods(self):
+        self.assertEqual(self.sl.emitKeywordRecognizedSignal(), 'pi-listening')
+        self.assertEqual(self.sl.emitCommandRecognizedSignal('what time is it'), 'pi-response')
