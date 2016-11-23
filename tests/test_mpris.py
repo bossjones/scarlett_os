@@ -58,3 +58,4 @@ class TestScarlettListener(unittest.TestCase):
         self.assertEqual(self.sl.emitListenerCancelSignal(), 'pi-cancel')  # SCARLETT_CANCEL
         self.assertEqual(self.sl.emitListenerReadySignal(), 'pi-listening')  # SCARLETT_LISTENING
         self.assertEqual(self.sl.emitConnectedToListener('fake_plugin'), ' fake_plugin is connected to ScarlettListener')
+        self.assertEqual(self.sl.emitListenerMessage(), 'This is the DBusServer')
