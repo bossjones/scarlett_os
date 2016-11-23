@@ -175,7 +175,7 @@ class Command(object):
         if isinstance(command_tuple, tuple):
             logger.info("Valid command_tuple: {}".format(command_tuple))
         else:
-            logger.error("INValid command_tuple: {}".format(command_tuple))
+            logger.error("Invalid command_tuple: {}".format(command_tuple))
             return NO_OP
 
         msg, scarlett_sound, command = command_tuple
@@ -184,25 +184,9 @@ class Command(object):
             logger.debug("** received {}, sending 'spotify {}'".format(command, SPOTIFY_CMDS[command]))
         elif command in LIGHT_CMDS.keys():
             logger.debug("** received {}, sending 'light {}'".format(command, LIGHT_CMDS[command]))
-            # try:
-            #     logger.debug("trying light chit")
-            #     self.get_hue = scarlett.connect_hue(self.voice, self.brain)
-            #     return self.get_hue.get_light_names()
-            #     # REFACTOR ### light_play(LIGHT_CMDS[command])
-            # except Exception as e:
-            #     logger.debug("light exception b. \nCMD: {} \nException: {}" %(command, e))
-            #     # REFACTOR ### general_play("cancel")
         elif command in TIME_CMDS.keys():
             logger.debug("** received {}, sending 'time {}'".format(command, TIME_CMDS[command]))
             return TimeCommand.get_current_time()
-            # try:
-            #     from scarlett.features.time import FeatureTime
-            #     self.get_time = FeatureTime(self.voice, self.brain)
-            #     return self.get_time.time_play()
-            # except Exception as e:
-            #     logger.debug(
-            #         "time exception b. \nCMD: {} \nException: {}" %
-            #         (command, e))
         elif command in GENERAL_CMDS.keys():
             logger.debug("** received {}, sending 'general command: {}'".format(command, GENERAL_CMDS[command]))
         elif command in FORECAST_CMDS.keys():
