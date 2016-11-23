@@ -54,3 +54,7 @@ class TestScarlettListener(unittest.TestCase):
     def test_scarlett_listener_emit_methods(self):
         self.assertEqual(self.sl.emitKeywordRecognizedSignal(), 'pi-listening')
         self.assertEqual(self.sl.emitCommandRecognizedSignal('what time is it'), 'pi-response')
+        self.assertEqual(self.sl.emitSttFailedSignal(), 'pi-response2')  # SCARLETT_FAILED
+        self.assertEqual(self.sl.emitListenerCancelSignal(), 'pi-cancel')  # SCARLETT_CANCEL
+        self.assertEqual(self.sl.emitListenerReadySignal(), 'pi-listening')  # SCARLETT_LISTENING
+        self.assertEqual(self.sl.emitConnectedToListener('fake_plugin'), ' fake_plugin is connected to ScarlettListener')
