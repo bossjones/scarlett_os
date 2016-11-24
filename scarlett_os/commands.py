@@ -187,6 +187,7 @@ class Command(object):
         elif command in TIME_CMDS.keys():
             logger.debug("** received {}, sending 'time {}'".format(command, TIME_CMDS[command]))
             return TimeCommand.get_current_time()
+
         elif command in GENERAL_CMDS.keys():
             logger.debug("** received {}, sending 'general command: {}'".format(command, GENERAL_CMDS[command]))
         elif command in FORECAST_CMDS.keys():
