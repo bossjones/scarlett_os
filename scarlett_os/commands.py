@@ -4,16 +4,9 @@
 
 from __future__ import with_statement, division, absolute_import
 
-# import sys
-# import os
-
 import logging
 logger = logging.getLogger(__name__)
 
-# import generator_utils
-# from generator_utils import trace, abort_on_exception
-
-# import time
 import datetime
 
 CMD_MASTER_LIST_HEX = {
