@@ -16,7 +16,7 @@ import threading
 import time
 
 from types import MappingProxyType
-from typing import Optional, Any, Callable, List  # NOQA
+from typing import Optional, Any, Callable, List  # noqa
 
 import voluptuous as vol
 from voluptuous.humanize import humanize_error
@@ -33,7 +33,7 @@ from scarlett_os.exceptions import (
 import scarlett_os.utility as utility
 import scarlett_os.utility.dt as dt_utility
 import scarlett_os.utility.location as location
-from scarlett_os.utility.unit_system import UnitSystem, METRIC_SYSTEM  # NOQA
+from scarlett_os.utility.unit_system import UnitSystem, METRIC_SYSTEM  # noqa
 
 DOMAIN = "scarlett_os"
 

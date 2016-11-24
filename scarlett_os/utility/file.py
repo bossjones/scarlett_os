@@ -24,7 +24,7 @@ def format_size(size):
         return "%d B" % size
 
 
-def mkdir(dir_, *args):  # NOQA
+def mkdir(dir_, *args):  # noqa
     """Make a directory, including all its parent directories. This does not
     raise an exception if the directory already exists (and is a
     directory)."""
@@ -35,7 +35,7 @@ def mkdir(dir_, *args):  # NOQA
         if e.errno != errno.EEXIST or not os.path.isdir(dir_):
             raise
 
-def iscommand(s):  # NOQA
+def iscommand(s):  # noqa
     """True if an executable file `s` exists in the user's path, or is a
     fully qualified and existing executable file."""
 
@@ -74,7 +74,7 @@ def listdir(path, hidden=False):
     if hidden:
         filt = None
     else:
-        filt = lambda base: not base.startswith(".")  # NOQA
+        filt = lambda base: not base.startswith(".")  # noqa
     if path.endswith(os.sep):
         join = "".join
     else:
@@ -100,7 +100,7 @@ def filesize(filename):
         return 0
 
 
-def expanduser(filename):  # NOQA
+def expanduser(filename):  # noqa
     """convience function to have expanduser return wide character paths
     """
     return os.path.expanduser(filename)

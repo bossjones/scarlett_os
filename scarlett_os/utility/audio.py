@@ -4,8 +4,12 @@
 
 from __future__ import with_statement, division
 
-from scarlett_os.compat import *
-from scarlett_os.utility import compat as s_utility_compat
+from scarlett_os.internal.gi import Gst, _gst_available
+from gettext import gettext as _
+
+QUEUE_SIZE = 10
+BUFFER_SIZE = 10
+SENTINEL = '__GSTDEC_SENTINEL__'
 
 
 def format_bitrate(value):

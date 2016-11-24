@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
+"""Main Module for scarlett_os."""
+
+# For the first problem, it is proposed that parentheses be permitted to enclose multiple
+# names, thus allowing Python's standard mechanisms for multi-line values to apply.
+# For the second problem, it is proposed that all import statements be absolute by default
+# (searching sys.path only) with special syntax (leading dots) for accessing package-relative imports.
 
 from __future__ import absolute_import
 import sys
-from .tools import package as ts_package
-from .tools import verify as ts_verify
+from scarlett_os.tools import package as ts_package
+from scarlett_os.tools import verify as ts_verify
 
 from scarlett_os.const import (__version__,
                                PROJECT_EMAIL,

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Setup logging."""
 
 from __future__ import absolute_import, unicode_literals
@@ -6,17 +7,14 @@ import logging
 import logging.config
 import logging.handlers
 
-# import platform
-# # logger = logging.getLogger('scarlettlogger')
-
 logger = logging.getLogger(__name__)
 
 try:
     from colorlog import ColoredFormatter
-    from gettext import gettext as _
+    from gettext import gettext as _  # noqa
     """Return a logger with a default ColoredFormatter."""
     formatter = ColoredFormatter(
-        "(%(threadName)-9s) %(log_color)s%(levelname)-8s%(reset)s (%(funcName)-5s) %(message_log_color)s%(message)s",
+        "(%(threadName)-9s) %(log_color)s%(levelname)-8s%(reset)s (%(funcName)-5s) %(message_log_color)s%(message)s",  # noqa
         datefmt=None,
         reset=True,
         log_colors={

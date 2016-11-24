@@ -18,7 +18,7 @@ import sys
 
 from types import ModuleType
 # pylint: disable=unused-import
-from typing import Optional, Sequence, Set, Dict  # NOQA
+from typing import Optional, Sequence, Set, Dict  # noqa
 
 from scarlett_os.const import PLATFORM_FORMAT
 from scarlett_os.utility import OrderedSet
@@ -26,7 +26,7 @@ from scarlett_os.utility import OrderedSet
 # Typing imports
 # pylint: disable=using-constant-test,unused-import
 if False:
-    from scarlett_os.core import ScarlettSystem  # NOQA
+    from scarlett_os.core import ScarlettSystem  # noqa
 
 PREPARED = False
 

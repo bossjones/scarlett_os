@@ -10,7 +10,7 @@ pytest_args := -s --tb short --cov-config .coveragerc $(COV_DIRS) tests
 pytest := py.test $(pytest_args)
 sources := $(shell find $(projects) tests -name '*.py' | grep -v version.py | grep -v thrift_gen)
 
-test_args_no_xml := --cov-report term-missing
+test_args_no_xml := --cov-report=
 test_args := --cov-report term-missing --cov-report xml --junitxml junit.xml
 cover_args := --cov-report html
 
@@ -103,7 +103,7 @@ test-docker:
 	sudo chown -R vagrant:vagrant *
 	grep -q -F 'privileged: true' docker-compose.yml || sed -i "/build: ./a \ \ privileged: true" docker-compose.yml
 	docker-compose -f docker-compose.yml -f ci/build.yml build
-	docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test
+	docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
 	sudo chown -R vagrant:vagrant *
 
 .PHONY: test-perf

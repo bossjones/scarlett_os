@@ -106,7 +106,9 @@ test_requirements = [
     'requests_mock>=1.0',
     'mock-open>=1.3.1',
     'mock',
-    'pytest-benchmark[histogram]>=3.0.0rc1'
+    'pytest-benchmark[histogram]>=3.0.0rc1',
+    'python-dbusmock',
+    'freezegun'
 ]
 
 

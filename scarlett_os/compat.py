@@ -15,11 +15,11 @@ if PY2:
     pass
 elif PY3:
     import os
-    import random  # NOQA
+    import random  # noqa
     import re
     import unicodedata
     import threading
-    import subprocess  # NOQA
+    import subprocess  # noqa
 
 
     map = itertools.imap if sys.version_info < (3,) else map
@@ -29,7 +29,7 @@ elif PY3:
     import pprint
     pp = pprint.PrettyPrinter(indent=4)
 
-    from scarlett_os.internal import debugger
+    # from scarlett_os.internal import debugger
 
     import builtins
     builtins
@@ -42,7 +42,7 @@ elif PY3:
     urlopen, build_opener
     import contextlib
     import time
-    import textwrap  # NOQA
+    import textwrap  # noqa
     import logging
     from functools import reduce, wraps
     import traceback
@@ -62,8 +62,8 @@ elif PY3:
     integer_types = (int,)
     number_types = (int, float)
 
-    iteritems = lambda d: iter(d.items())  # NOQA
-    itervalues = lambda d: iter(d.values())  # NOQA
+    iteritems = lambda d: iter(d.items())  # noqa
+    itervalues = lambda d: iter(d.values())  # noqa
 
     import builtins
     exec_ = getattr(builtins, "exec")
