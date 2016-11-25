@@ -56,10 +56,14 @@ class Subprocess(GObject.GObject):
             self.stdout = False
             self.stderr = False
 
-        types = map(type, command)
-        if not (min(types) == max(types) == str):
-            raise TypeError("executables and arguments must be str objects")
-        logger.debug("Running %r" % " ".join(command))
+        # types = map(type, command)
+        # # <map at 0x7f08918d74e0>
+        # if not (min(types) == max(types) == str):
+        #     raise TypeError("executables and arguments must be str objects")
+        # logger.debug("Running %r" % " ".join(command))
+
+        # Verify that command is properly formatted and each argument is a str
+        self.check_command_type(command)
 
         self.command = command
         self.name = name
@@ -74,6 +78,21 @@ class Subprocess(GObject.GObject):
         if fork:
             self.fork()
 
+    def spawn_command(self):
+        """Return: Tuple (pid(int), stdin, stdout, stderr)"""
+        return GLib.spawn_async(self.command,
+                                flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
+                                )
+
+    def check_command_type(self, command):
+        types = map(type, command)
+        # <map at 0x7f08918d74e0>
+        if not (min(types) == max(types) == str):
+            raise TypeError("Executables and arguments must be str objects")
+        else:
+            logger.debug("Running %r" % " ".join(command))
+            return True
+
     def run(self):
         """Run the process."""
 
@@ -87,9 +106,7 @@ class Subprocess(GObject.GObject):
         # source:
         # http://lazka.github.io/pgi-docs/#GLib-2.0/flags.html#GLib.SpawnFlags.SEARCH_PATH
 
-        self.pid, self.stdin, self.stdout, self.stderr = GLib.spawn_async(self.command,
-                                                                          flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
-                                                                          )
+        self.pid, self.stdin, self.stdout, self.stderr = self.spawn_command()
 
         logger.debug("command: ".format(self.command))
         logger.debug("stdin: ".format(self.stdin))
