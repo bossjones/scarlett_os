@@ -122,6 +122,8 @@ test-travis:
 .PHONY: cover
 cover:
 	$(pytest) $(cover_args) --benchmark-skip
+	coverage report -m
+	coverage html
 	$(BROWSER) htmlcov/index.html
 
 .PHONY: shell

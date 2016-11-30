@@ -21,7 +21,9 @@ from scarlett_os.subprocess import check_pid, Subprocess
 # from scarlett_os.internal.gi import GLib, GObject
 
 from tests import common
+import signal
 
+kill_mock = mock.Mock(name="kill")
 
 # self.res = generator_subprocess.Subprocess(
 #                 self._command, name='speaker_tmp', fork=False).run()
@@ -34,24 +36,10 @@ def raise_OSError(*x, **kw):
     raise OSError('Fail')
 
 
-# class MockSubprocess(GObject.GObject):
-#
-#     def __init__(self):
-#         GObject.GObject.__init__(self, common.create_scarlett_os_subprocess_mock())
-
-
 class SubprocessStub(object):
 
     def __init__(self):
         super(self).__init__()
-
-
-# class MockedPipeline(pipeline.Pipeline):
-#
-#     def __init__(self):
-#         pipeline.Pipeline.__init__(self, common.create_pitivi_mock())
-#         self.state_calls = {}
-#         self._timeline = mock.MagicMock()
 
 
 class TestScarlettSubprocess(unittest.TestCase):
@@ -62,11 +50,64 @@ class TestScarlettSubprocess(unittest.TestCase):
         """
 
         # spec: This can be either a list of strings or an existing object (a class or instance) that acts as the specification for the mock object. If you pass in an object then a list of strings is formed by calling dir on the object (excluding unsupported magic attributes and methods). Accessing any attribute not in this list will raise an AttributeError.
-        self.mock = mock.Mock(spec=scarlett_os.subprocess.Subprocess)
+        self.mock = mock.Mock(spec=scarlett_os.subprocess.Subprocess)  # raise an exception if you try to access an attribute that doesn't exist on this class
 
     @mock.patch("os.kill", new=mock.Mock(side_effect=OSError))
-    def test_check_pid(self):
+    def test_check_pid_os_error(self):
         self.assertFalse(check_pid(4353634632623))
+
+    @mock.patch("os.kill", kill_mock)
+    def test_check_pid(self):
+        result = check_pid(123)
+        self.assertTrue(kill_mock.called)
+        # NOTE: test against signal 0
+        # sending the signal 0 to a given PID just checks if any process with the given PID is running and you have the permission to send a signal to it.
+        kill_mock.assert_called_once_with(123, 0)
+        self.assertEqual(result, True)
+
+    # @mock.patch('scarlett_os.subprocess.logging')
+    # @mock.patch('logging.logger')
+    @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
+    @mock.patch('scarlett_os.subprocess.Subprocess.check_command_type')
+    def test_subprocess_init(self, mock_check_command_type, mock_logging):
+        test_result = '''
+pi       tty7         2016-11-24 11:19 (:0)
+pi       pts/5        2016-11-24 11:20 (10.0.2.2)
+pi       pts/17       2016-11-24 11:20 (10.0.2.2)
+'''
+        # NOTE: On purpose this is an invalid cmd. Should be of type array
+        test_command = ['who']
+
+        test_name = 'test_who'
+        test_fork = False
+        # test_return_tuple = (23241, None, None, None)
+
+        # mock
+        mock_check_command_type.return_value = True
+
+        # command, name=None, fork=False
+        s_test = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
+
+        # action
+        self.assertEqual(s_test.check_command_type(test_command), True)
+        mock_check_command_type.assert_called_with(['who'])
+        self.assertEqual(s_test.process, None)
+        self.assertEqual(s_test.pid, None)
+        self.assertEqual(s_test.name, 'test_who')
+        self.assertEqual(s_test.forked, False)
+        self.assertEqual(s_test.stdout, True)
+        self.assertEqual(s_test.stderr, True)
+
+        mock_logging.assert_any_call("command: ['who']")
+        mock_logging.assert_any_call("name: test_who")
+        mock_logging.assert_any_call("forked: False")
+        mock_logging.assert_any_call("process: None")
+        mock_logging.assert_any_call("pid: None")
+        # scarlett_os/subprocess.py                     75     36    52%   56-57, 79, 83, 88-94, 109-127, 130-131, 135-153
+
+        # assert
+        # mock_glib_spawn_async.assert_called_once_with(test_command,
+        #                                               flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD)
 
     # ME: def __init__(self, command, name=None, fork=False):
     # THEM: def __init__(self, host, port, protocol, protocol_kwargs=None,
@@ -148,10 +189,6 @@ class TestScarlettSubprocess(unittest.TestCase):
 #         #                                               flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD)
 #         #
 #         # pass
-
-
-
-
 
 #
 #     # NOTE: Decorators get applied BOTTOM to TOP

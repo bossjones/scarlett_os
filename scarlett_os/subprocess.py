@@ -69,11 +69,11 @@ class Subprocess(GObject.GObject):
         self.name = name
         self.forked = fork
 
-        logger.debug("command: ".format(self.command))
-        logger.debug("name: ".format(self.name))
-        logger.debug("forked: ".format(self.forked))
-        logger.debug("process: ".format(self.process))
-        logger.debug("pid: ".format(self.pid))
+        logger.debug("command: {}".format(self.command))
+        logger.debug("name: {}".format(self.name))
+        logger.debug("forked: {}".format(self.forked))
+        logger.debug("process: {}".format(self.process))
+        logger.debug("pid: {}".format(self.pid))
 
         if fork:
             self.fork()
@@ -108,11 +108,11 @@ class Subprocess(GObject.GObject):
 
         self.pid, self.stdin, self.stdout, self.stderr = self.spawn_command()
 
-        logger.debug("command: ".format(self.command))
-        logger.debug("stdin: ".format(self.stdin))
-        logger.debug("stdout: ".format(self.stdout))
-        logger.debug("stderr: ".format(self.stderr))
-        logger.debug("pid: ".format(self.pid))
+        logger.debug("command: {}".format(self.command))
+        logger.debug("stdin: {}".format(self.stdin))
+        logger.debug("stdout: {}".format(self.stdout))
+        logger.debug("stderr: {}".format(self.stderr))
+        logger.debug("pid: {}".format(self.pid))
 
         # close file descriptor
         self.pid.close()
