@@ -36,12 +36,6 @@ def raise_OSError(*x, **kw):
     raise OSError('Fail')
 
 
-class SubprocessStub(object):
-
-    def __init__(self):
-        super(self).__init__()
-
-
 class TestScarlettSubprocess(unittest.TestCase):
 
     def setUp(self):
@@ -111,33 +105,6 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         # assert
         # mock_glib_spawn_async.assert_called_once_with(test_command,
         #                                               flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD)
-
-    # ME: def __init__(self, command, name=None, fork=False):
-    # THEM: def __init__(self, host, port, protocol, protocol_kwargs=None,
-    #             max_connections=5, timeout=30):
-    #    self.protocol = protocol
-    #    self.protocol_kwargs = protocol_kwargs or {}
-    #    self.max_connections = max_connections
-    #    self.timeout = timeout
-    #    self.server_socket = self.create_server_socket(host, port)
-
-    #    self.register_server_socket(self.server_socket.fileno())
-
-    # @mock.patch('myapp.app.Car')
-    # def test_class(self, mock_car):
-    #
-    #     class NewCar(object):
-    #
-    #         def get_make(self):
-    #             return 'Audi'
-    #
-    #         @property
-    #         def wheels(self):
-    #             return 6
-    #
-    #     mock_car.return_value = NewCar()
-    #     self.assertEquals(get_car_make(), 'Audi')
-    #     self.assertEquals(get_car_wheels(), 6)
 
     # NOTE: Decorators get applied BOTTOM to TOP
     # @mock.patch("scarlett_os.internal.gi.GLib.spawn_async")
