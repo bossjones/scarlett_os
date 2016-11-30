@@ -69,7 +69,8 @@ class TestScarlettSubprocess(unittest.TestCase):
     # @mock.patch('logging.logger')
     @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
     @mock.patch('scarlett_os.subprocess.Subprocess.check_command_type')
-    def test_subprocess_init(self, mock_check_command_type, mock_logging):
+    @mock.patch('scarlett_os.subprocess.Subprocess.fork')
+    def test_subprocess_init(self, mock_fork, mock_check_command_type, mock_logging):
         test_result = '''
 pi       tty7         2016-11-24 11:19 (:0)
 pi       pts/5        2016-11-24 11:20 (10.0.2.2)
@@ -103,6 +104,8 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         mock_logging.assert_any_call("forked: False")
         mock_logging.assert_any_call("process: None")
         mock_logging.assert_any_call("pid: None")
+        mock_fork.assert_not_called()
+
         # scarlett_os/subprocess.py                     75     36    52%   56-57, 79, 83, 88-94, 109-127, 130-131, 135-153
 
         # assert
