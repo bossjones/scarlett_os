@@ -144,7 +144,7 @@ class Subprocess(GObject.GObject):
         # source:
         # http://valadoc.org/#!api=glib-2.0/GLib.SpawnFlags.DO_NOT_REAP_CHILD
 
-        # NOTE: SEARCH_PATH: argv[0] need not be an absolute path, it will be looked for in the userâ€™s PATH
+        # NOTE: SEARCH_PATH: argv[0] need not be an absolute path, it will be looked for in the user's PATH
         # source:
         # http://lazka.github.io/pgi-docs/#GLib-2.0/flags.html#GLib.SpawnFlags.SEARCH_PATH
 
@@ -178,8 +178,10 @@ class Subprocess(GObject.GObject):
             # first fork
             pid = os.fork()
             if pid > 0:
+                logger.debug('pid greater than 0 first time')
                 sys.exit(0)
         except OSError as e:
+            logger.error('Error forking process first time')
             sys.exit(1)
 
         # Change the current working directory to path.
@@ -197,6 +199,8 @@ class Subprocess(GObject.GObject):
             # second fork
             pid = os.fork()
             if pid > 0:
+                logger.debug('pid greater than 0 second time')
                 sys.exit(0)
         except OSError as e:
+            logger.error('Error forking process second time')
             sys.exit(1)
