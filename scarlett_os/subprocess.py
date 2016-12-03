@@ -24,21 +24,6 @@ def check_pid(pid):
         return True
 
 
-# def map_type_to_command(command):
-#     """Return: Map after applying type to several objects in an array"""
-#     return map(type, command)
-#
-#
-# def check_command_type(command):
-#     types = map_type_to_command(command)
-#     # <map at 0x7f08918d74e0>
-#     if not (min(types) == max(types) == str):
-#         raise TypeError("Executables and arguments must be str objects")
-#     else:
-#         logger.debug("Running %r" % " ".join(command))
-#         return True
-
-
 class Subprocess(GObject.GObject):
     """
     GObject API for handling child processes.
@@ -85,11 +70,6 @@ class Subprocess(GObject.GObject):
 
         self.command = command
         self.name = name
-
-        # self.command = command
-        # self.name = name
-        # self.forked = fork
-        # self.types = None
 
         logger.debug("command: {}".format(self.command))
         logger.debug("name: {}".format(self.name))

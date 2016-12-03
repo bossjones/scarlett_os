@@ -26,11 +26,6 @@ import builtins
 
 kill_mock = mock.Mock(name="kill")
 
-# self.res = generator_subprocess.Subprocess(
-#                 self._command, name='speaker_tmp', fork=False).run()
-#             generator_subprocess.check_pid(int(self.res))
-
-
 # new_callable: allows you to specify a different class, or callable object, that will be called to create the new object. By default MagicMock is used.
 
 def raise_OSError(*x, **kw):
@@ -251,46 +246,23 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
 
                             mock_logging_error.assert_any_call("Error forking process second time")
 
-    @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
+    @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
     def test_subprocess_fork_and_spawn_command(self, mock_logging_debug):
-        """Test fork class method process."""
+        """Test a full run connamd of Subprocess.run()"""
 
         test_command = ["who", "-b"]
         test_name = 'test_who'
         test_fork = False
 
         # mock
-        with mock.patch('scarlett_os.subprocess.os.fork', mock.Mock(name='mock_os_fork')) as mock_os_fork:
-            with mock.patch('scarlett_os.subprocess.sys.exit', mock.Mock(name='mock_sys_exit')) as mock_sys_exit:
-                with mock.patch('scarlett_os.subprocess.os.chdir', mock.Mock(name='mock_os_chdir')) as mock_os_chdir:
-                    with mock.patch('scarlett_os.subprocess.os.setsid', mock.Mock(name='mock_os_setsid')) as mock_os_setsid:
-                        with mock.patch('scarlett_os.subprocess.os.umask', mock.Mock(name='mock_os_umask')) as mock_os_umask:
+        with mock.patch('scarlett_os.subprocess.os.fork', mock.Mock(name='mock_os_fork')) as mock_os_fork:  # noqa
+            with mock.patch('scarlett_os.subprocess.sys.exit', mock.Mock(name='mock_sys_exit')) as mock_sys_exit:  # noqa
+                with mock.patch('scarlett_os.subprocess.os.chdir', mock.Mock(name='mock_os_chdir')) as mock_os_chdir:  # noqa
+                    with mock.patch('scarlett_os.subprocess.os.setsid', mock.Mock(name='mock_os_setsid')) as mock_os_setsid:  # noqa
+                        with mock.patch('scarlett_os.subprocess.os.umask', mock.Mock(name='mock_os_umask')) as mock_os_umask:  # noqa
 
                             # Import module locally for testing purposes
                             from scarlett_os.internal.gi import gi, GLib
-
-                            # In [2]: from scarlett_os.internal.gi import GLib, GObject
-                            #
-                            # In [3]: argv = [sys.executable, '-c', 'import sys']
-                            #
-                            # In [4]: pid, stdin, stdout, stderr = GLib.spawn_async(
-                            #    ...:             argv, flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD)
-                            #
-                            # In [5]: pid
-                            # Out[5]: 4324
-                            #
-                            # In [6]: type(pid)
-                            # Out[6]: gi._glib.Pid
-                            #
-                            # In [7]: stdin
-                            #
-                            # In [8]: type(stdin)
-                            # Out[8]: NoneType
-
-                            # self.assertEqual(stdin, None)
-                            # self.assertEqual(stdout, None)
-                            # self.assertEqual(stderr, None)
-                            # self.assertNotEqual(pid, 0)
 
                             test_pid = mock.Mock(spec=gi._gi._glib.Pid, return_value=23241, name='Mockgi._gi._glib.Pid')
                             test_pid.real = 23241
@@ -306,33 +278,34 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
                             tfork1 = scarlett_os.subprocess.Subprocess(test_command,
                                                                        name=test_name,
                                                                        fork=test_fork)
+
                             with mock.patch('scarlett_os.subprocess.Subprocess.exited_cb', mock.Mock(name='mock_exited_cb', spec=scarlett_os.subprocess.Subprocess.exited_cb)) as mock_exited_cb:
 
-                                # action, kick off subprocess run
-                                tfork1.run()
+                                with mock.patch('scarlett_os.subprocess.Subprocess.emit', mock.Mock(name='mock_emit', spec=scarlett_os.subprocess.Subprocess.emit)) as mock_emit:
 
-                                # assert
-                                mock_logging_debug.assert_any_call("command: {}".format(test_command))
-                                mock_logging_debug.assert_any_call("stdin: {}".format(None))
-                                mock_logging_debug.assert_any_call("stdout: {}".format(None))
-                                mock_logging_debug.assert_any_call("stderr: {}".format(None))
-                                # mock_logging_debug.assert_any_call("pid: {}".format(23241))
+                                    # action, kick off subprocess run
+                                    tfork1.run()
 
-                                self.assertNotEqual(tfork1.pid, 23241)
-                                self.assertEqual(GLib.PRIORITY_HIGH, -100)
-                                self.assertEqual(tfork1.stdin, None)
-                                self.assertEqual(tfork1.stdout, None)
-                                self.assertEqual(tfork1.stderr, None)
-                                GLib.spawn_async.assert_called_once_with(test_command,
-                                                                         flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
-                                                                         )
+                                    # assert
+                                    mock_logging_debug.assert_any_call("command: {}".format(test_command))
+                                    mock_logging_debug.assert_any_call("stdin: {}".format(None))
+                                    mock_logging_debug.assert_any_call("stdout: {}".format(None))
+                                    mock_logging_debug.assert_any_call("stderr: {}".format(None))
 
-                                # self.assertEqual(mock_pid_close.call_count, 1)
-                                GLib.child_watch_add.assert_called_once_with(GLib.PRIORITY_HIGH, test_pid, mock_exited_cb)
+                                    self.assertNotEqual(tfork1.pid, 23241)
+                                    self.assertEqual(tfork1.stdin, None)
+                                    self.assertEqual(tfork1.stdout, None)
+                                    self.assertEqual(tfork1.stderr, None)
+                                    self.assertEqual(tfork1.forked, False)
+                                    self.assertEqual(mock_emit.call_count, 0)
+
+                                    GLib.spawn_async.assert_called_once_with(test_command,
+                                                                             flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
+                                                                             )
+
+                                    GLib.child_watch_add.assert_called_once_with(GLib.PRIORITY_HIGH, test_pid, mock_exited_cb)
 
     # NOTE: Decorators get applied BOTTOM to TOP
-    # @mock.patch("scarlett_os.internal.gi.GLib.spawn_async")
-    # @mock.patch('scarlett_os.subprocess.Subprocess')
     def test_check_command_type_is_array_of_str(self):
         # source: http://stackoverflow.com/questions/28181867/how-do-a-mock-a-superclass-that-is-part-of-a-library
         self.assertRaises(Exception, Subprocess)  # Normal implementation raise Exception
@@ -343,168 +316,3 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
             s = Subprocess(['who'])  # Ok now it works
             mock_init.assert_called_with(mock.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
             self.assertEqual(s.check_command_type(['who']), True)
-            # But launch_nukes() was still the original one and it will raise
-            # self.assertRaises(Exception, s.party)
-            # pass
-#         #
-#         # class NewSubprocess(object):
-#         #
-#         # test_pid, test_stdin, test_stdout, test_stderr = GLib.spawn_async(test_command,
-#         #                                                                   flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
-#         #                                                                   )
-#         #
-#         # Out[11]: (23241, None, None, None)
-#         #
-#         # In [12]:  07:29:39 up 20:10,  3 users,  load average: 0.11, 0.08, 0.02
-#         # USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
-#         # In [12]:
-#         #
-#         # In [12]:
-#
-#         test_result = '''
-# pi       tty7         2016-11-24 11:19 (:0)
-# pi       pts/5        2016-11-24 11:20 (10.0.2.2)
-# pi       pts/17       2016-11-24 11:20 (10.0.2.2)
-# '''
-#         # NOTE: On purpose this is an invalid cmd. Should be of type array
-#         test_command = ['who']
-#
-#         test_name = None
-#         test_fork = False
-#         # test_return_tuple = (23241, None, None, None)
-#
-#         # command, name=None, fork=False
-#         s_test = scarlett_os.subprocess.Subprocess(test_command, test_name, test_fork)
-#
-#         # action
-#         self.assertEqual(s_test.check_command_type(test_command), True)
-#         #
-#         # # assert
-#         # mock_glib_spawn_async.assert_called_once_with(test_command,
-#         #                                               flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD)
-#         #
-#         # pass
-
-#
-#     # NOTE: Decorators get applied BOTTOM to TOP
-#     @mock.patch("scarlett_os.internal.gi.GLib.spawn_async")
-#     def test_check_command_type_not_str(self, mock_glib_spawn_async):
-#         # test_pid, test_stdin, test_stdout, test_stderr = GLib.spawn_async(test_command,
-#         #                                                                   flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
-#         #                                                                   )
-#         #
-#         # Out[11]: (23241, None, None, None)
-#         #
-#         # In [12]:  07:29:39 up 20:10,  3 users,  load average: 0.11, 0.08, 0.02
-#         # USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
-#         # In [12]:
-#         #
-#         # In [12]:
-#
-#         test_result = '''
-# pi       tty7         2016-11-24 11:19 (:0)
-# pi       pts/5        2016-11-24 11:20 (10.0.2.2)
-# pi       pts/17       2016-11-24 11:20 (10.0.2.2)
-# '''
-#         # NOTE: On purpose this is an invalid cmd. Should be of type array
-#         test_command = 'who'
-#         test_name = None
-#         test_fork = False
-#         test_return_tuple = (23241, None, None, None)
-#
-#         # command, name=None, fork=False
-#         s_test = scarlett_os.subprocess.Subprocess(test_command, test_name, test_fork)
-#
-#         # action
-#         s_test.spawn_command()
-#
-#         # assert
-#         mock_glib_spawn_async.assert_called_once_with(test_command,
-#                                                       flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD)
-#
-#         pass
-#
-#     # NOTE: Decorators get applied BOTTOM to TOP
-#     @mock.patch("scarlett_os.internal.gi.GLib.spawn_async")
-#     @mock.patch("scarlett_os.subprocess.Subprocess.check_command_type")
-#     def test_spawn_command(self, mock_glib_spawn_async, mock_check_command_type):
-#         # test_pid, test_stdin, test_stdout, test_stderr = GLib.spawn_async(test_command,
-#         #                                                                   flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
-#         #                                                                   )
-#         #
-#         # Out[11]: (23241, None, None, None)
-#         #
-#         # In [12]:  07:29:39 up 20:10,  3 users,  load average: 0.11, 0.08, 0.02
-#         # USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
-#         # In [12]:
-#         #
-#         # In [12]:
-#
-#         test_result = '''
-# pi       tty7         2016-11-24 11:19 (:0)
-# pi       pts/5        2016-11-24 11:20 (10.0.2.2)
-# pi       pts/17       2016-11-24 11:20 (10.0.2.2)
-# '''
-#         test_command = ['who']
-#         test_name = None
-#         test_fork = False
-#         test_return_tuple = (23241, None, None, None)
-#
-#         # mock
-#         mock_check_command_type.return_value = True
-#
-#         # action
-#         # command, name=None, fork=False
-#         s_test = scarlett_os.subprocess.Subprocess(test_command, test_name, test_fork)
-#         s_test.spawn_command()
-#
-#         # assert
-#         self.assertEquals(s_test.check_command_type(test_command), True)
-#         self.assertEquals(mock_glib_spawn_async.call_count, 1)
-#
-#         # scarlett_os.subprocess.Subprocess.__init__(
-#         #     self.mock, mock.sentinel.command)
-#         # self.mock.create_server_socket.assert_called_once_with(
-#         #     mock.sentinel.host, mock.sentinel.port)
-#         pass
-
-
-# In [2]: import os
-#
-# In [3]: import sys
-#
-# In [4]: import unittest
-#
-# In [5]: import unittest.mock as mock
-#
-# In [6]: import scarlett_os
-#
-# In [7]: from scarlett_os.subprocess import check_pid
-#
-# In [8]: mock = mock.Mock(spec=scarlett_os.subprocess.Subprocess)
-#
-# In [9]: mock
-# Out[9]: <Mock spec='Subprocess' id='139701201134816'>
-#
-# In [10]:
-
-# In [14]: import unittest.mock as mock
-#
-# In [15]: m = mock.Mock(spec=scarlett_os.subprocess.Subprocess)
-#
-# In [16]: scarlett_os.subprocess.Subprocess.__init__(m, mock.sentinel.command)
-# ---------------------------------------------------------------------------
-# TypeError                                 Traceback (most recent call last)
-# <ipython-input-16-73c79a1e2b20> in <module>()
-# ----> 1 scarlett_os.subprocess.Subprocess.__init__(m, mock.sentinel.command)
-#
-# /home/pi/dev/bossjones-github/scarlett_os/scarlett_os/subprocess.py in __init__(self, command, name, fork)
-#      45         """Create instance of Subprocess."""
-#      46
-# ---> 47         GObject.GObject.__init__(self)
-#      48
-#      49         self.process = None
-#
-# TypeError: descriptor '__init__' requires a 'gi._gobject.GObject' object but received a 'Mock'
-#
-# In [17]:
