@@ -24,9 +24,9 @@ def check_pid(pid):
         return True
 
 
-def map_type_to_command(command):
-    """Return: Map after applying type to several objects in an array"""
-    return map(type, command)
+# def map_type_to_command(command):
+#     """Return: Map after applying type to several objects in an array"""
+#     return map(type, command)
 #
 #
 # def check_command_type(command):
@@ -132,7 +132,7 @@ class Subprocess(GObject.GObject):
         # if not (min(types) == max(types) == str):
         #     raise TypeError("Executables and arguments must be str objects. types: {}".format(types))
         # else:
-        logger.debug("Running %r" % " ".join(command))
+        logger.debug("Running Command: %r" % " ".join(command))
         return True
 
     def run(self):
@@ -182,8 +182,15 @@ class Subprocess(GObject.GObject):
         except OSError as e:
             sys.exit(1)
 
+        # Change the current working directory to path.
         os.chdir("/")
+
+        # Description: setsid() creates a new session if the calling process is not a process group leader. The calling process is the leader of the new session, the process group leader of the new process group, and has no controlling terminal. The process group ID and session ID of the calling process are set to the PID of the calling process. The calling process will be the only process in this new process group and in this new session.
+
+        # Return Value: On success, the (new) session ID of the calling process is returned. On error, (pid_t) -1 is returned, and errno is set to indicate the error.
         os.setsid()
+
+        # Set the current numeric umask and return the previous umask.
         os.umask(0)
 
         try:

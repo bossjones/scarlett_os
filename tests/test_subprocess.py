@@ -113,7 +113,7 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         test_fork = False
 
         # mock
-        mock_check_command_type.return_value = test_command
+        mock_check_command_type.return_value = True
 
         # create subprocess object
         s_test = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
@@ -121,11 +121,13 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
 
         # test
         self.assertTrue(isinstance(map_output, list))
+        self.assertTrue(s_test.check_command_type(test_command))
+        self.assertEqual(s_test.check_command_type(test_command), mock_check_command_type.return_value)
 
     @mock.patch('scarlett_os.subprocess.Subprocess.fork')  # 3
     @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
-    # @mock.patch('scarlett_os.subprocess.Subprocess.map_type_to_command')  # 1
-    def test_subprocess_check_command_type(self, mock_logging, mock_fork):
+    @mock.patch('scarlett_os.subprocess.Subprocess.map_type_to_command')  # 1
+    def test_subprocess_check_command_type(self, mock_map_type_to_command, mock_logging, mock_fork):
         """Using the mock.patch decorator (removes the need to import builtins)"""
 
         test_command = ["who", "-b"]
@@ -133,59 +135,44 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         test_fork = False
 
         # mock
-        # NOTE: This value is the same as what it actually returns
-        # mock_check_command_type.return_value = test_command
-
-        # types_mock = mock_map_type_to_command.return_value
+        mock_map_type_to_command.return_value = int
 
         # action
-        s_test_check_command = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
+        with self.assertRaisesRegexp(TypeError, 'Variable types should return a list in python3.'):
+            scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
 
-        # TEMPORARY # self.assertTrue(s_test_check_command.types, list(map(type, test_command)))
-        # mock_map_type_to_command_output = s_test_check_command.map_type_to_command(test_command)
+        # Assert TypeError inside types list
+        mock_map_type_to_command.return_value = [int, int]
 
-        # assert
-        # mock_map_type_to_command.assert_called_with(['who'])
-        # self.assertTrue(isinstance(mock_map_type_to_command, map))
+        with self.assertRaisesRegexp(TypeError, 'Executables and arguments must be str objects. types'):
+            scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
 
-        # with mock.patch('scarlett_os.subprocess.Subprocess.map_type_to_command') as mock_map_type_to_command:
-        #     # mock
-        #     # NOTE: This value is the same as what it actually returns
-        #     mock_map_type_to_command.return_value = map(type, test_command)
-        #
-        #     # action
-        #     s_test_check_command = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
-        #     # mock_map_type_to_command_output = s_test_check_command.map_type_to_command(test_command)
-        #
-        #     # assert
-        #     mock_map_type_to_command.assert_called_with(['who'])
-        #     self.assertTrue(isinstance(mock_map_type_to_command, map))
+    @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
+    def test_subprocess_fork_daemonize(self, mock_logging):
+        """Test fork class method process."""
 
-        # # create subprocess object
-        # s_test = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
-        # map_output = s_test.map_type_to_command(test_command)
+        test_command = ["who", "-b"]
+        test_name = 'test_who'
+        test_fork = True
+        pid = 7
 
-        # test
-        # self.assertTrue(isinstance(map_output, map))
+        # mock
+        with mock.patch('scarlett_os.subprocess.os.fork', mock.Mock(return_value=pid)) as mock_os_fork:
+            with mock.patch('scarlett_os.subprocess.sys.exit', mock.Mock()) as mock_sys_exit:
+                with mock.patch('scarlett_os.subprocess.os.chdir', mock.Mock()) as mock_os_chdir:
+                    with mock.patch('scarlett_os.subprocess.os.setsid', mock.Mock()) as mock_os_setsid:
+                        with mock.patch('scarlett_os.subprocess.os.umask', mock.Mock()) as mock_os_umask:
 
-    # NOTE: TestsFrom quodlibet
-    # def test_simple(self):
-    #     self.failUnless(util.spawn(["ls", "."], stdout=True))
-    #
-    # def test_invalid(self):
-    #     from gi.repository import GLib
-    #     self.failUnlessRaises(GLib.GError, util.spawn, ["not a command"])
-    #
-    # def test_types(self):
-    #     if is_win:
-    #         return
-    #     self.failUnlessRaises(TypeError, util.spawn, [u"ls"])
-    #
-    # def test_get_output(self):
-    #     if is_win:
-    #         return
-    #     fileobj = util.spawn(["echo", "'$1'", '"$2"', ">3"], stdout=True)
-    #     self.failUnlessEqual(fileobj.read().split(), ["'$1'", '"$2"', ">3"])
+                            tfork1 = scarlett_os.subprocess.Subprocess(test_command,
+                                                                       name=test_name,
+                                                                       fork=test_fork)
+
+                            self.assertEqual(mock_sys_exit.call_count, 2)
+                            self.assertEqual(tfork1.stdout, False)
+                            self.assertEqual(tfork1.stderr, False)
+
+                            # mock_os_chdir.assert_called_once_with("/")
+                            # mock_sys_exit.assert_not_called()
 
     # NOTE: Decorators get applied BOTTOM to TOP
     # @mock.patch("scarlett_os.internal.gi.GLib.spawn_async")
@@ -199,6 +186,7 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
             self.assertRaises(TypeError, Subprocess)  # Wrong argument: autospec=True let as to catch it
             s = Subprocess(['who'])  # Ok now it works
             mock_init.assert_called_with(mock.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
+            self.assertEqual(s.check_command_type(['who']), True)
             # But launch_nukes() was still the original one and it will raise
             # self.assertRaises(Exception, s.party)
             # pass
