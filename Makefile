@@ -119,9 +119,21 @@ test-travis:
 	$(pytest) $(test_args_no_xml) --benchmark-skip
 	coverage report -m
 
+.PHONY: test-travis-debug
+test-travis-debug:
+	$(pytest) $(test_args_no_xml) --benchmark-skip --ipdb
+	coverage report -m
+
 .PHONY: cover
 cover:
 	$(pytest) $(cover_args) --benchmark-skip
+	coverage report -m
+	coverage html
+	$(BROWSER) htmlcov/index.html
+
+.PHONY: cover-debug
+cover-debug:
+	$(pytest) $(cover_args) --benchmark-skip --ipdb
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
@@ -185,6 +197,9 @@ run-travis-lint:
 
 install-gi-osx:
 	brew reinstall pygobject3 --with-python3
+
+isort:
+	python setup.py isort
 
 # source: https://github.com/docker/machine/blob/master/docs/drivers/generic.md#interaction-with-ssh-agents
 # source: http://blog.scottlowe.org/2015/08/04/using-vagrant-docker-machine-together/

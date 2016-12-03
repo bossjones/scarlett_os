@@ -24,6 +24,21 @@ def check_pid(pid):
         return True
 
 
+def map_type_to_command(command):
+    """Return: Map after applying type to several objects in an array"""
+    return map(type, command)
+#
+#
+# def check_command_type(command):
+#     types = map_type_to_command(command)
+#     # <map at 0x7f08918d74e0>
+#     if not (min(types) == max(types) == str):
+#         raise TypeError("Executables and arguments must be str objects")
+#     else:
+#         logger.debug("Running %r" % " ".join(command))
+#         return True
+
+
 class Subprocess(GObject.GObject):
     """
     GObject API for handling child processes.
@@ -56,6 +71,9 @@ class Subprocess(GObject.GObject):
             self.stdout = False
             self.stderr = False
 
+        self.forked = fork
+        # self.types = None
+
         # types = map(type, command)
         # # <map at 0x7f08918d74e0>
         # if not (min(types) == max(types) == str):
@@ -67,7 +85,11 @@ class Subprocess(GObject.GObject):
 
         self.command = command
         self.name = name
-        self.forked = fork
+
+        # self.command = command
+        # self.name = name
+        # self.forked = fork
+        # self.types = None
 
         logger.debug("command: {}".format(self.command))
         logger.debug("name: {}".format(self.name))
@@ -84,14 +106,34 @@ class Subprocess(GObject.GObject):
                                 flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
                                 )
 
+    def map_type_to_command(self, command):
+        """Return: Map after applying type to several objects in an array"""
+        # NOTE: In python3, many processes that iterate over iterables return iterators themselves. In most cases, this ends up saving memory, and should make things go faster.
+        # cause of that, we need to call list() over the map object
+        return list(map(type, command))
+
     def check_command_type(self, command):
-        types = map(type, command)
+        # TODO: Add a test to see if function
+        # source: http://stackoverflow.com/questions/624926/how-to-detect-whether-a-python-variable-is-a-function
+
+        # if callable(map_func):
+        types = self.map_type_to_command(command)
+
+        if type(types) is not list:
+            raise TypeError("Variable types should return a list in python3. Got: {}".format(types))
+
         # <map at 0x7f08918d74e0>
-        if not (min(types) == max(types) == str):
-            raise TypeError("Executables and arguments must be str objects")
-        else:
-            logger.debug("Running %r" % " ".join(command))
-            return True
+        # NOTE: str is a built-in function (actually a class) which converts its argument to a string. string is a module which provides common string operations.
+        # source: http://stackoverflow.com/questions/2026038/relationship-between-string-module-and-str
+        for t in types:
+            if t is not str:
+                raise TypeError("Executables and arguments must be str objects. types: {}".format(t))
+
+        # if not (min(types) == max(types) == str):
+        #     raise TypeError("Executables and arguments must be str objects. types: {}".format(types))
+        # else:
+        logger.debug("Running %r" % " ".join(command))
+        return True
 
     def run(self):
         """Run the process."""

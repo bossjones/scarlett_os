@@ -22,6 +22,7 @@ from scarlett_os.subprocess import check_pid, Subprocess
 
 from tests import common
 import signal
+import builtins
 
 kill_mock = mock.Mock(name="kill")
 
@@ -44,7 +45,7 @@ class TestScarlettSubprocess(unittest.TestCase):
         """
 
         # spec: This can be either a list of strings or an existing object (a class or instance) that acts as the specification for the mock object. If you pass in an object then a list of strings is formed by calling dir on the object (excluding unsupported magic attributes and methods). Accessing any attribute not in this list will raise an AttributeError.
-        self.mock = mock.Mock(spec=scarlett_os.subprocess.Subprocess)  # raise an exception if you try to access an attribute that doesn't exist on this class
+        # self.mock = mock.Mock(spec=scarlett_os.subprocess.Subprocess)  # raise an exception if you try to access an attribute that doesn't exist on this class
 
     @mock.patch("os.kill", new=mock.Mock(side_effect=OSError))
     def test_check_pid_os_error(self):
@@ -59,12 +60,10 @@ class TestScarlettSubprocess(unittest.TestCase):
         kill_mock.assert_called_once_with(123, 0)
         self.assertEqual(result, True)
 
-    # @mock.patch('scarlett_os.subprocess.logging')
-    # @mock.patch('logging.logger')
+    @mock.patch('scarlett_os.subprocess.Subprocess.fork')
     @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
     @mock.patch('scarlett_os.subprocess.Subprocess.check_command_type')
-    @mock.patch('scarlett_os.subprocess.Subprocess.fork')
-    def test_subprocess_init(self, mock_fork, mock_check_command_type, mock_logging):
+    def test_subprocess_init(self, mock_check_command_type, mock_logging, mock_fork):
         test_result = '''
 pi       tty7         2016-11-24 11:19 (:0)
 pi       pts/5        2016-11-24 11:20 (10.0.2.2)
@@ -92,6 +91,8 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         self.assertEqual(s_test.forked, False)
         self.assertEqual(s_test.stdout, True)
         self.assertEqual(s_test.stderr, True)
+        self.assertNotEqual(s_test.stdout, False)
+        self.assertNotEqual(s_test.stderr, False)
 
         mock_logging.assert_any_call("command: ['who']")
         mock_logging.assert_any_call("name: test_who")
@@ -100,11 +101,91 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         mock_logging.assert_any_call("pid: None")
         mock_fork.assert_not_called()
 
-        # scarlett_os/subprocess.py                     75     36    52%   56-57, 79, 83, 88-94, 109-127, 130-131, 135-153
+    @mock.patch('scarlett_os.subprocess.Subprocess.fork')  # 3
+    @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
+    @mock.patch('scarlett_os.subprocess.Subprocess.check_command_type')  # 1
+    def test_subprocess_map_type_to_command(self, mock_check_command_type, mock_logging, mock_fork):
+        """Using the mock.patch decorator (removes the need to import builtins)"""
+
+        # NOTE: On purpose this is an invalid cmd. Should be of type array
+        test_command = ["who", "-b"]
+        test_name = 'test_who'
+        test_fork = False
+
+        # mock
+        mock_check_command_type.return_value = test_command
+
+        # create subprocess object
+        s_test = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
+        map_output = s_test.map_type_to_command(test_command)
+
+        # test
+        self.assertTrue(isinstance(map_output, list))
+
+    @mock.patch('scarlett_os.subprocess.Subprocess.fork')  # 3
+    @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
+    # @mock.patch('scarlett_os.subprocess.Subprocess.map_type_to_command')  # 1
+    def test_subprocess_check_command_type(self, mock_logging, mock_fork):
+        """Using the mock.patch decorator (removes the need to import builtins)"""
+
+        test_command = ["who", "-b"]
+        test_name = 'test_who'
+        test_fork = False
+
+        # mock
+        # NOTE: This value is the same as what it actually returns
+        # mock_check_command_type.return_value = test_command
+
+        # types_mock = mock_map_type_to_command.return_value
+
+        # action
+        s_test_check_command = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
+
+        # TEMPORARY # self.assertTrue(s_test_check_command.types, list(map(type, test_command)))
+        # mock_map_type_to_command_output = s_test_check_command.map_type_to_command(test_command)
 
         # assert
-        # mock_glib_spawn_async.assert_called_once_with(test_command,
-        #                                               flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD)
+        # mock_map_type_to_command.assert_called_with(['who'])
+        # self.assertTrue(isinstance(mock_map_type_to_command, map))
+
+        # with mock.patch('scarlett_os.subprocess.Subprocess.map_type_to_command') as mock_map_type_to_command:
+        #     # mock
+        #     # NOTE: This value is the same as what it actually returns
+        #     mock_map_type_to_command.return_value = map(type, test_command)
+        #
+        #     # action
+        #     s_test_check_command = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
+        #     # mock_map_type_to_command_output = s_test_check_command.map_type_to_command(test_command)
+        #
+        #     # assert
+        #     mock_map_type_to_command.assert_called_with(['who'])
+        #     self.assertTrue(isinstance(mock_map_type_to_command, map))
+
+        # # create subprocess object
+        # s_test = scarlett_os.subprocess.Subprocess(test_command, name=test_name, fork=test_fork)
+        # map_output = s_test.map_type_to_command(test_command)
+
+        # test
+        # self.assertTrue(isinstance(map_output, map))
+
+    # NOTE: TestsFrom quodlibet
+    # def test_simple(self):
+    #     self.failUnless(util.spawn(["ls", "."], stdout=True))
+    #
+    # def test_invalid(self):
+    #     from gi.repository import GLib
+    #     self.failUnlessRaises(GLib.GError, util.spawn, ["not a command"])
+    #
+    # def test_types(self):
+    #     if is_win:
+    #         return
+    #     self.failUnlessRaises(TypeError, util.spawn, [u"ls"])
+    #
+    # def test_get_output(self):
+    #     if is_win:
+    #         return
+    #     fileobj = util.spawn(["echo", "'$1'", '"$2"', ">3"], stdout=True)
+    #     self.failUnlessEqual(fileobj.read().split(), ["'$1'", '"$2"', ">3"])
 
     # NOTE: Decorators get applied BOTTOM to TOP
     # @mock.patch("scarlett_os.internal.gi.GLib.spawn_async")
