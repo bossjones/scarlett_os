@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-language: python
-
-python:
-  - "3.5"
 
 matrix:
   fast_finish: true
@@ -13,9 +9,9 @@ matrix:
     dist: trusty
     language: python
     group: edge
-  # allow_failures:
-  # - python: '3.5'
-  #   env: TOXENV=typing PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=default DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.0-0~trusty DOCKER_COMPOSE_VERSION=1.8.0
+  allow_failures:
+  - python: '3.5'
+    env: TOXENV=typing
 
 services:
   - docker
