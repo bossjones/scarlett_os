@@ -34,4 +34,4 @@ pytest-timeout>=1.0.0
 pytest-catchlog>=1.2.2
 pytest-benchmark[histogram]>=3.0.0rc1
 python-dbusmock
-freezegun
+freezegun==0.3.8
