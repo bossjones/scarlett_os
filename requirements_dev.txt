@@ -35,3 +35,4 @@ pytest-catchlog>=1.2.2
 pytest-benchmark[histogram]>=3.0.0rc1
 python-dbusmock
 freezegun
+git+git://github.com/mverteuil/pytest-ipdb.git

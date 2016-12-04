@@ -96,3 +96,11 @@ class MainRunnerAbortedError(MainRunnerError):
 
 class MainRunnerTimeoutError(MainRunnerError):
     pass
+
+
+class SubProcessError(Exception):
+    pass
+
+
+class TimeOutError(Exception):
+    pass

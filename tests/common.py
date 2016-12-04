@@ -1,12 +1,20 @@
 """Test the helper method for writing tests."""
 import os
-from datetime import timedelta
+
+import contextlib
+import gc
+import tempfile
+import unittest
 from unittest import mock
+
+# from datetime import timedelta
 from unittest.mock import patch
 from io import StringIO
 import logging
 import threading
 from contextlib import contextmanager
+
+from scarlett_os.internal.gi import GLib, Gio, GObject, Gst
 
 from scarlett_os import core as s, loader
 from scarlett_os.utility.unit_system import METRIC_SYSTEM
@@ -20,6 +28,29 @@ from scarlett_os.const import (
 
 _TEST_INSTANCE_PORT = SERVER_PORT
 logger = logging.getLogger(__name__)
+
+
+def clean_scarlett_os_subprocess_mock(sub_p):
+    sub_p.process = None
+    sub_p.pid = None
+
+
+def create_scarlett_os_subprocess_mock(sub_p):
+    sub_p = mock.MagicMock()
+
+    return sub_p
+
+
+# def create_pitivi_mock(**settings):
+#     app = mock.MagicMock()
+#
+#     app.write_action = mock.MagicMock(spec=Pitivi.write_action)
+#     check.check_requirements()
+#
+#     app.settings = __create_settings(**settings)
+#     app.proxy_manager = ProxyManager(app)
+#
+#     return app
 
 
 def get_test_config_dir(*add_path):

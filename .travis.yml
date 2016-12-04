@@ -1,12 +1,8 @@
+# -*- coding: utf-8 -*-
+
 matrix:
   fast_finish: true
   include:
- #  - python: '3.5'
- #    env: TOXENV=typing PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=typing DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.0-0~trusty DOCKER_COMPOSE_VERSION=1.8.0
- #    sudo: required
- #    dist: trusty
- #    language: python
- #    group: edge
   - python: '3.5'
     env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=default DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.0-0~trusty DOCKER_COMPOSE_VERSION=1.8.0
     sudo: required
@@ -36,14 +32,15 @@ before_install:
 cache:
   apt: true
   directories:
-  - "$HOME/.cache/pip"
-  - "$HOME/virtualenv/python3.5.2/lib/python3.5/site-packages"
+  # - "$HOME/.cache/pip"
+  # - "$HOME/virtualenv/python3.5.2/lib/python3.5/site-packages"
   - "$HOME/.ccache"
   - "$HOME/jhbuild"
   - "$HOME/gnome"
 
 install:
   - travis_retry pip install coveralls
+  - travis_retry pip install coverage
   - travis_retry docker-compose pull
   # set containers as privileged to bypass Travis environment limitations
   - 'sed -i "/build: ./a \ \ privileged: true" docker-compose.yml'
@@ -52,6 +49,12 @@ install:
 script:
   #- "docker-compose -f docker-compose.test.yml run --rm ${TEST_TARGET}"
   - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
+
+# source: https://github.com/inspirehep/inspire-next/blob/9700274c36074a3e43168bf48b8ba3e3bfa7bcdf/.travis.yml
+after_script:
+  # Killing via SIGTERM in order to trigger atexit and dump coverage information in WSGI
+  - "docker-compose -f docker-compose.yml kill -s SIGTERM"
+  - "docker-compose -f docker-compose.yml rm -f"
 
 after_success:
   - _USER=$(ls -lta | awk '{print $3}')
