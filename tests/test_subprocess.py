@@ -28,6 +28,7 @@ kill_mock = mock.Mock(name="kill")
 
 # new_callable: allows you to specify a different class, or callable object, that will be called to create the new object. By default MagicMock is used.
 
+
 def raise_OSError(*x, **kw):
     raise OSError('Fail')
 

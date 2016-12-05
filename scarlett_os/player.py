@@ -33,8 +33,8 @@ os.environ[
 os.putenv('GST_DEBUG_DUMP_DIR_DIR',
           '/home/pi/dev/bossjones-github/scarlett_os/_debug')
 
-import threading
 import signal
+import threading
 import logging
 import pprint
 
@@ -42,18 +42,9 @@ from scarlett_os.internal.gi import gi, GObject, GLib, Gst, Gio
 
 from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
 
-try:
-    from urllib.parse import quote
-except ImportError:
-    from urllib import quote
-
-# import generator_utils
-# from generator_utils import trace, abort_on_exception, _IdleObject
+import queue
+from urllib.parse import quote
 
 from scarlett_os.utility.gnome import trace, abort_on_exception, _IdleObject
 
@@ -89,9 +80,13 @@ def get_loop_thread():
             _shared_loop_thread.start()
         return _shared_loop_thread
 
+# NOTE: doc updated via https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
+
 
 class MainLoopThread(threading.Thread):
     """A daemon thread encapsulating a Gobject main loop.
+
+    A mainloop is used by all asynchronous objects to defer handlers and callbacks to. The function run() blocks until the function quit() has been called (and all queued handlers have been executed). The run() function will then execute all the handlers in order.
     """
 
     def __init__(self):
@@ -106,10 +101,13 @@ class MainLoopThread(threading.Thread):
 class ScarlettPlayer(_IdleObject):
     # Anything defined here belongs to the class itself
 
-    def __init__(self, path, handle_error):
+    def __init__(self, path, handle_error, callback):
         self.running = False
         self.finished = False
         self.handle_error = False if handle_error is None else handle_error
+        self.callback = callback
+        # self.delay_start = False if delay_start is None else delay_start
+        # self.stopme = threading.Event()
 
         # Set up the Gstreamer pipeline.
         self.pipeline = Gst.Pipeline('main-pipeline')
@@ -232,6 +230,12 @@ class ScarlettPlayer(_IdleObject):
         # Return as soon as the stream is ready!
         self.running = True
         self.got_caps = False
+
+        # if not self.delay_start:
+
+        # if self.stopme.isSet():
+        #         return
+
         self.pipeline.set_state(Gst.State.PLAYING)
         self.on_debug_activate()
         self.ready_sem.acquire()
@@ -240,6 +244,9 @@ class ScarlettPlayer(_IdleObject):
             # An error occurred before the stream became ready.
             self.close(True)
             raise self.read_exc
+
+    # def abort(self):
+    #     self.stopme.set()
 
     def _source_setup_cb(self, discoverer, source):
         logger.debug("Discoverer object: ({})".format(discoverer))

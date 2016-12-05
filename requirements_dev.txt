@@ -36,3 +36,15 @@ pytest-benchmark[histogram]>=3.0.0rc1
 python-dbusmock==0.16.7
 freezegun
 git+git://github.com/mverteuil/pytest-ipdb.git
+
+# # Test runners
+# pytest
+# pytest-capturelog
+# pytest-cov
+# pytest-xdist
+
+# # To make wheel packages
+# wheel
+
+# # Securely upload packages to PyPI
+# twine
