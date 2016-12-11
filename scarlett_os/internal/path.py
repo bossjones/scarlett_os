@@ -1,31 +1,21 @@
-
+"""Scarlett path module. Deals with all things at the file system level."""
 
 import logging
 import os
 import stat
-import string
 import threading
 import bisect
 
 from scarlett_os import compat, exceptions
 
-# from scarlett_os.compat import queue, urllib
-# from scarlett_os.internal import encoding, xdg
 from scarlett_os.internal import encoding
 
-# from scarlett_os.internal.gi import GObject, Gst, GLib, gi
 from scarlett_os.internal.gi import Gst
-
-# import queue
-# import urllib.request, urllib.parse, urllib.error
-# from urllib.parse import quote
 
 from gettext import gettext as _
 
 logger = logging.getLogger(__name__)
 
-
-# XDG_DIRS = xdg.get_dirs()
 
 # NOTE: Borrowed from Pitivi
 # ------------------------------ URI helpers --------------------------------
@@ -256,27 +246,33 @@ def uri_to_path(uri):
     look up the matching dir or file on your file system because the exact path
     would be lost by ignoring its encoding.
     """
+    # convert str to byte
     if isinstance(uri, compat.text_type):
-        # convert str to byte
         uri = uri.encode('utf-8')
+
         # logger.debug('URI:')
         # logger.debug(uri)
         # In [6]: compat.urlsplit(uri)
         # Out[6]: SplitResultBytes(scheme=b'file', netloc=b'', path=b'/etc/fstab', query=b'', fragment=b'')
         # In [7]: compat.urlsplit(uri).path
         # Out[7]: b'/etc/fstab'
-    return compat.unquote(compat.urlsplit(uri).path)
+    _path = compat.urlsplit(uri).path
+
+    if isinstance(_path, compat.bytes):
+        _path = _path.decode('utf-8')
+
+    return compat.unquote(_path)
 
 
-def split_path(path):
-    parts = []
-    while True:
-        path, part = os.path.split(path)
-        if part:
-            parts.insert(0, part)
-        if not path or path == b'/':
-            break
-    return parts
+# def split_path(path):
+#     parts = []
+#     while True:
+#         path, part = os.path.split(path)
+#         if part:
+#             parts.insert(0, part)
+#         if not path or path == b'/':
+#             break
+#     return parts
 
 
 # def expand_path(path):
@@ -292,7 +288,7 @@ def split_path(path):
 #     return path
 
 
-def _find_worker(relative, follow, done, work, results, errors):
+def _find_worker(relative, follow, done, work, results, errors):  # pragma: no cover
     """Worker thread for collecting stat() results.
 
     :param str relative: directory to make results relative to
@@ -305,7 +301,7 @@ def _find_worker(relative, follow, done, work, results, errors):
     while not done.is_set():
         try:
             entry, parents = work.get(block=False)
-        except queue.Empty:
+        except compat.queue.Empty:
             continue
 
         if relative:
@@ -341,7 +337,7 @@ def _find_worker(relative, follow, done, work, results, errors):
             work.task_done()
 
 
-def _find(root, thread_count=10, relative=False, follow=False):
+def _find(root, thread_count=10, relative=False, follow=False):  # pragma: no cover
     """Threaded find implementation that provides stat results for files.
 
     Tries to protect against sym/hardlink loops by keeping an eye on parent
@@ -357,7 +353,7 @@ def _find(root, thread_count=10, relative=False, follow=False):
     results = {}
     errors = {}
     done = threading.Event()
-    work = queue.Queue()
+    work = compat.queue.Queue()
     work.put((os.path.abspath(root), []))
 
     if not relative:
@@ -377,14 +373,14 @@ def _find(root, thread_count=10, relative=False, follow=False):
     return results, errors
 
 
-def find_mtimes(root, follow=False):
+def find_mtimes(root, follow=False):  # pragma: no cover
     results, errors = _find(root, relative=False, follow=follow)
     # return the mtimes as integer milliseconds
     mtimes = {f: int(st.st_mtime * 1000) for f, st in list(results.items())}
     return mtimes, errors
 
 
-def is_path_inside_base_dir(path, base_path):
+def is_path_inside_base_dir(path, base_path):  # pragma: no cover
     if not isinstance(path, bytes):
         raise ValueError('path is not a bytestring')
     if not isinstance(base_path, bytes):
@@ -409,7 +405,7 @@ def is_path_inside_base_dir(path, base_path):
 
 
 # FIXME replace with mock usage in tests.
-class Mtime(object):
+class Mtime(object):  # pragma: no cover
 
     def __init__(self):
         self.fake = None

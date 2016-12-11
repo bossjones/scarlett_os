@@ -92,13 +92,67 @@ class PathToFileURITest(unittest.TestCase):
 
         mock_error_logger.assert_any_call(_message)
 
-    def test_simple_path(self):
+    def test_path_to_uri(self):
         result = s_path.path_to_uri('/etc/fstab')
         self.assertEqual(result, b'file:///etc/fstab')
+        self.assertTrue(type(result) == compat.bytes)
 
-    def test_uri_is_valid(self):
-        # uri = b'file:///etc/fstab'
-        pass
+    def test_uri_is_valid_bytes(self):
+        uri = b'file:///etc/fstab'
+        self.assertTrue(s_path.uri_is_valid(uri))
+
+    def test_path_from_uri_bytes(self):
+        raw_uri = b'file:///etc/fstab'
+        result = s_path.path_from_uri(raw_uri)
+        self.assertEqual(result, '/etc/fstab')
+
+    def test_filename_from_uri_bytes(self):
+        uri = b'file:///etc/fstab'
+        result = s_path.filename_from_uri(uri)
+        self.assertEqual(result, 'fstab')
+
+    def test_filename_from_uri_str(self):
+        uri = 'file:///etc/fstab'
+        result = s_path.filename_from_uri(uri)
+        self.assertEqual(result, 'fstab')
+
+    def test_quote_uri_byte_to_str(self):
+        uri = b'file:///etc/fstab'
+        result = s_path.quote_uri(uri)
+        self.assertEqual(result, 'file:///etc/fstab')
+        self.assertTrue(type(result) == compat.text_type)
+
+    def test_quantize(self):
+        result = s_path.quantize(100.00, 3.00)
+        self.assertEqual(result, 99.0)
+
+    def test_binary_search_EmptyList(self):
+        self.assertEqual(s_path.binary_search([], 10), -1)
+
+    def test_binary_search_Existing(self):
+        A = [10, 20, 30]
+        for index, element in enumerate(A):
+            self.assertEqual(s_path.binary_search([10, 20, 30], element), index)
+
+    def test_binary_search_MissingLeft(self):
+        self.assertEqual(s_path.binary_search([10, 20, 30], 1), 0)
+        self.assertEqual(s_path.binary_search([10, 20, 30], 16), 1)
+        self.assertEqual(s_path.binary_search([10, 20, 30], 29), 2)
+
+    def test_binary_search_MissingRight(self):
+        self.assertEqual(s_path.binary_search([10, 20, 30], 11), 0)
+        self.assertEqual(s_path.binary_search([10, 20, 30], 24), 1)
+        self.assertEqual(s_path.binary_search([10, 20, 30], 40), 2)
+
+    def test_uri_to_path_str(self):
+        uri = 'file:///etc/fstab'
+        result = s_path.uri_to_path(uri)
+        self.assertEqual(result, '/etc/fstab')
+
+    def test_uri_to_path_bytes(self):
+        uri = b'file:///etc/fstab'
+        result = s_path.uri_to_path(uri)
+        self.assertEqual(result, '/etc/fstab')
 
 ##################################################################################
 # Pitivi - BEGIN
