@@ -44,11 +44,11 @@ elif PY3:
     builtins
     import urllib  # noqa
     from urllib.parse import urlparse, urlunparse, quote_plus, unquote_plus, \
-        urlsplit, parse_qs, urlencode, quote, unquote
+        urlsplit, parse_qs, urlencode, quote, unquote, urljoin, urldefrag, urlunsplit
     urlparse, quote_plus, unquote_plus, urlunparse, urlsplit, parse_qs, \
-        urlencode, quote, unquote
-    from urllib.request import pathname2url, url2pathname
-    pathname2url, url2pathname
+        urlencode, quote, unquote, urljoin, urldefrag, urlunsplit
+    from urllib.request import pathname2url, url2pathname, parse_http_list, getproxies, proxy_bypass
+    pathname2url, url2pathname, parse_http_list, getproxies, proxy_bypass
     from urllib.request import urlopen, build_opener
     urlopen, build_opener
     from io import BytesIO as cBytesIO
@@ -62,6 +62,9 @@ elif PY3:
     from itertools import zip_longest as izip_longest
     izip_longest
     import codecs
+
+    # NOTE: via requests
+    from collections import OrderedDict
 
     import contextlib
     import time
@@ -91,6 +94,10 @@ elif PY3:
     number_types = (int, float)
     # NOTE: why does anaconda do this below
     # NUMERIC_TYPES = tuple(list(INT_TYPES) + [float, complex])
+
+    # NOTE: from requests
+    bytes = bytes
+    basestring = (str, bytes)
 
     # NOTE: From https://github.com/mopidy/mopidy/blob/develop/mopidy/compat.py
     input = input
@@ -141,3 +148,18 @@ def add_metaclass(metaclass):
         orig_vars.pop('__weakref__', None)
         return metaclass(cls.__name__, cls.__bases__, orig_vars)
     return wrapper
+
+
+    # from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, quote, unquote, quote_plus, unquote_plus, urldefrag
+    #     from urllib.request import parse_http_list, getproxies, proxy_bypass
+    #     from http import cookiejar as cookielib
+    #     from http.cookies import Morsel
+    #     from io import StringIO
+    #     from collections import OrderedDict
+    #
+    #     builtin_str = str
+    #     str = str
+    #     bytes = bytes
+    #     basestring = (str, bytes)
+    #     numeric_types = (int, float)
+    #     integer_types = (int,)
