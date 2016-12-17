@@ -91,7 +91,7 @@ def unicode_is_ascii(u_string):
         and not Python 2 `str`.
     :rtype: bool
     """
-    assert isinstance(u_string, str)
+    assert isinstance(u_string, compat.text_type)
     try:
         u_string.encode('ascii')
         return True

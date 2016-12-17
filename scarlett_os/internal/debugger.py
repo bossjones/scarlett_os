@@ -16,3 +16,11 @@ def init_debugger():
                                          color_scheme='Linux',
                                          call_pdb=True,
                                          ostream=sys.__stdout__)
+
+# http://stackoverflow.com/questions/582056/getting-list-of-parameter-names-inside-python-function
+# https://docs.python.org/3/library/inspect.html
+def inspect_scarlett_module(scarlett_module):
+    # func = lambda x, y: (x, y)
+    num_args = scarlett_module.__code__.co_argcount
+    name_args = scarlett_module.__code__.co_varnames
+    pass

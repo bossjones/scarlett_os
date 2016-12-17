@@ -121,7 +121,7 @@ test-travis:
 
 .PHONY: test-travis-debug
 test-travis-debug:
-	$(pytest) $(test_args_no_xml) --benchmark-skip --ipdb
+	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb
 	coverage report -m
 
 .PHONY: cover
@@ -133,7 +133,8 @@ cover:
 
 .PHONY: cover-debug
 cover-debug:
-	$(pytest) $(cover_args) --benchmark-skip --ipdb
+	# --showlocals # show local variables in tracebacks
+	$(pytest) $(cover_args) --benchmark-skip --pdb --showlocals
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
