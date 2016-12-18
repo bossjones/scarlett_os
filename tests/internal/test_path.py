@@ -64,6 +64,31 @@ class PathToFileURITest(unittest.TestCase):
         mock_os_access.assert_called_once_with('file:///tmp', os.W_OK)
         self.assertEqual(result, True)
 
+    def test_dir_isReadable(self):
+        tmpdir = tempfile.mkdtemp('.scarlett_os-tests')
+
+        try:
+            # run test
+            result = s_path.isReadable(tmpdir)
+
+            # tests
+            self.assertEqual(result, True)
+        finally:
+            # nuke
+            shutil.rmtree(tmpdir, ignore_errors=True)
+
+    def test_file_isReadable(self):
+        fd_unused, path = tempfile.mkstemp(suffix=".wav")
+
+        try:
+            # run test
+            result = s_path.isReadable(path)
+
+            # tests
+            self.assertTrue(result)
+        finally:
+            os.remove(path)
+
     @mock.patch('scarlett_os.internal.path.logging.Logger.error')
     @mock.patch('scarlett_os.internal.path.unicode_error_dialog')
     @mock.patch('scarlett_os.internal.path.os.access')

@@ -40,13 +40,15 @@ import pprint
 
 from scarlett_os.internal.gi import gi, GObject, GLib, Gst, Gio
 
-from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError
+from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError, InvalidUri, UriDoesNotExist
 
 
 import queue
 from urllib.parse import quote
 
 from scarlett_os.utility.gnome import trace, abort_on_exception, _IdleObject
+
+from scarlett_os.internal.path import uri_is_valid
 
 # Alias
 gst = Gst
@@ -61,6 +63,7 @@ logger = logging.getLogger(__name__)
 QUEUE_SIZE = 10
 BUFFER_SIZE = 10
 SENTINEL = '__GSTDEC_SENTINEL__'
+SEMAPHORE_NUM = 0
 
 
 # Managing the Gobject main loop thread.
@@ -111,7 +114,7 @@ class ScarlettPlayer(_IdleObject):
 
         # Set up the Gstreamer pipeline.
         self.pipeline = Gst.Pipeline('main-pipeline')
-        self.ready_sem = threading.Semaphore(0)
+        self.ready_sem = threading.Semaphore(SEMAPHORE_NUM)
 
         # Register for bus signals.
         bus = self.pipeline.get_bus()
@@ -131,6 +134,9 @@ class ScarlettPlayer(_IdleObject):
 
         # 2. Set properties
         uri = 'file://' + quote(os.path.abspath(path))
+        if not uri_is_valid(uri):
+            logger.error("Error: Something is wrong with uri provided. uri: {}".format(uri))
+            raise InvalidUri()
         self.source.set_property('uri', uri)
 
         # 3. Add them to the pipeline

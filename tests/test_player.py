@@ -75,3 +75,60 @@ class TestScarlettPlayer(unittest.TestCase):
         # tests
         mock_scarlett_player_loop_thread_lock.__enter__.assert_called_once_with()
         mock_scarlett_player_loop_thread_lock.__exit__.assert_called_once_with(None, None, None)
+
+    @mock.patch('scarlett_os.player.threading.Thread', spec=scarlett_os.player.threading.Thread, name='mock_thread_class')
+    def test_MainLoopThread(self, mock_thread_class):
+        # Import module locally for testing purposes
+        from scarlett_os.internal.gi import gi, GObject
+
+        # Mock function GLib function spawn_async
+        GObject.MainLoop = mock.create_autospec(GObject.spawn_async, name='Mock_GObject.MainLoop')
+
+        test_MainLoopThread = MainLoopThread()
+        test_MainLoopThread.start()
+
+        self.assertTrue(GObject.MainLoop.called)
+        self.assertTrue(test_MainLoopThread.loop.run.called)
+        self.assertEqual(test_MainLoopThread.daemon, True)
+
+    def test_ScarlettPlayer_init_fail_no_args(self):
+        # Import module locally for testing purposes
+        # from scarlett_os.internal.gi import gi, GObject, Gst
+        #
+        # mock_gobject = mock.Mock(spec=scarlett_os.player.GObject, name='mock_gobject')
+        # mock_gst = mock.Mock(spec=scarlett_os.player.Gst, name='mock_gst')
+        #
+        # # # Mock function GLib function spawn_async
+        # # GObject.MainLoop = mock.create_autospec(GObject.spawn_async, name='Mock_GObject.MainLoop')
+        # #
+        # # test_MainLoopThread = MainLoopThread()
+        # # test_MainLoopThread.start()
+        # #
+        # # self.assertTrue(GObject.MainLoop.called)
+        # # self.assertEqual(test_MainLoopThread.daemon, True)
+
+        with pytest.raises(TypeError):
+            ScarlettPlayer()
+
+    # DO THIS NEXT
+    # @mock.patch('scarlett_os.player.threading.Semaphore', spec=scarlett_os.player.threading.Semaphore, name='mock_threading_semaphore')
+    # @mock.patch('scarlett_os.player.threading.Thread', spec=scarlett_os.player.threading.Thread, name='mock_thread_class')
+    # def test_ScarlettPlayer_init_fail_no_args(self, mock_thread_class, mock_threading_semaphore):
+    #     # Import module locally for testing purposes
+    #     # from scarlett_os.internal.gi import gi, GObject, Gst
+    #     #
+    #     # mock_gobject = mock.Mock(spec=scarlett_os.player.GObject, name='mock_gobject')
+    #     # mock_gst = mock.Mock(spec=scarlett_os.player.Gst, name='mock_gst')
+    #     #
+    #     # # # Mock function GLib function spawn_async
+    #     # # GObject.MainLoop = mock.create_autospec(GObject.spawn_async, name='Mock_GObject.MainLoop')
+    #     # #
+    #     # # test_MainLoopThread = MainLoopThread()
+    #     # # test_MainLoopThread.start()
+    #     # #
+    #     # # self.assertTrue(GObject.MainLoop.called)
+    #     # # self.assertEqual(test_MainLoopThread.daemon, True)
+    #
+    #     with pytest.raises(TypeError):
+    #         # E TypeError: __init__() missing 3 required positional arguments: 'path', 'handle_error', and 'callback'
+    #         ScarlettPlayer()
