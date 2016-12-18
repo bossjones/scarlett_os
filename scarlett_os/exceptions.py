@@ -103,6 +103,14 @@ class UriDoesNotExist(GStreamerError):
         super(UriDoesNotExist, self).__init__('Uri does not exist on file system')
 
 
+class UriReadError(GStreamerError):
+    """Raised when Uri audio does not exist.
+    """
+
+    def __init__(self):
+        super(UriReadError, self).__init__('Uri can not be read from file system')
+
+
 class MainRunnerError(Exception):
     pass
 

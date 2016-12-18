@@ -33,6 +33,8 @@ from tests import common
 import signal
 import builtins
 
+from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError, InvalidUri, UriReadError
+
 # TODO: Handle this error
 #
 # In [5]: ScarlettPlayer(path, False)
@@ -92,23 +94,31 @@ class TestScarlettPlayer(unittest.TestCase):
         self.assertEqual(test_MainLoopThread.daemon, True)
 
     def test_ScarlettPlayer_init_fail_no_args(self):
-        # Import module locally for testing purposes
-        # from scarlett_os.internal.gi import gi, GObject, Gst
-        #
-        # mock_gobject = mock.Mock(spec=scarlett_os.player.GObject, name='mock_gobject')
-        # mock_gst = mock.Mock(spec=scarlett_os.player.Gst, name='mock_gst')
-        #
-        # # # Mock function GLib function spawn_async
-        # # GObject.MainLoop = mock.create_autospec(GObject.spawn_async, name='Mock_GObject.MainLoop')
-        # #
-        # # test_MainLoopThread = MainLoopThread()
-        # # test_MainLoopThread.start()
-        # #
-        # # self.assertTrue(GObject.MainLoop.called)
-        # # self.assertEqual(test_MainLoopThread.daemon, True)
-
+        # No args
         with pytest.raises(TypeError):
             ScarlettPlayer()
+
+    def test_ScarlettPlayer_init_fail_bad_uri(self):
+        path = 'blahgrdughdfg'
+        with pytest.raises(scarlett_os.exceptions.UriReadError):
+            player.ScarlettPlayer(path, False, False)
+
+    def test_ScarlettPlayer_init_fail_invalid_path(self):
+
+        # fd_unused, path = tempfile.mkstemp(suffix=".wav")
+        #
+        # try:
+        #     # run test
+        #     result = s_path.isReadable(path)
+        #
+        #     # tests
+        #     self.assertTrue(result)
+        # finally:
+        #     os.remove(path)
+        #
+        # with pytest.raises(TypeError):
+        #     ScarlettPlayer()
+        pass
 
     # DO THIS NEXT
     # @mock.patch('scarlett_os.player.threading.Semaphore', spec=scarlett_os.player.threading.Semaphore, name='mock_threading_semaphore')

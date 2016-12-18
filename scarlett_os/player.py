@@ -40,7 +40,7 @@ import pprint
 
 from scarlett_os.internal.gi import gi, GObject, GLib, Gst, Gio
 
-from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError, InvalidUri, UriDoesNotExist
+from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError, InvalidUri, UriReadError
 
 
 import queue
@@ -48,7 +48,7 @@ from urllib.parse import quote
 
 from scarlett_os.utility.gnome import trace, abort_on_exception, _IdleObject
 
-from scarlett_os.internal.path import uri_is_valid
+from scarlett_os.internal.path import uri_is_valid, isReadable
 
 # Alias
 gst = Gst
@@ -134,9 +134,17 @@ class ScarlettPlayer(_IdleObject):
 
         # 2. Set properties
         uri = 'file://' + quote(os.path.abspath(path))
+
+        # Make sure GST likes the uri
         if not uri_is_valid(uri):
             logger.error("Error: Something is wrong with uri provided. uri: {}".format(uri))
             raise InvalidUri()
+
+        # Make sure we can actually read the uri
+        if not isReadable(uri):
+            logger.error("Error: Can't read uri: {}".format(uri))
+            raise UriReadError()
+
         self.source.set_property('uri', uri)
 
         # 3. Add them to the pipeline
