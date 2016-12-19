@@ -2,7 +2,7 @@ pydbus>=0.5.0
 colorlog>=2.7
 click>=6.0
 psutil>=4.3.0
-Fabric3==1.12.post1
+Fabric3==1.13.1.post1
 PyYAML>=3.0
 jinja2>=2.8
 typing>=3,<4
