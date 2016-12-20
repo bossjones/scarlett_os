@@ -379,3 +379,25 @@ Checking connection to Docker...
 Docker is up and running!
 To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: docker-machine env scarlett-1604-packer
 ```
+
+# Debug python3 and PyGObject Setup
+- `python3 -c "from gi.repository import Gtk; print(Gtk._overrides_module)"`
+
+Source:
+  - https://bugs.launchpad.net/ubuntu/+source/gexiv2/+bug/1277894
+  - http://stackoverflow.com/questions/21380202/using-python3-gexiv2
+
+```
+A few debugging tips:
+You can verify introspection overrides are brought in by looking at the private "_overrides_module" attribute of a library:
+
+(this is on Fedora so Ubuntu will give a different location)
+python3 -c "from gi.repository import Gtk; print(Gtk._overrides_module)"
+<module 'gi.overrides.Gtk' from '/usr/lib64/python3.3/site-packages/gi/overrides/Gtk.py'>
+
+If you do the same thing with GExiv2, you should get a similar result in terms of output. It may also be a good idea to look at the result of Gtk.py to ensure the directory GExiv2.py found with "locate" is in the same place:
+python3 -c "from gi.repository import GExiv2; print(GExiv2._overrides_module)"
+<module 'gi.overrides.GExiv2' from '/usr/lib64/python3.3/site-packages/gi/overrides/GExiv2.py'>
+
+Also note Python2 and 3 will require separate installs of the overrides to their respective site-packages/dist-packages directory.
+```

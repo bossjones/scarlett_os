@@ -94,11 +94,15 @@ class TestScarlettPlayer(unittest.TestCase):
         self.assertEqual(test_MainLoopThread.daemon, True)
 
     def test_ScarlettPlayer_init_fail_no_args(self):
+        # Import module locally for testing purposes
+        from scarlett_os.internal.gi import gi, GObject
         # No args
         with pytest.raises(TypeError):
             ScarlettPlayer()
 
     def test_ScarlettPlayer_init_fail_bad_uri(self):
+        # Import module locally for testing purposes
+        from scarlett_os.internal.gi import gi, GObject
         path = 'blahgrdughdfg'
         with pytest.raises(scarlett_os.exceptions.UriReadError):
             player.ScarlettPlayer(path, False, False)
