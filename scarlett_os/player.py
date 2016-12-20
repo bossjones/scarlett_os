@@ -113,7 +113,9 @@ class ScarlettPlayer(_IdleObject):
         # self.stopme = threading.Event()
 
         # Set up the Gstreamer pipeline.
-        self.pipeline = Gst.Pipeline('main-pipeline')
+        # NOTE: Need to add .new for some reason to pass tests ...
+        # source: https://github.com/hadware/gstreamer-python-player/issues/1
+        self.pipeline = Gst.Pipeline.new('main-pipeline')
         self.ready_sem = threading.Semaphore(SEMAPHORE_NUM)
 
         # Register for bus signals.

@@ -95,14 +95,18 @@ class TestScarlettPlayer(unittest.TestCase):
 
     def test_ScarlettPlayer_init_fail_no_args(self):
         # Import module locally for testing purposes
-        from scarlett_os.internal.gi import gi, GObject
+        # from scarlett_os.internal.gi import gi, GObject
+        # import scarlett_os.internal.gi
         # No args
         with pytest.raises(TypeError):
             ScarlettPlayer()
 
     def test_ScarlettPlayer_init_fail_bad_uri(self):
         # Import module locally for testing purposes
-        from scarlett_os.internal.gi import gi, GObject
+        # import scarlett_os.internal.gi
+        # from scarlett_os.internal.gi import gi, GObject
+        # gi.require_version('Gst', '1.0')
+
         path = 'blahgrdughdfg'
         with pytest.raises(scarlett_os.exceptions.UriReadError):
             player.ScarlettPlayer(path, False, False)
