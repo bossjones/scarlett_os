@@ -48,23 +48,25 @@ def isWritable(path):
 def isReadable(path):
     """Returns whether the file/path is writable."""
     try:
-        if os.path.isdir(path):
-            # The given path is an existing directory.
-            # To properly check if it is writable, you need to use os.access.
-            return os.access(path, os.R_OK)
-        else:
-            # The given path is supposed to be a file.
-            # Avoid using open(path, "w"), as it might corrupt existing files.
-            # And yet, even if the parent directory is actually writable,
-            # open(path, "rw") will IOError if the file doesn't already exist.
-            # Therefore, simply check the directory permissions instead:
-
-            # path = 'file:///etc/fstab'
-            # In [22]: os.path.dirname(path)
-            # Out[22]: 'file:///etc'
-            return os.access(os.path.dirname(path), os.R_OK)
-            # In [23]: os.access(os.path.dirname(path), os.W_OK)
-            # Out[23]: False
+        # if os.path.isdir(path):
+        #     # The given path is an existing directory.
+        #     # To properly check if it is writable, you need to use os.access.
+        #     return os.path.exists(path)
+        # else:
+        #     # The given path is supposed to be a file.
+        #     # Avoid using open(path, "w"), as it might corrupt existing files.
+        #     # And yet, even if the parent directory is actually writable,
+        #     # open(path, "rw") will IOError if the file doesn't already exist.
+        #     # Therefore, simply check the directory permissions instead:
+        #
+        #     # path = 'file:///etc/fstab'
+        #     # In [22]: os.path.dirname(path)
+        #     # Out[22]: 'file:///etc'
+        #     # isfile
+        #     return os.access(path, os.R_OK)
+        #     # In [23]: os.access(os.path.dirname(path), os.W_OK)
+        #     # Out[23]: False
+        return (os.path.exists(path) and os.access(path, os.R_OK))
     except UnicodeDecodeError:
         unicode_error_dialog()
 

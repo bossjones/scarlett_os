@@ -48,7 +48,7 @@ from urllib.parse import quote
 
 from scarlett_os.utility.gnome import trace, abort_on_exception, _IdleObject
 
-from scarlett_os.internal.path import uri_is_valid, isReadable
+from scarlett_os.internal.path import uri_is_valid, isReadable, path_from_uri
 
 # Alias
 gst = Gst
@@ -143,8 +143,8 @@ class ScarlettPlayer(_IdleObject):
             raise InvalidUri()
 
         # Make sure we can actually read the uri
-        if not isReadable(uri):
-            logger.error("Error: Can't read uri: {}".format(uri))
+        if not isReadable(path_from_uri(uri)):
+            logger.error("Error: Can't read uri: {}".format(path_from_uri(uri)))
             raise UriReadError()
 
         self.source.set_property('uri', uri)
