@@ -105,11 +105,16 @@ class TestScarlettPlayer(unittest.TestCase):
         with pytest.raises(TypeError):
             ScarlettPlayer(False, False)
 
-
     def test_ScarlettPlayer_init_fail_bad_uri(self):
 
         path = 'blahgrdughdfg'
         with pytest.raises(scarlett_os.exceptions.UriReadError):
+            player.ScarlettPlayer(path, False, False)
+
+    @mock.patch('scarlett_os.player.Gst.ElementFactory.make', return_value=None, spec=scarlett_os.player.Gst.ElementFactory.make, name='mock_gst_elementfactory_make')
+    def test_ScarlettPlayer_init_missing_gst_elements(self, mock_gst_elementfactory_make):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav'
+        with pytest.raises(scarlett_os.exceptions.IncompleteGStreamerError):
             player.ScarlettPlayer(path, False, False)
 
     def test_ScarlettPlayer_init_fail_invalid_path(self):
