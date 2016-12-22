@@ -1,6 +1,6 @@
 """Debug module using ipython."""
 
-from __future__ import with_statement, division
+# from __future__ import with_statement, division
 
 import logging
 logger = logging.getLogger(__name__)

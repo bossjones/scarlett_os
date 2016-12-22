@@ -111,11 +111,30 @@ class TestScarlettPlayer(unittest.TestCase):
         with pytest.raises(scarlett_os.exceptions.UriReadError):
             player.ScarlettPlayer(path, False, False)
 
+    def test_ScarlettPlayer_init_isReadable_raises_exception_UriReadError(self):
+        path = 'blahgrdughdfg'
+        with mock.patch('scarlett_os.player.isReadable', mock.Mock(return_value=False)) as mock_isReadable:  # noqa
+            with pytest.raises(scarlett_os.exceptions.UriReadError):
+                player.ScarlettPlayer(path, False, False)
+        self.assertEqual(mock_isReadable.call_count, 1)
+
+    def test_ScarlettPlayer_init_uri_is_valid_raises_exception_InvalidUri(self):
+        path = 'blahgrdughdfg'
+        with mock.patch('scarlett_os.player.uri_is_valid', mock.Mock(return_value=False)) as mock_uri_is_valid:  # noqa
+            with pytest.raises(scarlett_os.exceptions.InvalidUri):
+                player.ScarlettPlayer(path, False, False)
+
     @mock.patch('scarlett_os.player.Gst.ElementFactory.make', return_value=None, spec=scarlett_os.player.Gst.ElementFactory.make, name='mock_gst_elementfactory_make')
     def test_ScarlettPlayer_init_missing_gst_elements(self, mock_gst_elementfactory_make):
         path = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav'
         with pytest.raises(scarlett_os.exceptions.IncompleteGStreamerError):
             player.ScarlettPlayer(path, False, False)
+
+    # @mock.patch('scarlett_os.player.compat.bytes.decode', return_value=u'/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav', name='mock_str_decode')
+    # def test_ScarlettPlayer_init_fail_uri_is_valid(self, mock_str_decode):
+    #     path = b'/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav'
+    #     with pytest.raises(scarlett_os.exceptions.InvalidUri):
+    #         player.ScarlettPlayer(path, False, False)
 
     def test_ScarlettPlayer_init_fail_invalid_path(self):
 
@@ -133,6 +152,37 @@ class TestScarlettPlayer(unittest.TestCase):
         # with pytest.raises(TypeError):
         #     ScarlettPlayer()
         pass
+
+    # DO THIS NEXT
+    # @mock.patch('scarlett_os.player.Gst.ElementFactory.make', return_value=None, spec=scarlett_os.player.Gst.ElementFactory.make, name='mock_gst_elementfactory_make')
+    # @mock.patch('scarlett_os.player.Gst.Pipeline.new', spec=scarlett_os.player.Gst.Pipeline, name='mock_player_gst_pipeline_new')
+    # @mock.patch('scarlett_os.player.Gst.Pipeline.new', spec=scarlett_os.player.Gst.Pipeline, name='mock_player_gst_pipeline_new')
+    # @mock.patch('scarlett_os.player.threading.Semaphore', spec=scarlett_os.player.threading.Semaphore, name='mock_threading_semaphore')
+    # @mock.patch('scarlett_os.player.threading.Thread', spec=scarlett_os.player.threading.Thread, name='mock_thread_class')
+    # def test_ScarlettPlayer_init_pipline_calls(self, monkeypatch):
+    #     # In [1]: from scarlett_os.internal.gi import gi, GObject, Gst
+    #     #
+    #     # In [2]: Gst.Pipeline.new('main-pipeline')
+    #     # Out[2]: <Gst.Pipeline object at 0x7ff1dbfd3dc8 (GstPipeline at 0x1f92150)>
+    #
+    #     path = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav'
+    #     player.ScarlettPlayer(path, False, False)
+    #
+    #     # Import module locally for testing purposes
+    #     # from scarlett_os.internal.gi import gi, GObject, Gst
+    #     #
+    #     # mock_gobject = mock.Mock(spec=scarlett_os.player.GObject, name='mock_gobject')
+    #     # mock_gst = mock.Mock(spec=scarlett_os.player.Gst, name='mock_gst')
+    #     #
+    #     # # # Mock function GLib function spawn_async
+    #     # # GObject.MainLoop = mock.create_autospec(GObject.spawn_async, name='Mock_GObject.MainLoop')
+    #     # #
+    #     # # test_MainLoopThread = MainLoopThread()
+    #     # # test_MainLoopThread.start()
+    #     # #
+    #     # # self.assertTrue(GObject.MainLoop.called)
+    #     # # self.assertEqual(test_MainLoopThread.daemon, True)
+    #     pass
 
     # DO THIS NEXT
     # @mock.patch('scarlett_os.player.threading.Semaphore', spec=scarlett_os.player.threading.Semaphore, name='mock_threading_semaphore')
