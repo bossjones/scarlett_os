@@ -17,5 +17,8 @@ fswatch -o . -e .git | xargs -n1 -I{} rsync -avz -e \
    --exclude parts/ --exclude sdist/ \
    --exclude var/ --exclude *.egg-info/ \
    --exclude *.__pycache__/ \
+   --exclude *__pycache__/ \
+   --exclude *.swp \
+   --exclude *.tox \
    --exclude .installed.cfg --exclude *.egg \
    . pi@127.0.0.1:/home/pi/dev/bossjones-github/scarlett_os/

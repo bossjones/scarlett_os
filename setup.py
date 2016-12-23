@@ -108,7 +108,8 @@ test_requirements = [
     'mock',
     'pytest-benchmark[histogram]>=3.0.0rc1',
     'python-dbusmock',
-    'freezegun'
+    'freezegun',
+    'hunter==1.4.1'
 ]
 
 

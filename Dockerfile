@@ -6,7 +6,7 @@ COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
 
 RUN sudo apt-get update -yqq && \
-    sudo apt-get install dbus psmisc -yqq && \
+    sudo apt-get install dbus psmisc vim -yqq && \
     sudo apt-get clean && \
     sudo apt-get autoclean -y && \
     sudo apt-get autoremove -y && \

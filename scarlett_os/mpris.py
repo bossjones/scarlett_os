@@ -39,9 +39,9 @@ init_debugger()
 
 # TODO: Move this to a debug function that allows you to enable it or disable it
 os.environ[
-    "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett-dbus-poc/_debug"
+    "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
 os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-          '/home/pi/dev/bossjones-github/scarlett-dbus-poc/_debug')
+          '/home/pi/dev/bossjones-github/scarlett_os/_debug')
 
 from scarlett_os.internal.gi import gi, GObject, Gst, GLib, Gio
 import threading

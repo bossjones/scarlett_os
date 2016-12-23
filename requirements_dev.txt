@@ -36,3 +36,29 @@ pytest-benchmark[histogram]>=3.0.0rc1
 python-dbusmock==0.16.7
 freezegun
 git+git://github.com/mverteuil/pytest-ipdb.git
+pdbpp==0.8.3
+
+# # Test runners
+# pytest
+# pytest-capturelog
+# pytest-cov
+# pytest-xdist
+
+# # To make wheel packages
+# wheel
+
+# # Securely upload packages to PyPI
+# twine
+
+# tracing and debugging
+hunter==1.4.1
+
+# testing helpers for future
+# description: A testing library for python with powerful and flexible assertions. Sure is heavily inspired by should.js
+# source: https://pypi.python.org/pypi/sure
+# sure==1.4.0
+
+# https://github.com/joke2k/faker
+# description: Faker is a Python package that generates fake data for you
+# source: https://github.com/joke2k/faker
+# faker==0.7.7
