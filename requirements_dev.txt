@@ -49,3 +49,16 @@ pdbpp==0.8.3
 
 # # Securely upload packages to PyPI
 # twine
+
+# tracing and debugging
+hunter==1.4.1
+
+# testing helpers for future
+# description: A testing library for python with powerful and flexible assertions. Sure is heavily inspired by should.js
+# source: https://pypi.python.org/pypi/sure
+# sure==1.4.0
+
+# https://github.com/joke2k/faker
+# description: Faker is a Python package that generates fake data for you
+# source: https://github.com/joke2k/faker
+# faker==0.7.7

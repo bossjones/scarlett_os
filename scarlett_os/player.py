@@ -103,6 +103,10 @@ class MainLoopThread(threading.Thread):
 
 class ScarlettPlayer(_IdleObject):
     # Anything defined here belongs to the class itself
+    #
+    # :param path: (str) path to sound file.
+    # :handler_error: (callable)
+    # :callback: (callable)
 
     def __init__(self, path, handle_error, callback):
         self.running = False
@@ -239,6 +243,12 @@ class ScarlettPlayer(_IdleObject):
 
         # Set up the queue for data and run the main thread.
         self.queue = queue.Queue(QUEUE_SIZE)
+        # False if handle_error is None else handle_error
+        # if loop_thread:
+        #     self.thread = loop_thread
+        # else:
+        #     self.thread = get_loop_thread()
+
         self.thread = get_loop_thread()
 
         # This wil get filled with an exception if opening fails.
