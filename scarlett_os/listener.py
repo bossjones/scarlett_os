@@ -127,7 +127,8 @@ def get_loop_thread():
             _shared_loop_thread.start()
         return _shared_loop_thread
 
-# NOTE: doc updated via https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
+# NOTE: doc updated via
+# https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
 
 
 class MainLoopThread(threading.Thread):
@@ -466,12 +467,12 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         sleep(2)
         logger.info('_connect_to_dbus')
         ss_cancel_signal = self.bus.subscribe(sender=None,
-                                         iface="org.scarlett.Listener",
-                                         signal="ListenerCancelSignal",
-                                         object="/org/scarlett/Listener",
-                                         arg0=None,
-                                         flags=0,
-                                         signal_fired=self.cancel_listening)
+                                              iface="org.scarlett.Listener",
+                                              signal="ListenerCancelSignal",
+                                              object="/org/scarlett/Listener",
+                                              arg0=None,
+                                              flags=0,
+                                              signal_fired=self.cancel_listening)
 
     # NOTE: This function generates the dot file, checks that graphviz in installed and
     # then finally generates a png file, which it then displays
@@ -583,7 +584,9 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         pocketsphinx.set_property('dsratio', 1)  # Evaluate acoustic model every N frames |  Integer. Range: 1 - 10 Default: 1
         pocketsphinx.set_property('maxhmmpf', 3000)  # Maximum number of HMMs searched per frame | Integer. Range: 1 - 100000 Default: 30000
         pocketsphinx.set_property('bestpath', True)  # Enable Graph Search | Boolean. Default: true
-        # pocketsphinx.set_property('maxwpf', -1)  # pocketsphinx.set_property('maxwpf', 20)  # Maximum number of words searched per frame | Range: 1 - 100000 Default: -1
+        # pocketsphinx.set_property('maxwpf', -1)  #
+        # pocketsphinx.set_property('maxwpf', 20)  # Maximum number of words
+        # searched per frame | Range: 1 - 100000 Default: -1
 
         self.elements_stack.append(pocketsphinx)
 
@@ -716,16 +719,16 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                     self.read_exc = generator_utils.NoStreamError()
                     self.ready_sem.release()
             elif struct and struct.get_name() == 'pocketsphinx':
-                        if struct['final']:
-                            logger.info(struct['hypothesis'])
-                            if self.kw_found == 1:
-                                # If keyword is set AND qualifier
-                                # then perform action
-                                self.run_cmd(struct['hypothesis'])
-                            else:
-                                # If it's the main keyword,
-                                # set values wait for qualifier
-                                self.result(struct['hypothesis'])
+                if struct['final']:
+                    logger.info(struct['hypothesis'])
+                    if self.kw_found == 1:
+                        # If keyword is set AND qualifier
+                        # then perform action
+                        self.run_cmd(struct['hypothesis'])
+                    else:
+                        # If it's the main keyword,
+                        # set values wait for qualifier
+                        self.result(struct['hypothesis'])
             elif message.type == Gst.MessageType.ERROR:
                 gerror, debug = message.parse_error()
                 pp.pprint(("gerror,debug:", gerror, debug))
