@@ -78,11 +78,11 @@ loop = GObject.MainLoop()
 # Pocketsphinx defaults
 LANGUAGE_VERSION = 1473
 HOMEDIR = "/home/pi"
-LANGUAGE_FILE_HOME = "{}/dev/bossjones-github/scarlett-dbus-poc/tests/fixtures/lm".format(HOMEDIR)
-DICT_FILE_HOME = "{}/dev/bossjones-github/scarlett-dbus-poc/tests/fixtures/dict".format(HOMEDIR)
+LANGUAGE_FILE_HOME = "{}/dev/bossjones-github/scarlett_os/static/speech/lm".format(HOMEDIR)
+DICT_FILE_HOME = "{}/dev/bossjones-github/scarlett_os/static/speech/dict".format(HOMEDIR)
 LM_PATH = "{}/{}.lm".format(LANGUAGE_FILE_HOME, LANGUAGE_VERSION)
 DICT_PATH = "{}/{}.dic".format(DICT_FILE_HOME, LANGUAGE_VERSION)
-HMM_PATH = "{}/.virtualenvs/scarlett-dbus-poc/share/pocketsphinx/model/en-us/en-us".format(HOMEDIR)
+HMM_PATH = "{}/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us".format(HOMEDIR)
 bestpath = 0
 PS_DEVICE = 'plughw:CARD=Device,DEV=0'
 
@@ -234,29 +234,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     lm = LM_PATH
     dic = DICT_PATH
 
-    # SCARLETT_LISTENER_I_SIGNALS = {
-    #     "completed": (
-    #         GObject.SignalFlags.RUN_LAST, None, []),
-    #     "progress": (
-    #         GObject.SignalFlags.RUN_LAST, None, [
-    #             GObject.TYPE_FLOAT]),  # percent complete
-    #     "eos": (GObject.SignalFlags.RUN_LAST, None, ()),
-    #     "error": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    #     "died": (GObject.SignalFlags.RUN_LAST, None, ()),
-    #     "async-done": (GObject.SignalFlags.RUN_LAST, None, ()),
-    #     "state-change": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_INT, GObject.TYPE_INT)),
-    #     # FIXME: AUDIT THE RETURN TYPES
-    #     "keyword-recgonized": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    #     "command-recgonized": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    #     "stt-failed": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    #     "listener-cancel": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    #     "listener-ready": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    #     "connected-to-server": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    #     "listener-message": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    #     'finished': (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_PYOBJECT,)),
-    #     'aborted': (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_PYOBJECT,))
-    # }
-
     def __init__(self, *args):
         threading.Thread.__init__(self)
         _IdleObject.__init__(self)
@@ -395,9 +372,9 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                                                     audioresample ! \
                                                     pocketsphinx \
                                                     name=asr \
-                                                    lm=~/dev/bossjones-github/scarlett-dbus-poc/tests/fixtures/lm/1473.lm \
-                                                    dict=~/dev/bossjones-github/scarlett-dbus-poc/tests/fixtures/dict/1473.dic \
-                                                    hmm=~/.virtualenvs/scarlett-dbus-poc/share/pocketsphinx/model/en-us/en-us
+                                                    lm=~/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm \
+                                                    dict=~/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic \
+                                                    hmm=~/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
                                                     bestpath=true ! \
                                                     tee name=tee ! \
                                                     queue name=appsink_queue \
@@ -481,8 +458,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     # NOTE: This function generates the dot file, checks that graphviz in installed and
     # then finally generates a png file, which it then displays
     def on_debug_activate(self):
-        dotfile = "/home/pi/dev/bossjones-github/scarlett-dbus-poc/_debug/generator-listener.dot"
-        pngfile = "/home/pi/dev/bossjones-github/scarlett-dbus-poc/_debug/generator-listener-pipeline.png"  # NOQA
+        dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener.dot"
+        pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener-pipeline.png"  # NOQA
         if os.access(dotfile, os.F_OK):
             os.remove(dotfile)
         if os.access(pngfile, os.F_OK):
