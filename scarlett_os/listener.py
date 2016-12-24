@@ -36,18 +36,25 @@ import signal
 import threading
 import logging
 import pprint
+import time
+import random
 
-from scarlett_os.internal.gi import gi, GObject, GLib, Gst, Gio
+from gettext import gettext as _
 
-from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError, InvalidUri, UriReadError
+from scarlett_os.internal.gi import gi, GObject, GLib, Gst, Gio  # noqa
+
+from scarlett_os.exceptions import (NoStreamError,
+                                    FileReadError)
 
 import queue
 from urllib.parse import quote
 
-from scarlett_os.utility.gnome import trace, abort_on_exception, _IdleObject
+from scarlett_os.utility.gnome import (abort_on_exception,
+                                       _IdleObject)
 
-from scarlett_os.internal.path import uri_is_valid, isReadable, path_from_uri
 
+from pydbus import SessionBus
+# from pydbus.green import sleep
 # Alias
 gst = Gst
 
@@ -152,7 +159,6 @@ class FooThreadManager:
     said threads, and respecting a maximum num of concurrent threads limit
     """
 
-    # @trace
     def __init__(self, maxConcurrentThreads):
         self.maxConcurrentThreads = maxConcurrentThreads
         # stores all threads, running or stopped
@@ -160,7 +166,6 @@ class FooThreadManager:
         # the pending thread args are used as an index for the stopped threads
         self.pendingFooThreadArgs = []
 
-    # @trace
     def _register_thread_completed(self, thread, *args):
         """
         Decrements the count of concurrent threads and starts any
@@ -169,18 +174,16 @@ class FooThreadManager:
         del(self.fooThreads[args])
         running = len(self.fooThreads) - len(self.pendingFooThreadArgs)
 
-        print "%s completed. %s running, %s pending" % (
-            thread, running, len(self.pendingFooThreadArgs))
+        print("{} completed. {} running, {} pending".format(thread, running, len(self.pendingFooThreadArgs)))
 
         if running < self.maxConcurrentThreads:
             try:
                 args = self.pendingFooThreadArgs.pop()
-                print "Starting pending %s" % self.fooThreads[args]
+                print("Starting pending {}".format(self.fooThreads[args]))
                 self.fooThreads[args].start()
             except IndexError:
                 pass
 
-    # @trace
     def make_thread(self, completedCb, progressCb, *args):
         """
         Makes a thread with args. The thread will be started when there is
@@ -200,13 +203,12 @@ class FooThreadManager:
             self.fooThreads[args] = thread
 
             if running < self.maxConcurrentThreads:
-                print "Starting %s" % thread
+                print("Starting {}".format(thread))
                 self.fooThreads[args].start()
             else:
-                print "Queuing %s" % thread
+                print("Queuing {}".format(thread))
                 self.pendingFooThreadArgs.append(args)
 
-    # @trace
     def stop_all_threads(self, block=False):
         """
         Stops all threads. If block is True then actually wait for the thread
@@ -272,14 +274,16 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
 
         self.cancelled = False
         self.name = args[0]
-        self.setName("%s" % self.name)
+        self.setName("{}".format(self.name))
 
         self.pipelines_stack = []
         self.elements_stack = []
         self.gst_bus_stack = []
 
         self._message = 'This is the ScarlettListenerI'
-        self.config = scarlett_config.Config()
+        # TODO: When we're ready to unit test, config this back in!!!!!
+        # self.config = scarlett_config.Config()
+        self.config = None
         self.override_parse = ''
         self.failed = 0
         self.kw_found = 0
@@ -317,7 +321,9 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             # so you dont have to keep yelling scarlett in front of strangers
             self.kw_to_find = ['yo', 'hello', 'man', 'children']
         else:
-            self.kw_to_find = self.config.get('scarlett', 'keywords')
+            # NOTE: Before we start worrying about the config class, lets hardcode what we care about
+            # ADD ME BACK IN WHEN WE REALLY START UNIT TESTING # self.kw_to_find = self.config.get('scarlett', 'keywords')
+            self.kw_to_find = ['scarlett', 'SCARLETT']
 
         if self.read_exc:
             # An error occurred before the stream became ready.
@@ -367,7 +373,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         logger.debug("AFTER: self.ready_sem.acquire()")
         logger.info("Press Ctrl+C to quit ...")
 
-    # @trace
     def stop(self):
         p = self.pipelines_stack[0]
         self.state = "stopped"
@@ -378,7 +383,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         p.set_state(Gst.State.NULL)
 
     def get_pocketsphinx_definition(self, override=False):
-        """
+        r"""
         GST_DEBUG=2,pocketsphinx*:5 gst-launch-1.0 alsasrc device=plughw:CARD=Device,DEV=0 ! \
                                                     queue name=capsfilter_queue \
                                                           leaky=2 \
@@ -437,7 +442,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
 
         return _gst_launch
 
-    # @trace
     def cancel(self):
         """
         Threads in python are not cancellable, so we implement our own
@@ -454,7 +458,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         # TODO: self.setup_dbus_callbacks_handlers()
         self._connect_to_dbus()
         self.init_gst()
-        print "Running %s" % str(self)
+        print("Running {}".format(str(self)))
         self.play()
         self.emit('playback-status-changed')
         self.emit('playing-changed')
@@ -716,7 +720,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                         "If the stream ends before _notify_caps was called, this is an invalid stream.")
                     # If the stream ends before _notify_caps was called, this
                     # is an invalid file.
-                    self.read_exc = generator_utils.NoStreamError()
+                    self.read_exc = NoStreamError()
                     self.ready_sem.release()
             elif struct and struct.get_name() == 'pocketsphinx':
                 if struct['final']:
@@ -734,14 +738,14 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                 pp.pprint(("gerror,debug:", gerror, debug))
                 if 'not-linked' in debug:
                     logger.error('not-linked')
-                    self.read_exc = generator_utils.NoStreamError()
+                    self.read_exc = NoStreamError()
                 elif 'No such device' in debug:
                     logger.error('No such device')
-                    self.read_exc = generator_utils.NoStreamError()
+                    self.read_exc = NoStreamError()
                 else:
                     logger.info("FileReadError")
                     pp.pprint(("SOME FileReadError", bus, message, struct, struct.get_name()))
-                    self.read_exc = generator_utils.FileReadError(debug)
+                    self.read_exc = FileReadError(debug)
                 self.ready_sem.release()
 
     # Cleanup.
@@ -821,53 +825,30 @@ class Demo:
         self.manager = FooThreadManager(1)
         self.add_thread()
 
-    # @trace
     def quit(self):
         # NOTE: when we connect this as a callback to a signal being emitted, we'll need to chage quit to look
         # like this quit(self, sender, event):
         self.manager.stop_all_threads(block=True)
 
-    # @trace
     def stop_threads(self, *args):
         self.manager.stop_all_threads()
 
-    # @trace
     def add_thread(self):
         # NOTE: if we do this via a gobject connect we need def add_thread(self, sender):
         # make a thread and start it
-        name = "Thread #%s" % random.randint(0, 1000)
+        name = "Thread #{}".format(random.randint(0, 1000))
         self.manager.make_thread(
             self.thread_finished,  # completedCb
             self.thread_progress,  # progressCb
             name)  # args[1]
 
-    # @trace
     def thread_finished(self, thread):
         logger.debug("thread_finished.")
 
-    # @trace
     def thread_progress(self, thread):
         logger.debug("thread_progress.")
 
 if __name__ == '__main__':
-    # from pydbus import SessionBus
-    # bus = SessionBus()
-    # bus.own_name(name='org.scarlett')
-    # sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
-    # # bus.publish("org.scarlett.Listener", sl)
-    # loop.run()
-    #
-    # def sigint_handler(*args):
-    #     """Exit on Ctrl+C"""
-    #
-    #     # Unregister handler, next Ctrl-C will kill app
-    #     # TODO: figure out if this is really needed or not
-    #     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    #
-    #     sl.Quit()
-    #
-    # signal.signal(signal.SIGINT, sigint_handler)
-
     demo = Demo()
     loop.run()
 
