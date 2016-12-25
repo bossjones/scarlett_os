@@ -41,21 +41,25 @@ import random
 
 from gettext import gettext as _
 
-from scarlett_os.internal.gi import gi, GObject, GLib, Gst, Gio  # noqa
+from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import Gio
 
-from scarlett_os.exceptions import (NoStreamError,
-                                    FileReadError)
+
+from scarlett_os.exceptions import NoStreamError
+from scarlett_os.exceptions import FileReadError
 
 import queue
 from urllib.parse import quote
 
-from scarlett_os.utility.gnome import (abort_on_exception,
-                                       _IdleObject)
+from scarlett_os.utility.gnome import abort_on_exception
+from scarlett_os.utility.gnome import _IdleObject
 
 
 from pydbus import SessionBus
-# from pydbus.green import sleep
-# Alias
+
 gst = Gst
 
 # global pretty print for debugging
@@ -87,7 +91,7 @@ bestpath = 0
 PS_DEVICE = 'plughw:CARD=Device,DEV=0'
 
 
-# NOTE: GObject.object.connect(detailed_signal: str, handler: function, *args) â†’ handler_id: int
+# NOTE: GObject.object.connect(detailed_signal: str, handler: function, *args) -> handler_id: int[source]
 SCARLETT_LISTENER_I_SIGNALS = {
     "completed": (
         GObject.SignalFlags.RUN_LAST, None, []),
