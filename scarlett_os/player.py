@@ -38,15 +38,26 @@ import threading
 import logging
 import pprint
 
-from scarlett_os.internal.gi import gi, GObject, GLib, Gst, Gio
+from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import Gio
 
-from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError, InvalidUri, UriReadError
-
+from scarlett_os.exceptions import IncompleteGStreamerError
+from scarlett_os.exceptions import MetadataMissingError
+from scarlett_os.exceptions import NoStreamError
+from scarlett_os.exceptions import FileReadError
+from scarlett_os.exceptions import UnknownTypeError
+from scarlett_os.exceptions import InvalidUri
+from scarlett_os.exceptions import UriReadError
 
 import queue
 from urllib.parse import quote
 
-from scarlett_os.utility.gnome import trace, abort_on_exception, _IdleObject
+from scarlett_os.utility.gnome import trace
+from scarlett_os.utility.gnome import abort_on_exception
+from scarlett_os.utility.gnome import _IdleObject
 
 from scarlett_os.internal.path import uri_is_valid, isReadable, path_from_uri
 
