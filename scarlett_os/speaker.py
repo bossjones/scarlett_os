@@ -1,5 +1,7 @@
-#!/usr/bin/env python  # NOQA
 # -*- coding: utf-8 -*-
+
+# NOTE: WE NEEDED TO REMOVE THE HASHBAG AT THE BEGINNING TO GET python3 -m scarlett_os.speaker to work!!!
+# source: http://stackoverflow.com/questions/16981921/relative-imports-in-python-3
 
 """Scarlett Listener Module."""
 
@@ -22,7 +24,7 @@
 import sys
 import os
 
-from .scarlett_os.internal.debugger import init_debugger
+from scarlett_os.internal.debugger import init_debugger
 
 init_debugger()
 
@@ -41,24 +43,24 @@ import random
 
 from gettext import gettext as _
 
-from .scarlett_os.internal.gi import gi
-from .scarlett_os.internal.gi import GObject
-from .scarlett_os.internal.gi import GLib
-from .scarlett_os.internal.gi import Gst
-from .scarlett_os.internal.gi import Gio
+from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import Gio
 
-from .scarlett_os.exceptions import NoStreamError
-from .scarlett_os.exceptions import FileReadError
+from scarlett_os.exceptions import NoStreamError
+from scarlett_os.exceptions import FileReadError
 
 import queue
 from urllib.parse import quote
 
-from .scarlett_os.utility.gnome import abort_on_exception
-from .scarlett_os.utility.gnome import _IdleObject
+from scarlett_os.utility.gnome import abort_on_exception
+from scarlett_os.utility.gnome import _IdleObject
 
-from .scarlett_os.utility import thread as s_thread
-from .scarlett_os import subprocess
-from .scarlett_os import player
+from scarlett_os.utility import thread as s_thread
+from scarlett_os import subprocess
+from scarlett_os import player
 
 
 # global pretty print for debugging
@@ -87,19 +89,19 @@ class ScarlettSpeaker(object):
         self.path = None
 
         # Write espeak data
-        with generator_utils.time_logger('Espeak Subprocess To File'):
+        with s_thread.time_logger('Espeak Subprocess To File'):
             self.running = True
             self.finished = False
-            self.res = generator_subprocess.Subprocess(
+            self.res = subprocess.Subprocess(
                 self._command, name='speaker_tmp', fork=False).run()
-            generator_subprocess.check_pid(int(self.res))
+            subprocess.check_pid(int(self.res))
             print("Did is run successfully? {}".format(self.res))
 
         # Have Gstreamer play it
-        if skip_player != True:
+        if skip_player is not True:
             for path in self._wavefile:
                 path = os.path.abspath(os.path.expanduser(path))
-                with generator_player.ScarlettPlayer(path) as f:
+                with player.ScarlettPlayer(path, False, False) as f:
                     print((f.channels))
                     print((f.samplerate))
                     print((f.duration))
@@ -130,6 +132,6 @@ if __name__ == '__main__':
     tts_list = [
         'Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands']
     for scarlett_text in tts_list:
-        with generator_utils.time_logger('Scarlett Speaks'):
+        with s_thread.time_logger('Scarlett Speaks'):
             ScarlettSpeaker(text_to_speak=scarlett_text,
-                            wavpath="/home/pi/dev/bossjones-github/scarlett-dbus-poc/espeak_tmp.wav")
+                            wavpath="/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav")
