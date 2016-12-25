@@ -1,3 +1,4 @@
+#!/usr/bin/env python  # NOQA
 # -*- coding: utf-8 -*-
 
 # NOTE: WE NEEDED TO REMOVE THE HASHBAG AT THE BEGINNING TO GET python3 -m scarlett_os.speaker to work!!!
