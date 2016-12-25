@@ -18,10 +18,11 @@
 # threading.Semaphore.  Note that these don't represent any kind of
 # thread-safety.
 
-
-
 import os
 import sys
+
+import contextlib
+import time
 
 from scarlett_os.internal.debugger import init_debugger
 
@@ -32,18 +33,20 @@ import threading
 import logging
 import pprint
 
-from scarlett_os.internal.gi import gi, GObject, GLib, Gst, Gio
-#
-# from scarlett_os.exceptions import IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError
+from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import Gio
 
 import queue
 from urllib.parse import quote
 
-from scarlett_os.utility.gnome import trace, abort_on_exception, _IdleObject
+from scarlett_os.utility.gnome import trace
+from scarlett_os.utility.gnome import abort_on_exception
+from scarlett_os.utility.gnome import _IdleObject
 
 from enum import IntEnum
-# Alias
-# gst = Gst
 
 # global pretty print for debugging
 pp = pprint.PrettyPrinter(indent=4)
@@ -63,6 +66,14 @@ class Priority(IntEnum):
     BACKGROUND = 1
     TIMEOUT = 2
     IDLE = 3
+
+
+@contextlib.contextmanager
+def time_logger(name, level=logging.DEBUG):
+    """Time logger context manager. Shows how long it takes to run a particular method"""
+    start = time.time()
+    yield
+    logger.log(level, '%s took %dms', name, (time.time() - start) * 1000)
 
 #############################################################
 # NOTE: borrowed from quodlibet.util.thread module
