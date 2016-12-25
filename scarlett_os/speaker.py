@@ -17,7 +17,7 @@
 # threading.Semaphore.  Note that these don't represent any kind of
 # thread-safety.
 
-from __future__ import with_statement, division, absolute_import
+# from __future__ import with_statement, division, absolute_import
 
 import sys
 import os
