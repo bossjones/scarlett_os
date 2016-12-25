@@ -22,7 +22,7 @@
 import sys
 import os
 
-from scarlett_os.internal.debugger import init_debugger
+from .scarlett_os.internal.debugger import init_debugger
 
 init_debugger()
 
@@ -41,24 +41,24 @@ import random
 
 from gettext import gettext as _
 
-from scarlett_os.internal.gi import gi
-from scarlett_os.internal.gi import GObject
-from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import Gst
-from scarlett_os.internal.gi import Gio
+from .scarlett_os.internal.gi import gi
+from .scarlett_os.internal.gi import GObject
+from .scarlett_os.internal.gi import GLib
+from .scarlett_os.internal.gi import Gst
+from .scarlett_os.internal.gi import Gio
 
-from scarlett_os.exceptions import NoStreamError
-from scarlett_os.exceptions import FileReadError
+from .scarlett_os.exceptions import NoStreamError
+from .scarlett_os.exceptions import FileReadError
 
 import queue
 from urllib.parse import quote
 
-from scarlett_os.utility.gnome import abort_on_exception
-from scarlett_os.utility.gnome import _IdleObject
+from .scarlett_os.utility.gnome import abort_on_exception
+from .scarlett_os.utility.gnome import _IdleObject
 
-from scarlett_os.utility import thread as s_thread
-from scarlett_os import subprocess
-from scarlett_os import player
+from .scarlett_os.utility import thread as s_thread
+from .scarlett_os import subprocess
+from .scarlett_os import player
 
 
 # global pretty print for debugging
@@ -93,16 +93,16 @@ class ScarlettSpeaker(object):
             self.res = generator_subprocess.Subprocess(
                 self._command, name='speaker_tmp', fork=False).run()
             generator_subprocess.check_pid(int(self.res))
-            print "Did is run successfully? {}".format(self.res)
+            print("Did is run successfully? {}".format(self.res))
 
         # Have Gstreamer play it
         if skip_player != True:
             for path in self._wavefile:
                 path = os.path.abspath(os.path.expanduser(path))
                 with generator_player.ScarlettPlayer(path) as f:
-                    print(f.channels)
-                    print(f.samplerate)
-                    print(f.duration)
+                    print((f.channels))
+                    print((f.samplerate))
+                    print((f.duration))
                     for s in f:
                         pass
 
