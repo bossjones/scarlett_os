@@ -34,3 +34,17 @@ import signal
 import builtins
 
 import scarlett_os.exceptions
+
+
+class TestScarlettListener(unittest.TestCase):
+
+    def setUp(self):  # noqa: N802
+        """
+        Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. The default implementation does nothing.
+        """
+        pass
+
+    def tearDown(self):
+        pass
+
+    

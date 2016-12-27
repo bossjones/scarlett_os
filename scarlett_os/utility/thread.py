@@ -144,6 +144,112 @@ def time_logger(name, level=logging.DEBUG):
 # NOTE: Borrowing a couple lines from python3-trepan
 # source: https://github.com/mvaled/python3-trepan/blob/3c8ddf94cd12ca72985d82d2cd589f8551a538fd/trepan/lib/thread.py
 
+# NOTE: From Pitivi
+class Thread(threading.Thread, _IdleObject):
+    """Event-powered thread."""
+
+    __gsignals__ = {
+        "done": (GObject.SIGNAL_RUN_LAST, None, ()),
+    }
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+        _IdleObject.__init__(self)
+
+    def stop(self):
+        """Stops the thread, do not override."""
+        self.abort()
+        self.emit("done")
+
+    def run(self):
+        """Runs the thread."""
+        self.process()
+        self.emit("done")
+
+    def process(self):
+        """Processes the thread.
+
+        Implement this in subclasses.
+        """
+        raise NotImplementedError
+
+    def abort(self):
+        """Aborts the thread.
+
+        Subclass have to implement this method !
+        """
+        pass
+
+
+class ThreadManager:
+    """
+    Manages many FooThreads. This involves starting and stopping
+    said threads, and respecting a maximum num of concurrent threads limit
+    """
+
+    def __init__(self, maxConcurrentThreads):
+        self.maxConcurrentThreads = maxConcurrentThreads
+        # stores all threads, running or stopped
+        self.fooThreads = {}
+        # the pending thread args are used as an index for the stopped threads
+        self.pendingFooThreadArgs = []
+
+    def _register_thread_completed(self, thread, *args):
+        """
+        Decrements the count of concurrent threads and starts any
+        pending threads if there is space
+        """
+        del(self.fooThreads[args])
+        running = len(self.fooThreads) - len(self.pendingFooThreadArgs)
+
+        print("{} completed. {} running, {} pending".format(thread, running, len(self.pendingFooThreadArgs)))
+
+        if running < self.maxConcurrentThreads:
+            try:
+                args = self.pendingFooThreadArgs.pop()
+                print("Starting pending {}".format(self.fooThreads[args]))
+                self.fooThreads[args].start()
+            except IndexError:
+                pass
+
+    def make_thread(self, completedCb, progressCb, threadclass, *args):
+        """
+        Makes a thread with args. The thread will be started when there is
+        a free slot
+        """
+        running = len(self.fooThreads) - len(self.pendingFooThreadArgs)
+
+        if args not in self.fooThreads:
+            # threadclass eg ScarlettListenerI
+            # OLD: thread = ScarlettListenerI(*args)
+            thread = threadclass(*args)
+            # signals run in the order connected. Connect the user completed
+            # callback first incase they wish to do something
+            # before we delete the thread
+            thread.connect("completed", completedCb)
+            thread.connect("completed", self._register_thread_completed, *args)
+            thread.connect("progress", progressCb)
+            # This is why we use args, not kwargs, because args are hashable
+            self.fooThreads[args] = thread
+
+            if running < self.maxConcurrentThreads:
+                print("Starting {}".format(thread))
+                self.fooThreads[args].start()
+            else:
+                print("Queuing {}".format(thread))
+                self.pendingFooThreadArgs.append(args)
+
+    def stop_all_threads(self, block=False):
+        """
+        Stops all threads. If block is True then actually wait for the thread
+        to finish (may block the UI)
+        """
+        for thread in self.fooThreads.values():
+            thread.cancel()
+            if block:
+                if thread.isAlive():
+                    thread.join()
+
 
 def current_thread_name():
     return threading.currentThread().getName()

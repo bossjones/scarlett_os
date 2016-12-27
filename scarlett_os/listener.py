@@ -56,6 +56,7 @@ from urllib.parse import quote
 
 from scarlett_os.utility.gnome import abort_on_exception
 from scarlett_os.utility.gnome import _IdleObject
+from scarlett_os.utility.thread import ThreadManager
 
 
 from pydbus import SessionBus
@@ -157,74 +158,6 @@ class MainLoopThread(threading.Thread):
         self.loop.run()
 
 
-class FooThreadManager:
-    """
-    Manages many FooThreads. This involves starting and stopping
-    said threads, and respecting a maximum num of concurrent threads limit
-    """
-
-    def __init__(self, maxConcurrentThreads):
-        self.maxConcurrentThreads = maxConcurrentThreads
-        # stores all threads, running or stopped
-        self.fooThreads = {}
-        # the pending thread args are used as an index for the stopped threads
-        self.pendingFooThreadArgs = []
-
-    def _register_thread_completed(self, thread, *args):
-        """
-        Decrements the count of concurrent threads and starts any
-        pending threads if there is space
-        """
-        del(self.fooThreads[args])
-        running = len(self.fooThreads) - len(self.pendingFooThreadArgs)
-
-        print("{} completed. {} running, {} pending".format(thread, running, len(self.pendingFooThreadArgs)))
-
-        if running < self.maxConcurrentThreads:
-            try:
-                args = self.pendingFooThreadArgs.pop()
-                print("Starting pending {}".format(self.fooThreads[args]))
-                self.fooThreads[args].start()
-            except IndexError:
-                pass
-
-    def make_thread(self, completedCb, progressCb, *args):
-        """
-        Makes a thread with args. The thread will be started when there is
-        a free slot
-        """
-        running = len(self.fooThreads) - len(self.pendingFooThreadArgs)
-
-        if args not in self.fooThreads:
-            thread = ScarlettListenerI(*args)
-            # signals run in the order connected. Connect the user completed
-            # callback first incase they wish to do something
-            # before we delete the thread
-            thread.connect("completed", completedCb)
-            thread.connect("completed", self._register_thread_completed, *args)
-            thread.connect("progress", progressCb)
-            # This is why we use args, not kwargs, because args are hashable
-            self.fooThreads[args] = thread
-
-            if running < self.maxConcurrentThreads:
-                print("Starting {}".format(thread))
-                self.fooThreads[args].start()
-            else:
-                print("Queuing {}".format(thread))
-                self.pendingFooThreadArgs.append(args)
-
-    def stop_all_threads(self, block=False):
-        """
-        Stops all threads. If block is True then actually wait for the thread
-        to finish (may block the UI)
-        """
-        for thread in self.fooThreads.values():
-            thread.cancel()
-            if block:
-                if thread.isAlive():
-                    thread.join()
-
-
 class ScarlettListenerI(threading.Thread, _IdleObject):
     """
     Attempt to take out all Gstreamer logic and put it in a class ouside the dbus server.
@@ -241,8 +174,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     def __init__(self, *args):
         threading.Thread.__init__(self)
         _IdleObject.__init__(self)
-
-        # Gst.init(None)
 
         self.running = False
         self.finished = False
@@ -287,7 +218,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.byte_count = 0
 
         # # Thread manager, maximum of 1 since it'll be long running
-        # self.manager = FooThreadManager(1)
+        # self.manager = ThreadManager(1)
 
         self._status_ready = "  ScarlettListener is ready"
         self._status_kw_match = "  ScarlettListener caught a keyword match"
@@ -803,7 +734,7 @@ class Demo:
 
     @abort_on_exception
     def __init__(self):
-        self.manager = FooThreadManager(1)
+        self.manager = ThreadManager(1)
         self.add_thread()
 
     def quit(self):
