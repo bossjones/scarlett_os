@@ -729,8 +729,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         return False
 
 
-class Demo:
-    """Demo Class strictly for testing out ScarlettListenerI."""
+class ListenerDemo:
+    """ListenerDemo Class strictly for testing out ScarlettListenerI."""
 
     @abort_on_exception
     def __init__(self):
@@ -761,7 +761,7 @@ class Demo:
         logger.debug("thread_progress.")
 
 if __name__ == '__main__':
-    demo = Demo()
+    demo = ListenerDemo()
     loop.run()
 
     def sigint_handler(*args):
