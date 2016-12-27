@@ -5,7 +5,7 @@
 
 """Scarlett Tasker Module."""
 
-from __future__ import with_statement, division, absolute_import
+# from __future__ import with_statement, division, absolute_import
 
 import os
 import sys
@@ -51,6 +51,7 @@ from scarlett_os.utility import thread as s_thread
 from scarlett_os import subprocess
 from scarlett_os import player
 from scarlett_os import speaker
+from scarlett_os import commands
 
 from pydbus import SessionBus
 
@@ -108,7 +109,7 @@ class ScarlettTasker(_IdleObject):
         _IdleObject.__init__(self)
         context = GObject.MainContext.default()
 
-        self.bucket = bucket = Queue.Queue()  # NOQA
+        self.bucket = bucket = queue.Queue()  # NOQA
         self.hello = None
 
         # with SessionBus() as bus:
@@ -172,9 +173,6 @@ class ScarlettTasker(_IdleObject):
 
         loop.run()
 
-        # THE ACTUAL THREAD BIT
-        # self.manager = FooThreadManager(3)
-
         try:
             print("ScarlettTasker Thread Started")
         except Exception:
@@ -198,10 +196,10 @@ def signal_handler_player_thread(scarlett_sound):
             wavefile = SoundType.get_path(scarlett_sound)
             for path in wavefile:
                 path = os.path.abspath(os.path.expanduser(path))
-                with generator_player.ScarlettPlayer(path) as f:
-                    print(f.channels)
-                    print(f.samplerate)
-                    print(f.duration)
+                with player.ScarlettPlayer(path, False, False) as f:
+                    print((f.channels))
+                    print((f.samplerate))
+                    print((f.duration))
                     for s in f:
                         yield
         event.set()
@@ -223,40 +221,10 @@ def signal_handler_speaker_thread():
 
     def function_calling_speaker(event, result, tts_list):
         for scarlett_text in tts_list:
-            with generator_utils.time_logger('Scarlett Speaks'):
-                generator_speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
-                                                  wavpath="/home/pi/dev/bossjones-github/scarlett-dbus-poc/espeak_tmp.wav")
+            with s_thread.time_logger('Scarlett Speaks'):
+                speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
+                                        wavpath="/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav")
         event.set()
-
-# def signal_handler_speaker_thread(scarlett_sound):
-#     '''No-Op Function to handle playing Gstreamer.'''
-#     Tracer()()
-#
-#     def function_calling_player_gst(event, *args, **kwargs):
-#         player_run = True
-#         logger.info('BEGIN PLAYING WITH SCARLETTPLAYER')
-#         if player_run:
-#             wavefile = SoundType.get_path(scarlett_sound)
-#             for path in wavefile:
-#                 path = os.path.abspath(os.path.expanduser(path))
-#                 with generator_player.ScarlettPlayer(path) as f:
-#                     print(f.channels)
-#                     print(f.samplerate)
-#                     print(f.duration)
-#                     for s in f:
-#                         yield
-#         event.set()
-#         wavefile = None
-#         player_run = False
-#         logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
-#         event.clear()
-#
-#     event = threading.Event()
-#     logger.info('event = threading.Event()')
-#     GObject.idle_add(function_calling_player_gst, event, priority=GLib.PRIORITY_HIGH)
-#     logger.info('BEFORE event.wait()')
-#     event.wait()
-#     logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
 
 
 @abort_on_exception
@@ -267,8 +235,8 @@ def fake_cb(*args, **kwargs):
 
 def print_keyword_args(**kwargs):
     # kwargs is a dict of the keyword args passed to the function
-    for key, value in kwargs.iteritems():
-        print("%s = %s" % (key, value))
+    for key, value in kwargs.items():
+        print(("%s = %s" % (key, value)))
 
 
 @abort_on_exception
@@ -294,10 +262,10 @@ def player_cb(*args, **kwargs):
                 path = os.path.abspath(os.path.expanduser(path))
                 yield True
                 print("for path in wavefile")
-                p = generator_player.ScarlettPlayer(path, False)
+                p = player.ScarlettPlayer(path, False, False)
                 while True:
                     try:
-                        yield p.next()
+                        yield next(p)
                     finally:
                         time.sleep(p.duration)
                         p.close(force=True)
@@ -319,29 +287,10 @@ def player_cb(*args, **kwargs):
             logger.warning(" msg: {}".format(msg))
             logger.warning(
                 " scarlett_sound: {}".format(scarlett_sound))
-            # player_run = True
-            # logger.info('BEGIN PLAYING WITH SCARLETTPLAYER')
-            # wavefile = SoundType.get_path(scarlett_sound)
-            # Tracer()()
-            # DISABLED # signal_handler_player_thread(scarlett_sound)
 
             wavefile = SoundType.get_path(scarlett_sound)
             run_player_result = run_player(player_generator_func)
-            # return True
-            # if player_run:
-            #     wavefile = SoundType.get_path(scarlett_sound)
-            #     for path in wavefile:
-            #         path = os.path.abspath(os.path.expanduser(path))
-            #         with generator_player.ScarlettPlayer(path) as f:
-            #             print(f.channels)
-            #             print(f.samplerate)
-            #             print(f.duration)
-            #             for s in f:
-            #                 pass
-            #     wavefile = None
-            #     player_run = False
-            #     logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
-            #     return True
+
             logger.info('END PLAYING WITH SCARLETTPLAYER OUTSIDE IF')
         else:
             logger.debug("THIS IS NOT A GLib.Variant: {} - TYPE {}".format(v, type(v)))
@@ -372,10 +321,10 @@ def command_cb(*args, **kwargs):
             path = os.path.abspath(os.path.expanduser(path))
             yield True
             print("for path in wavefile")
-            p = generator_player.ScarlettPlayer(path, False)
+            p = player.ScarlettPlayer(path, False, False)
             while True:
                 try:
-                    yield p.next()
+                    yield next(p)
                 finally:
                     time.sleep(p.duration)
                     p.close(force=True)
@@ -385,20 +334,19 @@ def command_cb(*args, **kwargs):
         gen = function()
         GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
 
-
     def speaker_generator_func():
         for scarlett_text in tts_list:
             yield True
             print("scarlett_text in tts_list")
-            _wavepath = "/home/pi/dev/bossjones-github/scarlett-dbus-poc/espeak_tmp.wav"
-            s = generator_speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
-                                                  wavpath=_wavepath,
-                                                  skip_player=True)
-            p = generator_player.ScarlettPlayer(_wavepath, False)
+            _wavepath = "/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"
+            s = speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
+                                        wavpath=_wavepath,
+                                        skip_player=True)
+            p = player.ScarlettPlayer(_wavepath, False, False)
             logger.error("Duration: p.duration: {}".format(p.duration))
             while True:
                 try:
-                    yield p.next()
+                    yield next(p)
                 finally:
                     time.sleep(p.duration)
                     p.close(force=True)
@@ -428,7 +376,7 @@ def command_cb(*args, **kwargs):
             run_player_result = run_player(player_generator_func)
 
             # 2. Perform command
-            command_run_results = generator_commands.Command.check_cmd(command_tuple=v)
+            command_run_results = commands.Command.check_cmd(command_tuple=v)
 
             # 3. Verify it is not a command NO_OP
             if command_run_results == '__SCARLETT_NO_OP__':
@@ -450,4 +398,3 @@ def command_cb(*args, **kwargs):
 
 if __name__ == "__main__":
     _INSTANCE = st = ScarlettTasker()
-    # loop.run()
