@@ -432,6 +432,7 @@ class ScarlettListener(_IdleObject, Server):  # noqa
         """Removes this object from the DBUS connection and exits."""
         loop.quit()
 
+# smoke test
 if __name__ == '__main__':
     # Example of how to use it
     from pydbus import SessionBus
