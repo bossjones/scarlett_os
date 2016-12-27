@@ -52,12 +52,11 @@ from scarlett_os.exceptions import NoStreamError
 from scarlett_os.exceptions import FileReadError
 
 import queue
-from urllib.parse import quote
+# from urllib.parse import quote
 
 from scarlett_os.utility.gnome import abort_on_exception
 from scarlett_os.utility.gnome import _IdleObject
 from scarlett_os.utility.thread import ThreadManager
-
 
 from pydbus import SessionBus
 
