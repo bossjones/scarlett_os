@@ -62,3 +62,5 @@ hunter==1.4.1
 # description: Faker is a Python package that generates fake data for you
 # source: https://github.com/joke2k/faker
 # faker==0.7.7
+
+Cython

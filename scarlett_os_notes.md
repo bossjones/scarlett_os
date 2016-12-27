@@ -401,3 +401,25 @@ python3 -c "from gi.repository import GExiv2; print(GExiv2._overrides_module)"
 
 Also note Python2 and 3 will require separate installs of the overrides to their respective site-packages/dist-packages directory.
 ```
+
+
+# rfoo
+
+rfoo: Add this so we can see what's happening when code gets locked up in python.
+
+rconsole: rconsole is a remote Python console with auto completion, which can be used to inspect and modify the namespace of a running script.
+
+
+```
+ 1646  pip install Cython
+ 1647  ls -lta
+ 1648  ls
+ 1649  cd ..
+ 1650  ls
+ 1651  gcl git@github.com:aaiyer/rfoo.git
+ 1652  gcl https://github.com/aaiyer/rfoo.git
+ 1653  cd rfoo/
+ 1654  ls
+ 1655  python setup.py install
+ 1656  history
+```
