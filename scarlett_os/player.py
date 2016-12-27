@@ -531,17 +531,17 @@ class ScarlettPlayer(_IdleObject):
         return self.handle_error
 
 
-# # Smoke test.
-# if __name__ == '__main__':
-#     wavefile = [
-#         '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']
-#     # ORIG # for path in sys.argv[1:]:
-#     for path in wavefile:
-#         path = os.path.abspath(os.path.expanduser(path))
-#         with ScarlettPlayer(path, False) as f:
-#             print(f.channels)
-#             print(f.samplerate)
-#             print(f.duration)
-#             for s in f:
-#                 pass
-#                 # READ IN BLOCKS # print(len(s), ord(s[0]))
+# Smoke test.
+if __name__ == '__main__':
+    wavefile = [
+        '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']
+    # ORIG # for path in sys.argv[1:]:
+    for path in wavefile:
+        path = os.path.abspath(os.path.expanduser(path))
+        with ScarlettPlayer(path, False, False) as f:
+            print(f.channels)
+            print(f.samplerate)
+            print(f.duration)
+            for s in f:
+                pass
+                # READ IN BLOCKS # print(len(s), ord(s[0]))
