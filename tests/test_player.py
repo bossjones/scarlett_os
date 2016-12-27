@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-test_subprocess
+test_player
 ----------------------------------
 """
 
@@ -21,7 +21,9 @@ import pytest
 
 
 import scarlett_os
-from scarlett_os.utility.gnome import trace, abort_on_exception, _IdleObject
+from scarlett_os.utility.gnome import trace
+from scarlett_os.utility.gnome import abort_on_exception
+from scarlett_os.utility.gnome import _IdleObject
 
 from scarlett_os import player
 from scarlett_os.player import get_loop_thread, MainLoopThread, ScarlettPlayer

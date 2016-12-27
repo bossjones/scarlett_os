@@ -82,10 +82,9 @@ class ScarlettSpeaker(object):
         self._voice = "en+f3"
         self._text = _('{}'.format(text_to_speak))
         self._word_gap = 1
-        self._command = ["espeak", "-p%s" % self._pitch,
-                         "-s%s" % self._speed, "-g%s" % self._word_gap,
-                         "-w", self._wavpath, "-v%s" % self._voice,
-                         ".   %s   ." % self._text]
+        self._command = self.create_cmd()
+
+        # TODO: Add check values before attempting to run
 
         self.path = None
 
@@ -108,6 +107,17 @@ class ScarlettSpeaker(object):
                     print((f.duration))
                     for s in f:
                         pass
+
+    def create_cmd(self):
+        cmd = ["espeak",
+               "-p%s" % self._pitch,
+               "-s%s" % self._speed,
+               "-g%s" % self._word_gap,
+               "-w", self._wavpath,
+               "-v%s" % self._voice,
+               ".   %s   ." % self._text]
+        print("cmd: {}".format(cmd))
+        return cmd
 
     # Cleanup.
     def close(self, force=False):

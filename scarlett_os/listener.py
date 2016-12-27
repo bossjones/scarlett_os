@@ -449,7 +449,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.bus = SessionBus()
         self.dbus_proxy = self.bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
         self.dbus_proxy.emitConnectedToListener('ScarlettListener')
-        sleep(2)
+        time.sleep(2)
         logger.info('_connect_to_dbus')
         ss_cancel_signal = self.bus.subscribe(sender=None,
                                               iface="org.scarlett.Listener",
