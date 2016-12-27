@@ -15,14 +15,6 @@ from scarlett_os.internal.debugger import init_debugger
 
 init_debugger()
 
-if SCARLETT_DEBUG:
-    # Setting GST_DEBUG_DUMP_DOT_DIR environment variable enables us to have a
-    # dotfile generated
-    os.environ[
-        "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-    os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-              '/home/pi/dev/bossjones-github/scarlett_os/_debug')
-
 import pprint
 import signal
 import threading
@@ -69,10 +61,15 @@ player_run = False
 command_run = False
 
 STATIC_SOUNDS_PATH = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
-# /pi-listening.wav
 
+if SCARLETT_DEBUG:
+    # Setting GST_DEBUG_DUMP_DOT_DIR environment variable enables us to have a
+    # dotfile generated
+    os.environ[
+        "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
+    os.putenv('GST_DEBUG_DUMP_DIR_DIR',
+              '/home/pi/dev/bossjones-github/scarlett_os/_debug')
 
-# loop = GObject.MainLoop()
 loop = GLib.MainLoop()
 
 try:
