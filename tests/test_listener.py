@@ -84,3 +84,14 @@ class TestScarlettListener(unittest.TestCase):
         self.assertEqual(sl.state, "stopped")
         self.assertEqual(sl.buffer_count, 0)
         self.assertEqual(sl.byte_count, 0)
+        self.assertEqual(sl.kw_to_find, ['scarlett', 'SCARLETT'])
+
+    # TODO: Write some better tests going forward
+    @mock.patch('scarlett_os.listener.SessionBus', name='mock_pydbus_session_dbus')
+    @mock.patch('scarlett_os.listener.Gst', name='mock_gst')
+    @mock.patch('scarlett_os.listener.GObject', name='mock_gobject')
+    def test_listener_init_fail(self, mock_gobject, mock_gst, mock_pydbus_session_dbus):
+        with pytest.raises(IndexError) as excinfo:
+            sl = listener.ScarlettListenerI()
+
+        assert 'tuple index out of range' in str(excinfo.value)
