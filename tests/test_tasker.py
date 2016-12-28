@@ -100,3 +100,22 @@ class TestScarlettTasker(unittest.TestCase):
 
         # NOTE: This is because we can't talk to dbus service on ("org.scarlett", object_path='/org/scarlett/Listener'
         assert 'g-io-error-quark: Timeout was reached (24)' in str(excinfo.value)
+
+
+class TestSoundType(unittest.TestCase):
+
+    def setUp(self):  # noqa: N802
+        """
+        Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. The default implementation does nothing.
+        """
+        pass
+
+    def test_soundtype_get_path(self):
+        # STATIC_SOUNDS_PATH = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
+        path_to_sound = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
+        self.assertEqual(tasker.STATIC_SOUNDS_PATH, path_to_sound)
+        self.assertEqual(type(tasker.SoundType.get_path('pi-cancel')), list)
+        self.assertEqual(tasker.SoundType.get_path('pi-cancel'), ["{}/pi-cancel.wav".format(path_to_sound)])
+        self.assertEqual(tasker.SoundType.get_path('pi-listening'), ["{}/pi-listening.wav".format(path_to_sound)])
+        self.assertEqual(tasker.SoundType.get_path('pi-response'), ["{}/pi-response.wav".format(path_to_sound)])
+        self.assertEqual(tasker.SoundType.get_path('pi-response2'), ["{}/pi-response2.wav".format(path_to_sound)])
