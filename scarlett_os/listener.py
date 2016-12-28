@@ -22,10 +22,6 @@ from __future__ import with_statement, division, absolute_import
 import sys
 import os
 
-from scarlett_os.internal.debugger import init_debugger
-
-init_debugger()
-
 # TODO: Move this to a debug function that allows you to enable it or disable it
 os.environ[
     "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
@@ -760,6 +756,9 @@ class ListenerDemo:
         logger.debug("thread_progress.")
 
 if __name__ == '__main__':
+    from scarlett_os.internal.debugger import init_debugger
+    init_debugger()
+
     demo = ListenerDemo()
     loop.run()
 

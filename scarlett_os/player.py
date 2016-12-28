@@ -23,10 +23,6 @@ from __future__ import with_statement, division, absolute_import
 import os
 import sys
 
-from scarlett_os.internal.debugger import init_debugger
-
-init_debugger()
-
 # TODO: Move this to a debug function that allows you to enable it or disable it
 os.environ[
     "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
@@ -533,6 +529,9 @@ class ScarlettPlayer(_IdleObject):
 
 # Smoke test.
 if __name__ == '__main__':
+    from scarlett_os.internal.debugger import init_debugger
+    init_debugger()
+
     wavefile = [
         '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']
     # ORIG # for path in sys.argv[1:]:

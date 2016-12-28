@@ -33,10 +33,6 @@ from __future__ import with_statement, division, absolute_import
 import sys
 import os
 
-from scarlett_os.internal.debugger import init_debugger
-
-init_debugger()
-
 # TODO: Move this to a debug function that allows you to enable it or disable it
 os.environ[
     "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
@@ -434,6 +430,8 @@ class ScarlettListener(_IdleObject, Server):  # noqa
 
 # smoke test
 if __name__ == '__main__':
+    from scarlett_os.internal.debugger import init_debugger
+    init_debugger()
     # Example of how to use it
     from pydbus import SessionBus
     bus = SessionBus()

@@ -11,9 +11,9 @@ import os
 import sys
 import time
 
-from scarlett_os.internal.debugger import init_debugger
+# from scarlett_os.internal.debugger import init_debugger
 
-init_debugger()
+# init_debugger()
 
 import pprint
 import signal
@@ -40,7 +40,6 @@ from scarlett_os.utility.gnome import abort_on_exception
 from scarlett_os.utility.gnome import _IdleObject
 
 from scarlett_os.utility import thread as s_thread
-from scarlett_os import subprocess
 from scarlett_os import player
 from scarlett_os import speaker
 from scarlett_os import commands
@@ -72,11 +71,11 @@ if SCARLETT_DEBUG:
 
 loop = GLib.MainLoop()
 
-try:
-    from rfoo.utils import rconsole
-    rconsole.spawn_server()
-except ImportError:
-    logger.debug("No socket opened for debugging -> please install rfoo")
+# try:
+#     from rfoo.utils import rconsole
+#     rconsole.spawn_server()
+# except ImportError:
+#     logger.debug("No socket opened for debugging -> please install rfoo")
 
 
 class SoundType:
