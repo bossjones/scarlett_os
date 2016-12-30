@@ -19,10 +19,10 @@ from scarlett_os.internal.gi import gi
 from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import GObject
 import pydbus
-# from pydbus import SessionBus
 
 from scarlett_os import tasker  # Module with our thing to test
 from scarlett_os.utility import gnome  # Module with the decorator we need to replace
+import time
 
 # NOTE: We can't add this here, otherwise we won't be able to mock them
 # from tests import common
@@ -49,16 +49,17 @@ class TestScarlettTasker(unittest.TestCase):
         self.old_glib_exception_error = GLib.GError
         # Now patch the decorator where the decorator is being imported from
         mock_abort_on_exception = mock.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        mock_gi = mock.patch('scarlett_os.internal.gi.gi', spec=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gi = mock.patch('scarlett_os.internal.gi.gi', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
 
-        mock_glib = mock.patch('scarlett_os.internal.gi.GLib', spec=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_glib = mock.patch('scarlett_os.internal.gi.GLib', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
 
-        mock_gobject = mock.patch('scarlett_os.internal.gi.GObject', spec=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gobject = mock.patch('scarlett_os.internal.gi.GObject', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
 
-        mock_gio = mock.patch('scarlett_os.internal.gi.Gio', spec=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gio = mock.patch('scarlett_os.internal.gi.Gio', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
 
-        # mock_pydbus = mock.patch('pydbus.bus.SessionBus', spec=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_pydbus = mock.patch('pydbus.bus', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
 
+        # mock_time = mock.patch('time.sleep', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
         # mock_pydbus.get.side_effect = Exception('GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.scarlett was not provided by any .service files')
 
         # Exception Thrown from [/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/pydbus/proxy.py] on line [40] via function [get]
@@ -71,6 +72,8 @@ class TestScarlettTasker(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch('scarlett_os.tasker.time.sleep', name='mock_time_sleep')
+    @mock.patch('scarlett_os.tasker.logging.Logger.debug', name='mock_logger_debug')
     @mock.patch('scarlett_os.tasker._IdleObject', name='mock_idle_obj')
     @mock.patch('scarlett_os.utility.thread.time_logger', name='mock_time_logger')
     @mock.patch('scarlett_os.tasker.speaker', name='mock_scarlett_speaker')
@@ -79,7 +82,7 @@ class TestScarlettTasker(unittest.TestCase):
     @mock.patch('scarlett_os.tasker.threading.RLock', spec=scarlett_os.tasker.threading.RLock, name='mock_threading_rlock')
     @mock.patch('scarlett_os.tasker.threading.Event', spec=scarlett_os.tasker.threading.Event, name='mock_threading_event')
     @mock.patch('scarlett_os.tasker.threading.Thread', spec=scarlett_os.tasker.threading.Thread, name='mock_thread_class')
-    def test_tasker_init(self, mock_thread_class, mock_threading_event, mock_threading_rlock, mock_scarlett_commands, mock_scarlett_player, mock_scarlett_speaker, mock_time_logger, mock_idle_obj):
+    def test_tasker_init_raise_glib_gerror(self, mock_thread_class, mock_threading_event, mock_threading_rlock, mock_scarlett_commands, mock_scarlett_player, mock_scarlett_speaker, mock_time_logger, mock_idle_obj, mock_logger_debug, mock_time_sleep):
         # python3 -m scarlett_os.tasker
         #
         # /home/pi/dev/bossjones-github/scarlett_os/scarlett_os/tasker.py:106: PyGIDeprecationWarning: GObject.MainContext is deprecated; use GLib.MainContext instead
@@ -100,6 +103,8 @@ class TestScarlettTasker(unittest.TestCase):
 
         # NOTE: This is because we can't talk to dbus service on ("org.scarlett", object_path='/org/scarlett/Listener'
         assert 'g-io-error-quark: Timeout was reached (24)' in str(excinfo.value)
+        self.assertEqual(mock_logger_debug.call_count, 0)
+        # mock_time_sleep.assert_called_with(1)
 
 
 class TestSoundType(unittest.TestCase):
@@ -131,3 +136,13 @@ class TestSpeakerType(unittest.TestCase):
     def test_speakertype_speaker_to_array(self):
         self.assertEqual(type(tasker.SpeakerType.speaker_to_array('It is now, 05:34 PM')), list)
         self.assertEqual(tasker.SpeakerType.speaker_to_array('It is now, 05:34 PM'), ['It is now, 05:34 PM'])
+
+
+
+
+# In [3]: bus = SessionBus()
+#
+# In [4]: bus
+# Out[4]: <pydbus.bus.Bus at 0x7f8a1d523a58>
+#
+# In [5]:

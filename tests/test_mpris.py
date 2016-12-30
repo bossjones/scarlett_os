@@ -10,7 +10,9 @@ import os
 import sys
 import unittest
 
-from scarlett_os.internal.gi import GLib, Gio, GObject
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import Gio
+from scarlett_os.internal.gi import GObject
 
 from pydbus import SessionBus
 from scarlett_os.mpris import ScarlettListener
