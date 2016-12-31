@@ -11,7 +11,7 @@ import os
 import sys
 import time
 
-# from scarlett_os.internal.debugger import init_debugger
+from scarlett_os.internal.debugger import init_debugger
 
 # init_debugger()
 
@@ -70,12 +70,6 @@ if SCARLETT_DEBUG:
               '/home/pi/dev/bossjones-github/scarlett_os/_debug')
 
 loop = GLib.MainLoop()
-
-# try:
-#     from rfoo.utils import rconsole
-#     rconsole.spawn_server()
-# except ImportError:
-#     logger.debug("No socket opened for debugging -> please install rfoo")
 
 
 class SoundType:

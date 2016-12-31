@@ -26,3 +26,11 @@ def inspect_scarlett_module(scarlett_module):
     num_args = scarlett_module.__code__.co_argcount
     name_args = scarlett_module.__code__.co_varnames
     pass
+
+
+def init_rconsole_server():
+    try:
+        from rfoo.utils import rconsole
+        rconsole.spawn_server()
+    except ImportError:
+        logger.debug("No socket opened for debugging -> please install rfoo")

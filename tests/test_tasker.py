@@ -14,15 +14,16 @@ import unittest
 import unittest.mock as mock
 
 import scarlett_os
+from scarlett_os import tasker  # Module with our thing to test
+from scarlett_os.utility import gnome  # Module with the decorator we need to replace
 
+import time
 from scarlett_os.internal.gi import gi
 from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import Gio
 import pydbus
-
-from scarlett_os import tasker  # Module with our thing to test
-from scarlett_os.utility import gnome  # Module with the decorator we need to replace
-import time
+from pydbus import SessionBus
 
 # NOTE: We can't add this here, otherwise we won't be able to mock them
 # from tests import common
@@ -32,7 +33,8 @@ import scarlett_os.exceptions
 
 import imp  # Library to help us reload our tasker module
 
-
+# py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
+# strace -s 40000 -vvtf python setup.py test > ./strace.out.strace 2>&1
 class TestScarlettTasker(unittest.TestCase):
 
     def setUp(self):  # noqa: N802
@@ -57,7 +59,9 @@ class TestScarlettTasker(unittest.TestCase):
 
         mock_gio = mock.patch('scarlett_os.internal.gi.Gio', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
 
-        mock_pydbus = mock.patch('pydbus.bus', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_pydbus_SessionBus = mock.patch('pydbus.SessionBus', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+
+        # mock_pydbus_SessionBus.return_value
 
         # mock_time = mock.patch('time.sleep', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
         # mock_pydbus.get.side_effect = Exception('GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.scarlett was not provided by any .service files')
@@ -72,6 +76,40 @@ class TestScarlettTasker(unittest.TestCase):
     def tearDown(self):
         pass
 
+    # @mock.patch('scarlett_os.tasker.time.sleep', name='mock_time_sleep')
+    # @mock.patch('scarlett_os.tasker.logging.Logger.debug', name='mock_logger_debug')
+    # @mock.patch('scarlett_os.tasker._IdleObject', name='mock_idle_obj')
+    # @mock.patch('scarlett_os.utility.thread.time_logger', name='mock_time_logger')
+    # @mock.patch('scarlett_os.tasker.speaker', name='mock_scarlett_speaker')
+    # @mock.patch('scarlett_os.tasker.player', name='mock_scarlett_player')
+    # @mock.patch('scarlett_os.tasker.commands', name='mock_scarlett_commands')
+    # @mock.patch('scarlett_os.tasker.threading.RLock', spec=scarlett_os.tasker.threading.RLock, name='mock_threading_rlock')
+    # @mock.patch('scarlett_os.tasker.threading.Event', spec=scarlett_os.tasker.threading.Event, name='mock_threading_event')
+    # @mock.patch('scarlett_os.tasker.threading.Thread', spec=scarlett_os.tasker.threading.Thread, name='mock_thread_class')
+    # def test_tasker_init_raise_glib_gerror(self, mock_thread_class, mock_threading_event, mock_threading_rlock, mock_scarlett_commands, mock_scarlett_player, mock_scarlett_speaker, mock_time_logger, mock_idle_obj, mock_logger_debug, mock_time_sleep):
+    #     # python3 -m scarlett_os.tasker
+    #     #
+    #     # /home/pi/dev/bossjones-github/scarlett_os/scarlett_os/tasker.py:106: PyGIDeprecationWarning: GObject.MainContext is deprecated; use GLib.MainContext instead
+    #     #   context = GObject.MainContext.default()
+    #     # Exception Thrown from [/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/pydbus/proxy.py] on line [40] via function [get]
+    #     # Exception type Error: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.scarlett was not provided by any .service files
+    #
+    #     with pytest.raises(self.old_glib_exception_error) as excinfo:
+    #         # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> traceback >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    #         # tests/test_tasker.py:113: in test_tasker_init
+    #         #     tskr = tasker.ScarlettTasker()
+    #         # scarlett_os/tasker.py:113: in __init__
+    #         #     ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
+    #         # /home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/pydbus/proxy.py:40: in get
+    #         #     0, self.timeout, None).unpack()[0]
+    #         # E   GLib.GError: g-io-error-quark: Timeout was reached (24)
+    #         tskr = tasker.ScarlettTasker()
+    #
+    #     # NOTE: This is because we can't talk to dbus service on ("org.scarlett", object_path='/org/scarlett/Listener'
+    #     assert 'g-io-error-quark: Timeout was reached (24)' in str(excinfo.value)
+    #     self.assertEqual(mock_logger_debug.call_count, 0)
+    #     # mock_time_sleep.assert_called_with(1)
+
     @mock.patch('scarlett_os.tasker.time.sleep', name='mock_time_sleep')
     @mock.patch('scarlett_os.tasker.logging.Logger.debug', name='mock_logger_debug')
     @mock.patch('scarlett_os.tasker._IdleObject', name='mock_idle_obj')
@@ -82,29 +120,17 @@ class TestScarlettTasker(unittest.TestCase):
     @mock.patch('scarlett_os.tasker.threading.RLock', spec=scarlett_os.tasker.threading.RLock, name='mock_threading_rlock')
     @mock.patch('scarlett_os.tasker.threading.Event', spec=scarlett_os.tasker.threading.Event, name='mock_threading_event')
     @mock.patch('scarlett_os.tasker.threading.Thread', spec=scarlett_os.tasker.threading.Thread, name='mock_thread_class')
-    def test_tasker_init_raise_glib_gerror(self, mock_thread_class, mock_threading_event, mock_threading_rlock, mock_scarlett_commands, mock_scarlett_player, mock_scarlett_speaker, mock_time_logger, mock_idle_obj, mock_logger_debug, mock_time_sleep):
-        # python3 -m scarlett_os.tasker
-        #
-        # /home/pi/dev/bossjones-github/scarlett_os/scarlett_os/tasker.py:106: PyGIDeprecationWarning: GObject.MainContext is deprecated; use GLib.MainContext instead
-        #   context = GObject.MainContext.default()
-        # Exception Thrown from [/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/pydbus/proxy.py] on line [40] via function [get]
-        # Exception type Error: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.scarlett was not provided by any .service files
-
-        with pytest.raises(self.old_glib_exception_error) as excinfo:
-            # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> traceback >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-            # tests/test_tasker.py:113: in test_tasker_init
-            #     tskr = tasker.ScarlettTasker()
-            # scarlett_os/tasker.py:113: in __init__
-            #     ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
-            # /home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/pydbus/proxy.py:40: in get
-            #     0, self.timeout, None).unpack()[0]
-            # E   GLib.GError: g-io-error-quark: Timeout was reached (24)
-            tskr = tasker.ScarlettTasker()
-
-        # NOTE: This is because we can't talk to dbus service on ("org.scarlett", object_path='/org/scarlett/Listener'
-        assert 'g-io-error-quark: Timeout was reached (24)' in str(excinfo.value)
-        self.assertEqual(mock_logger_debug.call_count, 0)
-        # mock_time_sleep.assert_called_with(1)
+    def test_tasker_init(self, mock_thread_class, mock_threading_event, mock_threading_rlock, mock_scarlett_commands, mock_scarlett_player, mock_scarlett_speaker, mock_time_logger, mock_idle_obj, mock_logger_debug, mock_time_sleep):
+        tskr = tasker.ScarlettTasker()
+        # pdb> tasker.ScarlettTasker()
+        # (   <MagicMock name='SessionBus().subscribe()' id='139958495523840'>,
+        #     <MagicMock name='SessionBus().subscribe()' id='139958495523840'>,
+        #     <MagicMock name='SessionBus().subscribe()' id='139958495523840'>,
+        #     <MagicMock name='SessionBus().subscribe()' id='139958495523840'>,
+        #     <MagicMock name='SessionBus().subscribe()' id='139958495523840'>)
+        # ScarlettTasker Thread Started
+        # <tasker.ScarlettTasker object at 0x7f4aa0549850 (scarlett_os+tasker+ScarlettTasker-v2 at 0x2a3dac0)>
+        # pdb>
 
 
 class TestSoundType(unittest.TestCase):
