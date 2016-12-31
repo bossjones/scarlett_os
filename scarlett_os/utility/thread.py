@@ -219,6 +219,10 @@ class ThreadManager:
         """
         running = len(self.fooThreads) - len(self.pendingFooThreadArgs)
 
+        # NOTE: Borrowed from pitivi
+        # assert issubclass(threadclass, Thread)
+        # self.log("Adding thread of type %r", threadclass)
+
         if args not in self.fooThreads:
             # threadclass eg ScarlettListenerI
             # OLD: thread = ScarlettListenerI(*args)

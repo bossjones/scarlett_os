@@ -747,7 +747,8 @@ class ListenerDemo:
         self.manager.make_thread(
             self.thread_finished,  # completedCb
             self.thread_progress,  # progressCb
-            name)  # args[1]
+            ScarlettListenerI,  # threadclass
+            name)  # args[1] <- verify that this is value is correct
 
     def thread_finished(self, thread):
         logger.debug("thread_finished.")
