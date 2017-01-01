@@ -327,6 +327,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if override:
             _gst_launch = override
         else:
+            # TODO: Add audio levels, see the following
+            # SOURCE: http://stackoverflow.com/questions/5686424/detecting-blowing-on-a-microphone-with-gstreamer-or-another-library
             _gst_launch = ['alsasrc device=' +
                            ScarlettListenerI.device,
                            # source: https://github.com/walterbender/story/blob/master/grecord.py
@@ -334,6 +336,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                            # recording and then the A/V sync is bad for the whole video
                            # (possibly a gstreamer/ALSA bug -- even if it gets caught up, it
                            # should be able to resync without problem)
+                           'progressreport name=progressreport update-freq=1',
                            'queue name=capsfilter_queue silent=false leaky=2 max-size-buffers=0 max-size-time=0 max-size-bytes=0',
                            'capsfilter name=capsfilter caps=audio/x-raw,format=S16LE,channels=1,layout=interleaved',
                            'audioconvert name=audioconvert',

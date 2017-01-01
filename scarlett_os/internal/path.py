@@ -14,12 +14,63 @@ from scarlett_os.internal.gi import Gst
 
 from gettext import gettext as _
 
+# import pathlib
+
+from pathlib import Path
+# from pathlib import PurePosixPath
+
+# p = PurePosixPath('/etc/passwd')
+# Path('path/to/file.txt').touch()
+
+
 logger = logging.getLogger(__name__)
 
+
+def get_parent_dir(path):
+    logger.info("get_parent_dir: {}".format(path))
+    # In [13]: q.parent
+    # Out[13]: PosixPath('/home/pi/dev/bossjones-github/scarlett_os/_debug')
+    p = Path(path)
+    return p.parent.__str__()
+
+
+def mkdir_p(path):
+    p = Path(path)
+    p.mkdir(parents=True, exist_ok=True)
+    d = dir_exists(path)
+    logger.info("Verify mkdir_p ran: {}".format(d))
+
+
+def dir_exists(path):
+    p = Path(path)
+    if not p.is_dir():
+        logger.error("This is not a dir: {}".format(path))
+        # NOTE this should raise a exception
+    return p.is_dir()
+
+
+def mkdir_if_does_not_exist(path):
+    if not dir_exists(path):
+        mkdir_p(path)
+        return True
+    return False
+
+
+def fname_exists(path):
+    p = Path(path)
+    return p.exists()
+
+
+def touch_empty_file(path):
+    if fname_exists(path):
+        logger.info("File already exists: {}".format(path))
+    p = Path(path)
+    return p.touch()
 
 # NOTE: Borrowed from Pitivi
 # ------------------------------ URI helpers --------------------------------
 # SOURCE: https://raw.githubusercontent.com/GNOME/pitivi/b2bbe6eef6d1e6d0fa5471d60004c62f936b3146/pitivi/utils/misc.py
+
 
 def isWritable(path):
     """Returns whether the file/path is writable."""

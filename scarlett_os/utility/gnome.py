@@ -24,6 +24,20 @@ logger = logging.getLogger(__name__)
 # START - SOURCE: https://github.com/quodlibet/quodlibet/blob/master/quodlibet/quodlibet/util/__init__.py
 ########################################################################################################################
 
+
+def get_connected_audio_devices():
+    devices = {}
+    dm = Gst.DeviceMonitor()
+    dm.start()
+    for device in dm.get_devices():
+        device_class = device.get_device_class()
+        props = device.get_properties()
+        element = device.create_element(None)
+        type_name = element.get_factory().get_name()
+        device_name = element.props.device
+        print("%s device=%r" % (type_name, device_name))
+    dm.stop()
+
 if PY2:
     def gdecode(s):  # noqa
         """Returns unicode for the glib text type"""
