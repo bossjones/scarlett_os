@@ -63,6 +63,40 @@ class PathToFileURITest(unittest.TestCase):
         mock_path().mkdir.assert_any_call(parents=True, exist_ok=True)
         mock_logger_info.assert_any_call("Verify mkdir_p ran: {}".format(mock_dir_exists.return_value))
 
+    @mock.patch('scarlett_os.internal.path.logging.Logger.error', name='mock_logger_error')
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_dir_exists_false(self, mock_path, mock_logger_error):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        mock_path_instance = mock_path()
+        #
+        mock_path_instance.is_dir.return_value = False
+
+        # run test
+        s_path.dir_exists(path)
+
+        # assert
+        self.assertEqual(mock_logger_error.call_count, 1)
+        self.assertEqual(mock_path_instance.is_dir.call_count, 2)
+        mock_logger_error.assert_any_call("This is not a dir: {}".format(path))
+
+    @mock.patch('scarlett_os.internal.path.logging.Logger.error', name='mock_logger_error')
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_dir_exists_true(self, mock_path, mock_logger_error):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        mock_path_instance = mock_path()
+        #
+        mock_path_instance.is_dir.return_value = True
+
+        # run test
+        s_path.dir_exists(path)
+
+        # assert
+        self.assertEqual(mock_logger_error.call_count, 0)
+        self.assertEqual(mock_path_instance.is_dir.call_count, 2)
+        mock_logger_error.assert_not_called()
+
     @mock.patch('scarlett_os.internal.path.os.access')
     @mock.patch('scarlett_os.internal.path.os.path.isdir')
     def test_dir_isWritable(self, mock_os_path_isdir, mock_os_access):
