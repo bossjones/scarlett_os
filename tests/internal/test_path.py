@@ -100,14 +100,14 @@ class PathToFileURITest(unittest.TestCase):
     @mock.patch('scarlett_os.internal.path.os.access')
     @mock.patch('scarlett_os.internal.path.os.path.isdir')
     def test_dir_isWritable(self, mock_os_path_isdir, mock_os_access):
-        path='file:///tmp'
+        path = 'file:///tmp'
 
         # patch return values
-        mock_os_path_isdir.return_value=True
-        mock_os_access.return_value=True
+        mock_os_path_isdir.return_value = True
+        mock_os_access.return_value = True
 
         # run test
-        result=s_path.isWritable(path)
+        result = s_path.isWritable(path)
 
         # tests
         mock_os_path_isdir.assert_called_once_with('file:///tmp')
@@ -117,14 +117,14 @@ class PathToFileURITest(unittest.TestCase):
     @mock.patch('scarlett_os.internal.path.os.access')
     @mock.patch('scarlett_os.internal.path.os.path.isdir')
     def test_file_isWritable(self, mock_os_path_isdir, mock_os_access):
-        path='file:///tmp/fake_file'
+        path = 'file:///tmp/fake_file'
 
         # patch return values
-        mock_os_path_isdir.return_value=False
-        mock_os_access.return_value=True
+        mock_os_path_isdir.return_value = False
+        mock_os_access.return_value = True
 
         # run test
-        result=s_path.isWritable(path)
+        result = s_path.isWritable(path)
 
         # tests
         mock_os_path_isdir.assert_called_once_with('file:///tmp/fake_file')
@@ -132,11 +132,11 @@ class PathToFileURITest(unittest.TestCase):
         self.assertEqual(result, True)
 
     def test_dir_isReadable(self):
-        tmpdir=tempfile.mkdtemp('.scarlett_os-tests')
+        tmpdir = tempfile.mkdtemp('.scarlett_os-tests')
 
         try:
             # run test
-            result=s_path.isReadable(tmpdir)
+            result = s_path.isReadable(tmpdir)
 
             # tests
             self.assertEqual(result, True)
@@ -145,11 +145,11 @@ class PathToFileURITest(unittest.TestCase):
             shutil.rmtree(tmpdir, ignore_errors=True)
 
     def test_file_isReadable(self):
-        fd_unused, path=tempfile.mkstemp(suffix=".wav")
+        fd_unused, path = tempfile.mkstemp(suffix=".wav")
 
         try:
             # run test
-            result=s_path.isReadable(path)
+            result = s_path.isReadable(path)
 
             # tests
             self.assertTrue(result)
@@ -162,10 +162,10 @@ class PathToFileURITest(unittest.TestCase):
     @mock.patch('scarlett_os.internal.path.os.path.isdir')
     def test_unicode_decode_error_isWritable(self, mock_os_path_isdir, mock_os_access, mock_unicode_error_dialog, mock_error_logger):
 
-        path=b'file:///tmp/fake_file'
+        path = b'file:///tmp/fake_file'
 
         # patch return values
-        mock_os_path_isdir.side_effect=UnicodeDecodeError('', b'', 1, 0, '')
+        mock_os_path_isdir.side_effect = UnicodeDecodeError('', b'', 1, 0, '')
         s_path.isWritable(path)
 
         self.assertEqual(mock_unicode_error_dialog.call_count, 1)
@@ -177,7 +177,7 @@ class PathToFileURITest(unittest.TestCase):
 
         self.assertEqual(mock_error_logger.call_count, 1)
 
-        _message=_("The system's locale that you are using is not UTF-8 capable. "
+        _message = _("The system's locale that you are using is not UTF-8 capable. "
                      "Unicode support is required for Python3 software like Pitivi. "
                      "Please correct your system settings; if you try to use Pitivi "
                      "with a broken locale, weird bugs will happen.")
@@ -185,44 +185,44 @@ class PathToFileURITest(unittest.TestCase):
         mock_error_logger.assert_any_call(_message)
 
     def test_path_to_uri(self):
-        result=s_path.path_to_uri('/etc/fstab')
+        result = s_path.path_to_uri('/etc/fstab')
         self.assertEqual(result, b'file:///etc/fstab')
         self.assertTrue(type(result) == compat.bytes)
 
     def test_uri_is_valid_bytes(self):
-        uri=b'file:///etc/fstab'
+        uri = b'file:///etc/fstab'
         self.assertTrue(s_path.uri_is_valid(uri))
 
     def test_path_from_uri_bytes(self):
-        raw_uri=b'file:///etc/fstab'
-        result=s_path.path_from_uri(raw_uri)
+        raw_uri = b'file:///etc/fstab'
+        result = s_path.path_from_uri(raw_uri)
         self.assertEqual(result, '/etc/fstab')
 
     def test_filename_from_uri_bytes(self):
-        uri=b'file:///etc/fstab'
-        result=s_path.filename_from_uri(uri)
+        uri = b'file:///etc/fstab'
+        result = s_path.filename_from_uri(uri)
         self.assertEqual(result, 'fstab')
 
     def test_filename_from_uri_str(self):
-        uri='file:///etc/fstab'
-        result=s_path.filename_from_uri(uri)
+        uri = 'file:///etc/fstab'
+        result = s_path.filename_from_uri(uri)
         self.assertEqual(result, 'fstab')
 
     def test_quote_uri_byte_to_str(self):
-        uri=b'file:///etc/fstab'
-        result=s_path.quote_uri(uri)
+        uri = b'file:///etc/fstab'
+        result = s_path.quote_uri(uri)
         self.assertEqual(result, 'file:///etc/fstab')
         self.assertTrue(type(result) == compat.text_type)
 
     def test_quantize(self):
-        result=s_path.quantize(100.00, 3.00)
+        result = s_path.quantize(100.00, 3.00)
         self.assertEqual(result, 99.0)
 
     def test_binary_search_EmptyList(self):
         self.assertEqual(s_path.binary_search([], 10), -1)
 
     def test_binary_search_Existing(self):
-        A=[10, 20, 30]
+        A = [10, 20, 30]
         for index, element in enumerate(A):
             self.assertEqual(s_path.binary_search([10, 20, 30], element), index)
 
@@ -237,13 +237,13 @@ class PathToFileURITest(unittest.TestCase):
         self.assertEqual(s_path.binary_search([10, 20, 30], 40), 2)
 
     def test_uri_to_path_str(self):
-        uri='file:///etc/fstab'
-        result=s_path.uri_to_path(uri)
+        uri = 'file:///etc/fstab'
+        result = s_path.uri_to_path(uri)
         self.assertEqual(result, '/etc/fstab')
 
     def test_uri_to_path_bytes(self):
-        uri=b'file:///etc/fstab'
-        result=s_path.uri_to_path(uri)
+        uri = b'file:///etc/fstab'
+        result = s_path.uri_to_path(uri)
         self.assertEqual(result, '/etc/fstab')
 
 ##################################################################################
