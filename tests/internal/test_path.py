@@ -97,6 +97,32 @@ class PathToFileURITest(unittest.TestCase):
         self.assertEqual(mock_path_instance.is_dir.call_count, 2)
         mock_logger_error.assert_not_called()
 
+    @mock.patch('scarlett_os.internal.path.mkdir_p', name='mock_mkdir_p')
+    @mock.patch('scarlett_os.internal.path.dir_exists', return_value=False, name='mock_dir_exists')
+    def test_mkdir_if_does_not_exist_false(self, mock_dir_exists, mock_mkdir_p):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        # run test
+        result = s_path.mkdir_if_does_not_exist(path)
+
+        # assert
+        self.assertEqual(mock_mkdir_p.call_count, 1)
+        self.assertEqual(mock_dir_exists.call_count, 1)
+        self.assertEqual(result, True)
+
+    @mock.patch('scarlett_os.internal.path.mkdir_p', name='mock_mkdir_p')
+    @mock.patch('scarlett_os.internal.path.dir_exists', return_value=True, name='mock_dir_exists')
+    def test_mkdir_if_does_not_exist_true(self, mock_dir_exists, mock_mkdir_p):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        # run test
+        result = s_path.mkdir_if_does_not_exist(path)
+
+        # assert
+        self.assertEqual(mock_mkdir_p.call_count, 0)
+        self.assertEqual(mock_dir_exists.call_count, 1)
+        self.assertEqual(result, False)
+
     @mock.patch('scarlett_os.internal.path.os.access')
     @mock.patch('scarlett_os.internal.path.os.path.isdir')
     def test_dir_isWritable(self, mock_os_path_isdir, mock_os_access):
