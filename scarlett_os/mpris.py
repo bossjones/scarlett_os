@@ -330,6 +330,8 @@ class ScarlettListener(_IdleObject, Server):  # noqa
         bus = self.dbus_stack[0]
         # s - dbus.String a subclass of unicode
         logger.debug(" Client Type: {}".format(type(scarlett_plugin)))
+        # GLib-GIO-CRITICAL fix s -> (s)
+        # source: http://stackoverflow.com/questions/28949009/glib-gio-critical-error-while-invoking-a-method-on-dbus-interface
         conn_to_lis_status = GLib.Variant("(s)", (scarlett_plugin,))
         bus.emit_signal(None,
                         '/org/scarlett/Listener',
