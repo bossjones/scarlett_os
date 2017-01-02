@@ -383,6 +383,9 @@ def command_cb(*args, **kwargs):
             logger.debug("THIS IS NOT A GLib.Variant: {} - TYPE {}".format(v, type(v)))
 
 if __name__ == "__main__":
+    import faulthandler
+    faulthandler.register(signal.SIGUSR2, all_threads=True)
+
     from scarlett_os.internal.debugger import init_debugger
 
     init_debugger()

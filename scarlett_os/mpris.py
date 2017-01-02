@@ -439,6 +439,9 @@ class ScarlettListener(_IdleObject, Server):  # noqa
 
 # smoke test
 if __name__ == '__main__':
+    import faulthandler
+    faulthandler.register(signal.SIGUSR2, all_threads=True)
+
     from scarlett_os.internal.debugger import init_debugger
     init_debugger()
     # Example of how to use it

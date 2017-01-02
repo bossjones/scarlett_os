@@ -559,6 +559,9 @@ class ScarlettPlayer(_IdleObject):
 
 # Smoke test.
 if __name__ == '__main__':
+    import faulthandler
+    faulthandler.register(signal.SIGUSR2, all_threads=True)
+
     from scarlett_os.internal.debugger import init_debugger
     init_debugger()
 
