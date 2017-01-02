@@ -11,10 +11,6 @@ import os
 import sys
 import time
 
-from scarlett_os.internal.debugger import init_debugger
-
-# init_debugger()
-
 import pprint
 import signal
 import threading
@@ -387,4 +383,8 @@ def command_cb(*args, **kwargs):
             logger.debug("THIS IS NOT A GLib.Variant: {} - TYPE {}".format(v, type(v)))
 
 if __name__ == "__main__":
+    from scarlett_os.internal.debugger import init_debugger
+
+    init_debugger()
+
     _INSTANCE = st = ScarlettTasker()
