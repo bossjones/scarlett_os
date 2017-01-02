@@ -423,3 +423,33 @@ rconsole: rconsole is a remote Python console with auto completion, which can be
  1655  python setup.py install
  1656  history
 ```
+
+# pulseaudio debugging
+
+- https://bugs.launchpad.net/ubuntu/+source/pulseaudio/+bug/1596344
+
+- https://bugs.launchpad.net/ubuntu/+source/pulseaudio/+bug/1604497
+
+- https://wiki.ubuntu.com/Audio/UpgradingAlsa/DKMS
+
+- https://wiki.ubuntu.com/PulseAudio/Log
+
+- https://wiki.archlinux.org/index.php/NetworkManager
+
+- https://bbs.archlinux.org/viewtopic.php?id=188287
+
+- https://wiki.archlinux.org/index.php/PulseAudio/Troubleshooting
+
+- https://wiki.archlinux.org/index.php/PulseAudio/Configuration
+
+- http://askubuntu.com/questions/70560/why-am-i-getting-this-connection-to-pulseaudio-failed-error
+
+- https://lists.freedesktop.org/archives/pulseaudio-discuss/2013-December/019344.html
+
+- http://askubuntu.com/questions/5866/what-terminal-command-will-dump-all-gconf-keys-and-values-ie-the-ones-seen-in-g
+
+- https://wiki.archlinux.org/index.php/PulseAudio/Examples
+
+- https://mail.gnome.org/archives/gtk-devel-list/2012-June/msg00000.html
+
+- https://mail.gnome.org/archives/commits-list/2011-May/msg07614.html

@@ -12,13 +12,18 @@ import unittest.mock as mock
 import pytest
 
 import scarlett_os
-from scarlett_os import compat, exceptions
+from scarlett_os import compat
+from scarlett_os import exceptions
 from scarlett_os.internal import path as s_path
 # from scarlett_os.internal.path import isWritable, unicode_error_dialog, uri_is_valid, path_from_uri, path_to_uri
 from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import Gst
 
 import tests
+
+
+def bad_read():
+    raise UnicodeDecodeError('utf-8', b'0x80', 0, 1, 'invalid start byte')
 
 
 class PathToFileURITest(unittest.TestCase):
@@ -191,6 +196,22 @@ class PathToFileURITest(unittest.TestCase):
         mock_os_path_isdir.assert_called_once_with('file:///tmp/fake_file')
         mock_os_access.assert_called_once_with('file:///tmp', os.W_OK)
         self.assertEqual(result, True)
+
+    # TODO: Need to figure out how to throw a fake UnicodeDecodeError
+    # @mock.patch('scarlett_os.internal.path.os.access')
+    # def test_dir_isReadable_unicode_error(self, mock_os_access):
+    #     # path = u'\x11/ip/addres\xc5\x82/print\x05first\x06second'
+    #     path = u'file:///tmp/fake_file'
+    #
+    #     # b'\x80abc'.decode("utf-8", "strict")
+    #     # tmpdir = tempfile.mkdtemp('.scarlett_os-tests')
+    #
+    #     mock_os_access.name = 'mock_os_access'
+    #     mock_os_access.side_effect = UnicodeDecodeError('', b'', 1, 0, '')
+    #
+    #     with pytest.raises(UnicodeDecodeError):
+    #         result = s_path.isReadable(path)
+    #
 
     def test_dir_isReadable(self):
         tmpdir = tempfile.mkdtemp('.scarlett_os-tests')
