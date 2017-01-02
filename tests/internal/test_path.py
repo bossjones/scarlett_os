@@ -123,6 +123,41 @@ class PathToFileURITest(unittest.TestCase):
         self.assertEqual(mock_dir_exists.call_count, 1)
         self.assertEqual(result, False)
 
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_fname_exists_true(self, mock_path):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot'
+
+        # def fname_exists(path):
+        #     p = Path(path)
+        #     return p.exists()
+
+        mock_path_instance = mock_path()
+        #
+        mock_path_instance.exists.return_value = True
+
+        # run test
+        result = s_path.fname_exists(path)
+
+        self.assertEqual(mock_path_instance.exists.call_count, 1)
+        mock_path.assert_any_call(path)
+        self.assertEqual(result, True)
+
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_fname_exists_false(self, mock_path):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot'
+
+        mock_path_instance = mock_path()
+        #
+        mock_path_instance.exists.return_value = False
+
+        # run test
+        result = s_path.fname_exists(path)
+
+        self.assertEqual(mock_path_instance.exists.call_count, 1)
+        mock_path_instance.exists.assert_called_once_with()
+        mock_path.assert_any_call(path)
+        self.assertEqual(result, False)
+
     @mock.patch('scarlett_os.internal.path.os.access')
     @mock.patch('scarlett_os.internal.path.os.path.isdir')
     def test_dir_isWritable(self, mock_os_path_isdir, mock_os_access):
