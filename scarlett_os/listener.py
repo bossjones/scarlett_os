@@ -611,6 +611,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             # New data is available from the pipeline! Dump it into our
             # queue (or possibly block if we're full).
             buf = sink.emit('pull-sample').get_buffer()
+            # IMPORTANT!!!!!
+            # NOTE: I think this is causing a deadlock
             self.queue.put(buf.extract_dup(0, buf.get_size()))
         return Gst.FlowReturn.OK
 
@@ -762,6 +764,8 @@ class ListenerDemo:
 if __name__ == '__main__':
     import faulthandler
     faulthandler.register(signal.SIGUSR2, all_threads=True)
+    faulthandler.enable(file=sys.stderr, all_threads=True)
+    print('Installed SIGUSR1 handler to print stack traces: pkill -USR1 -f scarlett_os.listener')
 
     from scarlett_os.internal.debugger import init_debugger
     init_debugger()
