@@ -1,4 +1,4 @@
-#!/usr/bin/env python  # NOQA
+#!/usr/bin/env python3  # NOQA
 # -*- coding: utf-8 -*-
 
 """Scarlett Listener Module."""
