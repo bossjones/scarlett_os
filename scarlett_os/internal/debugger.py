@@ -6,6 +6,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+# source: http://pyrasite.readthedocs.io/en/latest/Payloads.html
+# def create_call_graph():
+#     import pycallgraph
+#     pycallgraph.start_trace()
+#     pycallgraph.make_dot_graph('callgraph.png')
+
 def enable_remote_debugging():
     try:
         import pystuck
