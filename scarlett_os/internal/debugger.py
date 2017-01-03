@@ -6,6 +6,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def enable_remote_debugging():
+    try:
+        import pystuck
+        pystuck.run_server()
+    except ImportError:
+        logger.error("No socket opened for debugging -> please install pystuck")
+
+
 # source: https://github.com/kevinseelbach/generic_utils/blob/8b5636359fd248f5635160358fa237f9333f246f/src/generic_utils/debug_utils/__init__.py
 def enable_thread_dump_signal(signum=signal.SIGUSR1, dump_file=sys.stderr):
     """Turns on the ability to dump all of the threads to
@@ -50,7 +58,7 @@ def init_rconsole_server():
         from rfoo.utils import rconsole
         rconsole.spawn_server()
     except ImportError:
-        logger.debug("No socket opened for debugging -> please install rfoo")
+        logger.error("No socket opened for debugging -> please install rfoo")
 
 
 # source: http://blender.stackexchange.com/questions/1879/is-it-possible-to-dump-an-objects-properties-and-methods

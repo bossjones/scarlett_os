@@ -453,3 +453,67 @@ rconsole: rconsole is a remote Python console with auto completion, which can be
 - https://mail.gnome.org/archives/gtk-devel-list/2012-June/msg00000.html
 
 - https://mail.gnome.org/archives/commits-list/2011-May/msg07614.html
+
+
+# pystuck and remote debugging
+
+```
+pi@420148cf9f29:~/dev/bossjones-github/scarlett_os$ pystuck
+Welcome to the pystuck interactive shell.
+Use the 'modules' dictionary to access remote modules (like 'os', or '__main__')
+Use the `%show threads` magic to display all thread stack traces.
+
+In [1]: %show threads
+<_MainThread(MainThread, started 140438333286144)>
+  File "/usr/local/lib/python3.5/runpy.py", line 184, in _run_module_as_main
+    "__main__", mod_spec)
+  File "/usr/local/lib/python3.5/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/mpris.py", line 456, in <module>
+    loop.run()
+  File "/home/pi/jhbuild/lib/python3.5/site-packages/gi/overrides/GLib.py", line 574, in run
+    super(MainLoop, self).run()
+
+<Thread(Thread-1, started daemon 140438198179584)>
+  File "/usr/local/lib/python3.5/threading.py", line 882, in _bootstrap
+    self._bootstrap_inner()
+  File "/usr/local/lib/python3.5/threading.py", line 914, in _bootstrap_inner
+    self.run()
+  File "/usr/local/lib/python3.5/threading.py", line 862, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/local/lib/python3.5/site-packages/rpyc/utils/server.py", line 241, in start
+    self.accept()
+  File "/usr/local/lib/python3.5/site-packages/rpyc/utils/server.py", line 128, in accept
+    sock, addrinfo = self.listener.accept()
+  File "/usr/local/lib/python3.5/socket.py", line 195, in accept
+    fd, addr = self._accept()
+
+<HistorySavingThread(IPythonHistorySavingThread, started 140438080890624)>
+  File "/usr/local/lib/python3.5/threading.py", line 882, in _bootstrap
+    self._bootstrap_inner()
+  File "/usr/local/lib/python3.5/threading.py", line 914, in _bootstrap_inner
+    self.run()
+  File "<decorator-gen-23>", line 2, in run
+  File "/usr/local/lib/python3.5/site-packages/IPython/core/history.py", line 60, in needs_sqlite
+    return f(self, *a, **kw)
+  File "/usr/local/lib/python3.5/site-packages/IPython/core/history.py", line 834, in run
+    self.history_manager.save_flag.wait()
+  File "/usr/local/lib/python3.5/threading.py", line 549, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/local/lib/python3.5/threading.py", line 293, in wait
+    waiter.acquire()
+
+<Thread(Thread-2, started daemon 140438058526464)>
+  File "/usr/local/lib/python3.5/site-packages/pystuck/thread_probe.py", line 15, in thread_frame_generator
+    yield (thread_, frame)
+
+
+In [2]: modules['sys']._current_frames()
+Out[2]: {140438058526464: <frame object at 0x7fba3c009a08>, 140438080890624: <frame object at 0x1f127b8>, 140438333286144: <frame object at 0x2651fc8>, 140438198179584: <frame object at 0x7fba44003428>}
+
+In [3]: _[140438333286144]
+Out[3]: <frame at 0x7f4bfcf18988>
+
+In [4]: _.f_locals
+Out[4]: {'__class__': <class 'gi.overrides.GLib.MainLoop'>, 'self': <GLib.MainLoop object at 0x7fba523c0cb8 (GMainLoop at 0x1e2dfe0)>}
+```

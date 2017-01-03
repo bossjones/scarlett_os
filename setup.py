@@ -110,7 +110,8 @@ test_requirements = [
     'python-dbusmock',
     'freezegun',
     'hunter==1.4.1',
-    'Cython'
+    'Cython==0.25.2',
+    'pystuck==0.8.5'
 ]
 
 

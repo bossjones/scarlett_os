@@ -65,4 +65,7 @@ hunter==1.4.1
 # source: https://github.com/joke2k/faker
 # faker==0.7.7
 
-Cython
+Cython==0.25.2
+
+# trace python process
+pystuck==0.8.5
