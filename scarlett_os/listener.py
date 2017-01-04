@@ -767,7 +767,8 @@ if __name__ == '__main__':
     faulthandler.enable(file=sys.stderr, all_threads=True)
     print('Installed SIGUSR1 handler to print stack traces: pkill -USR1 -f scarlett_os.listener')
 
-    from scarlett_os.internal.debugger import init_debugger
+    from scarlett_os.internal.debugger import init_debugger, enable_remote_debugging
+    enable_remote_debugging()
     init_debugger()
 
     demo = ListenerDemo()
