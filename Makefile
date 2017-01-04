@@ -202,6 +202,12 @@ install-gi-osx:
 isort:
 	python setup.py isort
 
+dbus-monitor-signal:
+	dbus-monitor "type='signal'"
+
+dbus-monitor-all:
+	dbus-monitor
+
 # source: https://github.com/docker/machine/blob/master/docs/drivers/generic.md#interaction-with-ssh-agents
 # source: http://blog.scottlowe.org/2015/08/04/using-vagrant-docker-machine-together/
 create-docker-machine:

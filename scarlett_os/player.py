@@ -23,10 +23,6 @@ from __future__ import with_statement, division, absolute_import
 import os
 import sys
 
-from scarlett_os.internal.debugger import init_debugger
-
-init_debugger()
-
 # TODO: Move this to a debug function that allows you to enable it or disable it
 os.environ[
     "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
@@ -59,7 +55,13 @@ from scarlett_os.utility.gnome import trace
 from scarlett_os.utility.gnome import abort_on_exception
 from scarlett_os.utility.gnome import _IdleObject
 
-from scarlett_os.internal.path import uri_is_valid, isReadable, path_from_uri
+from scarlett_os.internal.path import uri_is_valid
+from scarlett_os.internal.path import isReadable
+from scarlett_os.internal.path import path_from_uri
+from scarlett_os.internal.path import get_parent_dir
+from scarlett_os.internal.path import mkdir_if_does_not_exist
+from scarlett_os.internal.path import fname_exists
+from scarlett_os.internal.path import touch_empty_file
 
 # Alias
 gst = Gst
@@ -297,10 +299,22 @@ class ScarlettPlayer(_IdleObject):
         if msg.src.get_name() == "pipeline" and states[1] == 4:
             dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
             pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
+
+            parent_dir = get_parent_dir(dotfile)
+
+            mkdir_if_does_not_exist(parent_dir)
+
             if os.access(dotfile, os.F_OK):
                 os.remove(dotfile)
             if os.access(pngfile, os.F_OK):
                 os.remove(pngfile)
+
+            if not fname_exists(dotfile):
+                touch_empty_file(dotfile)
+
+            if not fname_exists(pngfile):
+                touch_empty_file(pngfile)
+
             Gst.debug_bin_to_dot_file(msg.src,
                                       Gst.DebugGraphDetails.ALL, "generator-player")
             os.system('/usr/bin/dot' + " -Tpng -o " + pngfile + " " + dotfile)
@@ -339,10 +353,22 @@ class ScarlettPlayer(_IdleObject):
     def on_debug_activate(self):
         dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
         pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
+
+        parent_dir = get_parent_dir(dotfile)
+
+        mkdir_if_does_not_exist(parent_dir)
+
         if os.access(dotfile, os.F_OK):
             os.remove(dotfile)
         if os.access(pngfile, os.F_OK):
             os.remove(pngfile)
+
+        if not fname_exists(dotfile):
+            touch_empty_file(dotfile)
+
+        if not fname_exists(pngfile):
+            touch_empty_file(pngfile)
+
         Gst.debug_bin_to_dot_file(self.pipeline,
                                   Gst.DebugGraphDetails.ALL, "generator-player")
         os.system('/usr/bin/dot' + " -Tpng -o " + pngfile + " " + dotfile)
@@ -533,6 +559,12 @@ class ScarlettPlayer(_IdleObject):
 
 # Smoke test.
 if __name__ == '__main__':
+    import faulthandler
+    faulthandler.register(signal.SIGUSR2, all_threads=True)
+
+    from scarlett_os.internal.debugger import init_debugger
+    init_debugger()
+
     wavefile = [
         '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']
     # ORIG # for path in sys.argv[1:]:

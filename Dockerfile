@@ -6,7 +6,7 @@ COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
 
 RUN sudo apt-get update -yqq && \
-    sudo apt-get install dbus psmisc vim -yqq && \
+    sudo apt-get install dbus psmisc vim xvfb xclip -yqq && \
     sudo apt-get clean && \
     sudo apt-get autoclean -y && \
     sudo apt-get autoremove -y && \
@@ -20,6 +20,13 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     && jhbuild run -- pip install -e .[test]
 
 COPY ./container/root /
+
+RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
+    sudo chown pi:pi /home/pi/.pythonrc && \
+    sudo mv -f /dotfiles/.pdbrc /home/pi/.pdbrc && \
+    sudo chown pi:pi /home/pi/.pdbrc && \
+    sudo mv -f /dotfiles/.pdbrc.py /home/pi/.pdbrc.py && \
+    sudo chown pi:pi /home/pi/.pdbrc.py
 
 ENTRYPOINT ["/docker_entrypoint.sh"]
 CMD true

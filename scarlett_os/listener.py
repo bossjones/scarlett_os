@@ -1,4 +1,4 @@
-#!/usr/bin/env python  # NOQA
+#!/usr/bin/env python3  # NOQA
 # -*- coding: utf-8 -*-
 
 """Scarlett Listener Module."""
@@ -21,10 +21,6 @@ from __future__ import with_statement, division, absolute_import
 
 import sys
 import os
-
-from scarlett_os.internal.debugger import init_debugger
-
-init_debugger()
 
 # TODO: Move this to a debug function that allows you to enable it or disable it
 os.environ[
@@ -331,6 +327,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if override:
             _gst_launch = override
         else:
+            # TODO: Add audio levels, see the following
+            # SOURCE: http://stackoverflow.com/questions/5686424/detecting-blowing-on-a-microphone-with-gstreamer-or-another-library
             _gst_launch = ['alsasrc device=' +
                            ScarlettListenerI.device,
                            # source: https://github.com/walterbender/story/blob/master/grecord.py
@@ -338,6 +336,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                            # recording and then the A/V sync is bad for the whole video
                            # (possibly a gstreamer/ALSA bug -- even if it gets caught up, it
                            # should be able to resync without problem)
+                           'progressreport name=progressreport update-freq=1',
                            'queue name=capsfilter_queue silent=false leaky=2 max-size-buffers=0 max-size-time=0 max-size-bytes=0',
                            'capsfilter name=capsfilter caps=audio/x-raw,format=S16LE,channels=1,layout=interleaved',
                            'audioconvert name=audioconvert',
@@ -612,6 +611,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             # New data is available from the pipeline! Dump it into our
             # queue (or possibly block if we're full).
             buf = sink.emit('pull-sample').get_buffer()
+            # IMPORTANT!!!!!
+            # NOTE: I think this is causing a deadlock
             self.queue.put(buf.extract_dup(0, buf.get_size()))
         return Gst.FlowReturn.OK
 
@@ -751,7 +752,8 @@ class ListenerDemo:
         self.manager.make_thread(
             self.thread_finished,  # completedCb
             self.thread_progress,  # progressCb
-            name)  # args[1]
+            ScarlettListenerI,  # threadclass
+            name)  # args[1] <- verify that this is value is correct
 
     def thread_finished(self, thread):
         logger.debug("thread_finished.")
@@ -760,6 +762,15 @@ class ListenerDemo:
         logger.debug("thread_progress.")
 
 if __name__ == '__main__':
+    import faulthandler
+    faulthandler.register(signal.SIGUSR2, all_threads=True)
+    faulthandler.enable(file=sys.stderr, all_threads=True)
+    print('Installed SIGUSR1 handler to print stack traces: pkill -USR1 -f scarlett_os.listener')
+
+    from scarlett_os.internal.debugger import init_debugger, enable_remote_debugging
+    enable_remote_debugging()
+    init_debugger()
+
     demo = ListenerDemo()
     loop.run()
 

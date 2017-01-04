@@ -25,10 +25,6 @@
 import sys
 import os
 
-from scarlett_os.internal.debugger import init_debugger
-
-init_debugger()
-
 # TODO: Move this to a debug function that allows you to enable it or disable it
 os.environ[
     "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
@@ -140,6 +136,12 @@ class ScarlettSpeaker(object):
 
 # Smoke test.
 if __name__ == '__main__':
+    import faulthandler
+    faulthandler.register(signal.SIGUSR2, all_threads=True)
+
+    from scarlett_os.internal.debugger import init_debugger
+    init_debugger()
+
     tts_list = [
         'Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands']
     for scarlett_text in tts_list:

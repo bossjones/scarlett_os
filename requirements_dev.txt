@@ -37,12 +37,14 @@ python-dbusmock==0.16.7
 freezegun==0.3.8
 git+git://github.com/mverteuil/pytest-ipdb.git
 pdbpp==0.8.3
+# pudb
 
 # # Test runners
 # pytest
 # pytest-capturelog
 # pytest-cov
 # pytest-xdist
+# pytest-faulthandler
 
 # # To make wheel packages
 # wheel
@@ -62,3 +64,8 @@ hunter==1.4.1
 # description: Faker is a Python package that generates fake data for you
 # source: https://github.com/joke2k/faker
 # faker==0.7.7
+
+Cython==0.25.2
+
+# trace python process
+pystuck==0.8.5

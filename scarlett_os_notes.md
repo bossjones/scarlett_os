@@ -401,3 +401,119 @@ python3 -c "from gi.repository import GExiv2; print(GExiv2._overrides_module)"
 
 Also note Python2 and 3 will require separate installs of the overrides to their respective site-packages/dist-packages directory.
 ```
+
+
+# rfoo
+
+rfoo: Add this so we can see what's happening when code gets locked up in python.
+
+rconsole: rconsole is a remote Python console with auto completion, which can be used to inspect and modify the namespace of a running script.
+
+
+```
+ 1646  pip install Cython
+ 1647  ls -lta
+ 1648  ls
+ 1649  cd ..
+ 1650  ls
+ 1651  gcl git@github.com:aaiyer/rfoo.git
+ 1652  gcl https://github.com/aaiyer/rfoo.git
+ 1653  cd rfoo/
+ 1654  ls
+ 1655  python setup.py install
+ 1656  history
+```
+
+# pulseaudio debugging
+
+- https://bugs.launchpad.net/ubuntu/+source/pulseaudio/+bug/1596344
+
+- https://bugs.launchpad.net/ubuntu/+source/pulseaudio/+bug/1604497
+
+- https://wiki.ubuntu.com/Audio/UpgradingAlsa/DKMS
+
+- https://wiki.ubuntu.com/PulseAudio/Log
+
+- https://wiki.archlinux.org/index.php/NetworkManager
+
+- https://bbs.archlinux.org/viewtopic.php?id=188287
+
+- https://wiki.archlinux.org/index.php/PulseAudio/Troubleshooting
+
+- https://wiki.archlinux.org/index.php/PulseAudio/Configuration
+
+- http://askubuntu.com/questions/70560/why-am-i-getting-this-connection-to-pulseaudio-failed-error
+
+- https://lists.freedesktop.org/archives/pulseaudio-discuss/2013-December/019344.html
+
+- http://askubuntu.com/questions/5866/what-terminal-command-will-dump-all-gconf-keys-and-values-ie-the-ones-seen-in-g
+
+- https://wiki.archlinux.org/index.php/PulseAudio/Examples
+
+- https://mail.gnome.org/archives/gtk-devel-list/2012-June/msg00000.html
+
+- https://mail.gnome.org/archives/commits-list/2011-May/msg07614.html
+
+
+# pystuck and remote debugging
+
+```
+pi@420148cf9f29:~/dev/bossjones-github/scarlett_os$ pystuck
+Welcome to the pystuck interactive shell.
+Use the 'modules' dictionary to access remote modules (like 'os', or '__main__')
+Use the `%show threads` magic to display all thread stack traces.
+
+In [1]: %show threads
+<_MainThread(MainThread, started 140438333286144)>
+  File "/usr/local/lib/python3.5/runpy.py", line 184, in _run_module_as_main
+    "__main__", mod_spec)
+  File "/usr/local/lib/python3.5/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/mpris.py", line 456, in <module>
+    loop.run()
+  File "/home/pi/jhbuild/lib/python3.5/site-packages/gi/overrides/GLib.py", line 574, in run
+    super(MainLoop, self).run()
+
+<Thread(Thread-1, started daemon 140438198179584)>
+  File "/usr/local/lib/python3.5/threading.py", line 882, in _bootstrap
+    self._bootstrap_inner()
+  File "/usr/local/lib/python3.5/threading.py", line 914, in _bootstrap_inner
+    self.run()
+  File "/usr/local/lib/python3.5/threading.py", line 862, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/local/lib/python3.5/site-packages/rpyc/utils/server.py", line 241, in start
+    self.accept()
+  File "/usr/local/lib/python3.5/site-packages/rpyc/utils/server.py", line 128, in accept
+    sock, addrinfo = self.listener.accept()
+  File "/usr/local/lib/python3.5/socket.py", line 195, in accept
+    fd, addr = self._accept()
+
+<HistorySavingThread(IPythonHistorySavingThread, started 140438080890624)>
+  File "/usr/local/lib/python3.5/threading.py", line 882, in _bootstrap
+    self._bootstrap_inner()
+  File "/usr/local/lib/python3.5/threading.py", line 914, in _bootstrap_inner
+    self.run()
+  File "<decorator-gen-23>", line 2, in run
+  File "/usr/local/lib/python3.5/site-packages/IPython/core/history.py", line 60, in needs_sqlite
+    return f(self, *a, **kw)
+  File "/usr/local/lib/python3.5/site-packages/IPython/core/history.py", line 834, in run
+    self.history_manager.save_flag.wait()
+  File "/usr/local/lib/python3.5/threading.py", line 549, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/local/lib/python3.5/threading.py", line 293, in wait
+    waiter.acquire()
+
+<Thread(Thread-2, started daemon 140438058526464)>
+  File "/usr/local/lib/python3.5/site-packages/pystuck/thread_probe.py", line 15, in thread_frame_generator
+    yield (thread_, frame)
+
+
+In [2]: modules['sys']._current_frames()
+Out[2]: {140438058526464: <frame object at 0x7fba3c009a08>, 140438080890624: <frame object at 0x1f127b8>, 140438333286144: <frame object at 0x2651fc8>, 140438198179584: <frame object at 0x7fba44003428>}
+
+In [3]: _[140438333286144]
+Out[3]: <frame at 0x7f4bfcf18988>
+
+In [4]: _.f_locals
+Out[4]: {'__class__': <class 'gi.overrides.GLib.MainLoop'>, 'self': <GLib.MainLoop object at 0x7fba523c0cb8 (GMainLoop at 0x1e2dfe0)>}
+```

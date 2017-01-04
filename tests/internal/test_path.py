@@ -12,12 +12,18 @@ import unittest.mock as mock
 import pytest
 
 import scarlett_os
-from scarlett_os import compat, exceptions
+from scarlett_os import compat
+from scarlett_os import exceptions
 from scarlett_os.internal import path as s_path
 # from scarlett_os.internal.path import isWritable, unicode_error_dialog, uri_is_valid, path_from_uri, path_to_uri
-from scarlett_os.internal.gi import GLib, Gst
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import Gst
 
 import tests
+
+
+def bad_read():
+    raise UnicodeDecodeError('utf-8', b'0x80', 0, 1, 'invalid start byte')
 
 
 class PathToFileURITest(unittest.TestCase):
@@ -28,7 +34,134 @@ class PathToFileURITest(unittest.TestCase):
         """
 
         # spec: This can be either a list of strings or an existing object (a class or instance) that acts as the specification for the mock object. If you pass in an object then a list of strings is formed by calling dir on the object (excluding unsupported magic attributes and methods). Accessing any attribute not in this list will raise an AttributeError.
-        # self.mock = mock.Mock(spec=scarlett_os.subprocess.Subprocess)  # raise an exception if you try to access an attribute that doesn't exist on this class
+        # self.mock = mock.Mock(spec=scarlett_os.subprocess.Subprocess)  # raise
+        # an exception if you try to access an attribute that doesn't exist on
+        # this class
+
+    @mock.patch('scarlett_os.internal.path.logging.Logger.info', name='mock_logger_info')
+    def test_get_parent_dir(self, mock_logger_info):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot'
+
+        # run test
+        result = s_path.get_parent_dir(path)
+
+        self.assertEqual(mock_logger_info.call_count, 1)
+
+        mock_logger_info.assert_any_call("get_parent_dir: {}".format(path))
+        self.assertEqual(result, '/home/pi/dev/bossjones-github/scarlett_os/_debug')
+
+    @mock.patch('scarlett_os.internal.path.logging.Logger.info', name='mock_logger_info')
+    @mock.patch('scarlett_os.internal.path.dir_exists', name='mock_dir_exists')
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_mkdir_p(self, mock_path, mock_dir_exists, mock_logger_info):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        mock_dir_exists.return_value = True
+
+        # run test
+        s_path.mkdir_p(path)
+
+        # assert
+        self.assertEqual(mock_logger_info.call_count, 1)
+        mock_path.assert_called_once_with(path)
+        # from scarlett_os.internal.debugger import dump
+        mock_path().mkdir.assert_any_call(parents=True, exist_ok=True)
+        mock_logger_info.assert_any_call("Verify mkdir_p ran: {}".format(mock_dir_exists.return_value))
+
+    @mock.patch('scarlett_os.internal.path.logging.Logger.error', name='mock_logger_error')
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_dir_exists_false(self, mock_path, mock_logger_error):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        mock_path_instance = mock_path()
+        #
+        mock_path_instance.is_dir.return_value = False
+
+        # run test
+        s_path.dir_exists(path)
+
+        # assert
+        self.assertEqual(mock_logger_error.call_count, 1)
+        self.assertEqual(mock_path_instance.is_dir.call_count, 2)
+        mock_logger_error.assert_any_call("This is not a dir: {}".format(path))
+
+    @mock.patch('scarlett_os.internal.path.logging.Logger.error', name='mock_logger_error')
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_dir_exists_true(self, mock_path, mock_logger_error):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        mock_path_instance = mock_path()
+        #
+        mock_path_instance.is_dir.return_value = True
+
+        # run test
+        s_path.dir_exists(path)
+
+        # assert
+        self.assertEqual(mock_logger_error.call_count, 0)
+        self.assertEqual(mock_path_instance.is_dir.call_count, 2)
+        mock_logger_error.assert_not_called()
+
+    @mock.patch('scarlett_os.internal.path.mkdir_p', name='mock_mkdir_p')
+    @mock.patch('scarlett_os.internal.path.dir_exists', return_value=False, name='mock_dir_exists')
+    def test_mkdir_if_does_not_exist_false(self, mock_dir_exists, mock_mkdir_p):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        # run test
+        result = s_path.mkdir_if_does_not_exist(path)
+
+        # assert
+        self.assertEqual(mock_mkdir_p.call_count, 1)
+        self.assertEqual(mock_dir_exists.call_count, 1)
+        self.assertEqual(result, True)
+
+    @mock.patch('scarlett_os.internal.path.mkdir_p', name='mock_mkdir_p')
+    @mock.patch('scarlett_os.internal.path.dir_exists', return_value=True, name='mock_dir_exists')
+    def test_mkdir_if_does_not_exist_true(self, mock_dir_exists, mock_mkdir_p):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+
+        # run test
+        result = s_path.mkdir_if_does_not_exist(path)
+
+        # assert
+        self.assertEqual(mock_mkdir_p.call_count, 0)
+        self.assertEqual(mock_dir_exists.call_count, 1)
+        self.assertEqual(result, False)
+
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_fname_exists_true(self, mock_path):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot'
+
+        # def fname_exists(path):
+        #     p = Path(path)
+        #     return p.exists()
+
+        mock_path_instance = mock_path()
+        #
+        mock_path_instance.exists.return_value = True
+
+        # run test
+        result = s_path.fname_exists(path)
+
+        self.assertEqual(mock_path_instance.exists.call_count, 1)
+        mock_path.assert_any_call(path)
+        self.assertEqual(result, True)
+
+    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
+    def test_fname_exists_false(self, mock_path):
+        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot'
+
+        mock_path_instance = mock_path()
+        #
+        mock_path_instance.exists.return_value = False
+
+        # run test
+        result = s_path.fname_exists(path)
+
+        self.assertEqual(mock_path_instance.exists.call_count, 1)
+        mock_path_instance.exists.assert_called_once_with()
+        mock_path.assert_any_call(path)
+        self.assertEqual(result, False)
 
     @mock.patch('scarlett_os.internal.path.os.access')
     @mock.patch('scarlett_os.internal.path.os.path.isdir')
@@ -63,6 +196,22 @@ class PathToFileURITest(unittest.TestCase):
         mock_os_path_isdir.assert_called_once_with('file:///tmp/fake_file')
         mock_os_access.assert_called_once_with('file:///tmp', os.W_OK)
         self.assertEqual(result, True)
+
+    # TODO: Need to figure out how to throw a fake UnicodeDecodeError
+    # @mock.patch('scarlett_os.internal.path.os.access')
+    # def test_dir_isReadable_unicode_error(self, mock_os_access):
+    #     # path = u'\x11/ip/addres\xc5\x82/print\x05first\x06second'
+    #     path = u'file:///tmp/fake_file'
+    #
+    #     # b'\x80abc'.decode("utf-8", "strict")
+    #     # tmpdir = tempfile.mkdtemp('.scarlett_os-tests')
+    #
+    #     mock_os_access.name = 'mock_os_access'
+    #     mock_os_access.side_effect = UnicodeDecodeError('', b'', 1, 0, '')
+    #
+    #     with pytest.raises(UnicodeDecodeError):
+    #         result = s_path.isReadable(path)
+    #
 
     def test_dir_isReadable(self):
         tmpdir = tempfile.mkdtemp('.scarlett_os-tests')

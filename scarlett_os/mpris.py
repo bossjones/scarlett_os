@@ -33,10 +33,6 @@ from __future__ import with_statement, division, absolute_import
 import sys
 import os
 
-from scarlett_os.internal.debugger import init_debugger
-
-init_debugger()
-
 # TODO: Move this to a debug function that allows you to enable it or disable it
 os.environ[
     "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
@@ -214,7 +210,7 @@ class ScarlettListener(_IdleObject, Server):  # noqa
           <arg type='(ss)' name='listener_rdy_status' direction='out'/>
         </signal>
         <signal name='ConnectedToListener'>
-          <arg type='s' name='conn_to_lis_status' direction='out'/>
+          <arg type='(s)' name='conn_to_lis_status' direction='out'/>
         </signal>
       </interface>
     </node>
@@ -275,6 +271,7 @@ class ScarlettListener(_IdleObject, Server):  # noqa
         bus = self.dbus_stack[0]
         logger.debug("Inside KeywordRecognizedSignal. Dump bus object")
         pp.pprint(bus)
+        # (ss) - struct/tuple containing 2 strings.
         kw_rec_status = GLib.Variant("(ss)", (message, scarlett_sound))
         bus.emit_signal(None,
                         '/org/scarlett/Listener',
@@ -285,6 +282,7 @@ class ScarlettListener(_IdleObject, Server):  # noqa
     def CommandRecognizedSignal(self, message, scarlett_sound, scarlett_cmd):
         logger.debug(" sending message: {}".format(message))
         bus = self.dbus_stack[0]
+        # (sss) - struct/tuple containing 3 strings.
         cmd_rec_status = GLib.Variant(
             "(sss)", (message, scarlett_sound, scarlett_cmd))
         bus.emit_signal(None,
@@ -296,6 +294,7 @@ class ScarlettListener(_IdleObject, Server):  # noqa
     def SttFailedSignal(self, message, scarlett_sound):
         logger.debug(" sending message: {}".format(message))
         bus = self.dbus_stack[0]
+        # (ss) - struct/tuple containing 2 strings.
         stt_failed_status = GLib.Variant("(ss)", (message, scarlett_sound))
         bus.emit_signal(None,
                         '/org/scarlett/Listener',
@@ -306,6 +305,7 @@ class ScarlettListener(_IdleObject, Server):  # noqa
     def ListenerCancelSignal(self, message, scarlett_sound):
         logger.debug(" sending message: {}".format(message))
         bus = self.dbus_stack[0]
+        # (ss) - struct/tuple containing 2 strings.
         listener_cancel_status = GLib.Variant(
             "(ss)", (message, scarlett_sound))
         bus.emit_signal(None,
@@ -317,6 +317,7 @@ class ScarlettListener(_IdleObject, Server):  # noqa
     def ListenerReadySignal(self, message, scarlett_sound):
         logger.debug(" sending message: {}".format(message))
         bus = self.dbus_stack[0]
+        # (ss) - struct/tuple containing 2 strings.
         listener_rdy_status = GLib.Variant("(ss)", (message, scarlett_sound))
         bus.emit_signal(None,
                         '/org/scarlett/Listener',
@@ -327,7 +328,11 @@ class ScarlettListener(_IdleObject, Server):  # noqa
     def ConnectedToListener(self, scarlett_plugin):
         logger.debug(" Client Connected: {}".format(scarlett_plugin))
         bus = self.dbus_stack[0]
-        conn_to_lis_status = GLib.Variant("s", scarlett_plugin)
+        # s - dbus.String a subclass of unicode
+        logger.debug(" Client Type: {}".format(type(scarlett_plugin)))
+        # GLib-GIO-CRITICAL fix s -> (s)
+        # source: http://stackoverflow.com/questions/28949009/glib-gio-critical-error-while-invoking-a-method-on-dbus-interface
+        conn_to_lis_status = GLib.Variant("(s)", (scarlett_plugin,))
         bus.emit_signal(None,
                         '/org/scarlett/Listener',
                         'org.scarlett.Listener',
@@ -434,6 +439,11 @@ class ScarlettListener(_IdleObject, Server):  # noqa
 
 # smoke test
 if __name__ == '__main__':
+    import faulthandler
+    faulthandler.register(signal.SIGUSR2, all_threads=True)
+
+    from scarlett_os.internal.debugger import init_debugger
+    init_debugger()
     # Example of how to use it
     from pydbus import SessionBus
     bus = SessionBus()
