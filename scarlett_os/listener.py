@@ -517,6 +517,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         # capsfilter_queue.connect('pushing', self._on_pushing)
         # capsfilter_queue.connect('running', self._on_running)
 
+
         self.elements_stack.append(capsfilter_queue)
 
         ident = pipeline.get_by_name('ident')
