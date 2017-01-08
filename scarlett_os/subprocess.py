@@ -80,8 +80,19 @@ class Subprocess(GObject.GObject):
         if fork:
             self.fork()
 
+    # TODO: Add these arguments so we can toggle stdout
+    # def spawn_command(self, standard_input=False, standard_output=False, standard_error=False):
     def spawn_command(self):
         """Return: Tuple (pid(int), stdin, stdout, stderr)"""
+        # TODO: Add this so we can toggle stdout/error returned to variable
+        # return GLib.spawn_async(self.command,
+        #                         flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+        #                         standard_input=standard_input,
+        #                         standard_output=standard_output,
+        #                         standard_error=standard_error
+        #                         )
+        # DO_NOT_REAP_CHILD
+        # Don't reap process automatically so it is possible to detect when it is closed.
         return GLib.spawn_async(self.command,
                                 flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
                                 )
@@ -151,6 +162,9 @@ class Subprocess(GObject.GObject):
     def exited_cb(self, pid, condition):
         if not self.forked:
             self.emit('exited', pid, condition)
+
+        # logging.info("Transmission exited with status %d, exiting.", condition)
+        # GLib.spawn_close_pid(pid)
 
     def fork(self):
         """Fork the process."""

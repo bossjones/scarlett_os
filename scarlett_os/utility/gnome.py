@@ -20,6 +20,35 @@ from functools import wraps
 import logging
 logger = logging.getLogger(__name__)
 
+
+# source: https://github.com/mopidy/mopidy/blob/develop/mopidy/audio/utils.py
+class Signals(object):
+    """Helper for tracking gobject signal registrations"""
+    def __init__(self):
+        self._ids = {}
+
+    def connect(self, element, event, func, *args):
+        """Connect a function + args to signal event on an element.
+
+        Each event may only be handled by one callback in this implementation.
+        """
+        assert (element, event) not in self._ids
+        self._ids[(element, event)] = element.connect(event, func, *args)
+
+    def disconnect(self, element, event):
+        """Disconnect whatever handler we have for an element+event pair.
+
+        Does nothing it the handler has already been removed.
+        """
+        signal_id = self._ids.pop((element, event), None)
+        if signal_id is not None:
+            element.disconnect(signal_id)
+
+    def clear(self):
+        """Clear all registered signal handlers."""
+        for element, event in self._ids.keys():
+            element.disconnect(self._ids.pop((element, event)))
+
 ########################################################################################################################
 # START - SOURCE: https://github.com/quodlibet/quodlibet/blob/master/quodlibet/quodlibet/util/__init__.py
 ########################################################################################################################

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Execute lint to spot code mistakes.
+
+# source: https://github.com/home-assistant/home-assistant/blob/cb851283044c05e3f8da6795ef3ded353ebbcbe6/script/lint
+
+cd "$(dirname "$0")/.."
+
+if [ "$1" = "--changed" ]; then
+  export files="`git diff upstream/dev --name-only | grep -e '\.py$'`"
+  echo "================================================="
+  echo "FILES CHANGED (git diff upstream/dev --name-only)"
+  echo "================================================="
+  echo  $files
+  echo "================"
+  echo "LINT with flake8"
+  echo "================"
+  flake8 --doctests $files
+  echo "================"
+  echo "LINT with pylint"
+  echo "================"
+  pylint $files
+  echo
+else
+  tox -e lint
+fi

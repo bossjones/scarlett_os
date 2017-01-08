@@ -122,7 +122,6 @@ _shared_loop_thread = None
 _loop_thread_lock = threading.RLock()
 
 
-@abort_on_exception
 def get_loop_thread():
     """Get the shared main-loop thread.
     """
