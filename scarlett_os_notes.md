@@ -547,3 +547,17 @@ export python=3.5
 Make cover-debug = `py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals`
 
 `py.test -s --tb short tests --benchmark-skip --pdb --showlocals`
+
+
+# Garbage collection problem in travis test
+
+Test: https://travis-ci.org/bossjones/scarlett_os/builds/191936999
+
+```
+tests/test_mpris.py [   <Gio.DBusConnection object at 0x7fc1681c6238 (GDBusConnection at 0x1fa0050)>,
+    '/org/scarlett/Listener']
+<Gio.DBusConnection object at 0x7fc1681c6238 (GDBusConnection at 0x1fa0050)>
+.python3.5: Modules/gcmodule.c:441: visit_reachable: Assertion `gc_refs > 0 || gc_refs == GC_REACHABLE || gc_refs == GC_UNTRACKED' failed.
+Makefile:119: recipe for target 'test-travis' failed
+make: *** [test-travis] Aborted (core dumped)
+```
