@@ -540,3 +540,10 @@ export python=3.5
 # Good projects to follow
 
 - pytest, python3.5, python-dbus, travis: https://github.com/peuter/gosa
+
+
+# Movement towards integration testing for scarlett_os
+
+Make cover-debug = `py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals`
+
+`py.test -s --tb short tests --benchmark-skip --pdb --showlocals`
