@@ -36,12 +36,6 @@ import pprint
 import logging
 import threading
 
-# # TODO: Move this to a debug function that allows you to enable it or disable it
-# os.environ[
-#     "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-# os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-#           '/home/pi/dev/bossjones-github/scarlett_os/_debug')
-
 from scarlett_os.internal.gi import gi  # noqa
 from scarlett_os.internal.gi import GObject
 from scarlett_os.internal.gi import Gst
@@ -69,7 +63,8 @@ import signal
 
 # The gettext module provides internationalization (I18N) and localization (L10N) services for your Python modules and applications.
 from gettext import gettext as _
-from scarlett_os.utility.gnome import abort_on_exception, _IdleObject
+from scarlett_os.utility.gnome import abort_on_exception
+from scarlett_os.utility.gnome import _IdleObject
 
 from scarlett_os.const import SCARLETT_CANCEL
 from scarlett_os.const import SCARLETT_LISTENING
@@ -444,14 +439,16 @@ class ScarlettListener(_IdleObject, Server):  # noqa
 
 # smoke test
 if __name__ == '__main__':
-    import faulthandler
-    faulthandler.register(signal.SIGUSR2, all_threads=True)
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
+        import faulthandler
+        faulthandler.register(signal.SIGUSR2, all_threads=True)
 
-    from scarlett_os.internal.debugger import init_debugger
-    from scarlett_os.internal.debugger import set_gst_grapviz_tracing
-    init_debugger()
-    set_gst_grapviz_tracing()
-    # Example of how to use it
+        from scarlett_os.internal.debugger import init_debugger
+        from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+        init_debugger()
+        set_gst_grapviz_tracing()
+        # Example of how to use it
+
     from pydbus import SessionBus
     bus = SessionBus()
     # TODO: own_name() is deprecated, use request_name() instead.
