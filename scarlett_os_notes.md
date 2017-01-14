@@ -517,3 +517,26 @@ Out[3]: <frame at 0x7f4bfcf18988>
 In [4]: _.f_locals
 Out[4]: {'__class__': <class 'gi.overrides.GLib.MainLoop'>, 'self': <GLib.MainLoop object at 0x7fba523c0cb8 (GMainLoop at 0x1e2dfe0)>}
 ```
+
+
+# example of gui docker instance
+```
+export distribution=ubuntu
+export version=16.04
+export python=3.5
+
+# docker run --rm -it \
+# -v /etc/machine-id:/etc/machine-id:ro \
+# -v /etc/localtime:/etc/localtime:ro \
+# -v /tmp/.X11-unix:/tmp/.X11-unix \
+# -e DISPLAY=unix$DISPLAY \
+# --device /dev/snd:/dev/snd \
+# -v /var/run/dbus:/var/run/dbus \
+# -v $HOME/.scudcloud:/home/user/.config/scudcloud \
+# --name scudcloud \
+# jess/scudcloud
+```
+
+# Good projects to follow
+
+- pytest, python3.5, python-dbus, travis: https://github.com/peuter/gosa

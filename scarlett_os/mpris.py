@@ -32,21 +32,21 @@ from __future__ import with_statement, division, absolute_import
 
 import sys
 import os
-
-# TODO: Move this to a debug function that allows you to enable it or disable it
-os.environ[
-    "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-          '/home/pi/dev/bossjones-github/scarlett_os/_debug')
-
-from scarlett_os.internal.gi import gi, GObject, Gst, GLib, Gio
+import pprint
+import logging
 import threading
 
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
+# # TODO: Move this to a debug function that allows you to enable it or disable it
+# os.environ[
+#     "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
+# os.putenv('GST_DEBUG_DUMP_DIR_DIR',
+#           '/home/pi/dev/bossjones-github/scarlett_os/_debug')
 
-import logging
-logger = logging.getLogger(__name__)
+from scarlett_os.internal.gi import gi  # noqa
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import Gio
 
 # An in-memory stream for text. It inherits TextIOWrapper.
 try:
@@ -71,9 +71,13 @@ import signal
 from gettext import gettext as _
 from scarlett_os.utility.gnome import abort_on_exception, _IdleObject
 
+from scarlett_os.const import SCARLETT_CANCEL
+from scarlett_os.const import SCARLETT_LISTENING
+from scarlett_os.const import SCARLETT_RESPONSE
+from scarlett_os.const import SCARLETT_FAILED
 
-from scarlett_os.const import (SCARLETT_CANCEL, SCARLETT_LISTENING,
-                               SCARLETT_RESPONSE, SCARLETT_FAILED)
+pp = pprint.PrettyPrinter(indent=4)
+logger = logging.getLogger(__name__)
 
 gst = Gst
 HERE = os.path.dirname(__file__)
@@ -437,16 +441,20 @@ class ScarlettListener(_IdleObject, Server):  # noqa
         """Removes this object from the DBUS connection and exits."""
         loop.quit()
 
+
 # smoke test
 if __name__ == '__main__':
     import faulthandler
     faulthandler.register(signal.SIGUSR2, all_threads=True)
 
     from scarlett_os.internal.debugger import init_debugger
+    from scarlett_os.internal.debugger import set_gst_grapviz_tracing
     init_debugger()
+    set_gst_grapviz_tracing()
     # Example of how to use it
     from pydbus import SessionBus
     bus = SessionBus()
+    # TODO: own_name() is deprecated, use request_name() instead.
     bus.own_name(name='org.scarlett')
     sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
     loop.run()

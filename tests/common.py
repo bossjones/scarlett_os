@@ -14,7 +14,10 @@ import logging
 import threading
 from contextlib import contextmanager
 
-from scarlett_os.internal.gi import GLib, Gio, GObject, Gst
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import Gio
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import Gst
 
 from scarlett_os import core as s, loader
 from scarlett_os.utility.unit_system import METRIC_SYSTEM
