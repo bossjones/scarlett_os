@@ -17,8 +17,14 @@ from scarlett_os.internal.gi import GLib
 
 logger = logging.getLogger(__name__)
 
+# DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-AmtpYxooYR,guid=c32e70e0207846dc470144d3587a6283
+
 # from pydbus import SessionBus
 # bus = SessionBus()
+#
+# In [3]: bus
+# Out[3]: <pydbus.bus.Bus at 0x7fb8f407dae8>
+
 # bus.own_name(name='org.scarlett')
 # sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
 #
@@ -107,6 +113,20 @@ class DBusRunner(object):
         self.__gloop = GLib.MainLoop()
         try:
             self.__gloop.run()
+            # Definition: GLib.MainLoop.get_context
+
+            # The GLib.MainContext with which the source is associated,
+            # or None if the context has not yet been added to a source.
+            # Return type: GLib.MainContext or None
+
+            # Gets the GLib.MainContext with which the source is associated.
+            # You can call this on a source that has been destroyed,
+            # provided that the GLib.MainContext it was attached to still
+            # exists (in which case it will return that GLib.MainContext).
+            # In particular, you can always call this function on the
+            # source returned from GLib.main_current_source().
+            # But calling this function on a source whose
+            # GLib.MainContext has been destroyed is an error.
             context = self.__gloop.get_context()
             while self.__active:
                 context.iteration(False)

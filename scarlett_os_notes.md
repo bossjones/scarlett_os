@@ -540,6 +540,9 @@ export python=3.5
 # Good projects to follow
 
 - pytest, python3.5, python-dbus, travis: https://github.com/peuter/gosa
+- pytest, dbus, conftest, pytest.fixture https://github.com/Pelagicore/dbus-proxy/blob/6f8dfcefb83cee5513f4ffcc46f12dcf701598f5/component-test/conftest.py
+- pulse, pulsevideo, pytest, integration, FrameCounter https://github.com/wmanley/pulsevideo/blob/d8259f2ce2f3951e380e319c80b9d124b47efdf2/tests/integration_test.py (Allows multiplexing access to webcams such that more than one application can read video from a single piece of hardware at a time.)
+- dbus-python: https://cgit.freedesktop.org/dbus/dbus-python/
 
 
 # Movement towards integration testing for scarlett_os

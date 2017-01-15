@@ -17,6 +17,13 @@ from scarlett_os import compat
 # http://stackoverflow.com/questions/31058055/python-3-convert-byte-string-variable-to-regular-string
 
 
+def bytesting_to_string(a_bytestring):
+    # If we have a byte instead of a strng, decode to str type
+    if isinstance(a_bytestring, compat.bytes):
+        a_bytestring = a_bytestring.decode('utf-8')
+
+    return a_bytestring
+
 # def locale_decode(bytestr):
 #     try:
 #         return compat.text_type(bytestr)

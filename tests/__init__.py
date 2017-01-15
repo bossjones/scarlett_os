@@ -14,10 +14,22 @@ import unittest
 
 
 def get_scarlett_os_dir():
-    """Gets the scarlett_os root directory."""
+    """
+    Gets the scarlett_os root directory.
+
+    Example:
+
+    pi@5068ced95719:~/dev/bossjones-github/scarlett_os/tests$ python try.py
+    /home/pi/dev/bossjones-github/scarlett_os
+    pi@5068ced95719:~/dev/bossjones-github/scarlett_os/tests$
+
+    """
     tests_dir = os.path.dirname(os.path.abspath(__file__))
     scarlett_os_dir = os.path.join(tests_dir, os.path.pardir)
     return os.path.abspath(scarlett_os_dir)
+
+
+PROJECT_ROOT = get_scarlett_os_dir()
 
 
 def setup():

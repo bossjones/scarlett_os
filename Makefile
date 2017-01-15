@@ -121,7 +121,7 @@ test-travis:
 
 .PHONY: test-travis-debug
 test-travis-debug:
-	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb
+	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb --showlocals
 	coverage report -m
 
 .PHONY: cover
@@ -181,6 +181,13 @@ dist: clean ## builds source and wheel package
 
 dc-ci-build:
 	docker-compose -f docker-compose.yml -f ci/build.yml build
+
+docker-run-bash:
+	docker run -i -t --rm scarlettos_scarlett_master bash
+
+# docker-exec-bash:
+# 	container_id := $(shell docker ps |grep scarlettos_scarlett_master| awk '{print $1}')
+# 	docker exec -i it $(container_id) bash
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
