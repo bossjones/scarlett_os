@@ -27,9 +27,9 @@ done = 0
 
 class TestScarlettSpeaker(object):
 
-    def test_bus_works(self, session_bus):
-        bus = session_bus
-        assert type(bus) == pydbus.request_name.NameOwner
+    def test_bus_works(self, scarlett_os_interface):
+        bus = scarlett_os_interface
+        assert type(bus) == pydbus.bus.Bus
         # In [5]: _session = _dr.get_session_bus()
 
         # In [6]: _session

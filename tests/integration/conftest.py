@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 import pytest
 
+import signal
+# import errno
+
 import os
 from os import environ
 
 import sys
 import tempfile
 
+import time
 from time import sleep
+import subprocess
 from subprocess import Popen
 from subprocess import call
 
@@ -61,21 +66,22 @@ def wait_until(f, timeout_secs=10):
 # with SessionBus() as bus:
 #   pass
 
-# # SessionBus() and SystemBus() are not closed automatically, so this should work:
+# # SessionBus() and SystemBus() are not closed automatically, so this should work:  # noqa
 # bus.dbus
 ########################################################################
 
 # OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
 # INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
 
-# source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job
-if not 'DISPLAY' in os.environ:
+
+# source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
+if 'DISPLAY' not in os.environ:
     os.environ['DISPLAY'] = ':0'
 
-if not 'DBUS_SESSION_BUS_ADDRESS' in os.environ:
-  print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
+if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
+    print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
 
-# Setup an environment for the fixtures to share so the bus address is the same for all
+# Setup an environment for the fixtures to share so the bus address is the same for all  # noqa
 environment = environ.copy()
 
 ########################################################################
@@ -141,7 +147,7 @@ environment = environ.copy()
 # ADDRESS_FILE=$(mktemp /tmp/pydbustest.XXXXXXXXX)
 # PID_FILE=$(mktemp /tmp/pydbustest.XXXXXXXXX)
 
-# dbus-daemon --session --print-address=0 --print-pid=1 --fork 0>"$ADDRESS_FILE" 1>"$PID_FILE"
+# dbus-daemon --session --print-address=0 --print-pid=1 --fork 0>"$ADDRESS_FILE" 1>"$PID_FILE"  # noqa
 #   --print-address[=DESCRIPTOR]
 #              Print the address of the message bus to standard output,
 #              or to the given file descriptor. This is used by programs
@@ -186,11 +192,44 @@ INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
 # Setup an environment for the fixtures to share so the bus address is the same for all
 environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
 
-# print(environment["DBUS_SESSION_BUS_ADDRESS"])
+print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"]))
+
+# DISABLED # # As historical note, another way to write teardown code is by
+# DISABLED # # accepting a request object into your fixture function and can
+# DISABLED # # call its request.addfinalizer one or multiple times:
+# DISABLED # # source: https://github.com/projecthamster/hamster-dbus/blob/cfd4cabda55779d2f07649c6c364e2e781e3d7c5/tests/conftest.py
+# DISABLED # @pytest.fixture
+# DISABLED # def init_session_bus(request):
+# DISABLED #     """
+# DISABLED #     Provide a new private session bus so we don't polute the regular one.
+# DISABLED #
+# DISABLED #     This is a straight copy of: https://github.com/martinpitt/python-dbusmock/blob/master/dbusmock/testcase.py#L92
+# DISABLED #
+# DISABLED #     Returns:
+# DISABLED #         tuple: (pid, address) pair.
+# DISABLED #     """
+# DISABLED #     def fin():
+# DISABLED #         # [FIXME]
+# DISABLED #         # We propably could be a bit more gentle then this.
+# DISABLED #         os.kill(pid, signal.SIGKILL)
+# DISABLED #
+# DISABLED #     argv = ['dbus-launch']
+# DISABLED #     out = subprocess.check_output(argv, universal_newlines=True)
+# DISABLED #     variables = {}
+# DISABLED #     for line in out.splitlines():
+# DISABLED #         (k, v) = line.split('=', 1)
+# DISABLED #         variables[k] = v
+# DISABLED #     pid = int(variables['DBUS_SESSION_BUS_PID'])
+# DISABLED #     request.addfinalizer(fin)
+# DISABLED #     return (pid, variables['DBUS_SESSION_BUS_ADDRESS'])
 
 
-@pytest.fixture(scope="module", autouse=True)
-def session_bus(request):
+# @pytest.fixture(scope="module", autouse=True)
+# hamster-dbus # @pytest.fixture
+# FROM: dbus-proxy # @pytest.fixture(scope="function")
+@pytest.fixture
+def create_session_bus(request):
+    # source: dbus-proxy
     """ Create a session bus.
 
         The dbus-deamon will be torn down at the end of the test.
@@ -209,8 +248,10 @@ def session_bus(request):
         " --address=" + "unix:path=" + OUTSIDE_SOCKET
     ]
     try:
-        # For some reason shell needs to be set to True, which is the reason the command
-        # is passed as a string instead as an argument list, as recommended in the docs.
+        # For some reason shell needs to be set to True,
+        # which is the reason the command is passed as
+        # a string instead as an argument list,
+        # as recommended in the docs.
         dbus_daemon = Popen(
             "".join(start_dbus_daemon_command),
             env=environment,
@@ -229,66 +270,10 @@ def session_bus(request):
     request.addfinalizer(teardown)
 
 
-@pytest.fixture(scope='module')
-def get_session_bus(init_session_bus):
-    """
-    Provide the session bus instance.
-
-    Adapted from: https://github.com/martinpitt/python-dbusmock/blob/master/dbusmock/testcase.py#L137
-    """
-    # Fixture finalization / executing teardown code pytest
-    # supports execution of fixture specific finalization code
-    # when the fixture goes out of scope.
-    # By using a yield statement instead of return,
-    # all the code after the yield
-    # statement serves as the teardown code.:
-    if os.environ.get('DBUS_SESSION_BUS_ADDRESS'):
-        bus = connect(environment["DBUS_SESSION_BUS_ADDRESS"])
-        # yield bus
-        # print("teardown new session bus")
-        # return dbus.bus.BusConnection(os.environ['DBUS_SESSION_BUS_ADDRESS'])
-    else:
-        bus = SessionBus()
-        # yield bus
-        # print("teardown existing session bus")
-        # Out[4]: <DBUS.org.freedesktop.DBus at 0x7fb8f40389b0>
-
-    try:
-        yield bus
-    finally:
-        print("Tearing down session bus object")
-        del bus._dbus
-        print("ran: del bus._dbus")
-        # os.remove(socket_path)
-        # dbus_daemon.kill()
-        # dbus_daemon.wait()
-        # 1/14/2017 # NOTE: RE-ENABLE THIS # del os.environ['DBUS_SESSION_BUS_ADDRESS']
-
-# @pytest.fixture
-# def hamster_service(request, session_bus):
-#     """
-#     Provide a hamster service running as a seperate process.
-
-#     This is heavily inspired by the way ``dbusmock`` sets up its ``mock_server``
-#     """
-#     import subprocess
-#     import sys
-#     import time
-#     import psutil
-#     def fin():
-#         # [FIXME]
-#         # We propably could be a bit more gentle then this.
-#         os.kill(deamon.pid, signal.SIGKILL)
-#     env = os.environ.copy()
-#     deamon = subprocess.Popen([sys.executable, '-m', 'hamster_dbus.hamster_dbus', 'server'], env=env)
-#     # Wait for the service to become available
-#     time.sleep(2)
-#     request.addfinalizer(fin)
-#     return deamon
-
-
-@pytest.fixture(scope="module")
-def service_on_outside(request):
+# @pytest.fixture(scope="module")
+@pytest.fixture
+def service_on_outside(request, create_session_bus):
+    # FROM: dbus-proxy
     """ Start the service on the "outside" as seen from the proxy.
 
         The service is torn down at the end of the test.
@@ -297,6 +282,7 @@ def service_on_outside(request):
 
     outside_service = None
     scarlett_root = r"{}".format(PROJECT_ROOT)
+    print("[service_on_outside]: {}".format(scarlett_root))
 
     try:
         outside_service = Popen(
@@ -320,6 +306,82 @@ def service_on_outside(request):
 
     request.addfinalizer(teardown)
 
+
+# @pytest.fixture(scope='module')
+@pytest.fixture
+def get_bus(request, create_session_bus):
+    """
+    Provide the session bus instance.
+
+    Adapted from: https://github.com/martinpitt/python-dbusmock/blob/master/dbusmock/testcase.py#L137  # noqa
+    """
+    # Fixture finalization / executing teardown code pytest
+    # supports execution of fixture specific finalization code
+    # when the fixture goes out of scope.
+    # By using a yield statement instead of return,
+    # all the code after the yield
+    # statement serves as the teardown code.:
+    # if os.environ.get('DBUS_SESSION_BUS_ADDRESS'):
+    if environment['DBUS_SESSION_BUS_ADDRESS']:
+        bus = connect(environment["DBUS_SESSION_BUS_ADDRESS"])
+        # yield bus
+        # print("teardown new session bus")
+        # return dbus.bus.BusConnection(os.environ['DBUS_SESSION_BUS_ADDRESS'])
+    else:
+        bus = SessionBus()
+        # yield bus
+        # print("teardown existing session bus")
+        # Out[4]: <DBUS.org.freedesktop.DBus at 0x7fb8f40389b0>
+
+    # try:
+    #     yield bus
+    # finally:
+    #     print("Tearing down session bus object")
+    #     del bus._dbus
+    #     print("ran: del bus._dbus")
+    #     # os.remove(socket_path)
+    #     # dbus_daemon.kill()
+    #     # dbus_daemon.wait()
+    #     # 1/14/2017 # NOTE: RE-ENABLE THIS # del os.environ['DBUS_SESSION_BUS_ADDRESS']  # noqa
+
+    def teardown():
+        """
+        As historical note, another way to write teardown code is by
+        accepting a request object into your fixture function and can
+        call its request.addfinalizer one or multiple times:
+        """
+        del bus._dbus
+        print("ran: del bus._dbus")
+
+    request.addfinalizer(teardown)
+
+    return bus
+
+
+# @pytest.fixture
+# def hamster_service(request, session_bus):
+#     """
+#     Provide a hamster service running as a seperate process.
+#
+#     This is heavily inspired by the way
+#     ``dbusmock`` sets up its ``mock_server``
+#     """
+#     import subprocess
+#     import sys
+#     import time
+#     import psutil
+#     def fin():
+#         # We propably could be a bit more gentle then this.
+#         os.kill(deamon.pid, signal.SIGKILL)
+#     env = os.environ.copy()
+#     deamon = subprocess.Popen([sys.executable,
+#                               '-m',
+#                               'hamster_dbus.hamster_dbus',
+#                               'server'], env=env)
+#     # Wait for the service to become available
+#     time.sleep(2)
+#     request.addfinalizer(fin)
+#     return deamon
 
 
 ########################################################################
@@ -403,14 +465,22 @@ def service_on_outside(request):
 #     request.addfinalizer(fin)
 #     return process
 
-
-@pytest.fixture(scope="module")
-def scarlett_os_interface(request, session_bus):
-# ORIG # def scarlett_os_interface(request, session_bus, hamster_service3):
+# @pytest.fixture(scope="module")
+@pytest.fixture
+def scarlett_os_interface(request, get_bus):
+# ORIG # def scarlett_os_interface(request, session_bus, hamster_service3):  # noqa
     """Provide a covinient interface hook to our hamster-dbus service."""
     time.sleep(2)
     # bus.request_name(name='org.scarlett')
     # sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
-    # ORIG # return session_bus.get_object('org.gnome.hamster_dbus', '/org/gnome/hamster_dbus')
-    return session_bus.request_name(name='org.scarlett')
+    # ORIG # return session_bus.get_object('org.gnome.hamster_dbus', '/org/gnome/hamster_dbus')  # noqa
+    print("[get_bus] in [scarlett_os_interface]: {}".format(get_bus))
+    get_bus.request_name(name='org.scarlett')
+    return get_bus
 
+
+if __name__ == "__main__":
+    print('testing_create_session_bus')
+    create_session_bus()
+    print('testing_create_session_bus_end')
+    #     pytest.main(['-s', '-v', __file__])

@@ -42,6 +42,7 @@ freezegun==0.3.8
 git+git://github.com/mverteuil/pytest-ipdb.git
 pdbpp==0.8.3
 # pudb
+pytest-sugar
 
 # # Test runners
 # pytest
