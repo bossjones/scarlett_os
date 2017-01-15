@@ -19,14 +19,21 @@ except ImportError:
     use_setuptools()
     from setuptools import setup
 
-from setuptools import setup, find_packages
+from setuptools import setup
+from setuptools import find_packages
 from setuptools.command.test import test as TestCommand
 from setuptools.command import install_lib
-from scarlett_os.const import (__version__, PROJECT_PACKAGE_NAME,
-                               PROJECT_LICENSE, PROJECT_URL,
-                               PROJECT_EMAIL, PROJECT_DESCRIPTION,
-                               PROJECT_CLASSIFIERS, GITHUB_URL,
-                               PROJECT_AUTHOR)
+
+from scarlett_os.const import __version__
+from scarlett_os.const import PROJECT_PACKAGE_NAME
+from scarlett_os.const import PROJECT_LICENSE
+from scarlett_os.const import PROJECT_URL
+from scarlett_os.const import PROJECT_EMAIL
+from scarlett_os.const import PROJECT_DESCRIPTION
+from scarlett_os.const import PROJECT_CLASSIFIERS
+from scarlett_os.const import GITHUB_URL
+from scarlett_os.const import PROJECT_AUTHOR
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 DOWNLOAD_URL = ('{}/archive/'
@@ -76,7 +83,7 @@ requirements = [
     'typing>=3,<4',
     'psutil>=4.3.0',
     'six',
-    'voluptuous==0.9.2',
+    'voluptuous==0.9.3',
     'Fabric3==1.12.post1',
     'PyYAML>=3.0'
 ]
@@ -111,8 +118,34 @@ test_requirements = [
     'freezegun',
     'hunter==1.4.1',
     'Cython==0.25.2',
-    'pystuck==0.8.5'
+    'pystuck==0.8.5',
+    # 'pdbpp==0.8.3',
+    'pytest-sugar==0.8.0',
+    # 'pytest-ipdb',
+    'objgraph',
+    'xdot'
+
 ]
+
+# 0.1.dev2
+# https://github.com/mverteuil/pytest-ipdb/search?utf8=%E2%9C%93&q=version
+# setup(
+#    ...
+#    dependency_links = ['http://github.com/mtai/python-gearman/tarball/master#egg=gearman-2.0.0beta']
+# )
+#
+# dependency_links = ['https://github.com/mverteuil/pytest-ipdb/tarball/master#egg=gearman-0.1.dev2']
+
+
+# source: http://stackoverflow.com/questions/14399534/how-can-i-reference-requirements-txt-for-the-install-requires-kwarg-in-setuptool
+# In [1]: from pip.req import parse_requirements
+
+# In [2]: install_reqs = parse_requirements('/home/pi/dev/bossjones-github/scarlett_os/requirements_dev.txt')
+
+# In [3]: install_reqs
+# Out[3]: <generator object parse_requirements at 0x7fd0c55eb6b8>
+
+# In [4]:
 
 
 # Pytest
@@ -190,5 +223,6 @@ setup(
     classifiers=PROJECT_CLASSIFIERS,
     test_suite='tests',
     tests_require=test_requirements,
+    # dependency_links = ['https://github.com/mverteuil/pytest-ipdb/tarball/master#egg=pytest-ipdb-0.1.dev2'],
     cmdclass={'test': PyTest}
 )
