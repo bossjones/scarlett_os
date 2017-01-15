@@ -267,6 +267,9 @@ def create_session_bus(request):
         dbus_daemon.kill()
         os.remove(OUTSIDE_SOCKET)
 
+    # The finalizer is called after all of the tests that use the fixture.
+    # If you’ve used parameterized fixtures,
+    # the finalizer is called between instances of the parameterized fixture changes.
     request.addfinalizer(teardown)
 
 
@@ -304,6 +307,9 @@ def service_on_outside(request, create_session_bus):
     def teardown():
         outside_service.kill()
 
+    # The finalizer is called after all of the tests that use the fixture.
+    # If you’ve used parameterized fixtures,
+    # the finalizer is called between instances of the parameterized fixture changes.
     request.addfinalizer(teardown)
 
 
@@ -353,6 +359,9 @@ def get_bus(request, create_session_bus):
         del bus._dbus
         print("ran: del bus._dbus")
 
+    # The finalizer is called after all of the tests that use the fixture.
+    # If you’ve used parameterized fixtures,
+    # the finalizer is called between instances of the parameterized fixture changes.
     request.addfinalizer(teardown)
 
     return bus
