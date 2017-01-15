@@ -329,6 +329,7 @@ def get_bus(request, create_session_bus):
     # statement serves as the teardown code.:
     # if os.environ.get('DBUS_SESSION_BUS_ADDRESS'):
     if environment['DBUS_SESSION_BUS_ADDRESS']:
+        print("[get_bus] inside if environment['DBUS_SESSION_BUS_ADDRESS']")
         bus = connect(environment["DBUS_SESSION_BUS_ADDRESS"])
         # yield bus
         # print("teardown new session bus")
@@ -363,6 +364,9 @@ def get_bus(request, create_session_bus):
     # If you’ve used parameterized fixtures,
     # the finalizer is called between instances of the parameterized fixture changes.
     request.addfinalizer(teardown)
+
+    #
+    bus.dbus
 
     return bus
 
@@ -442,6 +446,20 @@ def get_bus(request, create_session_bus):
 
 #   assert result == ["Method1", "Method2"]
 #   assert obj.done == ["Method1", "Method2"]
+#
+# def test_using_multiface(defaults):
+#     def thread_func():
+#         results = []
+#         results += [remote.Method1()]
+#         results += [remote.Method2()]
+#         return results
+
+#     loop, obj, remote = defaults
+
+#     result = run(loop, thread_func)
+
+#     assert result == ["Method1", "Method2"]
+#     assert obj.done == ["Method1", "Method2"]
 ########################################################################
 #
 
@@ -477,7 +495,7 @@ def get_bus(request, create_session_bus):
 # @pytest.fixture(scope="module")
 @pytest.fixture
 def scarlett_os_interface(request, get_bus):
-# ORIG # def scarlett_os_interface(request, session_bus, hamster_service3):  # noqa
+    # ORIG # def scarlett_os_interface(request, session_bus, hamster_service3):  # noqa
     """Provide a covinient interface hook to our hamster-dbus service."""
     time.sleep(2)
     # bus.request_name(name='org.scarlett')
@@ -486,6 +504,99 @@ def scarlett_os_interface(request, get_bus):
     print("[get_bus] in [scarlett_os_interface]: {}".format(get_bus))
     get_bus.request_name(name='org.scarlett')
     return get_bus
+
+
+@pytest.fixture
+def get_dbus_proxy_obj_helper(request, get_bus):
+    """
+    Returns dbus proxy object connected to org.scarlett @ /org/scarlett/Listener  # noqa
+
+    ProxyObject implementing all the Interfaces exposed by the remote object.
+    """
+    time.sleep(2)
+    print("[get_dbus_proxy_obj_helper] ('org.scarlett','/org/scarlett/Listener')")  # noqa
+    # In [1]: from pydbus import SessionBus
+
+    # In [2]: from pydbus import connect
+
+    # In [3]: bus = connect('unix:abstract=/tmp/dbus-nJ52F5C5hQ,guid=fd01ec563d96b1011e5afea8587bd0bc')  # noqa
+
+    # In [4]: bus
+    # Out[4]: <pydbus.bus.Bus at 0x7ff0ec397468>
+
+    # In [5]: help(bus.request_name)
+
+    # In [6]: help(bus.get)
+
+    # In [7]: ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # noqa
+
+    # In [8]: ss
+    # Out[8]: <DBUS.<CompositeObject>(org.scarlett.Listener1+org.freedesktop.DBus.Introspectable+org.freedesktop.DBus.Properties) at 0x7ff0ec3b14d0>  # noqa
+
+    # In [9]: dir(ss)
+    # Out[9]:
+    # ['CanQuit',
+    #  'CanRaise',
+    #  'CommandRecognizedSignal',
+    #  'ConnectedToListener',
+    #  'DesktopEntry',
+    #  'Fullscreen',
+    #  'Get',
+    #  'GetAll',
+    #  'HasTrackList',
+    #  'Identity',
+    #  'Introspect',
+    #  'KeywordRecognizedSignal',
+    #  'ListenerCancelSignal',
+    #  'ListenerReadySignal',
+    #  'Quit',
+    #  'Set',
+    #  'SttFailedSignal',
+    #  '_Introspect',
+    #  '__class__',
+    #  '__delattr__',
+    #  '__dict__',
+    #  '__dir__',
+    #  '__doc__',
+    #  '__eq__',
+    #  '__format__',
+    #  '__ge__',
+    #  '__getattribute__',
+    #  '__getitem__',
+    #  '__gt__',
+    #  '__hash__',
+    #  '__init__',
+    #  '__le__',
+    #  '__lt__',
+    #  '__module__',
+    #  '__ne__',
+    #  '__new__',
+    #  '__reduce__',
+    #  '__reduce_ex__',
+    #  '__repr__',
+    #  '__setattr__',
+    #  '__sizeof__',
+    #  '__str__',
+    #  '__subclasshook__',
+    #  '__weakref__',
+    #  '_bus',
+    #  '_bus_name',
+    #  '_object',
+    #  '_path',
+    #  'emitCommandRecognizedSignal',
+    #  'emitConnectedToListener',
+    #  'emitKeywordRecognizedSignal',
+    #  'emitListenerCancelSignal',
+    #  'emitListenerMessage',
+    #  'emitListenerReadySignal',
+    #  'emitSttFailedSignal',
+    #  'onCommandRecognizedSignal',
+    #  'onConnectedToListener',
+    #  'onKeywordRecognizedSignal',
+    #  'onListenerCancelSignal',
+    #  'onListenerReadySignal',
+    #  'onSttFailedSignal']
+    return get_bus.get("org.scarlett", object_path='/org/scarlett/Listener')
 
 
 if __name__ == "__main__":

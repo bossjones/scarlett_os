@@ -30,6 +30,45 @@ class TestScarlettSpeaker(object):
     def test_bus_works(self, scarlett_os_interface):
         bus = scarlett_os_interface
         assert type(bus) == pydbus.bus.Bus
+
+    def test_mpris_methods_exist(self, service_on_outside, get_dbus_proxy_obj_helper):
+        look_for_methods_list = ['CanQuit',
+                                 'CanRaise',
+                                 'CommandRecognizedSignal',
+                                 'ConnectedToListener',
+                                 'DesktopEntry',
+                                 'Fullscreen',
+                                 'Get',
+                                 'GetAll',
+                                 'HasTrackList',
+                                 'Identity',
+                                 'Introspect',
+                                 'KeywordRecognizedSignal',
+                                 'ListenerCancelSignal',
+                                 'ListenerReadySignal',
+                                 'Quit',
+                                 'Set',
+                                 'SttFailedSignal',
+                                 'emitCommandRecognizedSignal',
+                                 'emitConnectedToListener',
+                                 'emitKeywordRecognizedSignal',
+                                 'emitListenerCancelSignal',
+                                 'emitListenerMessage',
+                                 'emitListenerReadySignal',
+                                 'emitSttFailedSignal',
+                                 'onCommandRecognizedSignal',
+                                 'onConnectedToListener',
+                                 'onKeywordRecognizedSignal',
+                                 'onListenerCancelSignal',
+                                 'onListenerReadySignal',
+                                 'onSttFailedSignal']
+
+        scarlett_speaker_proxy = get_dbus_proxy_obj_helper
+        proxy_methods_list = dir(scarlett_speaker_proxy)
+
+        for _method in look_for_methods_list:
+            assert _method in proxy_methods_list
+
         # In [5]: _session = _dr.get_session_bus()
 
         # In [6]: _session
