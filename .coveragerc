@@ -10,6 +10,8 @@ omit =
     */site-packages/*
     scarlett_os/__main__.py
     scarlett_os/scripts/*.py
+    scarlett_os/emitter.py
+    scarlett_os/receiver.py
 
 [report]
 # Regexes for lines to exclude from consideration

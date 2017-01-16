@@ -95,6 +95,8 @@ class ScarlettTasker(_IdleObject):
         self.bucket = bucket = queue.Queue()  # NOQA
         self.hello = None
 
+        self.devices = []
+
         # with SessionBus() as bus:
         bus = SessionBus()
         ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA

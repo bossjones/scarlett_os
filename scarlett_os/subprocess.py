@@ -7,9 +7,11 @@ from __future__ import with_statement, division, absolute_import
 
 import os
 import sys
-from scarlett_os.exceptions import SubProcessError, TimeOutError
+from scarlett_os.exceptions import SubProcessError
+from scarlett_os.exceptions import TimeOutError
 import logging
-from scarlett_os.internal.gi import GObject, GLib
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import GLib
 
 logger = logging.getLogger(__name__)
 

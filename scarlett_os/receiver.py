@@ -21,19 +21,19 @@ pp = pprint.PrettyPrinter(indent=4)
 logger = logging.getLogger(__name__)
 
 
-def print_keyword_args(**kwargs):
+def print_keyword_args(**kwargs):  # pragma: no cover
     print('--- [kargs] ---')
     if kwargs is not None:
         for key, value in kwargs.items():
             print("{} = {}".format(key, value))
 
 
-def print_args(args):
+def print_args(args):  # pragma: no cover
     for i, v in enumerate(args):
         print("another arg through *arg : {}".format(v))
 
 
-def catchall_handler(*args, **kwargs):
+def catchall_handler(*args, **kwargs):  # pragma: no cover
     """
     Catch all handler.
     Catch and print information about all singals.

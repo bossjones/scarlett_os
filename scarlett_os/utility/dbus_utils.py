@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 
-def convert_complex_type(subsig):
+def convert_complex_type(subsig):  # pragma: no cover
     result = None
     len_consumed = 0
 
@@ -69,7 +69,7 @@ def convert_complex_type(subsig):
     return (result, len_consumed)
 
 
-def convert_simple_type(c):
+def convert_simple_type(c):  # pragma: no cover
     result = None
 
     if c == 'n':
@@ -102,7 +102,7 @@ def convert_simple_type(c):
     return result
 
 
-def sig_to_type_list(sig):
+def sig_to_type_list(sig):  # pragma: no cover
     i = 0
     result = []
 
@@ -128,7 +128,7 @@ def sig_to_type_list(sig):
     return result
 
 
-def type_list_to_string(type_list):
+def type_list_to_string(type_list):  # pragma: no cover
     result = ''
     add_cap = False
 
@@ -151,7 +151,7 @@ def type_list_to_string(type_list):
     return result[2:]
 
 
-def sig_to_markup(sig, span_attr_str):
+def sig_to_markup(sig, span_attr_str):  # pragma: no cover
     list_ = sig_to_type_list(sig)
     markedup_list = []
     m = '<span ' + span_attr_str + '>'
@@ -161,5 +161,5 @@ def sig_to_markup(sig, span_attr_str):
     return m
 
 
-def sig_to_string(sig):
+def sig_to_string(sig):  # pragma: no cover
     return type_list_to_string(sig_to_type_list(sig))

@@ -27,7 +27,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def main(ss, args):
+def main(ss, args):  # pragma: no cover
     if args.signal == 'failed':
         ss.emitSttFailedSignal()
 
