@@ -149,6 +149,13 @@ class ScarlettTasker(_IdleObject):
         #                            flags=0,
         #                            signal_fired=catchall_handler)
 
+        #  TODO: If we want to keep track of signals,
+        #  we'll probably need to yield values we
+        #  append to notification list/obj
+        #  difference between yield and return
+        # Yes, it' still a generator. The return is (almost) equivalent to raising StopIteration
+        # source: http://stackoverflow.com/questions/26595895/return-and-yield-in-the-same-function
+
         pp.pprint((ss_failed_signal,
                    ss_rdy_signal,
                    ss_kw_rec_signal,
