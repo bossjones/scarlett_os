@@ -50,6 +50,7 @@ class TestScarlettSpeaker(object):
         assert type(bus) == pydbus.bus.Bus
 
     def test_mpris_methods_exist(self, service_on_outside, get_dbus_proxy_obj_helper):  # noqa
+        # NOTE: Technically these are both methods and signals
         look_for_methods_list = ['CanQuit',
                                  'CanRaise',
                                  'CommandRecognizedSignal',
@@ -84,8 +85,14 @@ class TestScarlettSpeaker(object):
         scarlett_speaker_proxy = get_dbus_proxy_obj_helper
         proxy_methods_list = dir(scarlett_speaker_proxy)
 
+        # all dbus methos exists
         for _method in look_for_methods_list:
             assert _method in proxy_methods_list
+
+
+    def test_mpris_catchall_signal(self, service_on_outside, get_dbus_proxy_obj_helper):  # noqa
+        # source: https://github.com/stylesuxx/python-dbus-examples/blob/master/receiver.py
+        pass
 
 
 # class TestScarlettSpeaker(unittest.TestCase):

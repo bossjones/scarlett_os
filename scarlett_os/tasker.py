@@ -93,6 +93,11 @@ class ScarlettTasker(_IdleObject):
     @abort_on_exception
     def __init__(self, *args):
         _IdleObject.__init__(self)
+        # Returns the global default main context.
+        # This is the main context used for main loop functions
+        # when a main loop is not explicitly specified,
+        # and corresponds to the "main" main loop.
+        # See also GLib.MainContext.get_thread_default().
         context = GObject.MainContext.default()
 
         self.bucket = bucket = queue.Queue()  # NOQA
