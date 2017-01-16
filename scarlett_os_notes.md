@@ -564,3 +564,59 @@ tests/test_mpris.py [   <Gio.DBusConnection object at 0x7fc1681c6238 (GDBusConne
 Makefile:119: recipe for target 'test-travis' failed
 make: *** [test-travis] Aborted (core dumped)
 ```
+
+# dbus testing
+
+```
+$ DBUS_SESSION_BUS_ADDRESS=tcp:host=192.168.56.101,port=10010 dbus-send --print-reply --type=method_call --dest=com.example.Test /com/example/Test com.example.Test.TestMethod string:foo
+
+
+dbus-send \
+  --print-reply \
+  --dest=org.scarlett \
+  --type=mathod_call \
+  /org/scarlett/Listener \
+  org.scarlett.Listener.emitConnectedToListener \
+  variant:string:"ScarlettEmitter"
+
+
+
+dbus-send \
+--print-reply \
+--dest=org.scarlett \
+/org/scarlett/Listener \
+org.scarlett.Listener.emitConnectedToListener \
+variant:string:"ScarlettEmitter"
+
+
+DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-jDEVlaa4gH,guid=0731db7bb15b0f356987abe7587bf5f6 \
+
+
+dbus-send \
+--session \
+--print-reply \
+--dest='org.scarlett' \
+'/org/scarlett/Listener' \
+'org.scarlett.Listener.emitConnectedToListener' \
+string:"ScarlettEmitter"
+
+
+dbus-send \
+--session \
+--print-reply \
+--dest=org.scarlett \
+/org/scarlett/Listener \
+org.scarlett.Listener1.emitConnectedToListener \
+string:"ScarlettEmitter"
+
+
+
+ dbus-send --dest=org.freedesktop.ExampleName               \
+                       /org/freedesktop/sample/object/name              \
+                       org.freedesktop.ExampleInterface.ExampleMethod   \
+                       int32:47 string:'hello world' double:65.32       \
+                       array:string:"1st item","next item","last item"  \
+                       dict:string:int32:"one",1,"two",2,"three",3      \
+                       variant:int32:-8                                 \
+                       objpath:/org/freedesktop/sample/object/name
+```

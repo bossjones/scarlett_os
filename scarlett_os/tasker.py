@@ -382,12 +382,13 @@ def command_cb(*args, **kwargs):
         else:
             logger.debug("THIS IS NOT A GLib.Variant: {} - TYPE {}".format(v, type(v)))
 
+
 if __name__ == "__main__":
-    import faulthandler
-    faulthandler.register(signal.SIGUSR2, all_threads=True)
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
+        import faulthandler
+        faulthandler.register(signal.SIGUSR2, all_threads=True)
 
-    from scarlett_os.internal.debugger import init_debugger
-
-    init_debugger()
+        from scarlett_os.internal.debugger import init_debugger
+        init_debugger()
 
     _INSTANCE = st = ScarlettTasker()

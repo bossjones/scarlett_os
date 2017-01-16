@@ -599,6 +599,46 @@ def get_dbus_proxy_obj_helper(request, get_bus):
     return get_bus.get("org.scarlett", object_path='/org/scarlett/Listener')
 
 
+# def dbus_send_sbuprocess(self, session_bus, service_on_outside, dbus_proxy):
+#     """ Assert dbus-proxy doesn't crash due to fd and zombie process leaks.
+#         The history behind this test is that there was a bug reported that
+#         dbus-proxy always crashed after 544 calls on D-Bus.
+#         Test steps:
+#           * Configure dbus-proxy.
+#           * Call a method on D-Bus from "inside".
+#           * Assert the method call can be performed 1024 times, i.e.
+#             dbus-proxy didn't crash.
+#     """
+
+#     dbus_send_command = [
+#         "dbus-send",
+#         "--address=" + dbus_proxy.INSIDE_SOCKET,
+#         "--print-reply",
+#         "--dest=" + stubs.BUS_NAME,
+#         stubs.OPATH_1,
+#         stubs.IFACE_1 + "." + stubs.EXT_1 + "." + stubs.METHOD_1,
+#         'string:"My unique key"']
+
+#     environment = environ.copy()
+#     for _x in range(0, 1024):
+#         dbus_send_process = Popen(dbus_send_command,
+#                                   env=environment,
+#                                   stdout=PIPE)
+#         captured_stdout = dbus_send_process.communicate()[0]
+#         assert "My unique key" in captured_stdout
+
+
+
+# dbus-send \
+# --address=unix:abstract=/tmp/dbus-jDEVlaa4gH,guid=0731db7bb15b0f356987abe7587bf5f6 \
+# --print-reply \
+# --dest=org.scarlett \
+# /org/scarlett/Listener \
+# org.scarlett.Listener \
+# emitConnectedToListener \
+# 'string:"ScarlettEmitter"'
+
+
 if __name__ == "__main__":
     print('testing_create_session_bus')
     create_session_bus()

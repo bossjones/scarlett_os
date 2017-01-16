@@ -559,11 +559,15 @@ class ScarlettPlayer(_IdleObject):
 
 # Smoke test.
 if __name__ == '__main__':
-    import faulthandler
-    faulthandler.register(signal.SIGUSR2, all_threads=True)
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
+        import faulthandler
+        faulthandler.register(signal.SIGUSR2, all_threads=True)
 
-    from scarlett_os.internal.debugger import init_debugger
-    init_debugger()
+        from scarlett_os.internal.debugger import init_debugger
+        from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+        init_debugger()
+        set_gst_grapviz_tracing()
+        # Example of how to use it
 
     wavefile = [
         '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']

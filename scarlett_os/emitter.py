@@ -9,15 +9,6 @@ import time
 
 SCARLETT_DEBUG = True
 
-if SCARLETT_DEBUG:
-    # Setting GST_DEBUG_DUMP_DOT_DIR environment variable enables us to have a
-    # dotfile generated
-    os.environ[
-        "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-    os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-              '/home/pi/dev/bossjones-github/scarlett_os/_debug')
-
-
 import argparse
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
@@ -56,9 +47,15 @@ def main(ss, args):
         ss.emitConnectedToListener('ScarlettEmitter')
 
 if __name__ == '__main__':
-    from scarlett_os.internal.debugger import init_debugger
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
+        import faulthandler
+        faulthandler.register(signal.SIGUSR2, all_threads=True)
 
-    init_debugger()
+        from scarlett_os.internal.debugger import init_debugger
+        from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+        init_debugger()
+        set_gst_grapviz_tracing()
+        # Example of how to use it
 
     from pydbus import SessionBus
     bus = SessionBus()

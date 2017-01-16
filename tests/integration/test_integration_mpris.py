@@ -22,7 +22,27 @@ import scarlett_os.exceptions
 
 done = 0
 
+# NOTE: example of testing dbus send on commandline
+# pi@e17ba21a9d2b:~/dev/bossjones-github/scarlett_os$ dbus-send \
+# > --session \
+# > --print-reply \
+# > --dest=org.scarlett \
+# > /org/scarlett/Listener \
+# > org.scarlett.Listener1.emitConnectedToListener \
+# > string:"ScarlettEmitter"
+# method return time=1484522999.087256 sender=:1.1 -> destination=:1.12 serial=12 reply_serial=2
+#    string " ScarlettEmitter is connected to ScarlettListener"
+# pi@e17ba21a9d2b:~/dev/bossjones-github/scarlett_os$
 
+# NOTE: THIS WORKS
+# dbus-send --session --print-reply --dest=org.scarlett /org/scarlett/Listener org.scarlett.Listener1.emitConnectedToListener string:"ScarlettEmitter"
+
+# NOTE: We can use this instead of dbus-send
+# [FIXME]
+# pi@e17ba21a9d2b:~/dev/bossjones-github/scarlett_os$ python3 -m scarlett_os.emitter --signal=ready
+# ready
+# pi@e17ba21a9d2b:~/dev/bossjones-github/scarlett_os$
+#
 class TestScarlettSpeaker(object):
 
     def test_bus_works(self, scarlett_os_interface):
