@@ -636,8 +636,6 @@ def get_dbus_proxy_obj_helper(request, get_bus):
 #         captured_stdout = dbus_send_process.communicate()[0]
 #         assert "My unique key" in captured_stdout
 
-
-
 # dbus-send \
 # --address=unix:abstract=/tmp/dbus-jDEVlaa4gH,guid=0731db7bb15b0f356987abe7587bf5f6 \
 # --print-reply \
@@ -647,6 +645,26 @@ def get_dbus_proxy_obj_helper(request, get_bus):
 # emitConnectedToListener \
 # 'string:"ScarlettEmitter"'
 
+# def create_main_loop():
+#     mainloop = GLib.MainLoop()
+#     timed_out = False
+
+#     def quit_cb(unused):
+#         nonlocal timed_out  # noqa
+#         timed_out = True
+#         mainloop.quit()
+
+#     def run(timeout_seconds=5):
+#         source = GLib.timeout_source_new_seconds(timeout_seconds)
+#         source.set_callback(quit_cb)
+#         source.attach()
+#         GLib.MainLoop.run(mainloop)
+#         source.destroy()
+#         if timed_out:
+#             raise Exception("Timed out after %s seconds" % timeout_seconds)
+
+#     mainloop.run = run
+#     return mainloop
 
 if __name__ == "__main__":
     print('testing_create_session_bus')

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3  # NOQA
+#!/usr/bin/env python  # NOQA
 # -*- coding: utf-8 -*-
 
 # source: http://stackoverflow.com/questions/16981921/relative-imports-in-python-3
@@ -56,14 +56,6 @@ player_run = False
 command_run = False
 
 STATIC_SOUNDS_PATH = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
-
-if SCARLETT_DEBUG:
-    # Setting GST_DEBUG_DUMP_DOT_DIR environment variable enables us to have a
-    # dotfile generated
-    os.environ[
-        "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-    os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-              '/home/pi/dev/bossjones-github/scarlett_os/_debug')
 
 loop = GLib.MainLoop()
 
@@ -148,6 +140,15 @@ class ScarlettTasker(_IdleObject):
                                          flags=0,
                                          signal_fired=player_cb)
 
+        # [FIXME]: Enable this, see twitter note re: unpacking tuples
+        # ss_connect = bus.subscribe(sender=None,
+        #                            iface="org.scarlett.Listener",
+        #                            signal="ConnectedToListener",
+        #                            object="/org/scarlett/Listener",
+        #                            arg0=None,
+        #                            flags=0,
+        #                            signal_fired=catchall_handler)
+
         pp.pprint((ss_failed_signal,
                    ss_rdy_signal,
                    ss_kw_rec_signal,
@@ -220,7 +221,7 @@ def signal_handler_speaker_thread():
 
 @abort_on_exception
 def fake_cb(*args, **kwargs):
-    if SCARLETT_DEBUG:
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
         logger.debug("fake_cb")
 
 
@@ -232,7 +233,7 @@ def print_keyword_args(**kwargs):
 
 @abort_on_exception
 def player_cb(*args, **kwargs):
-    if SCARLETT_DEBUG:
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
         logger.debug("player_cb PrettyPrinter: ")
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(args)
@@ -267,11 +268,11 @@ def player_cb(*args, **kwargs):
             GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
 
     for i, v in enumerate(args):
-        if SCARLETT_DEBUG:
+        if os.environ.get('SCARLETT_DEBUG_MODE'):
             logger.debug("Type v: {}".format(type(v)))
             logger.debug("Type i: {}".format(type(i)))
         if isinstance(v, tuple):
-            if SCARLETT_DEBUG:
+            if os.environ.get('SCARLETT_DEBUG_MODE'):
                 logger.debug(
                     "THIS SHOULD BE A Tuple now: {}".format(v))
             msg, scarlett_sound = v
@@ -291,7 +292,7 @@ def player_cb(*args, **kwargs):
 # @trace
 @abort_on_exception
 def command_cb(*args, **kwargs):
-    if SCARLETT_DEBUG:
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
         logger.debug("command_cb PrettyPrinter: ")
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(args)
@@ -349,11 +350,11 @@ def command_cb(*args, **kwargs):
         GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
 
     for i, v in enumerate(args):
-        if SCARLETT_DEBUG:
+        if os.environ.get('SCARLETT_DEBUG_MODE'):
             logger.debug("Type v: {}".format(type(v)))
             logger.debug("Type i: {}".format(type(i)))
         if isinstance(v, tuple):
-            if SCARLETT_DEBUG:
+            if os.environ.get('SCARLETT_DEBUG_MODE'):
                 logger.debug(
                     "THIS SHOULD BE A Tuple now: {}".format(v))
             msg, scarlett_sound, command = v
