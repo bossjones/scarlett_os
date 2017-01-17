@@ -158,12 +158,15 @@ class ScarlettPlayer(_IdleObject):
 
         # Make sure GST likes the uri
         if not uri_is_valid(uri):
-            logger.error("Error: Something is wrong with uri provided. uri: {}".format(uri))
+            logger.error("Error: "
+                         "Something is wrong with uri "
+                         "provided. uri: {}".format(uri))
             raise InvalidUri()
 
         # Make sure we can actually read the uri
         if not isReadable(path_from_uri(uri)):
-            logger.error("Error: Can't read uri: {}".format(path_from_uri(uri)))
+            logger.error("Error: Can't read uri:"
+                         " {}".format(path_from_uri(uri)))
             raise UriReadError()
 
         self.source.set_property('uri', uri)
@@ -219,8 +222,9 @@ class ScarlettPlayer(_IdleObject):
 
         # link tee to queueA
         tee_src_pad_to_appsink_bin = self.splitter.get_request_pad('src_%u')
-        logger.debug("Obtained request pad Name({}) Type({}) for audio branch.".format(
-            self.splitter.name, self.splitter))
+        logger.debug("Obtained request pad "
+                     "Name({}) Type({}) for audio branch.".format(
+                     self.splitter.name, self.splitter))
         queueAsinkPad = self.queueA.get_static_pad('sink')
         logger.debug(
             "Obtained sink pad for element ({}) for tee -> queueA.".format(queueAsinkPad))
