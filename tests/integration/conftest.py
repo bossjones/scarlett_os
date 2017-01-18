@@ -75,9 +75,10 @@ def wait_until(f, timeout_secs=10):
 
 
 # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
-if 'DISPLAY' not in os.environ:
-    # TODO: Should this be on :99 ?
-    os.environ['DISPLAY'] = ':0'
+if 'TRAVIS_CI' in os.environ:
+    if 'DISPLAY' not in os.environ:
+        # TODO: Should this be on :99 ?
+        os.environ['DISPLAY'] = ':0'
 
 if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
     print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')

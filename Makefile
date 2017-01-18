@@ -115,6 +115,7 @@ jenkins: bootstrap
 	$(pytest) $(test_args) --benchmark-skip
 
 .PHONY: test-travis
+test-travis: export TRAVIS_CI=1
 test-travis:
 	$(pytest) $(test_args_no_xml) --benchmark-skip
 	coverage report -m
