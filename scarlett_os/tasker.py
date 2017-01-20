@@ -10,13 +10,10 @@
 import os
 import sys
 import time
-
 import pprint
 import signal
 import threading
 import logging
-import pprint
-import time
 import random
 
 from gettext import gettext as _
@@ -187,51 +184,51 @@ class ScarlettTasker(_IdleObject):
             raise
 
 
-def signal_handler_player_thread(scarlett_sound):
-    '''No-Op Function to handle playing Gstreamer.'''
-
-    def function_calling_player_gst(event, *args, **kwargs):
-        player_run = True
-        logger.info('BEGIN PLAYING WITH SCARLETTPLAYER')
-        if player_run:
-            wavefile = SoundType.get_path(scarlett_sound)
-            for path in wavefile:
-                path = os.path.abspath(os.path.expanduser(path))
-                with player.ScarlettPlayer(path, False, False) as f:
-                    print((f.channels))
-                    print((f.samplerate))
-                    print((f.duration))
-                    for s in f:
-                        yield
-        event.set()
-        wavefile = None
-        player_run = False
-        logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
-        event.clear()
-
-    event = threading.Event()
-    logger.info('event = threading.Event()')
-    GObject.idle_add(function_calling_player_gst, event, priority=GLib.PRIORITY_HIGH)
-    logger.info('BEFORE event.wait()')
-    event.wait()
-    logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
-
-
-@abort_on_exception
-def signal_handler_speaker_thread():
-
-    def function_calling_speaker(event, result, tts_list):
-        for scarlett_text in tts_list:
-            with s_thread.time_logger('Scarlett Speaks'):
-                speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
-                                        wavpath="/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav")
-        event.set()
+# def signal_handler_player_thread(scarlett_sound):
+#     '''No-Op Function to handle playing Gstreamer.'''
+#
+#     def function_calling_player_gst(event, *args, **kwargs):
+#         player_run = True
+#         logger.info('BEGIN PLAYING WITH SCARLETTPLAYER')
+#         if player_run:
+#             wavefile = SoundType.get_path(scarlett_sound)
+#             for path in wavefile:
+#                 path = os.path.abspath(os.path.expanduser(path))
+#                 with player.ScarlettPlayer(path, False, False) as f:
+#                     print((f.channels))
+#                     print((f.samplerate))
+#                     print((f.duration))
+#                     for s in f:
+#                         yield
+#         event.set()
+#         wavefile = None
+#         player_run = False
+#         logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
+#         event.clear()
+#
+#     event = threading.Event()
+#     logger.info('event = threading.Event()')
+#     GObject.idle_add(function_calling_player_gst, event, priority=GLib.PRIORITY_HIGH)
+#     logger.info('BEFORE event.wait()')
+#     event.wait()
+#     logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
 
 
-@abort_on_exception
-def fake_cb(*args, **kwargs):
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
-        logger.debug("fake_cb")
+# @abort_on_exception
+# def signal_handler_speaker_thread():
+#
+#     def function_calling_speaker(event, result, tts_list):
+#         for scarlett_text in tts_list:
+#             with s_thread.time_logger('Scarlett Speaks'):
+#                 speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
+#                                         wavpath="/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav")
+#         event.set()
+
+
+# @abort_on_exception
+# def fake_cb(*args, **kwargs):
+#     if os.environ.get('SCARLETT_DEBUG_MODE'):
+#         logger.debug("fake_cb")
 
 
 def print_keyword_args(**kwargs):
@@ -256,30 +253,31 @@ def player_cb(*args, **kwargs):
         # signal='CommandRecognizedSignal',
         # params=GLib.Variant('(sss)', ('  ScarlettListener caugh...ommand match', 'pi-response', 'what time is it')))
 
-        # NOTE: THIS IS WHAT FIXED THE GENERATOR NONSENSE
-        # source: https://www.python.org/dev/peps/pep-0343/
-        def player_generator_func():
-            for path in wavefile:
-                path = os.path.abspath(os.path.expanduser(path))
-                yield True
-                print("for path in wavefile")
-                p = player.ScarlettPlayer(path, False, False)
-                while True:
-                    try:
-                        yield next(p)
-                    finally:
-                        time.sleep(p.duration)
-                        p.close(force=True)
-                        yield False
+    # NOTE: THIS IS WHAT FIXED THE GENERATOR NONSENSE
+    # source: https://www.python.org/dev/peps/pep-0343/
+    def player_generator_func():
+        for path in wavefile:
+            path = os.path.abspath(os.path.expanduser(path))
+            yield True
+            print("for path in wavefile")
+            p = player.ScarlettPlayer(path, False, False)
+            while True:
+                try:
+                    yield next(p)
+                finally:
+                    time.sleep(p.duration)
+                    p.close(force=True)
+                    yield False
 
-        def run_player(function):
-            gen = function()
-            GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
+    def run_player(function):
+        gen = function()
+        GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
 
     for i, v in enumerate(args):
         if os.environ.get('SCARLETT_DEBUG_MODE'):
             logger.debug("Type v: {}".format(type(v)))
             logger.debug("Type i: {}".format(type(i)))
+        logger.info('go')
         if isinstance(v, tuple):
             if os.environ.get('SCARLETT_DEBUG_MODE'):
                 logger.debug(
@@ -362,10 +360,10 @@ def command_cb(*args, **kwargs):
         if os.environ.get('SCARLETT_DEBUG_MODE'):
             logger.debug("Type v: {}".format(type(v)))
             logger.debug("Type i: {}".format(type(i)))
+        logger.info('go')
         if isinstance(v, tuple):
             if os.environ.get('SCARLETT_DEBUG_MODE'):
-                logger.debug(
-                    "THIS SHOULD BE A Tuple now: {}".format(v))
+                logger.debug("THIS SHOULD BE A Tuple now: {}".format(v))
             msg, scarlett_sound, command = v
             logger.warning(" msg: {}".format(msg))
             logger.warning(
