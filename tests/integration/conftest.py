@@ -23,11 +23,10 @@ import pydbus
 from pydbus import SessionBus
 from pydbus import connect
 
-import time
+import logging
+import select
 
-# from scarlett_os import tests
 from tests import PROJECT_ROOT
-# import PROJECT_ROOT
 
 
 """ Component test fixtures.
@@ -37,6 +36,7 @@ from tests import PROJECT_ROOT
     * [IGNORE] dbus-proxy is found in a build/ directory one level above, i.e. "../build/dbus-proxy"
     * dbus has already been started up by Docker or is running on your OS
 """
+
 
 # source: https://github.com/wmanley/pulsevideo/blob/d8259f2ce2f3951e380e319c80b9d124b47efdf2/tests/integration_test.py
 def wait_until(f, timeout_secs=10):
@@ -232,9 +232,10 @@ print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDR
 @pytest.fixture
 def create_session_bus(request):
     # source: dbus-proxy
-    """ Create a session bus.
+    """
+    Create a session bus.
 
-        The dbus-deamon will be torn down at the end of the test.
+    The dbus-deamon will be torn down at the end of the test.
     """
     # TODO: Parametrize the socket path.
 
@@ -279,9 +280,10 @@ def create_session_bus(request):
 @pytest.fixture
 def service_on_outside(request, create_session_bus):
     # FROM: dbus-proxy
-    """ Start the service on the "outside" as seen from the proxy.
+    """
+    Start the service on the "outside" as seen from the proxy.
 
-        The service is torn down at the end of the test.
+    The service is torn down at the end of the test.
     """
     # TODO: Make it more robust w.r.t. where to find the service file.
 
@@ -308,6 +310,44 @@ def service_on_outside(request, create_session_bus):
 
     def teardown():
         outside_service.kill()
+
+    # The finalizer is called after all of the tests that use the fixture.
+    # If you’ve used parameterized fixtures,
+    # the finalizer is called between instances of the parameterized fixture changes.
+    request.addfinalizer(teardown)
+
+
+@pytest.fixture
+def service_tasker(request):
+    """
+    Start the Scarlett Tasker Service after the mpris is already running
+
+    The service is torn down at the end of the test.
+    """
+
+    tasker_service = None
+    scarlett_root = r"{}".format(PROJECT_ROOT)
+    print("[service_tasker]: {}".format(scarlett_root))
+
+    try:
+        tasker_service = Popen(
+            [
+                "python3",
+                "-m",
+                "scarlett_os.tasker"
+            ],
+            env=environment,
+            stdout=sys.stdout,
+            cwd=scarlett_root)
+        # Allow time for the service to show up on the bus
+        # before consuming tests can try to use it.
+        sleep(0.3)
+    except OSError as e:
+        print("Error starting service on outside: {}".format(str(e)))
+        sys.exit(1)
+
+    def teardown():
+        tasker_service.kill()
 
     # The finalizer is called after all of the tests that use the fixture.
     # If you’ve used parameterized fixtures,
@@ -367,7 +407,6 @@ def get_bus(request, create_session_bus):
     # the finalizer is called between instances of the parameterized fixture changes.
     request.addfinalizer(teardown)
 
-    #
     bus.dbus
 
     return bus
@@ -666,6 +705,258 @@ def get_dbus_proxy_obj_helper(request, get_bus):
 
 #     mainloop.run = run
 #     return mainloop
+
+# def run_emitter(cmd, environment):
+#     """
+#     Run emitter in subshell to test dbus signals are being sent correctly
+#     """
+#     emitter_cmd = None
+#     scarlett_root = r"{}".format(PROJECT_ROOT)
+#     print("[run_emitter]: {}".format(scarlett_root))
+#
+#     try:
+#         emitter_cmd = subprocess.Popen(
+#             [
+#                 "python3",
+#                 "-m",
+#                 "scarlett_os.emitter",
+#                 "-s ",
+#                 cmd
+#             ],
+#             env=environment,
+#             stdout=sys.stdout,
+#             cwd=scarlett_root)
+#         # Allow time for the service to show up on the bus
+#         # before consuming tests can try to use it.
+#         time.sleep(0.3)
+#     except OSError as e:
+#         print("Error starting service on outside: {}".format(str(e)))
+#         sys.exit(1)
+#
+#     emitter_cmd.kill()
+
+
+@pytest.fixture
+def get_environment():
+    return environment
+
+
+@pytest.fixture
+def service_receiver(request):
+    """
+    Start the Scarlett Tasker Service after the mpris is already running
+
+    The service is torn down at the end of the test.
+    """
+
+    receiver_service = None
+
+    receiver_cmd = [
+        "python3",
+        "-m",
+        "scarlett_os.receiver"
+    ]
+
+    try:
+        receiver_service = ProcessMonitor(receiver_cmd)
+        # Allow time for the service to show up on the bus
+        # before consuming tests can try to use it.
+        sleep(0.3)
+    except OSError as e:
+        print("Error starting service on outside: {}".format(str(e)))
+        sys.exit(1)
+
+    def teardown():
+        receiver_service.terminate()
+        print("ran: receiver_service.terminate()")
+    request.addfinalizer(teardown)
+
+    return receiver_service
+
+
+# NOTE: Borrowed this straight from gst-switch. Using it for integration testing
+class BaseError(Exception):
+
+    """docstring for BaseError"""
+    pass
+
+
+class PathError(BaseError):
+
+    """docstring for PathError"""
+    pass
+
+
+class ServerProcessError(BaseError):
+
+    """docstring for ServerProcessError"""
+    pass
+
+
+class MatchTimeoutError(BaseError):
+
+    """Timeout during ProcessMonitor.wait_for_output"""
+    pass
+
+
+class MatchEofError(BaseError):
+
+    """Process died during ProcessMonitor.wait_for_output"""
+    pass
+
+
+class SelectError(BaseError):
+
+    """select.select returned with an unknown Error
+       during ProcessMonitor.wait_for_output"""
+    pass
+
+
+class ProcessMonitor(subprocess.Popen):
+    """Runs a command in a background-thread and monitors its output
+
+    Can block until the command prints a certain string and log the full
+    output into a file
+    """
+
+    def __init__(self, cmd, cmd_output_target=sys.stderr, environment=environment):
+        self.log = logging.getLogger('server-output-monitor')
+
+        # Logfile to write to
+        self._cmd_output_target = cmd_output_target
+
+        # Internal Buffer to search for matched when wait_for_output is called
+        self._buffer = ""
+
+        self.log.debug("starting subprocess")
+
+        scarlett_root = r"{}".format(PROJECT_ROOT)
+
+        try:
+            super(ProcessMonitor, self).__init__(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                bufsize=4096,
+                env=environment,
+                cwd=scarlett_root)
+        except Exception as err:
+            raise ServerProcessError(err)
+
+        self.log.debug("subprocess successfully started")
+
+    def terminate(self):
+        """Kills the process and waits for the thread to exit"""
+
+        self.log.debug("terminating the subprocess")
+        super(ProcessMonitor, self).terminate()
+
+        self.log.info("reading remaining data from subprocess")
+        while True:
+            # select takes three lists of file-descriptors to be monitored:
+            #   readable, writeable and exceptional
+            # The last argument is the timeout after which select should give
+            # up. 0 means, that select should return immediately without
+            # blocking (called a "poll")
+            (read, _, _) = select.select([self.stdout], [], [], 0)
+
+            # if the processes' stdout is not readable (ie there is nothing
+            # to read), we're done and can exit the loop
+            if self.stdout not in read:
+                break
+
+            # otherwise read as many bytes as possible, up to 2000,
+            # from the process. os.read does not wait until exactly 2000
+            # bytes have been read but returns as many bytes as possible
+            # the only time os.read block is, when there's nothing to read,
+            # which we ruled out by the poll-call to select before
+            #
+            # os.read -in contrast to self.stdout.read- is non-blocking,
+            # if at least 1 character is readable.
+            self.log.debug("reading data from subprocess")
+            chunk = os.read(self.stdout.fileno(), 2000).decode('utf-8')
+
+            if len(chunk) == 0:
+                break
+
+            self.log.debug(
+                "read %d bytes, appending to cmd_output_target",
+                len(chunk))
+            self._cmd_output_target.write(chunk)
+
+        # TODO: In python3 I'd add a timeout here but because of the forced
+        # python2 compatibility it's not that simple. Using subprocess32
+        # requires different patching in the unit-tests.
+        self.log.debug("waiting for the subprocess to die")
+        super(ProcessMonitor, self).communicate()
+
+    def wait_for_output(self, match, timeout=5, count=1):
+        """Searches the output already captured from the running process for
+        match and returns immediatly if match has already been captured.
+
+        Sets up a match-request for the stdout/stderr-reader and blocks until
+        match emerges in the processes stdout/stderr but not longer then
+        timeout. If no match is found until timeout is passed, a RuntimeError
+        is raised.
+        """
+        if self._buffer.count(match) >= count:
+            self.log.debug("match found, returning without reading more data")
+            return
+
+        endtime = time.time() + timeout
+        while True:
+            timeout = endtime - time.time()
+            self.log.debug("waiting for data output by subprocess"
+                           "(remaining time to timeout = %fs)", timeout)
+
+            # select takes three lists of file-descriptors to be monitored:
+            #   readable, writeable and exceptional
+            # The last argument is the timeout after which select should give
+            # up. If one of the supplied descriptors gets readable within the
+            # supplied timeout, the function returns.
+            (read, _, _) = select.select([self.stdout], [], [], timeout)
+
+            # if the processed' stdout is not readable (ie there's
+            # to read) and select did return nevertheless, so there must have
+            # been an exception or a timeout.
+            if self.stdout not in read:
+                remaining = endtime - time.time()
+                if remaining < 0:
+                    raise MatchTimeoutError(
+                        "Timeout while waiting for match "
+                        "'%s' %dx in the subprocess output.\n"
+                        "re-run tests with -x and look at "
+                        "server.log to investigate further"
+                        % (match, count,))
+
+                raise SelectError("select returned without stdout being"
+                                  " readable, assuming an exception")
+
+            # read as many bytes as possible, up to 2000,
+            # from the process. os.read does not wait until exactly 2000
+            # bytes have been read but returns as many bytes as possible
+            # the only time os.read block is, when there's nothing to read,
+            # which we ruled out by the call to select before
+            #
+            # os.read -in contrast to self.stdout.read- is non-blocking,
+            # if at least 1 character is readable.
+            self.log.debug("reading data from subprocess")
+            chunk = os.read(self.stdout.fileno(), 2000).decode('utf-8')
+
+            if len(chunk) == 0:
+                raise MatchEofError("Subprocess died while waiting for match "
+                                    "'%s' %dx in the subprocess output."
+                                    % (match, count,))
+
+            self.log.debug("read %d bytes, appending to buffer", len(chunk))
+            self._buffer += chunk
+            self._cmd_output_target.write(chunk)
+
+            self.log.debug("testing again for %dx '%s' in buffer",
+                           count, match)
+            if self._buffer.count(match) >= count:
+                self.log.debug("match found, returning")
+                return
 
 if __name__ == "__main__":
     print('testing_create_session_bus')

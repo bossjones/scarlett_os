@@ -133,6 +133,9 @@ if __name__ == '__main__':
                                arg0=None,
                                flags=0,
                                signal_fired=catchall_handler)
+
+    logger.info('[receiver] RUNNING ....')
+
     loop.run()
 
     def sigint_handler(*args):

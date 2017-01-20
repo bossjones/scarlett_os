@@ -404,4 +404,19 @@ if __name__ == "__main__":
         from scarlett_os.internal.debugger import init_debugger
         init_debugger()
 
-    _INSTANCE = st = ScarlettTasker()
+    if os.environ.get('TRAVIS_CI'):
+        # Close application silently
+        try:
+            _INSTANCE = st = ScarlettTasker()
+        except KeyboardInterrupt:
+            logger.warning('***********************************************')
+            logger.warning('Note: Added an exception "pass" for KeyboardInterrupt')
+            logger.warning('It is very possible that this might mask other errors happening with the application.')
+            logger.warning('Remove this while testing manually')
+            logger.warning('***********************************************')
+            pass
+        except:
+            raise
+    else:
+        # Close into a ipython debug shell
+        _INSTANCE = st = ScarlettTasker()

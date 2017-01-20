@@ -8,15 +8,18 @@ import time
 import unittest
 import unittest.mock as mock
 import threading
+
 from contextlib import contextmanager
 from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import Gio
 from scarlett_os.internal.gi import GObject
 from scarlett_os.internal.gi import Gst
 
+from tests import PROJECT_ROOT
+
 
 def create_main_loop():
-    '''Create isolated GLibMainloop for testing.'''
+    """Create isolated GLibMainloop for testing."""
     mainloop = GLib.MainLoop()
     timed_out = False
 
