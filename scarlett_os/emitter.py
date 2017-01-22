@@ -6,6 +6,7 @@
 import os
 import sys
 import time
+import signal
 
 SCARLETT_DEBUG = True
 
@@ -29,22 +30,28 @@ logger = logging.getLogger(__name__)
 
 def main(ss, args):  # pragma: no cover
     if args.signal == 'failed':
-        ss.emitSttFailedSignal()
+        res = ss.emitSttFailedSignal()
+        logger.info("[res]: {}".format(res))
 
     if args.signal == 'ready':
-        ss.emitListenerReadySignal()
+        res = ss.emitListenerReadySignal()
+        logger.info("[res]: {}".format(res))
 
     if args.signal == 'kw-rec':
-        ss.emitKeywordRecognizedSignal()
+        res = ss.emitKeywordRecognizedSignal()
+        logger.info("[res]: {}".format(res))
 
     if args.signal == 'cmd-rec':
-        ss.emitCommandRecognizedSignal('what time is it')
+        res = ss.emitCommandRecognizedSignal('what time is it')
+        logger.info("[res]: {}".format(res))
 
     if args.signal == 'cancel':
-        ss.emitListenerCancelSignal()
+        res = ss.emitListenerCancelSignal()
+        logger.info("[res]: {}".format(res))
 
     if args.signal == 'connect':
-        ss.emitConnectedToListener('ScarlettEmitter')
+        res = ss.emitConnectedToListener('ScarlettEmitter')
+        logger.info("[res]: {}".format(res))
 
 if __name__ == '__main__':
     if os.environ.get('SCARLETT_DEBUG_MODE'):
