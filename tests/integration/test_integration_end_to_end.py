@@ -6,9 +6,18 @@ test_integration_mpris
 ----------------------------------
 """
 
+import os
 import sys
+import signal
 import pytest
+import builtins
 import threading
+
+import unittest
+import unittest.mock as mock
+
+import pydbus
+import scarlett_os
 
 from tests import PROJECT_ROOT
 import time
