@@ -15,10 +15,10 @@ import time
 
 done = 0
 
-# from scarlett_os.internal import gi
+from scarlett_os.internal.gi import gi  # noqa
+from scarlett_os.internal.gi import Gio  # noqa
+from scarlett_os.internal.gi import GObject  # noqa
 from scarlett_os.internal.gi import GLib
-# from scarlett_os.internal.gi import Gio
-# from scarlett_os.internal.gi import GObject
 
 
 class TestScarlettEndToEnd(object):
@@ -143,98 +143,3 @@ class TestScarlettEndToEnd(object):
 
         # Disconnect dbus signal
         ss_rdy_signal.disconnect()
-
-        # pid, stdin, stdout, stderr = GLib.spawn_async(
-        #     ['sh', '-c', 'echo $TEST_VAR'], ['TEST_VAR=moo!'],
-        #     flags=GLib.SpawnFlags.SEARCH_PATH, standard_output=True)
-
-        # loop = GLib.MainLoop()
-        #
-        # recieved_signals = []
-        #
-        # from pydbus import SessionBus
-        # bus = SessionBus()
-        # ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')
-        # time.sleep(0.5)
-        #
-        # # taken from tasker
-        # ss_failed_signal = bus.subscribe(sender=None,
-        #                                  iface="org.scarlett.Listener",
-        #                                  signal="SttFailedSignal",
-        #                                  object="/org/scarlett/Listener",
-        #                                  arg0=None,
-        #                                  flags=0,
-        #                                  signal_fired=catchall_handler)
-        #
-        # ss_rdy_signal = bus.subscribe(sender=None,
-        #                               iface="org.scarlett.Listener",
-        #                               signal="ListenerReadySignal",
-        #                               object="/org/scarlett/Listener",
-        #                               arg0=None,
-        #                               flags=0,
-        #                               signal_fired=catchall_handler)
-        #
-        # ss_kw_rec_signal = bus.subscribe(sender=None,
-        #                                  iface="org.scarlett.Listener",
-        #                                  signal="KeywordRecognizedSignal",
-        #                                  object="/org/scarlett/Listener",
-        #                                  arg0=None,
-        #                                  flags=0,
-        #                                  signal_fired=catchall_handler)
-        #
-        # ss_cmd_rec_signal = bus.subscribe(sender=None,
-        #                                   iface="org.scarlett.Listener",
-        #                                   signal="CommandRecognizedSignal",
-        #                                   object="/org/scarlett/Listener",
-        #                                   arg0=None,
-        #                                   flags=0,
-        #                                   signal_fired=catchall_handler)
-        #
-        # ss_cancel_signal = bus.subscribe(sender=None,
-        #                                  iface="org.scarlett.Listener",
-        #                                  signal="ListenerCancelSignal",
-        #                                  object="/org/scarlett/Listener",
-        #                                  arg0=None,
-        #                                  flags=0,
-        #                                  signal_fired=catchall_handler)
-        #
-        # ss_connect = bus.subscribe(sender=None,
-        #                            iface="org.scarlett.Listener",
-        #                            signal="ConnectedToListener",
-        #                            object="/org/scarlett/Listener",
-        #                            arg0=None,
-        #                            flags=0,
-        #                            signal_fired=catchall_handler)
-        #
-        # logger.info('[receiver] RUNNING ....')
-        #
-        # loop.run()
-        # pass
-        # # use emitter to run all signal tests
-        #
-        # _environment = get_environment
-        #
-        # emitter_service = None
-        # scarlett_root = r"{}".format(PROJECT_ROOT)
-        #
-        # print('[emitter_service] running ...')
-        # emitter_service = subprocess.Popen(
-        #     [
-        #         "python3",
-        #         "-m",
-        #         "scarlett_os.emitter",
-        #         "-s ",
-        #         "ready"
-        #     ],
-        #     env=_environment,
-        #     stdout=sys.stdout,
-        #     shell=True,
-        #     cwd=scarlett_root)
-        # print('[emitter_service] FINISHED running ...')
-        #
-        # service_receiver.wait_for_output("('  ScarlettListener is ready', 'pi-listening')")
-        # print('[emitter_service] killing ...')
-        # emitter_service.kill()
-        # print('[emitter_service] killed ...')
-        #
-        # service_receiver.terminate()
