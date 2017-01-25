@@ -24,7 +24,7 @@ import time
 
 done = 0
 
-from scarlett_os.internal.gi import gi  # noqa
+from scarlett_os.internal import gi  # noqa
 from scarlett_os.internal.gi import Gio  # noqa
 from scarlett_os.internal.gi import GObject  # noqa
 from scarlett_os.internal.gi import GLib
