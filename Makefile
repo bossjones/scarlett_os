@@ -99,6 +99,10 @@ test-clean-all: ## run tests on every Python version with tox
 	python setup.py install
 	coverage run setup.py test
 
+test-with-pdb:
+	# pytest -p no:timeout -k test_mpris_player_and_tasker
+	pytest -p no:timeout -k test_mpris_player_and_tasker
+
 test-docker:
 	sudo chown -R vagrant:vagrant *
 	grep -q -F 'privileged: true' docker-compose.yml || sed -i "/build: ./a \ \ privileged: true" docker-compose.yml

@@ -6,94 +6,48 @@ test_integration_mpris
 ----------------------------------
 """
 
-import os
 import sys
-import signal
 import pytest
-import builtins
 import threading
 
-import unittest
-import unittest.mock as mock
-
-import pydbus
-import scarlett_os
-import scarlett_os.exceptions
-
-# from tests.integration.stubs import create_main_loop
-
-import subprocess
 from tests import PROJECT_ROOT
 import time
 
 done = 0
 
-
-# from scarlett_os.internal.gi import gi  # noqa
-# from scarlett_os.internal.gi import GLib
+# from scarlett_os.internal import gi
+from scarlett_os.internal.gi import GLib
 # from scarlett_os.internal.gi import Gio
 # from scarlett_os.internal.gi import GObject
-
-from scarlett_os.internal import gi
-from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import Gio
-from scarlett_os.internal.gi import GObject
-
-import imp  # Library to help us reload our tasker module
-
-# from scarlett_os.internal.gi import Gst
-#
-#
-# pp = pprint.PrettyPrinter(indent=4)
-# logger = logging.getLogger(__name__)
-#
-#
-# def print_keyword_args(**kwargs):  # pragma: no cover
-#     print('--- [kargs] ---')
-#     if kwargs is not None:
-#         for key, value in kwargs.items():
-#             print("{} = {}".format(key, value))
-#
-#
-# def print_args(args):  # pragma: no cover
-#     for i, v in enumerate(args):
-#         print("another arg through *arg : {}".format(v))
-#
-#
 
 
 class TestScarlettEndToEnd(object):
 
-    # def _connect_to_signal(self, bus, signal_name):
-    #     """Uses the PathWalker to scan URIs."""
-    #     mainloop = create_main_loop()
-    #
-    #     def done_cb(uris):  # pylint: disable=missing-docstring
-    #         recieved_signals.extend(signal_name)
-    #         mainloop.quit()
-    #
-    #     mainloop.run()
-    #     mainloop.quit()
-
     def test_mpris_player_and_tasker(self, service_on_outside, service_tasker, service_receiver, get_environment, get_bus):
 
-        # mock.patch.stopall()  # Stops all patches started with start()
-        # imp.reload(gi)
-        # imp.reload(GLib)
-        # imp.reload(GObject)
-        # imp.reload(Gio)
-
+        # Return dbus obj
         bus = get_bus
+
+        # Sleep to give time for connection to be established
         time.sleep(0.5)
+
+        # Return dbus proxy object
         ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')
+
+        # wait till we get proxy object
         time.sleep(0.5)
-        recieved_signals = []
-        # mainloop = create_main_loop()
 
+        # Catch tuples find from dbus signal
+        self.recieved_signals = []
+
+        # Return return code for running shell out command
         def cb(pid, status):
+            """
+            Set return code for emitter shell script.
+            """
             self.status = status
-            self.loop.quit()
 
+        # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
             Catch all handler.
@@ -110,10 +64,32 @@ class TestScarlettEndToEnd(object):
                     elif tuple_args == 3:
                         msg, scarlett_sound, command = v
 
-                    recieved_signals.append(v)
+            self.recieved_signals.append(v)
 
+            print('--- [args] ---')
+            for arg in args:
+                print("another arg through *arg : {}".format(arg))
+
+            print('--- [kargs] ---')
+            if kwargs is not None:
+                for key, value in kwargs.items():
+                    print("{} = {}".format(key, value))
+
+            print("\n")
+
+            # Run Mainloop
+            # 1. Run: [spawn_async]
+            # 2. Run: [dbus ]
+            loop.quit()
+
+        # The only main loop supported by pydbus is GLib.MainLoop.
         self.status = None
-        self.loop = GLib.MainLoop()
+
+        # MainLoop
+        loop = GLib.MainLoop()
+
+        print("Running main gui loop in thread: {}".format(threading.current_thread()))
+        print("Are we in main thread?: {}".format(threading.main_thread()))
 
         ss_rdy_signal = bus.subscribe(sender=None,
                                       iface="org.scarlett.Listener",
@@ -123,7 +99,13 @@ class TestScarlettEndToEnd(object):
                                       flags=0,
                                       signal_fired=catchall_handler)
 
+        # Give it a second
+        time.sleep(0.5)
+
+        # Send [ready] signal to dbus service
         argv = [sys.executable, '-m', 'scarlett_os.emitter', '-s', 'ready']
+
+        # Async background call. Send a signal to running process.
         pid, stdin, stdout, stderr = GLib.spawn_async(
             argv,
             envp=[
@@ -131,20 +113,36 @@ class TestScarlettEndToEnd(object):
             ],
             working_directory=PROJECT_ROOT,
             flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD)
+
+        # Close file descriptor when finished running scarlett emitter
         pid.close()
+
+        # NOTE: We give this PRIORITY_HIGH to ensure callback [cb] runs before dbus signal callback
         id = GLib.child_watch_add(GLib.PRIORITY_HIGH, pid, cb)
-        assert self.loop.get_context().find_source_by_id(id).priority == GLib.PRIORITY_HIGH
+
+        # assert 0 is basically a break point which will allow you to step through your code in pytest when --pdb is provided.
+
+        # source: http://stackoverflow.com/questions/2678792/can-i-debug-with-python-debugger-when-using-py-test-somehow
+
+        # Taken from pygobject test
+        assert loop.get_context().find_source_by_id(id).priority == GLib.PRIORITY_HIGH
+
+        # More sleeps
         time.sleep(1)
-        self.loop.run()
-        print('--------- recieved_signals -----------')
-        print(recieved_signals)
-        print('--------- stdin -----------')
-        print(stdin)
-        print('--------- stdout -----------')
-        print(stdout)
-        print('--------- stderr -----------')
-        print(stderr)
+
+        # import pdb;pdb.set_trace()
+
+        # Kick off mainloop
+        loop.run()
+
+        # TEST: Verify that shell return code is 0
         assert self.status == 0
+
+        # TEST: Assert we got READY signal
+        assert self.recieved_signals[0] == ('  ScarlettListener is ready', 'pi-listening')
+
+        # Disconnect dbus signal
+        ss_rdy_signal.disconnect()
 
         # pid, stdin, stdout, stderr = GLib.spawn_async(
         #     ['sh', '-c', 'echo $TEST_VAR'], ['TEST_VAR=moo!'],
