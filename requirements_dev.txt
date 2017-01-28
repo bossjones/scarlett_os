@@ -75,5 +75,5 @@ Cython==0.25.2
 # trace python process
 pystuck==0.8.5
 
-objgraph
+objgraph==3.1.0
 xdot
