@@ -38,7 +38,7 @@ class TestScarlettEndToEnd(object):
         bus = get_bus
 
         # Sleep to give time for connection to be established
-        time.sleep(0.5)
+        time.sleep(1)
 
         # Return dbus proxy object
         ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')
@@ -91,6 +91,8 @@ class TestScarlettEndToEnd(object):
             # 2. Run: [dbus ]
             loop.quit()
 
+        # import pdb;pdb.set_trace()
+
         # The only main loop supported by pydbus is GLib.MainLoop.
         self.status = None
 
@@ -108,18 +110,22 @@ class TestScarlettEndToEnd(object):
                                       flags=0,
                                       signal_fired=catchall_handler)
 
+        print('[ss_rdy_signal] - created')
+
         # Give it a second
         time.sleep(0.5)
 
         # Send [ready] signal to dbus service
+        # FIXME: THIS IS THE CULPRIT
         argv = [sys.executable, '-m', 'scarlett_os.emitter', '-s', 'ready']
+
+        # convert environment dict -> list of strings
+        env_dict_to_str = ['{}={}'.format(k, v) for k, v in get_environment.items()]
 
         # Async background call. Send a signal to running process.
         pid, stdin, stdout, stderr = GLib.spawn_async(
             argv,
-            envp=[
-                'DBUS_SESSION_BUS_ADDRESS=' + get_environment['DBUS_SESSION_BUS_ADDRESS']
-            ],
+            envp=env_dict_to_str,
             working_directory=PROJECT_ROOT,
             flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD)
 

@@ -14,7 +14,7 @@ import argparse
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-from scarlett_os.internal.gi import gi  # noqa
+from scarlett_os.internal.gi import gi
 
 valid_signals = ['failed',
                  'ready',

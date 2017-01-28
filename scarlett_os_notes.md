@@ -620,3 +620,22 @@ string:"ScarlettEmitter"
                        variant:int32:-8                                 \
                        objpath:/org/freedesktop/sample/object/name
 ```
+
+# sysdig for debugging
+
+```
+docker pull sysdig/sysdig
+
+docker run -i -t --name sysdig --privileged -v /var/run/docker.sock:/host/var/run/docker.sock -v /dev:/host/dev -v /proc:/host/proc:ro -v /boot:/host/boot:ro -v /lib/modules:/host/lib/modules:ro -v /usr:/host/usr:ro sysdig/sysdig
+```
+
+```
+# list process by top CPU inside container @ name
+sysdig -pc -c topprocs_cpu container.name=7764d091cf0b
+
+# Show all the interactive commands executed inside the container
+sysdig -pc -c spy_users container.name=7764d091cf0b
+
+
+sysdig evt.type=open and fd.name contains /etc
+```

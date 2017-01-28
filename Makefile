@@ -74,6 +74,12 @@ clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
 	rm -fr htmlcov/
 
+docker-build:
+	docker-compose -f docker-compose.yml -f ci/build.yml build
+
+docker-build-run: docker-build
+	docker run -i -t --rm scarlettos_scarlett_master bash
+
 lint: ## check style with flake8
 	flake8 scarlett_os tests
 
