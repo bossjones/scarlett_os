@@ -265,6 +265,11 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
                             # Import module locally for testing purposes
                             from scarlett_os.internal.gi import gi, GLib
 
+                            # Save unpatched versions of the following so we can reset everything after tests finish
+                            before_patch_gi_pid = gi._gi._glib.Pid
+                            before_path_glib_spawn_async = GLib.spawn_async
+                            before_path_child_watch_add = GLib.child_watch_add
+
                             test_pid = mock.Mock(spec=gi._gi._glib.Pid, return_value=23241, name='Mockgi._gi._glib.Pid')
                             test_pid.real = 23241
                             test_pid.close = mock.Mock(name='Mockgi._gi._glib.Pid.close')
@@ -305,6 +310,11 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
                                                                              )
 
                                     GLib.child_watch_add.assert_called_once_with(GLib.PRIORITY_HIGH, test_pid, mock_exited_cb)
+
+                                    # now unpatch all of these guys
+                                    gi._gi._glib.Pid = before_patch_gi_pid
+                                    GLib.spawn_async = before_path_glib_spawn_async
+                                    GLib.child_watch_add = before_path_child_watch_add
 
     # NOTE: Decorators get applied BOTTOM to TOP
     def test_check_command_type_is_array_of_str(self):

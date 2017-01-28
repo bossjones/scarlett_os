@@ -22,12 +22,6 @@ from __future__ import with_statement, division, absolute_import
 import sys
 import os
 
-# TODO: Move this to a debug function that allows you to enable it or disable it
-os.environ[
-    "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-          '/home/pi/dev/bossjones-github/scarlett_os/_debug')
-
 import signal
 import threading
 import logging
@@ -122,7 +116,6 @@ _shared_loop_thread = None
 _loop_thread_lock = threading.RLock()
 
 
-@abort_on_exception
 def get_loop_thread():
     """Get the shared main-loop thread.
     """
@@ -517,6 +510,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         # capsfilter_queue.connect('pushing', self._on_pushing)
         # capsfilter_queue.connect('running', self._on_running)
 
+
         self.elements_stack.append(capsfilter_queue)
 
         ident = pipeline.get_by_name('ident')
@@ -762,14 +756,19 @@ class ListenerDemo:
         logger.debug("thread_progress.")
 
 if __name__ == '__main__':
-    import faulthandler
-    faulthandler.register(signal.SIGUSR2, all_threads=True)
-    faulthandler.enable(file=sys.stderr, all_threads=True)
-    print('Installed SIGUSR1 handler to print stack traces: pkill -USR1 -f scarlett_os.listener')
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
+        import faulthandler
+        faulthandler.register(signal.SIGUSR2, all_threads=True)
+        faulthandler.enable(file=sys.stderr, all_threads=True)
+        print('Installed SIGUSR1 handler to print stack traces: pkill -USR1 -f scarlett_os.listener')
 
-    from scarlett_os.internal.debugger import init_debugger, enable_remote_debugging
-    enable_remote_debugging()
-    init_debugger()
+        from scarlett_os.internal.debugger import init_debugger
+        from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+        from scarlett_os.internal.debugger import enable_remote_debugging
+        enable_remote_debugging()
+        init_debugger()
+        set_gst_grapviz_tracing()
+        # Example of how to use it
 
     demo = ListenerDemo()
     loop.run()

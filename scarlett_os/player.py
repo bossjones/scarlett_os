@@ -23,12 +23,6 @@ from __future__ import with_statement, division, absolute_import
 import os
 import sys
 
-# TODO: Move this to a debug function that allows you to enable it or disable it
-os.environ[
-    "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-          '/home/pi/dev/bossjones-github/scarlett_os/_debug')
-
 import signal
 import threading
 import logging
@@ -158,12 +152,15 @@ class ScarlettPlayer(_IdleObject):
 
         # Make sure GST likes the uri
         if not uri_is_valid(uri):
-            logger.error("Error: Something is wrong with uri provided. uri: {}".format(uri))
+            logger.error("Error: "
+                         "Something is wrong with uri "
+                         "provided. uri: {}".format(uri))
             raise InvalidUri()
 
         # Make sure we can actually read the uri
         if not isReadable(path_from_uri(uri)):
-            logger.error("Error: Can't read uri: {}".format(path_from_uri(uri)))
+            logger.error("Error: Can't read uri:"
+                         " {}".format(path_from_uri(uri)))
             raise UriReadError()
 
         self.source.set_property('uri', uri)
@@ -219,8 +216,9 @@ class ScarlettPlayer(_IdleObject):
 
         # link tee to queueA
         tee_src_pad_to_appsink_bin = self.splitter.get_request_pad('src_%u')
-        logger.debug("Obtained request pad Name({}) Type({}) for audio branch.".format(
-            self.splitter.name, self.splitter))
+        logger.debug("Obtained request pad "
+                     "Name({}) Type({}) for audio branch.".format(
+                     self.splitter.name, self.splitter))
         queueAsinkPad = self.queueA.get_static_pad('sink')
         logger.debug(
             "Obtained sink pad for element ({}) for tee -> queueA.".format(queueAsinkPad))
@@ -559,11 +557,15 @@ class ScarlettPlayer(_IdleObject):
 
 # Smoke test.
 if __name__ == '__main__':
-    import faulthandler
-    faulthandler.register(signal.SIGUSR2, all_threads=True)
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
+        import faulthandler
+        faulthandler.register(signal.SIGUSR2, all_threads=True)
 
-    from scarlett_os.internal.debugger import init_debugger
-    init_debugger()
+        from scarlett_os.internal.debugger import init_debugger
+        from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+        init_debugger()
+        set_gst_grapviz_tracing()
+        # Example of how to use it
 
     wavefile = [
         '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']

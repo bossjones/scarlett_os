@@ -17,6 +17,10 @@ mock==2.0.0
 pydocstyle>=1.0.0
 mypy-lang>=0.4
 pylint>=1.5.6
+# NOTE: We need to install android as well
+# python -m pip install astroid
+# NOTE: We need isort too
+# isort
 coveralls>=1.1
 
 # data science
@@ -38,6 +42,7 @@ freezegun==0.3.8
 git+git://github.com/mverteuil/pytest-ipdb.git
 pdbpp==0.8.3
 # pudb
+pytest-sugar
 
 # # Test runners
 # pytest
@@ -69,3 +74,6 @@ Cython==0.25.2
 
 # trace python process
 pystuck==0.8.5
+
+objgraph
+xdot

@@ -3,7 +3,19 @@
 import sys
 import signal
 import logging
+import os
 logger = logging.getLogger(__name__)
+
+
+def set_gst_grapviz_tracing(enabled=True):
+    if enabled:
+        os.environ[
+            "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"  # noqa
+        os.putenv('GST_DEBUG_DUMP_DIR_DIR',
+                  '/home/pi/dev/bossjones-github/scarlett_os/_debug')
+    else:
+        if os.environ.get('GST_DEBUG_DUMP_DOT_DIR'):
+            del os.environ['GST_DEBUG_DUMP_DOT_DIR']
 
 
 # source: http://pyrasite.readthedocs.io/en/latest/Payloads.html

@@ -1,4 +1,4 @@
-FROM  bossjones/boss-docker-jhbuild-pygobject3:v1
+FROM  bossjones/boss-docker-jhbuild-pygobject3:v1.1
 MAINTAINER Malcolm Jones <bossjones@theblacktonystark.com>
 
 COPY ./ /home/pi/dev/bossjones-github/scarlett_os
@@ -6,7 +6,7 @@ COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
 
 RUN sudo apt-get update -yqq && \
-    sudo apt-get install dbus psmisc vim xvfb xclip -yqq && \
+    sudo apt-get install dbus dbus-x11 psmisc vim xvfb xclip -yqq && \
     sudo apt-get clean && \
     sudo apt-get autoclean -y && \
     sudo apt-get autoremove -y && \

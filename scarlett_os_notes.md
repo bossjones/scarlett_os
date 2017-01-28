@@ -517,3 +517,125 @@ Out[3]: <frame at 0x7f4bfcf18988>
 In [4]: _.f_locals
 Out[4]: {'__class__': <class 'gi.overrides.GLib.MainLoop'>, 'self': <GLib.MainLoop object at 0x7fba523c0cb8 (GMainLoop at 0x1e2dfe0)>}
 ```
+
+
+# example of gui docker instance
+```
+export distribution=ubuntu
+export version=16.04
+export python=3.5
+
+# docker run --rm -it \
+# -v /etc/machine-id:/etc/machine-id:ro \
+# -v /etc/localtime:/etc/localtime:ro \
+# -v /tmp/.X11-unix:/tmp/.X11-unix \
+# -e DISPLAY=unix$DISPLAY \
+# --device /dev/snd:/dev/snd \
+# -v /var/run/dbus:/var/run/dbus \
+# -v $HOME/.scudcloud:/home/user/.config/scudcloud \
+# --name scudcloud \
+# jess/scudcloud
+```
+
+# Good projects to follow
+
+- pytest, python3.5, python-dbus, travis: https://github.com/peuter/gosa
+- pytest, dbus, conftest, pytest.fixture https://github.com/Pelagicore/dbus-proxy/blob/6f8dfcefb83cee5513f4ffcc46f12dcf701598f5/component-test/conftest.py
+- pulse, pulsevideo, pytest, integration, FrameCounter https://github.com/wmanley/pulsevideo/blob/d8259f2ce2f3951e380e319c80b9d124b47efdf2/tests/integration_test.py (Allows multiplexing access to webcams such that more than one application can read video from a single piece of hardware at a time.)
+- dbus-python: https://cgit.freedesktop.org/dbus/dbus-python/
+
+
+# Movement towards integration testing for scarlett_os
+
+Make cover-debug = `py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals`
+
+`py.test -s --tb short tests --benchmark-skip --pdb --showlocals`
+
+
+# Garbage collection problem in travis test
+
+Test: https://travis-ci.org/bossjones/scarlett_os/builds/191936999
+
+```
+tests/test_mpris.py [   <Gio.DBusConnection object at 0x7fc1681c6238 (GDBusConnection at 0x1fa0050)>,
+    '/org/scarlett/Listener']
+<Gio.DBusConnection object at 0x7fc1681c6238 (GDBusConnection at 0x1fa0050)>
+.python3.5: Modules/gcmodule.c:441: visit_reachable: Assertion `gc_refs > 0 || gc_refs == GC_REACHABLE || gc_refs == GC_UNTRACKED' failed.
+Makefile:119: recipe for target 'test-travis' failed
+make: *** [test-travis] Aborted (core dumped)
+```
+
+# dbus testing
+
+```
+$ DBUS_SESSION_BUS_ADDRESS=tcp:host=192.168.56.101,port=10010 dbus-send --print-reply --type=method_call --dest=com.example.Test /com/example/Test com.example.Test.TestMethod string:foo
+
+
+dbus-send \
+  --print-reply \
+  --dest=org.scarlett \
+  --type=mathod_call \
+  /org/scarlett/Listener \
+  org.scarlett.Listener.emitConnectedToListener \
+  variant:string:"ScarlettEmitter"
+
+
+
+dbus-send \
+--print-reply \
+--dest=org.scarlett \
+/org/scarlett/Listener \
+org.scarlett.Listener.emitConnectedToListener \
+variant:string:"ScarlettEmitter"
+
+
+DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-jDEVlaa4gH,guid=0731db7bb15b0f356987abe7587bf5f6 \
+
+
+dbus-send \
+--session \
+--print-reply \
+--dest='org.scarlett' \
+'/org/scarlett/Listener' \
+'org.scarlett.Listener.emitConnectedToListener' \
+string:"ScarlettEmitter"
+
+
+dbus-send \
+--session \
+--print-reply \
+--dest=org.scarlett \
+/org/scarlett/Listener \
+org.scarlett.Listener1.emitConnectedToListener \
+string:"ScarlettEmitter"
+
+
+
+ dbus-send --dest=org.freedesktop.ExampleName               \
+                       /org/freedesktop/sample/object/name              \
+                       org.freedesktop.ExampleInterface.ExampleMethod   \
+                       int32:47 string:'hello world' double:65.32       \
+                       array:string:"1st item","next item","last item"  \
+                       dict:string:int32:"one",1,"two",2,"three",3      \
+                       variant:int32:-8                                 \
+                       objpath:/org/freedesktop/sample/object/name
+```
+
+# sysdig for debugging
+
+```
+docker pull sysdig/sysdig
+
+docker run -i -t --name sysdig --privileged -v /var/run/docker.sock:/host/var/run/docker.sock -v /dev:/host/dev -v /proc:/host/proc:ro -v /boot:/host/boot:ro -v /lib/modules:/host/lib/modules:ro -v /usr:/host/usr:ro sysdig/sysdig
+```
+
+```
+# list process by top CPU inside container @ name
+sysdig -pc -c topprocs_cpu container.name=7764d091cf0b
+
+# Show all the interactive commands executed inside the container
+sysdig -pc -c spy_users container.name=7764d091cf0b
+
+
+sysdig evt.type=open and fd.name contains /etc
+```

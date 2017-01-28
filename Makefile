@@ -74,6 +74,12 @@ clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
 	rm -fr htmlcov/
 
+docker-build:
+	docker-compose -f docker-compose.yml -f ci/build.yml build
+
+docker-build-run: docker-build
+	docker run -i -t --rm scarlettos_scarlett_master bash
+
 lint: ## check style with flake8
 	flake8 scarlett_os tests
 
@@ -99,6 +105,10 @@ test-clean-all: ## run tests on every Python version with tox
 	python setup.py install
 	coverage run setup.py test
 
+test-with-pdb:
+	# pytest -p no:timeout -k test_mpris_player_and_tasker
+	pytest -p no:timeout -k test_mpris_player_and_tasker
+
 test-docker:
 	sudo chown -R vagrant:vagrant *
 	grep -q -F 'privileged: true' docker-compose.yml || sed -i "/build: ./a \ \ privileged: true" docker-compose.yml
@@ -115,13 +125,14 @@ jenkins: bootstrap
 	$(pytest) $(test_args) --benchmark-skip
 
 .PHONY: test-travis
+test-travis: export TRAVIS_CI=1
 test-travis:
 	$(pytest) $(test_args_no_xml) --benchmark-skip
 	coverage report -m
 
 .PHONY: test-travis-debug
 test-travis-debug:
-	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb
+	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb --showlocals
 	coverage report -m
 
 .PHONY: cover
@@ -178,6 +189,16 @@ dist: clean ## builds source and wheel package
 	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist
+
+dc-ci-build:
+	docker-compose -f docker-compose.yml -f ci/build.yml build
+
+docker-run-bash:
+	docker run -i -t --rm scarlettos_scarlett_master bash
+
+# docker-exec-bash:
+# 	container_id := $(shell docker ps |grep scarlettos_scarlett_master| awk '{print $1}')
+# 	docker exec -i it $(container_id) bash
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install

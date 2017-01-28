@@ -25,12 +25,6 @@
 import sys
 import os
 
-# TODO: Move this to a debug function that allows you to enable it or disable it
-os.environ[
-    "GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-os.putenv('GST_DEBUG_DUMP_DIR_DIR',
-          '/home/pi/dev/bossjones-github/scarlett_os/_debug')
-
 import signal
 import threading
 import logging
@@ -134,13 +128,18 @@ class ScarlettSpeaker(object):
         self.close()
         return False
 
+
 # Smoke test.
 if __name__ == '__main__':
-    import faulthandler
-    faulthandler.register(signal.SIGUSR2, all_threads=True)
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
+        import faulthandler
+        faulthandler.register(signal.SIGUSR2, all_threads=True)
 
-    from scarlett_os.internal.debugger import init_debugger
-    init_debugger()
+        from scarlett_os.internal.debugger import init_debugger
+        from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+        init_debugger()
+        set_gst_grapviz_tracing()
+        # Example of how to use it
 
     tts_list = [
         'Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands']

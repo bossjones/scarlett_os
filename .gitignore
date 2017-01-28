@@ -74,3 +74,8 @@ ess.zip
 espeak-1.48.04-source
 pocketsphinx
 sphinxbase
+
+# os x
+.DS_Store
+*.DS_Store
+*.DS_Store*
