@@ -295,6 +295,7 @@ class ScarlettPlayer(_IdleObject):
         states = msg.parse_state_changed()
         # To state is PLAYING
         if msg.src.get_name() == "pipeline" and states[1] == 4:
+            # TODO: Modify the creation of this path, it should be programatically created
             dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
             pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
 
