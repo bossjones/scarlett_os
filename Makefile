@@ -235,7 +235,7 @@ run-mpris:
 run-tasker:
 	python -m scarlett_os.tasker
 
-run-tasker:
+run-listener:
 	python -m scarlett_os.listener
 
 # source: https://github.com/docker/machine/blob/master/docs/drivers/generic.md#interaction-with-ssh-agents
