@@ -639,3 +639,25 @@ sysdig -pc -c spy_users container.name=7764d091cf0b
 
 sysdig evt.type=open and fd.name contains /etc
 ```
+
+# Solid approach
+
+Target: `multiple modules`
+
+Sticking with main focus of porting everything from python2 to python3 from the `scarlett-dbus-poc` repo, even though it needs to be refactored ... HEAVILY.
+
+Planning on using the `S.O.L.I.D` approach w/ python going forward.
+
+Resources:
+
+- https://github.com/dboyliao/SOLID
+- http://www.slideshare.net/DrTrucho/python-solid
+- https://www.reddit.com/r/learnpython/comments/4i6tw4/solid_principles_in_python/
+
+Videos:
+
+- https://www.youtube.com/watch?v=wf-BqAjZb8M
+- https://www.youtube.com/watch?v=NfngrdLv9ZQ
+- https://www.youtube.com/watch?v=TQgB9JFbui0
+
+<img width="628" alt="screen shot 2016-12-23 at 7 05 51 pm" src="https://cloud.githubusercontent.com/assets/709872/21464154/34496f78-c943-11e6-8b22-eb2c493e1286.png">
