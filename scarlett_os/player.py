@@ -115,6 +115,10 @@ class ScarlettPlayer(_IdleObject):
     # :handler_error: (callable)
     # :callback: (callable)
 
+    DEFAULT_SRC = 'uridecodebin'
+
+    DEFAULT_SINK = 'pulsesink'
+
     def __init__(self, path, handle_error, callback):
         self.running = False
         self.finished = False
@@ -229,7 +233,7 @@ class ScarlettPlayer(_IdleObject):
         #######################################################################
 
         self.queueB = Gst.ElementFactory.make('queue', None)
-        self.pulsesink = Gst.ElementFactory.make('pulsesink', None)
+        self.pulsesink = Gst.ElementFactory.make(ScarlettPlayer.DEFAULT_SINK, None)
 
         self.pipeline.add(self.queueB)
         self.pipeline.add(self.pulsesink)
