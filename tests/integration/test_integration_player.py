@@ -58,7 +58,7 @@ class TestScarlettPlayer(object):
         assert str(type(player_data[0].audioconvert)) == "<class '__gi__.GstAudioConvert'>"
         assert str(type(player_data[0].splitter)) == "<class '__gi__.GstTee'>"
         assert str(type(player_data[0].pulsesink)) == "<class '__gi__.GstFakeSink'>"
-        assert str(type(player_data[0].queueB_sink_pad)) == "<class 'gi.overrides.Gst.Pad'>"
+        # assert str(type(player_data[0].queueB_sink_pad)) == "<class 'gi.overrides.Gst.Pad'>"
 
         # Means pipeline was setup correct and ran without error
         assert player_data[0].read_exc is None
