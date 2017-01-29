@@ -229,6 +229,15 @@ dbus-monitor-signal:
 dbus-monitor-all:
 	dbus-monitor
 
+run-mpris:
+	python -m scarlett_os.mpris
+
+run-tasker:
+	python -m scarlett_os.tasker
+
+run-tasker:
+	python -m scarlett_os.listener
+
 # source: https://github.com/docker/machine/blob/master/docs/drivers/generic.md#interaction-with-ssh-agents
 # source: http://blog.scottlowe.org/2015/08/04/using-vagrant-docker-machine-together/
 create-docker-machine:

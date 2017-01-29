@@ -184,53 +184,6 @@ class ScarlettTasker(_IdleObject):
             raise
 
 
-# def signal_handler_player_thread(scarlett_sound):
-#     '''No-Op Function to handle playing Gstreamer.'''
-#
-#     def function_calling_player_gst(event, *args, **kwargs):
-#         player_run = True
-#         logger.info('BEGIN PLAYING WITH SCARLETTPLAYER')
-#         if player_run:
-#             wavefile = SoundType.get_path(scarlett_sound)
-#             for path in wavefile:
-#                 path = os.path.abspath(os.path.expanduser(path))
-#                 with player.ScarlettPlayer(path, False, False) as f:
-#                     print((f.channels))
-#                     print((f.samplerate))
-#                     print((f.duration))
-#                     for s in f:
-#                         yield
-#         event.set()
-#         wavefile = None
-#         player_run = False
-#         logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
-#         event.clear()
-#
-#     event = threading.Event()
-#     logger.info('event = threading.Event()')
-#     GObject.idle_add(function_calling_player_gst, event, priority=GLib.PRIORITY_HIGH)
-#     logger.info('BEFORE event.wait()')
-#     event.wait()
-#     logger.info('END PLAYING WITH SCARLETTPLAYER INSIDE IF')
-
-
-# @abort_on_exception
-# def signal_handler_speaker_thread():
-#
-#     def function_calling_speaker(event, result, tts_list):
-#         for scarlett_text in tts_list:
-#             with s_thread.time_logger('Scarlett Speaks'):
-#                 speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
-#                                         wavpath="/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav")
-#         event.set()
-
-
-# @abort_on_exception
-# def fake_cb(*args, **kwargs):
-#     if os.environ.get('SCARLETT_DEBUG_MODE'):
-#         logger.debug("fake_cb")
-
-
 def print_keyword_args(**kwargs):
     # kwargs is a dict of the keyword args passed to the function
     for key, value in kwargs.items():
@@ -277,12 +230,19 @@ def player_cb(*args, **kwargs):
         if os.environ.get('SCARLETT_DEBUG_MODE'):
             logger.debug("Type v: {}".format(type(v)))
             logger.debug("Type i: {}".format(type(i)))
-        logger.info('go')
         if isinstance(v, tuple):
             if os.environ.get('SCARLETT_DEBUG_MODE'):
-                logger.debug(
-                    "THIS SHOULD BE A Tuple now: {}".format(v))
-            msg, scarlett_sound = v
+                logger.debug("THIS SHOULD BE A Tuple now: {}".format(v))
+
+            # Unbundle tuples and make sure you know how many items are returned
+            tuple_args = len(v)
+            if tuple_args == 1:
+                msg = v
+            elif tuple_args == 2:
+                msg, scarlett_sound = v
+            elif tuple_args == 3:
+                msg, scarlett_sound, command = v
+
             logger.warning(" msg: {}".format(msg))
             logger.warning(
                 " scarlett_sound: {}".format(scarlett_sound))
@@ -360,11 +320,19 @@ def command_cb(*args, **kwargs):
         if os.environ.get('SCARLETT_DEBUG_MODE'):
             logger.debug("Type v: {}".format(type(v)))
             logger.debug("Type i: {}".format(type(i)))
-        logger.info('go')
         if isinstance(v, tuple):
             if os.environ.get('SCARLETT_DEBUG_MODE'):
                 logger.debug("THIS SHOULD BE A Tuple now: {}".format(v))
-            msg, scarlett_sound, command = v
+
+            # Unbundle tuples and make sure you know how many items are returned
+            tuple_args = len(v)
+            if tuple_args == 1:
+                msg = v
+            elif tuple_args == 2:
+                msg, scarlett_sound = v
+            elif tuple_args == 3:
+                msg, scarlett_sound, command = v
+
             logger.warning(" msg: {}".format(msg))
             logger.warning(
                 " scarlett_sound: {}".format(scarlett_sound))
