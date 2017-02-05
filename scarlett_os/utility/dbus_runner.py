@@ -92,9 +92,11 @@ class DBusRunner(object):
     __bus = None
     __active = False
     __instance = None
+    __proxy = None
 
     def __init__(self):
         DBusRunner.__bus = SessionBus()
+        DBusRunner.__proxy = DBusRunner.__bus.get("org.scarlett", object_path='/org/scarlett/Listener')
 
     def start(self):
         """
@@ -159,6 +161,18 @@ class DBusRunner(object):
 
         # pydbus.bus.Bus at 0x7fa552e8ef60
         return DBusRunner.__bus
+
+    def get_proxy_object(self):
+        """
+        Return the current DBUS session bus.
+
+        ``Return:`` DBusRunner bus object
+        """
+
+        # if not DBusRunner.__proxy:
+        #     DBusRunner.__proxy = DBusRunner.__bus.get("org.scarlett", object_path='/org/scarlett/Listener')
+
+        return DBusRunner.__proxy
 
     def is_active(self):
         """

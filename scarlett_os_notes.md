@@ -661,3 +661,118 @@ Videos:
 - https://www.youtube.com/watch?v=TQgB9JFbui0
 
 <img width="628" alt="screen shot 2016-12-23 at 7 05 51 pm" src="https://cloud.githubusercontent.com/assets/709872/21464154/34496f78-c943-11e6-8b22-eb2c493e1286.png">
+
+
+# pygobject callbacks ! return true or return false
+
+```
+#!/usr/bin/env python
+
+# example helloworld.py
+
+import pygtk
+pygtk.require('2.0')
+import gtk
+
+class HelloWorld:
+
+    # This is a callback function. The data arguments are ignored
+    # in this example. More on callbacks below.
+    def hello(self, widget, data=None):
+        print "Hello World"
+
+    def delete_event(self, widget, event, data=None):
+        # If you return FALSE in the "delete_event" signal handler,
+        # GTK will emit the "destroy" signal. Returning TRUE means
+        # you don't want the window to be destroyed.
+        # This is useful for popping up 'are you sure you want to quit?'
+        # type dialogs.
+        print "delete event occurred"
+
+        # Change FALSE to TRUE and the main window will not be destroyed
+        # with a "delete_event".
+        return False
+
+    def destroy(self, widget, data=None):
+        print "destroy signal occurred"
+        gtk.main_quit()
+
+    def __init__(self):
+        # create a new window
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+
+        # When the window is given the "delete_event" signal (this is given
+        # by the window manager, usually by the "close" option, or on the
+        # titlebar), we ask it to call the delete_event () function
+        # as defined above. The data passed to the callback
+        # function is NULL and is ignored in the callback function.
+        self.window.connect("delete_event", self.delete_event)
+
+        # Here we connect the "destroy" event to a signal handler.
+        # This event occurs when we call gtk_widget_destroy() on the window,
+        # or if we return FALSE in the "delete_event" callback.
+        self.window.connect("destroy", self.destroy)
+
+        # Sets the border width of the window.
+        self.window.set_border_width(10)
+
+        # Creates a new button with the label "Hello World".
+        self.button = gtk.Button("Hello World")
+
+        # When the button receives the "clicked" signal, it will call the
+        # function hello() passing it None as its argument.  The hello()
+        # function is defined above.
+        self.button.connect("clicked", self.hello, None)
+
+        # This will cause the window to be destroyed by calling
+        # gtk_widget_destroy(window) when "clicked".  Again, the destroy
+        # signal could come from here, or the window manager.
+        self.button.connect_object("clicked", gtk.Widget.destroy, self.window)
+
+        # This packs the button into the window (a GTK container).
+        self.window.add(self.button)
+
+        # The final step is to display this newly created widget.
+        self.button.show()
+
+        # and the window
+        self.window.show()
+
+    def main(self):
+        # All PyGTK applications must have a gtk.main(). Control ends here
+        # and waits for an event to occur (like a key press or mouse event).
+        gtk.main()
+
+# If the program is run directly or passed as an argument to the python
+# interpreter then create a HelloWorld instance and show it
+if __name__ == "__main__":
+    hello = HelloWorld()
+    hello.main()
+```
+
+Also see: https://en.wikibooks.org/wiki/PyGTK_For_GUI_Programming/Signals
+
+
+# [EVENTS] Return values in pygobject/gtk+ events
+
+**SOURCE:** https://en.wikibooks.org/wiki/PyGTK_For_GUI_Programming/Signals
+
+GTK+ events are similar to signals: they are 'emitted' by specific widgets and can be handled by callback functions. The only differences as far as the PyGTK programmer is concerned are the arguments to a callback function and its return value. As an example, we'll use the 'button_pressed_event' emitted by the gtk.Button widget, which can be connected to a callback function the same way a signal is:
+
+`button.connect('button_press_event', callback_func, callback_data)`
+
+where button is an instance of the gtk.Button object. The callback_data argument, as explained in the previous chapter, is optional. The definition of the callback function contains three arguments: a reference to the widget that emitted the signal, the event and the callback data:
+
+`def callback_func(widget, event, callback_data=None)`
+
+The value returned from this function must be a boolean value (unlike callback functions for signals). This return value is an important message in the GTK+ event mechanism:
+
+* False means that the event was not fully processed so GTK+ should continue doing whatever it usually does when this event occurs and the signal should propagate further.
+* True means that the event was fully handled and GTK+ no longer needs to do any further processing in response to the event.
+
+As an example, the 'delete_event' event is emitted from a gtk.Window when the user tries to close the window; if we connect a callback function to this and the function returns False, GTK+ will go on to close the window and emit the 'destroy' signal. If our callback function returns True, however, GTK+ does not close the window itself or emit the 'destroy' signal. This allows us to intervene when someone tries to close a window so we have to opportunity to ask them if, for example, they want to save their work, and then either instruct GTK+ to close the window or leave it open by returning the appropriate values from our callback function.
+
+
+# pygobject / pygtk signals
+
+**SEE THE FOLLOWING:** https://en.wikibooks.org/wiki/PyGTK_For_GUI_Programming/First_Steps
