@@ -140,6 +140,22 @@ class ScarlettTasker(_IdleObject):
     __active = False
     __instance = None
 
+    # source: https://github.com/samdroid-apps/something-for-reddit/blob/6ec982f6fb776387ab007e2603671ec932b2005c/src/identity.py
+    # sign_in_status = GObject.Signal('sign-in-status', arg_types=[str, bool])
+    # token_changed = GObject.Signal('token-changed', arg_types=[object])
+
+    __gsignals__ = {
+        "tasker-started": (GObject.SignalFlags.RUN_LAST, None, ()),
+        "tasker-configured": (GObject.SignalFlags.RUN_LAST, None, ()),
+    }
+
+    # tasker_started = GObject.Signal('tasker-started', arg_types=[str])
+    # self.token_changed.emit(self._tokens[id])
+    # self.sign_in_status.emit('', True)
+    #
+    # if callback is not None:
+    #     callback()
+
     @abort_on_exception
     def __init__(self, *args):
         _IdleObject.__init__(self)
@@ -275,12 +291,19 @@ class ScarlettTasker(_IdleObject):
     #     pass
     # where self is the object instance invoking the method. This is the form used in the helloworld.py example program.
 
+    def do_tasker_started(self):
+        logger.info("Starting up ScarlettTasker ...")
+
+    def do_tasker_configured(self):
+        logger.info("ScarlettTasker is configured...")
+
     def reset(self):
         """Reset the helper.
 
         Should be called whenever the source changes and we are not setting up
         a new appsrc.
         """
+        self._handler.clear()
         self._failed_signal_callback = None
         self._ready_signal_callback = None
         self._keyword_recognized_signal_callback = None
@@ -407,28 +430,24 @@ class ScarlettTasker(_IdleObject):
 
         if self._ready_signal_callback:
             self._handler.connect(bus, "ListenerReadySignal", self._ready_signal_callback)
-            # self._handler.connect(bus, "ListenerReadySignal", self._on_signal,
-            #                       self._seek_data_callback)
 
         if self._keyword_recognized_signal_callback:
             self._handler.connect(bus, "KeywordRecognizedSignal", self._keyword_recognized_signal_callback)
-            # self._handler.connect(bus, "KeywordRecognizedSignal", self._on_signal, None,
-            #                       self._enough_data_callback)
 
         if self._command_recognized_signal_callback:
             self._handler.connect(bus, "CommandRecognizedSignal", self._command_recognized_signal_callback)
-            # self._handler.connect(bus, "CommandRecognizedSignal", self._on_signal, None,
-            #                       self._enough_data_callback)
 
         if self._cancel_signal_callback:
             self._handler.connect(bus, "ListenerCancelSignal", self._cancel_signal_callback)
-            # self._handler.connect(bus, "ListenerCancelSignal", self._on_signal, None,
-            #                       self._enough_data_callback)
 
         if self._connect_signal_callback:
             self._handler.connect(bus, "ConnectedToListener", self._connect_signal_callback)
-            # self._handler.connect(bus, "ConnectedToListener", self._on_signal, None,
-            #                       self._enough_data_callback)
+
+        # This function always returns False so that it may be safely
+        # invoked via GLib.idle_add(). Use of idle_add() is necessary
+        # to ensure that watchers are always called from the main thread,
+        # even if progress updates are received from other threads.
+        self.emit('tasker-configured')
 
 
 def print_keyword_args(**kwargs):
