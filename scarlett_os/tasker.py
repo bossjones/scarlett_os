@@ -188,103 +188,14 @@ class ScarlettTasker(_IdleObject):
 
         # call back to quit mainloop
         self._connect_quit = None
-        #############################################################################
-        #    OLD WORKING TASKER CODE - BEGIN
-        #############################################################################
-        # bus = SessionBus()
-        # ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
-        # time.sleep(1)
-        #
-        # ss_failed_signal = bus.subscribe(sender=None,
-        #                                  iface="org.scarlett.Listener",
-        #                                  signal="SttFailedSignal",
-        #                                  object="/org/scarlett/Listener",
-        #                                  arg0=None,
-        #                                  flags=0,
-        #                                  signal_fired=player_cb)
-        #
-        # ss_rdy_signal = bus.subscribe(sender=None,
-        #                               iface="org.scarlett.Listener",
-        #                               signal="ListenerReadySignal",
-        #                               object="/org/scarlett/Listener",
-        #                               arg0=None,
-        #                               flags=0,
-        #                               signal_fired=player_cb)
-        #
-        # ss_kw_rec_signal = bus.subscribe(sender=None,
-        #                                  iface="org.scarlett.Listener",
-        #                                  signal="KeywordRecognizedSignal",
-        #                                  object="/org/scarlett/Listener",
-        #                                  arg0=None,
-        #                                  flags=0,
-        #                                  signal_fired=player_cb)
-        #
-        # ss_cmd_rec_signal = bus.subscribe(sender=None,
-        #                                   iface="org.scarlett.Listener",
-        #                                   signal="CommandRecognizedSignal",
-        #                                   object="/org/scarlett/Listener",
-        #                                   arg0=None,
-        #                                   flags=0,
-        #                                   signal_fired=command_cb)
-        #
-        # ss_cancel_signal = bus.subscribe(sender=None,
-        #                                  iface="org.scarlett.Listener",
-        #                                  signal="ListenerCancelSignal",
-        #                                  object="/org/scarlett/Listener",
-        #                                  arg0=None,
-        #                                  flags=0,
-        #                                  signal_fired=player_cb)
-        #
-        # # [FIXME]: Enable this, see twitter note re: unpacking tuples
-        # ss_connect_signal = bus.subscribe(sender=None,
-        #                                   iface="org.scarlett.Listener",
-        #                                   signal="ConnectedToListener",
-        #                                   object="/org/scarlett/Listener",
-        #                                   arg0=None,
-        #                                   flags=0,
-        #                                   signal_fired=connected_to_listener_cb)
-        #
+
         # #  TODO: If we want to keep track of signals,
         # #  we'll probably need to yield values we
         # #  append to notification list/obj
         # #  difference between yield and return
         # # Yes, it' still a generator. The return is (almost) equivalent to raising StopIteration
         # # source: http://stackoverflow.com/questions/26595895/return-and-yield-in-the-same-function
-        #
-        # pp.pprint((ss_failed_signal,
-        #            ss_rdy_signal,
-        #            ss_kw_rec_signal,
-        #            ss_cmd_rec_signal,
-        #            ss_cancel_signal,
-        #            ss_connect_signal))
-        #
-        # logger.debug("ss_failed_signal: {}".format(ss_failed_signal))
-        # logger.debug("ss_rdy_signal: {}".format(ss_rdy_signal))
-        # logger.debug("ss_kw_rec_signal: {}".format(ss_kw_rec_signal))
-        # logger.debug("ss_cmd_rec_signal: {}".format(ss_cmd_rec_signal))
-        # logger.debug("ss_cancel_signal: {}".format(ss_cancel_signal))
-        # logger.debug("ss_connect_signal: {}".format(ss_connect_signal))
-        #
-        # ss.emitConnectedToListener('ScarlettTasker')
-        #
-        # loop.run()
-        #
-        # try:
-        #     print("ScarlettTasker Thread Started")
-        # except Exception:
-        #     ss_failed_signal.disconnect()
-        #     ss_rdy_signal.disconnect()
-        #     ss_kw_rec_signal.disconnect()
-        #     ss_cmd_rec_signal.disconnect()
-        #     ss_cancel_signal.disconnect()
-        #     ss_connect_signal.disconnect()
-        #     loop.quit()
-        #     self.bucket.put(sys.exc_info())
-        #     raise
 
-        #############################################################################
-        #    OLD WORKING TASKER CODE - BEGIN
-        #############################################################################
 
     # NOTE
     # source: http://www.pygtk.org/pygtk2tutorial/examples/helloworld.py

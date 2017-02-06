@@ -800,3 +800,53 @@ st.configure()
 
 loop.run()
 ```
+
+# Patching tricks
+
+```
+class TestScarlettTasker(unittest.TestCase):
+
+    def setUp(self):  # noqa: N802
+        """
+        Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. The default implementation does nothing.
+        """
+        # source: http://stackoverflow.com/questions/7667567/can-i-patch-a-python-decorator-before-it-wraps-a-function
+        # Do cleanup first so it is ready if an exception is raised
+        def kill_patches():  # Create a cleanup callback that undoes our patches
+            mock.patch.stopall()  # Stops all patches started with start()
+            imp.reload(tasker)  # Reload our UUT module which restores the original decorator
+        self.addCleanup(kill_patches)  # We want to make sure this is run so we do this in addCleanup instead of tearDown
+
+        self.old_glib_exception_error = GLib.GError
+        # Now patch the decorator where the decorator is being imported from
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_abort_on_exception = mock.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x).start()
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gi = mock.patch('scarlett_os.internal.gi.gi', spec=True, create=True).start()
+
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_glib = mock.patch('scarlett_os.internal.gi.GLib', spec=True, create=True).start()
+
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gobject = mock.patch('scarlett_os.internal.gi.GObject', spec=True, create=True).start()
+
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gio = mock.patch('scarlett_os.internal.gi.Gio', spec=True, create=True).start()
+
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_pydbus_SessionBus = mock.patch('pydbus.SessionBus', spec=True, create=True).start()
+
+        # mock_pydbus_SessionBus.return_value
+
+        # mock_time = mock.patch('time.sleep', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        # mock_pydbus.get.side_effect = Exception('GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.scarlett was not provided by any .service files')
+
+        # Exception Thrown from [/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/pydbus/proxy.py] on line [40] via function [get]
+        # Exception type Error:
+        # GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name
+        # org.scarlett was not provided by any .service files
+
+        # HINT: if you're patching a decor with params use something like:
+        # lambda *x, **y: lambda f: f
+        imp.reload(tasker)  # Reloads the tasker.py module which applies our patched decorator
+```

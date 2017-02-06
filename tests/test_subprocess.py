@@ -15,7 +15,8 @@ import unittest
 import unittest.mock as mock
 
 import scarlett_os
-from scarlett_os.subprocess import check_pid, Subprocess
+from scarlett_os.subprocess import check_pid
+from scarlett_os.subprocess import Subprocess
 
 # NOTE: We can't add this here, otherwise we won't be able to mock them
 # from scarlett_os.internal.gi import GLib, GObject
@@ -29,8 +30,8 @@ kill_mock = mock.Mock(name="kill")
 # new_callable: allows you to specify a different class, or callable object, that will be called to create the new object. By default MagicMock is used.
 
 
-def raise_OSError(*x, **kw):
-    raise OSError('Fail')
+# def raise_OSError(*x, **kw):
+#     raise OSError('Fail')
 
 
 class TestScarlettSubprocess(unittest.TestCase):
