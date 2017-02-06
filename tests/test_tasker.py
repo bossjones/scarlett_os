@@ -133,6 +133,33 @@ class TestScarlettTasker(unittest.TestCase):
         # pdb>
 
 
+    @mock.patch('scarlett_os.tasker.TaskSignalHandler', spec=scarlett_os.tasker.TaskSignalHandler, name='mock_task_signal_handler')
+    @mock.patch('scarlett_os.tasker.time.sleep', name='mock_time_sleep')
+    @mock.patch('scarlett_os.tasker.logging.Logger.debug', name='mock_logger_debug')
+    @mock.patch('scarlett_os.tasker._IdleObject', name='mock_idle_obj')
+    @mock.patch('scarlett_os.utility.thread.time_logger', name='mock_time_logger')
+    @mock.patch('scarlett_os.tasker.speaker', name='mock_scarlett_speaker')
+    @mock.patch('scarlett_os.tasker.player', name='mock_scarlett_player')
+    @mock.patch('scarlett_os.tasker.commands', name='mock_scarlett_commands')
+    @mock.patch('scarlett_os.tasker.threading.RLock', spec=scarlett_os.tasker.threading.RLock, name='mock_threading_rlock')
+    @mock.patch('scarlett_os.tasker.threading.Event', spec=scarlett_os.tasker.threading.Event, name='mock_threading_event')
+    @mock.patch('scarlett_os.tasker.threading.Thread', spec=scarlett_os.tasker.threading.Thread, name='mock_thread_class')
+    def test_tasker_reset(self, mock_thread_class, mock_threading_event, mock_threading_rlock, mock_scarlett_commands, mock_scarlett_player, mock_scarlett_speaker, mock_time_logger, mock_idle_obj, mock_logger_debug, mock_time_sleep, mock_task_signal_handler):
+        _handler = mock_task_signal_handler()
+        tskr = tasker.ScarlettTasker()
+
+        tskr.reset()
+
+        self.assertEqual(_handler.clear.call_count, 1)
+
+        self.assertIsNone(tskr._failed_signal_callback)
+        self.assertIsNone(tskr._ready_signal_callback)
+        self.assertIsNone(tskr._keyword_recognized_signal_callback)
+        self.assertIsNone(tskr._command_recognized_signal_callback)
+        self.assertIsNone(tskr._cancel_signal_callback)
+        self.assertIsNone(tskr._connect_signal_callback)
+
+
 class TestSoundType(unittest.TestCase):
 
     def setUp(self):  # noqa: N802
