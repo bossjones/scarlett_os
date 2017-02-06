@@ -91,7 +91,6 @@ class TaskSignalHandler(object):
         Each dbus_signal may only be handled by one callback in this implementation.
         """
         assert (bus, dbus_signal) not in self._ids
-        # self._ids[(bus, dbus_signal)] = bus.connect(dbus_signal, func, *args)
         self._ids[(bus, dbus_signal)] = bus.subscribe(sender=None,
                                                       iface="org.scarlett.Listener",
                                                       signal=dbus_signal,
@@ -111,7 +110,10 @@ class TaskSignalHandler(object):
 
     def clear(self):
         """Clear all registered signal handlers."""
-        for bus, dbus_signal in self._ids.keys():
+        # NOTE: How to avoid “RuntimeError: dictionary changed size during iteration” error?
+        # source: http://stackoverflow.com/questions/11941817/how-to-avoid-runtimeerror-dictionary-changed-size-during-iteration-error
+        # HINT: use list()
+        for bus, dbus_signal in list(self._ids):
             signal_id = self._ids.pop((bus, dbus_signal))
             signal_id.disconnect()
 

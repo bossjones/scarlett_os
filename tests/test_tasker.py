@@ -150,6 +150,84 @@ class TestSoundType(unittest.TestCase):
         self.assertEqual(tasker.SoundType.get_path('pi-response'), ["{}/pi-response.wav".format(path_to_sound)])
         self.assertEqual(tasker.SoundType.get_path('pi-response2'), ["{}/pi-response2.wav".format(path_to_sound)])
 
+class TestTaskSignalHandler(unittest.TestCase):
+
+    def setUp(self):  # noqa: N802
+        """
+        Tasker
+        """
+        self._handler = tasker.TaskSignalHandler()
+
+        def kill_patches():  # Create a cleanup callback that undoes our patches
+            mock.patch.stopall()  # Stops all patches started with start()
+            imp.reload(tasker)  # Reload our UUT module which restores the original decorator
+        self.addCleanup(kill_patches)  # We want to make sure this is run so we do this in addCleanup instead of tearDown
+
+        self.old_glib_exception_error = GLib.GError
+        # Now patch the decorator where the decorator is being imported from
+        mock_abort_on_exception = mock.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gi = mock.patch('scarlett_os.internal.gi.gi', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+
+        mock_glib = mock.patch('scarlett_os.internal.gi.GLib', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+
+        mock_gobject = mock.patch('scarlett_os.internal.gi.GObject', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+
+        mock_gio = mock.patch('scarlett_os.internal.gi.Gio', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+
+        mock_pydbus_SessionBus = mock.patch('pydbus.SessionBus', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+
+        imp.reload(tasker)  # Reloads the tasker.py module which applies our patched decorator
+
+
+    def tearDown(self):
+        del(self._handler)
+        self._handler = None
+
+    # from scarlett_os.utility.dbus_runner import DBusRunner
+
+    @mock.patch('scarlett_os.utility.dbus_runner.DBusRunner', autospec=True, name='mock_dbusrunner')
+    def test_connect_then_disconnect(self, mock_dbusrunner):
+        _dr = mock_dbusrunner.get_instance()
+        bus = _dr.get_session_bus()
+
+        def test_cb():
+            print('test_cb')
+
+        self._handler.connect(bus, "SttFailedSignal", test_cb)
+
+        # assertions
+        self.assertEqual(len(self._handler._ids), 1)
+
+        bus.subscribe.assert_called_once_with(sender=None,
+                                              iface="org.scarlett.Listener",
+                                              signal="SttFailedSignal",
+                                              object="/org/scarlett/Listener",
+                                              arg0=None,
+                                              flags=0,
+                                              signal_fired=test_cb)
+
+        # Disconnect then test again
+        self._handler.disconnect(bus, "SttFailedSignal")
+
+        self.assertEqual(len(self._handler._ids), 0)
+
+
+    @mock.patch('scarlett_os.utility.dbus_runner.DBusRunner', autospec=True, name='mock_dbusrunner')
+    def test_connect_then_clear(self, mock_dbusrunner):
+        _dr = mock_dbusrunner.get_instance()
+        bus = _dr.get_session_bus()
+
+        def test_cb():
+            print('test_cb')
+
+        self._handler.connect(bus, "SttFailedSignal", test_cb)
+
+        # Disconnect then test again
+        self._handler.clear()
+
+        self.assertEqual(len(self._handler._ids), 0)
+
+
 
 class TestSpeakerType(unittest.TestCase):
 
