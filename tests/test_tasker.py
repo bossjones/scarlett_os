@@ -122,7 +122,6 @@ class TestScarlettTasker(unittest.TestCase):
         tskr.reset()
 
         self.assertEqual(_handler.clear.call_count, 1)
-
         self.assertIsNone(tskr._failed_signal_callback)
         self.assertIsNone(tskr._ready_signal_callback)
         self.assertIsNone(tskr._keyword_recognized_signal_callback)
