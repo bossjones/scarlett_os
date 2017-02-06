@@ -776,3 +776,27 @@ As an example, the 'delete_event' event is emitted from a gtk.Window when the us
 # pygobject / pygtk signals
 
 **SEE THE FOLLOWING:** https://en.wikibooks.org/wiki/PyGTK_For_GUI_Programming/First_Steps
+
+
+# Testing ScarlettTasker in ipython
+
+```
+from scarlett_os.tasker import ScarlettTasker
+from scarlett_os.tasker import player_cb
+from scarlett_os.tasker import command_cb
+from scarlett_os.tasker import connected_to_listener_cb
+
+from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import GLib
+
+
+loop = GLib.MainLoop()
+
+st = ScarlettTasker()
+st.prepare(player_cb, command_cb, connected_to_listener_cb)
+st.configure()
+
+
+loop.run()
+```

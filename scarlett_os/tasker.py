@@ -56,7 +56,7 @@ command_run = False
 
 STATIC_SOUNDS_PATH = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
 
-loop = GLib.MainLoop()
+# loop = GLib.MainLoop()
 
 
 class SoundType:
@@ -299,7 +299,14 @@ class ScarlettTasker(_IdleObject):
         self._connect_signal_callback = connected_to_listener_cb
 
     def teardown_handling(self):
+        # disconnect all signals
         self._handler.clear()
+        self._failed_signal_callback = None
+        self._ready_signal_callback = None
+        self._keyword_recognized_signal_callback = None
+        self._command_recognized_signal_callback = None
+        self._cancel_signal_callback = None
+        self._connect_signal_callback = None
 
     # def run_mainloop(self):
     #     try:
@@ -629,19 +636,30 @@ if __name__ == "__main__":
         from scarlett_os.internal.debugger import init_debugger
         init_debugger()
 
+        from scarlett_os.internal.debugger import enable_remote_debugging
+        enable_remote_debugging()
+
+    #######################################################################
+    loop = GLib.MainLoop()
+    _INSTANCE = st = ScarlettTasker()
+    st.prepare(player_cb, command_cb, connected_to_listener_cb)
+    st.configure()
+    #######################################################################
+
     if os.environ.get('TRAVIS_CI'):
         # Close application silently
         try:
-            _INSTANCE = st = ScarlettTasker()
+            loop.run()
         except KeyboardInterrupt:
             logger.warning('***********************************************')
             logger.warning('Note: Added an exception "pass" for KeyboardInterrupt')
             logger.warning('It is very possible that this might mask other errors happening with the application.')
             logger.warning('Remove this while testing manually')
             logger.warning('***********************************************')
+            st.teardown_handling()
             pass
         except:
             raise
     else:
         # Close into a ipython debug shell
-        _INSTANCE = st = ScarlettTasker()
+        loop.run()
