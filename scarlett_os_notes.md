@@ -850,3 +850,116 @@ class TestScarlettTasker(unittest.TestCase):
         # lambda *x, **y: lambda f: f
         imp.reload(tasker)  # Reloads the tasker.py module which applies our patched decorator
 ```
+
+# Commented out tasker stuff we might care about
+
+```
+
+    # def run_mainloop(self):
+    #     try:
+    #         self.mainloop_init()
+    #     except Exception:
+    #         ss_failed_signal.disconnect()
+    #         ss_rdy_signal.disconnect()
+    #         ss_kw_rec_signal.disconnect()
+    #         ss_cmd_rec_signal.disconnect()
+    #         ss_cancel_signal.disconnect()
+    #         ss_connect_signal.disconnect()
+    #         loop.quit()
+    #         self.bucket.put(sys.exc_info())
+    #         raise
+
+    ###################################################################################################################
+    #  From dbus_runner
+    ###################################################################################################################
+    # def start(self):
+    #     """
+    #     Start the :func:`gi.MainLoop` to establish DBUS communications.
+    #     """
+    #     if self.__active:
+    #         return
+    #
+    #     self.__active = True
+    #
+    #     self.__thread = threading.Thread(target=self.__runner)
+    #     self.__thread.daemon = True
+    #     self.__thread.start()
+    #
+    # def __runner(self):
+    #     self.__gloop = GLib.MainLoop()
+    #     try:
+    #         self.__gloop.run()
+    #         # Definition: GLib.MainLoop.get_context
+    #
+    #         # The GLib.MainContext with which the source is associated,
+    #         # or None if the context has not yet been added to a source.
+    #         # Return type: GLib.MainContext or None
+    #
+    #         # Gets the GLib.MainContext with which the source is associated.
+    #         # You can call this on a source that has been destroyed,
+    #         # provided that the GLib.MainContext it was attached to still
+    #         # exists (in which case it will return that GLib.MainContext).
+    #         # In particular, you can always call this function on the
+    #         # source returned from GLib.main_current_source().
+    #         # But calling this function on a source whose
+    #         # GLib.MainContext has been destroyed is an error.
+    #         context = self.__gloop.get_context()
+    #         while self.__active:
+    #             context.iteration(False)
+    #             if not context.pending():
+    #                 time.sleep(.1)
+    #     except KeyboardInterrupt:
+    #         self.__active = False
+    #         # env = Environment.getInstance()
+    #         # if hasattr(env, "active"):
+    #         #     env.active = False
+    #
+    # def stop(self):
+    #     """
+    #     Stop the :func:`gobject.MainLoop` to shut down DBUS communications.
+    #     """
+    #     # Don't stop us twice
+    #     if not self.__active:
+    #         return
+    #
+    #     self.__active = False
+    #     self.__gloop.quit()
+    #     self.__thread.join(5)
+
+    # # from mopidy
+    # def mainloop_init(self):
+    #     loop = GLib.MainLoop()
+    #     context = loop.get_context()
+    #     t = threading.Thread(target=self.__mainloop, args=(context,))
+    #     t.daemon = True
+    #     t.start()
+    #
+    # # from mopidy
+    # def __mainloop(self, context):
+    #     while 1:
+    #         try:
+    #             context.iteration(True)
+    #         except Exception:
+    #             pass
+```
+
+
+# Patch modules vs patch objects
+
+**source:** http://stackoverflow.com/questions/24995466/assertionerror-altough-the-expected-call-looks-same-as-actual-call
+
+```
+AFAIK you can't use patch() like this. Patch target should be a string in the form package.module.ClassName. I don't know much about django but I suppose Note is a class so Note.objects.filter is not something you can import and hence use in patch(). Also I don't think patch() can handle attributes. Actually I don't quite understand why the patch works at all.
+
+Try using patch.object() which is specifically designed to patch class attributes. It implies Note is already imported in your test module.
+
+@mock.patch.object(Note, 'objects')
+def test_get_all_notes(self, objects_mock):
+    get_notes()
+    objects_mock.filter.assert_called_once_with(number=2, new=1)
+I've removed autospec because I'm not sure it will work correctly in this case. You can try putting it back if it works.
+
+Another option might be to use patch() on whatever you get with type(Note.objects) (probably some django class).
+
+As I've said I don't know much about django so I'm not sure if these things work.
+```
