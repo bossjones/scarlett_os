@@ -41,10 +41,9 @@ from scarlett_os import tasker
 # from scarlett_os.utility.dbus_runner import DBusRunner
 
 
-@pytest.fixture(params=['ready', 'failed', 'kw-rec', 'cancel', 'connect', 'cmd-rec'])
-def run_emitter_signal(request, get_environment):
+def run_emitter_signal(request, get_environment, sig_name='ready'):
     print("Setting up emitter")
-    print("[Emit]: {}".format(request.param))
+    print("[Emit]: {}".format(sig_name))
 
     # Return return code for running shell out command
     def cb(pid, status):
@@ -55,7 +54,7 @@ def run_emitter_signal(request, get_environment):
 
     # Send [ready] signal to dbus service
     # FIXME: THIS IS THE CULPRIT
-    argv = [sys.executable, '-m', 'scarlett_os.emitter', '-s', str(request.param)]
+    argv = [sys.executable, '-m', 'scarlett_os.emitter', '-s', sig_name]
 
     # convert environment dict -> list of strings
     env_dict_to_str = ['{}={}'.format(k, v) for k, v in get_environment.items()]
@@ -92,10 +91,10 @@ class IntegrationTestbase(object):
         self.status = None
         self.tasker = None
 
-    # @mock.patch("scarlett_os.tasker.DBusRunner.get_instance", 'dbus')
     def setup_tasker(self, monkeypatch, get_bus):
         """Create ScarlettTasker object and call setup_controller."""
         monkeypatch.setattr("scarlett_os.utility.dbus_runner.SessionBus", lambda: get_bus)
+        time.sleep(1)
         self.log.info("setting up Controller")
         self.tasker = tasker.ScarlettTasker()
 
@@ -109,6 +108,7 @@ class IntegrationTestbase(object):
         self.tasker = None
 
 
+# @pytest.mark.usefixtures("service_on_outside", "get_environment", "get_bus")
 class IntegrationTestbaseMainloop(IntegrationTestbase):
     """Base class for integration tests that require a GLib-Mainloop.
     Used for Tests that register and wait for signals.
