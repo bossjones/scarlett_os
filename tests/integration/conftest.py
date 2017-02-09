@@ -355,6 +355,97 @@ def service_tasker(request):
     request.addfinalizer(teardown)
 
 
+@pytest.fixture
+def create_tasker_object(request):
+    # source: dbus-proxy
+    """
+    Create a Scarlett Tasker Object
+
+    """
+
+    # Return return code for running shell out command
+    def cb(pid, status):
+        """
+        Set return code for emitter shell script.
+        """
+        test_status = status
+
+    # Append tuple to recieved_signals
+    def catchall_handler(*args, **kwargs):  # pragma: no cover
+        """
+        Catch all handler.
+        Catch and print information about all singals.
+        """
+        # unpack tuple to variables ( Taken from Tasker )
+        for i, v in enumerate(args):
+            if isinstance(v, tuple):
+                tuple_args = len(v)
+                if tuple_args == 1:
+                    msg = v
+                elif tuple_args == 2:
+                    msg, scarlett_sound = v
+                elif tuple_args == 3:
+                    msg, scarlett_sound, command = v
+
+        test_recieved_signals.append(v)
+
+        print('--- [args] ---')
+        for arg in args:
+            print("another arg through *arg : {}".format(arg))
+
+        print('--- [kargs] ---')
+        if kwargs is not None:
+            for key, value in kwargs.items():
+                print("{} = {}".format(key, value))
+
+        print("\n")
+
+        loop.quit()
+
+    # TODO: Parametrize the socket path.
+
+    tskr = tasker.ScarlettTasker()
+
+    tskr.prepare(catchall_handler, catchall_handler, catchall_handler)
+    tskr.configure()
+
+    # dbus_daemon = None
+    # # The 'exec' part is a workaround to make the whole process group be killed
+    # # later when kill() is caled and not just the shell. This is only needed when
+    # # 'shell' is set to True like in the later Popen() call below.
+    # start_dbus_daemon_command = [
+    #     "exec",
+    #     " dbus-daemon",
+    #     " --session",
+    #     " --nofork",
+    #     " --address=" + "unix:path=" + OUTSIDE_SOCKET
+    # ]
+    # try:
+    #     # For some reason shell needs to be set to True,
+    #     # which is the reason the command is passed as
+    #     # a string instead as an argument list,
+    #     # as recommended in the docs.
+    #     dbus_daemon = Popen(
+    #         "".join(start_dbus_daemon_command),
+    #         env=environment,
+    #         shell=True,
+    #         stdout=sys.stdout)
+    #     # Allow time for the bus daemon to start
+    #     sleep(0.3)
+    # except OSError as e:
+    #     print("Error starting dbus-daemon: {}".format(str(e)))
+    #     sys.exit(1)
+
+    def teardown():
+        dbus_daemon.kill()
+        os.remove(OUTSIDE_SOCKET)
+
+    # The finalizer is called after all of the tests that use the fixture.
+    # If you’ve used parameterized fixtures,
+    # the finalizer is called between instances of the parameterized fixture changes.
+    request.addfinalizer(teardown)
+
+
 # @pytest.fixture(scope='module')
 @pytest.fixture
 def get_bus(request, create_session_bus):
