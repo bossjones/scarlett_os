@@ -38,6 +38,8 @@ import pydbus
 from pydbus import SessionBus
 
 from scarlett_os.utility.dbus_runner import DBusRunner
+from scarlett_os.internal.path import touch_empty_file
+from scarlett_os.internal.path import fname_exists
 
 
 # global pretty print for debugging
@@ -365,6 +367,10 @@ def command_cb(*args, **kwargs):
             yield True
             print("scarlett_text in tts_list")
             _wavepath = "/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"
+            if not fname_exists(_wavepath):
+                print('[speaker_generator_func]: MISSING TEMP ESPEAK FILE')
+                touch_empty_file(_wavepath)
+
             s = speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
                                         wavpath=_wavepath,
                                         skip_player=True)
