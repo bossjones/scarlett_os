@@ -290,8 +290,6 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         self.log.info("setting callback")
 
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
-        # Sleep to give time for connection to be established
-        # time.sleep(1)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='connect')
@@ -307,6 +305,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         check that the callback fires initially when the sources are set up
         """
         recieved_signals = []
+
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
 
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
@@ -351,6 +351,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         """
         recieved_signals = []
 
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
@@ -375,8 +377,6 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         self.log.info("setting callback")
 
         self.tasker.prepare(player_cb, command_cb, connected_to_listener_cb)
-        # Sleep to give time for connection to be established
-        # time.sleep(1)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='failed')
@@ -391,6 +391,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         """
 
         recieved_signals = []
+
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
 
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
@@ -430,6 +432,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         """
         recieved_signals = []
 
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
@@ -467,6 +471,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         check that the callback fires initially when the sources are set up
         """
         recieved_signals = []
+
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
 
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover

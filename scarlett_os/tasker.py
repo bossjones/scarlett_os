@@ -421,6 +421,7 @@ def command_cb(*args, **kwargs):
             tts_list = SpeakerType.speaker_to_array(command_run_results)
             run_speaker_result = run_speaker(speaker_generator_func)
 
+            # FIXME: Turn this into a call back function. Pass it to run_speaker
             # 5. Emit signal to reset keyword match ( need to implement this )
             dr = DBusRunner.get_instance()
             bus = dr.get_session_bus()
