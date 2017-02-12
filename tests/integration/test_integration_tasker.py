@@ -69,22 +69,20 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
             # Add value to list so we can assert later
             recieved_signals.append(v)
 
-        # import pdb;pdb.set_trace()  # noqa
-
         self.setup_tasker(monkeypatch, get_bus)
 
         self.log.info("setting callback")
 
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
         # Sleep to give time for connection to be established
-        time.sleep(1)
+        # time.sleep(1)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='ready')
 
         self.log.info("waiting for initial callback with"
                       "('  ScarlettListener is ready', 'pi-listening')")
-        self.run_mainloop(timeout=5)
+        self.run_mainloop(timeout=3)
 
         assert recieved_signals[0] == ('  ScarlettListener is ready', 'pi-listening')
 
@@ -119,14 +117,14 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
         # Sleep to give time for connection to be established
-        time.sleep(1)
+        # time.sleep(1)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='failed')
 
         self.log.info("waiting for initial callback with"
                       "('  ScarlettListener hit Max STT failures', 'pi-response2')")
-        self.run_mainloop(timeout=5)
+        self.run_mainloop(timeout=3)
 
         assert recieved_signals[0] == ('  ScarlettListener hit Max STT failures', 'pi-response2')
 
@@ -162,14 +160,14 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
         # Sleep to give time for connection to be established
-        time.sleep(1)
+        # time.sleep(1)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='kw-rec')
 
         self.log.info("waiting for initial callback with"
                       "('  ScarlettListener caught a keyword match', 'pi-listening')")
-        self.run_mainloop(timeout=5)
+        self.run_mainloop(timeout=3)
 
         assert recieved_signals[0] == ('  ScarlettListener caught a keyword match', 'pi-listening')
 
@@ -204,14 +202,14 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
         # Sleep to give time for connection to be established
-        time.sleep(1)
+        # time.sleep(1)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='cmd-rec')
 
         self.log.info("waiting for initial callback with"
                       "('  ScarlettListener caught a command match', 'pi-response', 'what time is it')")
-        self.run_mainloop(timeout=5)
+        self.run_mainloop(timeout=3)
 
         assert recieved_signals[0] == ('  ScarlettListener caught a command match', 'pi-response', 'what time is it')
 
@@ -246,14 +244,14 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
         # Sleep to give time for connection to be established
-        time.sleep(1)
+        # time.sleep(1)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='cancel')
 
         self.log.info("waiting for initial callback with"
                       "('  ScarlettListener cancel speech Recognition', 'pi-cancel')")
-        self.run_mainloop(timeout=5)
+        self.run_mainloop(timeout=3)
 
         assert recieved_signals[0] == ('  ScarlettListener cancel speech Recognition', 'pi-cancel')
 
@@ -288,67 +286,13 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
         # Sleep to give time for connection to be established
-        time.sleep(1)
+        # time.sleep(1)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='connect')
 
         self.log.info("waiting for initial callback with"
                       "('ScarlettEmitter',)")
-        self.run_mainloop(timeout=5)
+        self.run_mainloop(timeout=3)
 
         assert recieved_signals[0] == ('ScarlettEmitter',)
-
-############################################################################
-# EXAMPLE [ready signal]
-# another arg through *arg : :1.0
-# another arg through *arg : /org/scarlett/Listener
-# another arg through *arg : org.scarlett.Listener
-# another arg through *arg : ListenerReadySignal
-# another arg through *arg : ('  ScarlettListener is ready', 'pi-listening')
-############################################################################
-
-#############################################################################
-# EXAMPLE [failed]
-# another arg through *arg : :1.0
-# another arg through *arg : /org/scarlett/Listener
-# another arg through *arg : org.scarlett.Listener
-# another arg through *arg : SttFailedSignal
-# another arg through *arg : ('  ScarlettListener hit Max STT failures', 'pi-response2')
-#############################################################################
-
-#############################################################################
-# EXAMPLE [listener]
-# another arg through *arg : :1.0
-# another arg through *arg : /org/scarlett/Listener
-# another arg through *arg : org.scarlett.Listener
-# another arg through *arg : KeywordRecognizedSignal
-# another arg through *arg : ('  ScarlettListener caught a keyword match', 'pi-listening')
-#############################################################################
-
-##############################################################################
-# EXAMPLE [command]
-# another arg through *arg : :1.0
-# another arg through *arg : /org/scarlett/Listener
-# another arg through *arg : org.scarlett.Listener
-# another arg through *arg : CommandRecognizedSignal
-# another arg through *arg : ('  ScarlettListener caught a command match', 'pi-response', 'what time is it')
-##############################################################################
-
-###############################################################################
-# EXAMPLE [cancel]
-# another arg through *arg : :1.0
-# another arg through *arg : /org/scarlett/Listener
-# another arg through *arg : org.scarlett.Listener
-# another arg through *arg : ListenerCancelSignal
-# another arg through *arg : ('  ScarlettListener cancel speech Recognition', 'pi-cancel')
-###############################################################################
-
-################################################################################
-# EXAMPLE [connect]
-# another arg through *arg : :1.0
-# another arg through *arg : /org/scarlett/Listener
-# another arg through *arg : org.scarlett.Listener
-# another arg through *arg : ConnectedToListener
-# another arg through *arg : ('ScarlettEmitter',)
-################################################################################
