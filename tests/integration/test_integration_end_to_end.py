@@ -35,6 +35,7 @@ class TestScarlettEndToEnd(object):
     def test_setup_mpris(self, service_on_outside):
         pass
 
+    @pytest.mark.flaky(reruns=3)
     def test_mpris_player_and_tasker(self, service_on_outside, service_tasker, service_receiver, get_environment, get_bus):
 
         # Return dbus obj
