@@ -101,6 +101,7 @@ class IntegrationTestbase(object):
         """Tear down called automatically after every test_XXXX method."""
         # self.recieved_signals = None
         self.status = None
+        self.tasker.reset()
         self.tasker = None
 
 

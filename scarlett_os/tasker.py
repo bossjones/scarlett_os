@@ -219,20 +219,6 @@ class ScarlettTasker(_IdleObject):
         self._cancel_signal_callback = player_cb
         self._connect_signal_callback = connected_to_listener_cb
 
-    def teardown_handling(self):
-        # disconnect all signals
-        self._handler.clear()
-        self._failed_signal_callback = None
-        self._ready_signal_callback = None
-        self._keyword_recognized_signal_callback = None
-        self._command_recognized_signal_callback = None
-        self._cancel_signal_callback = None
-        self._connect_signal_callback = None
-
-        if hasattr(self, "_id_dbus_watch_name"):
-            self._id_dbus_watch_name.unwatch()
-            self._id_dbus_watch_name = None
-
     def configure(self):
         """Configure the supplied bus for use.
         """
@@ -291,18 +277,10 @@ def connected_to_listener_cb(*args, **kwargs):
 @abort_on_exception
 def player_cb(*args, **kwargs):
     if os.environ.get('SCARLETT_DEBUG_MODE'):
-        logger.debug("player_cb PrettyPrinter: ")
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(args)
-        # MAR 13 2016
+        logger.debug("player_cb args")
+        print_args(args)
         logger.debug("player_cb kwargs")
         print_keyword_args(**kwargs)
-        # (con=<DBusConnection object at 0x7f3fba21f0f0 (GDBusConnection at 0x2ede000)>,
-        # sender=':1.0',
-        # object='/org/scarlett/Listener',
-        # iface='org.scarlett.Listener',
-        # signal='CommandRecognizedSignal',
-        # params=GLib.Variant('(sss)', ('  ScarlettListener caugh...ommand match', 'pi-response', 'what time is it')))
 
     # NOTE: THIS IS WHAT FIXED THE GENERATOR NONSENSE
     # source: https://www.python.org/dev/peps/pep-0343/
@@ -353,22 +331,14 @@ def player_cb(*args, **kwargs):
 
 
 # NOTE: enumerate req to iterate through tuple and find GVariant
-# @trace
+
 @abort_on_exception
 def command_cb(*args, **kwargs):
     if os.environ.get('SCARLETT_DEBUG_MODE'):
-        logger.debug("command_cb PrettyPrinter: ")
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(args)
-        # MAR 13 2016
+        logger.debug("command_cb args")
+        print_args(args)
         logger.debug("command_cb kwargs")
         print_keyword_args(**kwargs)
-        # (con=<DBusConnection object at 0x7f3fba21f0f0 (GDBusConnection at 0x2ede000)>,
-        # sender=':1.0',
-        # object='/org/scarlett/Listener',
-        # iface='org.scarlett.Listener',
-        # signal='CommandRecognizedSignal',
-        # params=GLib.Variant('(sss)', ('  ScarlettListener caugh...ommand match', 'pi-response', 'what time is it')))
 
         # NOTE: THIS IS WHAT FIXED THE GENERATOR NONSENSE
         # source: https://www.python.org/dev/peps/pep-0343/
@@ -440,6 +410,7 @@ def command_cb(*args, **kwargs):
 
             # 2. Perform command
             command_run_results = commands.Command.check_cmd(command_tuple=v)
+            logger.debug("[command_run_results]: {}".format(command_run_results))
 
             # 3. Verify it is not a command NO_OP
             if command_run_results == '__SCARLETT_NO_OP__':
@@ -451,7 +422,8 @@ def command_cb(*args, **kwargs):
             run_speaker_result = run_speaker(speaker_generator_func)
 
             # 5. Emit signal to reset keyword match ( need to implement this )
-            bus = SessionBus()
+            dr = DBusRunner.get_instance()
+            bus = dr.get_session_bus()
             ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
             time.sleep(1)
             ss.emitListenerCancelSignal()
@@ -488,7 +460,7 @@ if __name__ == "__main__":
             logger.warning('It is very possible that this might mask other errors happening with the application.')
             logger.warning('Remove this while testing manually')
             logger.warning('***********************************************')
-            st.teardown_handling()
+            st.reset()
             pass
         except:
             raise
