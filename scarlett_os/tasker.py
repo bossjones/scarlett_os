@@ -5,8 +5,6 @@
 
 """Scarlett Tasker Module."""
 
-# from __future__ import with_statement, division, absolute_import
-
 import os
 import sys
 import time
@@ -21,7 +19,6 @@ from gettext import gettext as _
 from scarlett_os.internal.gi import gi
 from scarlett_os.internal.gi import GObject
 from scarlett_os.internal.gi import GLib
-
 
 from scarlett_os.exceptions import NoStreamError
 from scarlett_os.exceptions import FileReadError
@@ -56,8 +53,6 @@ player_run = False
 command_run = False
 
 STATIC_SOUNDS_PATH = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
-
-# loop = GLib.MainLoop()
 
 
 class SoundType:
@@ -194,171 +189,6 @@ class ScarlettTasker(_IdleObject):
         self._cancel_signal_callback = None
         self._connect_signal_callback = None
 
-        # # dbus related variables
-        # self._id_dbus_watch_name = None
-        # self._ran_configure_dbus_proxy = False
-
-        # call back to quit mainloop
-        self._connect_quit = None
-
-        # Help on method watch_name in module pydbus.bus_names:
-
-        # watch_name(name, flags=0, name_appeared=None, name_vanished=None) method of pydbus.bus.Bus instance
-        #     Asynchronously watches a bus name.
-        #
-        #     Starts watching name on the bus specified by bus_type and calls
-        #     name_appeared and name_vanished when the name is known to have a owner
-        #     respectively known to lose its owner.
-        #
-        #     To receive name_appeared and name_vanished callbacks, you need an event loop.
-        #     https://github.com/LEW21/pydbus/blob/master/doc/tutorial.rst#setting-up-an-event-loop
-        #
-        #     Parameters
-        #     ----------
-        #     name : string
-        #             Bus name to watch
-        #     flags : NameWatcherFlags, optional
-        #     name_appeared : callable, optional
-        #             Invoked when name is known to exist
-        #             Called as name_appeared(name_owner).
-        #     name_vanished : callable, optional
-        #             Invoked when name is known to not exist
-        #
-        #     Returns
-        #     -------
-        #     NameWatcher
-        #             An object you can use as a context manager to unwatch the name later.
-        #
-        #     See Also
-        #     --------
-        #     See https://developer.gnome.org/gio/2.44/gio-Watching-Bus-Names.html#g-bus-watch-name
-        #     for more information.
-        # (END)
-
-        # __bus = None
-        # __active = False
-        # __instance = None
-        # __proxy = None
-        # __timeout = 30
-        # __retry = 5
-        # __bus_name = "org.scarlett"
-        # __object_path = '/org/scarlett/Listener'
-        # __default_interface = "org.scarlett.Listener"
-
-        # FIXME: Figure out if we want to use this or not
-        # self.configure_dbus_proxy()
-
-        # #  TODO: If we want to keep track of signals,
-        # #  we'll probably need to yield values we
-        # #  append to notification list/obj
-        # #  difference between yield and return
-        # # Yes, it' still a generator. The return is (almost) equivalent to raising StopIteration
-        # # source: http://stackoverflow.com/questions/26595895/return-and-yield-in-the-same-function
-
-    # def configure_dbus_proxy(self):
-    #     self.bus = self.__dr.get_session_bus()
-    #     # NOTE: This doesn't work if we don't have a mainloop running
-    #     # NOTE: To receive name_appeared and name_vanished callbacks, you need an event loop.
-    #     self._id_dbus_watch_name = self.bus.watch_name("org.scarlett",
-    #                                                    name_appeared=self._on_name_appeared, name_vanished=self._on_name_vanished)
-    #
-    #     self._ran_configure_dbus_proxy = True
-    #
-    #     logger.info("[configure_dbus_proxy] waiting on dbus proxy object")
-
-    # source: https://github.com/GNOME/tracker/blob/811ad968ed549b126e75c70eaa00cbb37dfa55cc/tests/functional-tests/common/utils/helpers.py
-    # def _bus_name_appeared(self, name, owner, data):
-    #     log ("[%s] appeared in the bus as %s" % (self.PROCESS_NAME, owner))
-    #     self.available = True
-    #     self.loop.quit()
-    #
-    # def _bus_name_vanished(self, name, data):
-    #     log ("[%s] disappeared from the bus" % self.PROCESS_NAME)
-    #     self.available = False
-    #     self.loop.quit()
-    #
-    # def _on_name_appeared(self):
-    #     if "org.scarlett" in self.bus.list_names():
-    #         if self.scarlett_dbus:
-    #             del self.scarlett_dbus
-    #
-    #         # Trigger resend of capapability event
-    #         self.available = True
-    #         self.scarlett_dbus = self.bus.get("org.scarlett", '/org/scarlett/Listener')
-    #         # ccr = PluginRegistry.getInstance('ClientCommandRegistry')
-    #         # ccr.register("request_inventory", 'Inventory.request_inventory', [], ['old_checksum=None'], 'Request client inventory information')
-    #         # mqtt = PluginRegistry.getInstance('MQTTClientService')
-    #         # mqtt.reAnnounce()
-    #         logger.info("[on_name_appeared][{}]: Established dbus connection".format(self.__class__))
-    #     else:
-    #         logger.info("[on_name_appeared][{}]: no dbus connection".format(self.__class__))
-    #
-    # def _on_name_vanished(self):
-    #     if "org.scarlett" not in self.bus.list_names():
-    #         if self.scarlett_dbus:
-    #             # NOTE: This might come up soon
-    #             # source: http://blender.stackexchange.com/questions/18802/how-to-delete-property-from-object
-    #             del(self.scarlett_dbus)
-    #             self.available = False
-    #
-    #             # Trigger resend of capapability event
-    #             # ccr = PluginRegistry.getInstance('ClientCommandRegistry')
-    #             # ccr.unregister("request_inventory")
-    #             # mqtt = PluginRegistry.getInstance('MQTTClientService')
-    #             # mqtt.reAnnounce()
-    #             logger.info("[on_name_vanished][{}]: lost dbus connection".format(self.__class__))
-    #     else:
-    #         logger.info("[on_name_appeared][{}]: no dbus connection".format(self.__class__))
-
-    # NOTE
-    # source: http://www.pygtk.org/pygtk2tutorial/examples/helloworld.py
-    # If the callback function is an object method then it will have the general form:
-    # def on_connected_to_listener(self):
-    #     pass
-    # where self is the object instance invoking the method. This is the form used in the helloworld.py example program.
-
-    # @property
-    # def bus(self):
-    #     """Get the Bus Object"""
-    #     if self.__bus is None:
-    #         return None
-    #     return self.__bus
-    #
-    # @bus.setter
-    # def bus(self, bus_obj):
-    #     """Set the Bus Object
-    #     """
-    #     if bus_obj is None:
-    #         self.__bus = None
-    #         return
-    #     else:
-    #         if type(bus_obj) == pydbus.bus.Bus:
-    #             self.__bus = bus_obj
-    #         else:
-    #             raise ValueError("bus_obj '{0} must be of type pydbus.bus.Bus'")
-    #
-    # @property
-    # def scarlett_dbus(self):
-    #     """Get the scarlett dbus proxy object"""
-    #     if self.__scarlett_dbus is None:
-    #         return None
-    #     return self.__scarlett_dbus
-    #
-    # @scarlett_dbus.setter
-    # def scarlett_dbus(self, s_dbus):
-    #     """Set the scarlett dbus proxy Object
-    #     """
-    #     if s_dbus is None:
-    #         self.__scarlett_dbus = None
-    #         return
-    #     else:
-    #         # Check that proxy object has a Introspect method
-    #         proxy_obj = getattr(s_dbus, "Introspect")
-    #         if callable(proxy_obj.Introspect):
-    #             self.__scarlett_dbus = s_dbus
-    #         else:
-    #             raise ValueError("proxy_obj.Introspect '{0} is not callable. Something wrong with proxy object!'")
-
     def do_tasker_started(self):
         logger.info("Starting up ScarlettTasker ...")
 
@@ -406,13 +236,7 @@ class ScarlettTasker(_IdleObject):
     def configure(self):
         """Configure the supplied bus for use.
         """
-        # NOTE: OLD VALUE
-        # bus = self.__dr.get_session_bus()
-        # bus = self.bus = self.__dr.get_session_bus()
-        # bus = self.bus
         bus = self.__dr.get_session_bus()
-
-        # def connect(self, bus, dbus_signal, func, *args):
 
         if self._failed_signal_callback:
             self._handler.connect(bus, "SttFailedSignal", self._failed_signal_callback)

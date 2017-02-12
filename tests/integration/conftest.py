@@ -2,7 +2,6 @@
 import pytest
 
 import signal
-# import errno
 
 import os
 from os import environ
