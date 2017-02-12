@@ -3,7 +3,7 @@
 import sys
 
 try:
-    # import pydbus
+    import pydbus
     from pydbus import SessionBus
 
 except ImportError:
@@ -92,11 +92,177 @@ class DBusRunner(object):
     __bus = None
     __active = False
     __instance = None
-    __proxy = None
+    # __proxy = None
+    __timeout = 30
+    __attempts = 0
+    __bus_name = "org.scarlett"
+    __object_path = '/org/scarlett/Listener'
+    __default_interface = "org.scarlett.Listener"
+    __scarlett_dbus = None
 
     def __init__(self):
-        DBusRunner.__bus = SessionBus()
-        DBusRunner.__proxy = DBusRunner.__bus.get("org.scarlett", object_path='/org/scarlett/Listener')
+        # FIXME: Temporarily disabled
+        # DBusRunner.__bus = SessionBus()
+        self.configure_session_bus()
+        # self.bus_name = DBusRunner.__bus_name
+        # self.object_path = DBusRunner.__object_path
+        # self.default_interface = DBusRunner.__default_interface
+        # FIXME: Break out dbus proxy object into classes that need them
+        # DBusRunner.__proxy = DBusRunner.__bus.get("org.scarlett", object_path='/org/scarlett/Listener')
+
+        # self._id_dbus_watch_name = self.bus.watch_name("org.scarlett",
+        #                                                name_appeared=self._on_name_appeared, name_vanished=self._on_name_vanished)
+
+    def configure_session_bus(self, attempts=0):
+        while attempts < 5:
+            try:
+                DBusRunner.__bus = SessionBus()
+                time.sleep(0.3)
+                break
+            except Exception as e:
+                attempts += 1
+                logger.error("Error getting Session Bus %d: %s" % (e.args[0], e.args[1]))
+
+    def configure_dbus_proxy(self, attempts=0):
+        while attempts < 5:
+            try:
+                self.__scarlett_dbus = self.__bus.get("org.scarlett", '/org/scarlett/Listener')
+                time.sleep(0.3)
+                break
+            except Exception as e:
+                attempts += 1
+                logger.error("Scarlett DBusRunner Error %d: %s" % (e.args[0], e.args[1]))
+
+    @property
+    def bus(self):
+        """Get the Bus Object"""
+        if self.__bus is None:
+            return None
+        return self.__bus
+
+    @bus.setter
+    def bus(self, bus_obj):
+        """Set the Bus Object
+        """
+        if bus_obj is None:
+            self.__bus = None
+            return
+        else:
+            if type(bus_obj) == pydbus.bus.Bus:
+                self.__bus = bus_obj
+            else:
+                raise ValueError("bus_obj '{0} must be of type pydbus.bus.Bus'")
+
+    @property
+    def scarlett_dbus(self):
+        """Get the scarlett dbus proxy object"""
+        if self.__scarlett_dbus is None:
+            return None
+        return self.__scarlett_dbus
+
+    @scarlett_dbus.setter
+    def scarlett_dbus(self, s_dbus):
+        """Set the scarlett dbus proxy Object
+        """
+        if s_dbus is None:
+            self.__scarlett_dbus = None
+            return
+        else:
+            # Check that proxy object has a Introspect method
+            proxy_obj = getattr(s_dbus, "Introspect")
+            if callable(proxy_obj.Introspect):
+                self.__scarlett_dbus = s_dbus
+            else:
+                raise ValueError("proxy_obj.Introspect '{0} is not callable. Something wrong with proxy object!'")
+
+    @property
+    def bus_name(self):
+        """Get the bus name"""
+        if self._bus_name is None:
+            return None
+        return self._bus_name
+
+    @bus_name.setter
+    def bus_name(self, bus_name):
+        r"""Set the Bus Name
+        http://dbus.freedesktop.org/doc/dbus-specification.html\
+        #message-protocol-names-bus
+        """
+        if bus_name is None:
+            self._bus_name = None
+            return
+        bus = str(bus_name)
+        self._bus_name = bus
+
+    @property
+    def object_path(self):
+        """Get the object path"""
+        return self._object_path
+
+    @object_path.setter
+    def object_path(self, object_path):
+        r"""Set the object_path
+        http://dbus.freedesktop.org/doc/dbus-specification.html\
+        #message-protocol-marshaling-object-path
+        """
+        if not object_path:
+            raise ValueError("object_path '{0} cannot be blank'")
+        else:
+            obj = str(object_path)
+            if obj[0] == '/':
+                self._object_path = obj
+            else:
+                raise ValueError("object_path must follow specifications"
+                                 " mentioned at "
+                                 "http://dbus.freedesktop.org/doc/"
+                                 "dbus-specification.html"
+                                 "#message-protocol-marshaling-object-path""")
+
+    @property
+    def default_interface(self):
+        """Get the default interface"""
+        return self._default_interface
+
+    @default_interface.setter
+    def default_interface(self, default_interface):
+        r"""Set the default_interface
+        http://dbus.freedesktop.org/doc/dbus-specification.html\
+        #message-protocol-names-interface
+        """
+        if not default_interface:
+            raise ValueError("default_interface '{0} cannot be blank'")
+        else:
+            intr = str(default_interface)
+            if intr.count('.') > 1:
+                self._default_interface = intr
+            else:
+                raise ValueError("default_interface must follow "
+                                 "specifications mentioned at "
+                                 "http://dbus.freedesktop.org/"
+                                 "doc/dbus-specification.html"
+                                 "#message-protocol-names-interface")
+
+    # def wait_for_bus_object(self, dest, path):
+    #     # we check whether the name is owned first, to avoid race conditions
+    #     # with service activation; once it's owned, wait until we can actually
+    #     # call methods
+    #     while DBusRunner.__timeout > 0:
+    #         if bus.name_has_owner(dest):
+    #             try:
+    #                 p = dbus.Interface(bus.get_object(dest, path),
+    #                                    dbus_interface=dbus.INTROSPECTABLE_IFACE)
+    #                 p.Introspect()
+    #                 break
+    #             except dbus.exceptions.DBusException as e:
+    #                 last_exc = e
+    #                 if '.UnknownInterface' in str(e):
+    #                     break
+    #                 pass
+    #
+    #         timeout -= 1
+    #         time.sleep(0.1)
+    #     if timeout <= 0:
+    #         assert timeout > 0, 'timed out waiting for D-BUS object %s: %s' % (path, last_exc)
 
     def start(self):
         """
@@ -162,17 +328,17 @@ class DBusRunner(object):
         # pydbus.bus.Bus at 0x7fa552e8ef60
         return DBusRunner.__bus
 
-    def get_proxy_object(self):
-        """
-        Return the current DBUS session bus.
-
-        ``Return:`` DBusRunner bus object
-        """
-
-        # if not DBusRunner.__proxy:
-        #     DBusRunner.__proxy = DBusRunner.__bus.get("org.scarlett", object_path='/org/scarlett/Listener')
-
-        return DBusRunner.__proxy
+    # def get_proxy_object(self):
+    #     """
+    #     Return the current DBUS session bus.
+    #
+    #     ``Return:`` DBusRunner bus object
+    #     """
+    #
+    #     # if not DBusRunner.__proxy:
+    #     #     DBusRunner.__proxy = DBusRunner.__bus.get("org.scarlett", object_path='/org/scarlett/Listener')
+    #
+    #     return DBusRunner.__proxy
 
     def is_active(self):
         """

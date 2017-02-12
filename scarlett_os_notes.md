@@ -549,6 +549,8 @@ export python=3.5
 
 Make cover-debug = `py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals`
 
+Without Timeout = `pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals`
+
 `py.test -s --tb short tests --benchmark-skip --pdb --showlocals`
 
 

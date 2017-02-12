@@ -22,36 +22,14 @@ import scarlett_os.exceptions
 
 from tests.integration.stubs import create_main_loop
 
+import time
+
 done = 0
 
-# NOTE: example of testing dbus send on commandline
-# pi@e17ba21a9d2b:~/dev/bossjones-github/scarlett_os$ dbus-send \
-# > --session \
-# > --print-reply \
-# > --dest=org.scarlett \
-# > /org/scarlett/Listener \
-# > org.scarlett.Listener1.emitConnectedToListener \
-# > string:"ScarlettEmitter"
-# method return time=1484522999.087256 sender=:1.1 -> destination=:1.12 serial=12 reply_serial=2
-#    string " ScarlettEmitter is connected to ScarlettListener"
-# pi@e17ba21a9d2b:~/dev/bossjones-github/scarlett_os$
 
-# NOTE: THIS WORKS
-# dbus-send --session --print-reply --dest=org.scarlett /org/scarlett/Listener org.scarlett.Listener1.emitConnectedToListener string:"ScarlettEmitter"
-
-# NOTE: We can use this instead of dbus-send
-# [FIXME]
-# pi@e17ba21a9d2b:~/dev/bossjones-github/scarlett_os$ python3 -m scarlett_os.emitter --signal=ready
-# ready
-# pi@e17ba21a9d2b:~/dev/bossjones-github/scarlett_os$
-#
 class TestScarlettSpeaker(object):
 
-    def test_bus_works(self, scarlett_os_interface):
-        bus = scarlett_os_interface
-        assert type(bus) == pydbus.bus.Bus
-
-    def test_mpris_methods_exist(self, service_on_outside, get_dbus_proxy_obj_helper):  # noqa
+    def test_mpris_methods_exist(self, service_on_outside, get_bus):  # noqa
         # NOTE: Technically these are both methods and signals
         look_for_methods_list = ['CanQuit',
                                  'CanRaise',
@@ -84,7 +62,18 @@ class TestScarlettSpeaker(object):
                                  'onListenerReadySignal',
                                  'onSttFailedSignal']
 
-        scarlett_speaker_proxy = get_dbus_proxy_obj_helper
+        # Return dbus obj
+        bus = get_bus
+
+        # Sleep to give time for connection to be established
+        time.sleep(1)
+
+        # Return dbus proxy object
+        scarlett_speaker_proxy = bus.get("org.scarlett", object_path='/org/scarlett/Listener')
+
+        # wait till we get proxy object
+        time.sleep(0.5)
+
         proxy_methods_list = dir(scarlett_speaker_proxy)
 
         # all dbus methos exists
@@ -261,4 +250,3 @@ class TestScarlettSpeaker(object):
     #   sl = mpris.ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
 
     #   pass
-

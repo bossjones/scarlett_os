@@ -42,14 +42,18 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
     """Test Tasker Signals for various on_* signal-handler methods
     """
 
-    def test_signal_ready(self, request, get_environment, monkeypatch, get_bus):
+    def test_signal_ready(self, request, service_on_outside, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
         check that the callback fires initially when the sources are set up
         """
+        recieved_signals = []
+
         # Append tuple to recieved_signals
+        # FIXME:
+        # /home/pi/dev/bossjones-github/scarlett_os/tests/integration/test_integration_tasker.py in catchall_handler(*args=(':1.0', '/org/scarlett/Listener', 'org.scarlett.Listener', 'SttFailedSignal', ('  ScarlettListener hit Max STT failures', 'pi-response2')), **kwargs={})
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
-            Catch all handler. Catch and print information about all singals.
+            Catch all handler. Catch and print information about all signals.
             """
             # unpack tuple to variables ( Taken from Tasker )
             for i, v in enumerate(args):
@@ -63,7 +67,9 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                         msg, scarlett_sound, command = v
 
             # Add value to list so we can assert later
-            self.recieved_signals.append(v)
+            recieved_signals.append(v)
+
+        # import pdb;pdb.set_trace()  # noqa
 
         self.setup_tasker(monkeypatch, get_bus)
 
@@ -80,16 +86,18 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                       "('  ScarlettListener is ready', 'pi-listening')")
         self.run_mainloop(timeout=5)
 
-        assert self.recieved_signals[0] == ('  ScarlettListener is ready', 'pi-listening')
+        assert recieved_signals[0] == ('  ScarlettListener is ready', 'pi-listening')
 
     def test_signal_failed(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
         check that the callback fires initially when the sources are set up
         """
+        recieved_signals = []
+
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
-            Catch all handler. Catch and print information about all singals.
+            Catch all handler. Catch and print information about all signals.
             """
             # unpack tuple to variables ( Taken from Tasker )
             for i, v in enumerate(args):
@@ -103,7 +111,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                         msg, scarlett_sound, command = v
 
             # Add value to list so we can assert later
-            self.recieved_signals.append(v)
+            recieved_signals.append(v)
 
         self.setup_tasker(monkeypatch, get_bus)
 
@@ -120,16 +128,19 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                       "('  ScarlettListener hit Max STT failures', 'pi-response2')")
         self.run_mainloop(timeout=5)
 
-        assert self.recieved_signals[0] == ('  ScarlettListener hit Max STT failures', 'pi-response2')
+        assert recieved_signals[0] == ('  ScarlettListener hit Max STT failures', 'pi-response2')
 
     def test_signal_kw_rec(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
         check that the callback fires initially when the sources are set up
         """
+
+        recieved_signals = []
+
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
-            Catch all handler. Catch and print information about all singals.
+            Catch all handler. Catch and print information about all signals.
             """
             # unpack tuple to variables ( Taken from Tasker )
             for i, v in enumerate(args):
@@ -143,7 +154,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                         msg, scarlett_sound, command = v
 
             # Add value to list so we can assert later
-            self.recieved_signals.append(v)
+            recieved_signals.append(v)
 
         self.setup_tasker(monkeypatch, get_bus)
 
@@ -160,16 +171,18 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                       "('  ScarlettListener caught a keyword match', 'pi-listening')")
         self.run_mainloop(timeout=5)
 
-        assert self.recieved_signals[0] == ('  ScarlettListener caught a keyword match', 'pi-listening')
+        assert recieved_signals[0] == ('  ScarlettListener caught a keyword match', 'pi-listening')
 
     def test_signal_command(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
         check that the callback fires initially when the sources are set up
         """
+        recieved_signals = []
+
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
-            Catch all handler. Catch and print information about all singals.
+            Catch all handler. Catch and print information about all signals.
             """
             # unpack tuple to variables ( Taken from Tasker )
             for i, v in enumerate(args):
@@ -183,7 +196,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                         msg, scarlett_sound, command = v
 
             # Add value to list so we can assert later
-            self.recieved_signals.append(v)
+            recieved_signals.append(v)
 
         self.setup_tasker(monkeypatch, get_bus)
 
@@ -194,22 +207,24 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         time.sleep(1)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='command')
+        run_emitter_signal(request, get_environment, sig_name='cmd-rec')
 
         self.log.info("waiting for initial callback with"
                       "('  ScarlettListener caught a command match', 'pi-response', 'what time is it')")
         self.run_mainloop(timeout=5)
 
-        assert self.recieved_signals[0] == ('  ScarlettListener caught a command match', 'pi-response', 'what time is it')
+        assert recieved_signals[0] == ('  ScarlettListener caught a command match', 'pi-response', 'what time is it')
 
     def test_signal_cancel(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
         check that the callback fires initially when the sources are set up
         """
+        recieved_signals = []
+
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
-            Catch all handler. Catch and print information about all singals.
+            Catch all handler. Catch and print information about all signals.
             """
             # unpack tuple to variables ( Taken from Tasker )
             for i, v in enumerate(args):
@@ -223,7 +238,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                         msg, scarlett_sound, command = v
 
             # Add value to list so we can assert later
-            self.recieved_signals.append(v)
+            recieved_signals.append(v)
 
         self.setup_tasker(monkeypatch, get_bus)
 
@@ -240,16 +255,18 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                       "('  ScarlettListener cancel speech Recognition', 'pi-cancel')")
         self.run_mainloop(timeout=5)
 
-        assert self.recieved_signals[0] == ('  ScarlettListener cancel speech Recognition', 'pi-cancel')
+        assert recieved_signals[0] == ('  ScarlettListener cancel speech Recognition', 'pi-cancel')
 
     def test_signal_connect(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
         check that the callback fires initially when the sources are set up
         """
+        recieved_signals = []
+
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
             """
-            Catch all handler. Catch and print information about all singals.
+            Catch all handler. Catch and print information about all signals.
             """
             # unpack tuple to variables ( Taken from Tasker )
             for i, v in enumerate(args):
@@ -263,7 +280,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                         msg, scarlett_sound, command = v
 
             # Add value to list so we can assert later
-            self.recieved_signals.append(v)
+            recieved_signals.append(v)
 
         self.setup_tasker(monkeypatch, get_bus)
 
@@ -280,7 +297,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
                       "('ScarlettEmitter',)")
         self.run_mainloop(timeout=5)
 
-        assert self.recieved_signals[0] == ('ScarlettEmitter',)
+        assert recieved_signals[0] == ('ScarlettEmitter',)
 
 ############################################################################
 # EXAMPLE [ready signal]

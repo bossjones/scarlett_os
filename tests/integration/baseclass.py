@@ -73,7 +73,7 @@ def run_emitter_signal(request, get_environment, sig_name='ready'):
     id = GLib.child_watch_add(GLib.PRIORITY_HIGH, pid, cb)
 
 
-@pytest.mark.usefixtures("service_on_outside", "get_environment", "get_bus")
+# @pytest.mark.usefixtures("service_on_outside", "get_environment", "get_bus")
 class IntegrationTestbase(object):
     """Base class for integration tests."""
     # Tests are not allowed to have an __init__ method
@@ -87,23 +87,19 @@ class IntegrationTestbase(object):
         logging.basicConfig(
             format="%(filename)s:%(lineno)d (%(funcName)s): %(message)s")
 
-        self.recieved_signals = []
+        # self.recieved_signals = []
         self.status = None
         self.tasker = None
 
     def setup_tasker(self, monkeypatch, get_bus):
         """Create ScarlettTasker object and call setup_controller."""
         monkeypatch.setattr("scarlett_os.utility.dbus_runner.SessionBus", lambda: get_bus)
-        time.sleep(1)
         self.log.info("setting up Controller")
         self.tasker = tasker.ScarlettTasker()
 
-    def setup_mpris(self, service_on_outside):
-        self.log.info("Setting up mpris dbus server")
-
     def teardown_method(self, _):
         """Tear down called automatically after every test_XXXX method."""
-        self.recieved_signals = []
+        # self.recieved_signals = None
         self.status = None
         self.tasker = None
 
