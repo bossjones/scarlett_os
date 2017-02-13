@@ -549,6 +549,8 @@ export python=3.5
 
 Make cover-debug = `py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals`
 
+Without Timeout = `pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals`
+
 `py.test -s --tb short tests --benchmark-skip --pdb --showlocals`
 
 
@@ -638,4 +640,328 @@ sysdig -pc -c spy_users container.name=7764d091cf0b
 
 
 sysdig evt.type=open and fd.name contains /etc
+```
+
+# Solid approach
+
+Target: `multiple modules`
+
+Sticking with main focus of porting everything from python2 to python3 from the `scarlett-dbus-poc` repo, even though it needs to be refactored ... HEAVILY.
+
+Planning on using the `S.O.L.I.D` approach w/ python going forward.
+
+Resources:
+
+- https://github.com/dboyliao/SOLID
+- http://www.slideshare.net/DrTrucho/python-solid
+- https://www.reddit.com/r/learnpython/comments/4i6tw4/solid_principles_in_python/
+
+Videos:
+
+- https://www.youtube.com/watch?v=wf-BqAjZb8M
+- https://www.youtube.com/watch?v=NfngrdLv9ZQ
+- https://www.youtube.com/watch?v=TQgB9JFbui0
+
+<img width="628" alt="screen shot 2016-12-23 at 7 05 51 pm" src="https://cloud.githubusercontent.com/assets/709872/21464154/34496f78-c943-11e6-8b22-eb2c493e1286.png">
+
+
+# pygobject callbacks ! return true or return false
+
+```
+#!/usr/bin/env python
+
+# example helloworld.py
+
+import pygtk
+pygtk.require('2.0')
+import gtk
+
+class HelloWorld:
+
+    # This is a callback function. The data arguments are ignored
+    # in this example. More on callbacks below.
+    def hello(self, widget, data=None):
+        print "Hello World"
+
+    def delete_event(self, widget, event, data=None):
+        # If you return FALSE in the "delete_event" signal handler,
+        # GTK will emit the "destroy" signal. Returning TRUE means
+        # you don't want the window to be destroyed.
+        # This is useful for popping up 'are you sure you want to quit?'
+        # type dialogs.
+        print "delete event occurred"
+
+        # Change FALSE to TRUE and the main window will not be destroyed
+        # with a "delete_event".
+        return False
+
+    def destroy(self, widget, data=None):
+        print "destroy signal occurred"
+        gtk.main_quit()
+
+    def __init__(self):
+        # create a new window
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+
+        # When the window is given the "delete_event" signal (this is given
+        # by the window manager, usually by the "close" option, or on the
+        # titlebar), we ask it to call the delete_event () function
+        # as defined above. The data passed to the callback
+        # function is NULL and is ignored in the callback function.
+        self.window.connect("delete_event", self.delete_event)
+
+        # Here we connect the "destroy" event to a signal handler.
+        # This event occurs when we call gtk_widget_destroy() on the window,
+        # or if we return FALSE in the "delete_event" callback.
+        self.window.connect("destroy", self.destroy)
+
+        # Sets the border width of the window.
+        self.window.set_border_width(10)
+
+        # Creates a new button with the label "Hello World".
+        self.button = gtk.Button("Hello World")
+
+        # When the button receives the "clicked" signal, it will call the
+        # function hello() passing it None as its argument.  The hello()
+        # function is defined above.
+        self.button.connect("clicked", self.hello, None)
+
+        # This will cause the window to be destroyed by calling
+        # gtk_widget_destroy(window) when "clicked".  Again, the destroy
+        # signal could come from here, or the window manager.
+        self.button.connect_object("clicked", gtk.Widget.destroy, self.window)
+
+        # This packs the button into the window (a GTK container).
+        self.window.add(self.button)
+
+        # The final step is to display this newly created widget.
+        self.button.show()
+
+        # and the window
+        self.window.show()
+
+    def main(self):
+        # All PyGTK applications must have a gtk.main(). Control ends here
+        # and waits for an event to occur (like a key press or mouse event).
+        gtk.main()
+
+# If the program is run directly or passed as an argument to the python
+# interpreter then create a HelloWorld instance and show it
+if __name__ == "__main__":
+    hello = HelloWorld()
+    hello.main()
+```
+
+Also see: https://en.wikibooks.org/wiki/PyGTK_For_GUI_Programming/Signals
+
+
+# [EVENTS] Return values in pygobject/gtk+ events
+
+**SOURCE:** https://en.wikibooks.org/wiki/PyGTK_For_GUI_Programming/Signals
+
+GTK+ events are similar to signals: they are 'emitted' by specific widgets and can be handled by callback functions. The only differences as far as the PyGTK programmer is concerned are the arguments to a callback function and its return value. As an example, we'll use the 'button_pressed_event' emitted by the gtk.Button widget, which can be connected to a callback function the same way a signal is:
+
+`button.connect('button_press_event', callback_func, callback_data)`
+
+where button is an instance of the gtk.Button object. The callback_data argument, as explained in the previous chapter, is optional. The definition of the callback function contains three arguments: a reference to the widget that emitted the signal, the event and the callback data:
+
+`def callback_func(widget, event, callback_data=None)`
+
+The value returned from this function must be a boolean value (unlike callback functions for signals). This return value is an important message in the GTK+ event mechanism:
+
+* False means that the event was not fully processed so GTK+ should continue doing whatever it usually does when this event occurs and the signal should propagate further.
+* True means that the event was fully handled and GTK+ no longer needs to do any further processing in response to the event.
+
+As an example, the 'delete_event' event is emitted from a gtk.Window when the user tries to close the window; if we connect a callback function to this and the function returns False, GTK+ will go on to close the window and emit the 'destroy' signal. If our callback function returns True, however, GTK+ does not close the window itself or emit the 'destroy' signal. This allows us to intervene when someone tries to close a window so we have to opportunity to ask them if, for example, they want to save their work, and then either instruct GTK+ to close the window or leave it open by returning the appropriate values from our callback function.
+
+
+# pygobject / pygtk signals
+
+**SEE THE FOLLOWING:** https://en.wikibooks.org/wiki/PyGTK_For_GUI_Programming/First_Steps
+
+
+# Testing ScarlettTasker in ipython
+
+```
+from scarlett_os.tasker import ScarlettTasker
+from scarlett_os.tasker import player_cb
+from scarlett_os.tasker import command_cb
+from scarlett_os.tasker import connected_to_listener_cb
+
+from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import GLib
+
+
+loop = GLib.MainLoop()
+
+st = ScarlettTasker()
+st.prepare(player_cb, command_cb, connected_to_listener_cb)
+st.configure()
+
+
+loop.run()
+```
+
+# Patching tricks
+
+```
+class TestScarlettTasker(unittest.TestCase):
+
+    def setUp(self):  # noqa: N802
+        """
+        Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. The default implementation does nothing.
+        """
+        # source: http://stackoverflow.com/questions/7667567/can-i-patch-a-python-decorator-before-it-wraps-a-function
+        # Do cleanup first so it is ready if an exception is raised
+        def kill_patches():  # Create a cleanup callback that undoes our patches
+            mock.patch.stopall()  # Stops all patches started with start()
+            imp.reload(tasker)  # Reload our UUT module which restores the original decorator
+        self.addCleanup(kill_patches)  # We want to make sure this is run so we do this in addCleanup instead of tearDown
+
+        self.old_glib_exception_error = GLib.GError
+        # Now patch the decorator where the decorator is being imported from
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_abort_on_exception = mock.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x).start()
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gi = mock.patch('scarlett_os.internal.gi.gi', spec=True, create=True).start()
+
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_glib = mock.patch('scarlett_os.internal.gi.GLib', spec=True, create=True).start()
+
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gobject = mock.patch('scarlett_os.internal.gi.GObject', spec=True, create=True).start()
+
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_gio = mock.patch('scarlett_os.internal.gi.Gio', spec=True, create=True).start()
+
+        # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        mock_pydbus_SessionBus = mock.patch('pydbus.SessionBus', spec=True, create=True).start()
+
+        # mock_pydbus_SessionBus.return_value
+
+        # mock_time = mock.patch('time.sleep', spec=True, create=True).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
+        # mock_pydbus.get.side_effect = Exception('GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.scarlett was not provided by any .service files')
+
+        # Exception Thrown from [/home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/pydbus/proxy.py] on line [40] via function [get]
+        # Exception type Error:
+        # GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name
+        # org.scarlett was not provided by any .service files
+
+        # HINT: if you're patching a decor with params use something like:
+        # lambda *x, **y: lambda f: f
+        imp.reload(tasker)  # Reloads the tasker.py module which applies our patched decorator
+```
+
+# Commented out tasker stuff we might care about
+
+```
+
+    # def run_mainloop(self):
+    #     try:
+    #         self.mainloop_init()
+    #     except Exception:
+    #         ss_failed_signal.disconnect()
+    #         ss_rdy_signal.disconnect()
+    #         ss_kw_rec_signal.disconnect()
+    #         ss_cmd_rec_signal.disconnect()
+    #         ss_cancel_signal.disconnect()
+    #         ss_connect_signal.disconnect()
+    #         loop.quit()
+    #         self.bucket.put(sys.exc_info())
+    #         raise
+
+    ###################################################################################################################
+    #  From dbus_runner
+    ###################################################################################################################
+    # def start(self):
+    #     """
+    #     Start the :func:`gi.MainLoop` to establish DBUS communications.
+    #     """
+    #     if self.__active:
+    #         return
+    #
+    #     self.__active = True
+    #
+    #     self.__thread = threading.Thread(target=self.__runner)
+    #     self.__thread.daemon = True
+    #     self.__thread.start()
+    #
+    # def __runner(self):
+    #     self.__gloop = GLib.MainLoop()
+    #     try:
+    #         self.__gloop.run()
+    #         # Definition: GLib.MainLoop.get_context
+    #
+    #         # The GLib.MainContext with which the source is associated,
+    #         # or None if the context has not yet been added to a source.
+    #         # Return type: GLib.MainContext or None
+    #
+    #         # Gets the GLib.MainContext with which the source is associated.
+    #         # You can call this on a source that has been destroyed,
+    #         # provided that the GLib.MainContext it was attached to still
+    #         # exists (in which case it will return that GLib.MainContext).
+    #         # In particular, you can always call this function on the
+    #         # source returned from GLib.main_current_source().
+    #         # But calling this function on a source whose
+    #         # GLib.MainContext has been destroyed is an error.
+    #         context = self.__gloop.get_context()
+    #         while self.__active:
+    #             context.iteration(False)
+    #             if not context.pending():
+    #                 time.sleep(.1)
+    #     except KeyboardInterrupt:
+    #         self.__active = False
+    #         # env = Environment.getInstance()
+    #         # if hasattr(env, "active"):
+    #         #     env.active = False
+    #
+    # def stop(self):
+    #     """
+    #     Stop the :func:`gobject.MainLoop` to shut down DBUS communications.
+    #     """
+    #     # Don't stop us twice
+    #     if not self.__active:
+    #         return
+    #
+    #     self.__active = False
+    #     self.__gloop.quit()
+    #     self.__thread.join(5)
+
+    # # from mopidy
+    # def mainloop_init(self):
+    #     loop = GLib.MainLoop()
+    #     context = loop.get_context()
+    #     t = threading.Thread(target=self.__mainloop, args=(context,))
+    #     t.daemon = True
+    #     t.start()
+    #
+    # # from mopidy
+    # def __mainloop(self, context):
+    #     while 1:
+    #         try:
+    #             context.iteration(True)
+    #         except Exception:
+    #             pass
+```
+
+
+# Patch modules vs patch objects
+
+**source:** http://stackoverflow.com/questions/24995466/assertionerror-altough-the-expected-call-looks-same-as-actual-call
+
+```
+AFAIK you can't use patch() like this. Patch target should be a string in the form package.module.ClassName. I don't know much about django but I suppose Note is a class so Note.objects.filter is not something you can import and hence use in patch(). Also I don't think patch() can handle attributes. Actually I don't quite understand why the patch works at all.
+
+Try using patch.object() which is specifically designed to patch class attributes. It implies Note is already imported in your test module.
+
+@mock.patch.object(Note, 'objects')
+def test_get_all_notes(self, objects_mock):
+    get_notes()
+    objects_mock.filter.assert_called_once_with(number=2, new=1)
+I've removed autospec because I'm not sure it will work correctly in this case. You can try putting it back if it works.
+
+Another option might be to use patch() on whatever you get with type(Note.objects) (probably some django class).
+
+As I've said I don't know much about django so I'm not sure if these things work.
 ```

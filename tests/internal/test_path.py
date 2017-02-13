@@ -15,7 +15,6 @@ import scarlett_os
 from scarlett_os import compat
 from scarlett_os import exceptions
 from scarlett_os.internal import path as s_path
-# from scarlett_os.internal.path import isWritable, unicode_error_dialog, uri_is_valid, path_from_uri, path_to_uri
 from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import Gst
 

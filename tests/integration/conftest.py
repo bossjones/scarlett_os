@@ -2,7 +2,6 @@
 import pytest
 
 import signal
-# import errno
 
 import os
 from os import environ
@@ -229,7 +228,8 @@ print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDR
 # @pytest.fixture(scope="module", autouse=True)
 # hamster-dbus # @pytest.fixture
 # FROM: dbus-proxy # @pytest.fixture(scope="function")
-@pytest.fixture
+# @pytest.fixture
+@pytest.fixture(scope="module")
 def create_session_bus(request):
     # source: dbus-proxy
     """
@@ -260,6 +260,7 @@ def create_session_bus(request):
             env=environment,
             shell=True,
             stdout=sys.stdout)
+        print('\n[setup] create_session_bus, dbus-daemon running ...')
         # Allow time for the bus daemon to start
         sleep(0.3)
     except OSError as e:
@@ -267,6 +268,7 @@ def create_session_bus(request):
         sys.exit(1)
 
     def teardown():
+        print('\n[teardown] create_session_bus, killing dbus-daemon ...')
         dbus_daemon.kill()
         os.remove(OUTSIDE_SOCKET)
 
@@ -276,8 +278,8 @@ def create_session_bus(request):
     request.addfinalizer(teardown)
 
 
-# @pytest.fixture(scope="module")
-@pytest.fixture
+@pytest.fixture(scope="module")
+# @pytest.fixture
 def service_on_outside(request, create_session_bus):
     # FROM: dbus-proxy
     """
@@ -303,12 +305,14 @@ def service_on_outside(request, create_session_bus):
             cwd=scarlett_root)
         # Allow time for the service to show up on the bus
         # before consuming tests can try to use it.
+        print('\n[setup] service_on_outside, mpris running')
         sleep(0.3)
     except OSError as e:
         print("Error starting service on outside: {}".format(str(e)))
         sys.exit(1)
 
     def teardown():
+        print('\n[teardown] service_on_outside finalizer, disconnect from dbus mpris')
         outside_service.kill()
 
     # The finalizer is called after all of the tests that use the fixture.
@@ -355,8 +359,99 @@ def service_tasker(request):
     request.addfinalizer(teardown)
 
 
-# @pytest.fixture(scope='module')
-@pytest.fixture
+# @pytest.fixture
+# def create_tasker_object(request):
+#     # source: dbus-proxy
+#     """
+#     Create a Scarlett Tasker Object
+#
+#     """
+#
+#     # Return return code for running shell out command
+#     def cb(pid, status):
+#         """
+#         Set return code for emitter shell script.
+#         """
+#         test_status = status
+#
+#     # Append tuple to recieved_signals
+#     def catchall_handler(*args, **kwargs):  # pragma: no cover
+#         """
+#         Catch all handler.
+#         Catch and print information about all singals.
+#         """
+#         # unpack tuple to variables ( Taken from Tasker )
+#         for i, v in enumerate(args):
+#             if isinstance(v, tuple):
+#                 tuple_args = len(v)
+#                 if tuple_args == 1:
+#                     msg = v
+#                 elif tuple_args == 2:
+#                     msg, scarlett_sound = v
+#                 elif tuple_args == 3:
+#                     msg, scarlett_sound, command = v
+#
+#         test_recieved_signals.append(v)
+#
+#         print('--- [args] ---')
+#         for arg in args:
+#             print("another arg through *arg : {}".format(arg))
+#
+#         print('--- [kargs] ---')
+#         if kwargs is not None:
+#             for key, value in kwargs.items():
+#                 print("{} = {}".format(key, value))
+#
+#         print("\n")
+#
+#         loop.quit()
+#
+#     # TODO: Parametrize the socket path.
+#
+#     tskr = tasker.ScarlettTasker()
+#
+#     tskr.prepare(catchall_handler, catchall_handler, catchall_handler)
+#     tskr.configure()
+#
+#     # dbus_daemon = None
+#     # # The 'exec' part is a workaround to make the whole process group be killed
+#     # # later when kill() is caled and not just the shell. This is only needed when
+#     # # 'shell' is set to True like in the later Popen() call below.
+#     # start_dbus_daemon_command = [
+#     #     "exec",
+#     #     " dbus-daemon",
+#     #     " --session",
+#     #     " --nofork",
+#     #     " --address=" + "unix:path=" + OUTSIDE_SOCKET
+#     # ]
+#     # try:
+#     #     # For some reason shell needs to be set to True,
+#     #     # which is the reason the command is passed as
+#     #     # a string instead as an argument list,
+#     #     # as recommended in the docs.
+#     #     dbus_daemon = Popen(
+#     #         "".join(start_dbus_daemon_command),
+#     #         env=environment,
+#     #         shell=True,
+#     #         stdout=sys.stdout)
+#     #     # Allow time for the bus daemon to start
+#     #     sleep(0.3)
+#     # except OSError as e:
+#     #     print("Error starting dbus-daemon: {}".format(str(e)))
+#     #     sys.exit(1)
+#
+#     def teardown():
+#         dbus_daemon.kill()
+#         os.remove(OUTSIDE_SOCKET)
+#
+#     # The finalizer is called after all of the tests that use the fixture.
+#     # If you’ve used parameterized fixtures,
+#     # the finalizer is called between instances of the parameterized fixture changes.
+#     request.addfinalizer(teardown)
+
+
+@pytest.fixture(scope='module')
+# @pytest.fixture
 def get_bus(request, create_session_bus):
     """
     Provide the session bus instance.
@@ -377,6 +472,7 @@ def get_bus(request, create_session_bus):
         # print("teardown new session bus")
         # return dbus.bus.BusConnection(os.environ['DBUS_SESSION_BUS_ADDRESS'])
     else:
+        print('\n[get_bus] default SessionBus')
         bus = SessionBus()
         # yield bus
         # print("teardown existing session bus")
@@ -533,8 +629,8 @@ def get_bus(request, create_session_bus):
 #     request.addfinalizer(fin)
 #     return process
 
-# @pytest.fixture(scope="module")
-@pytest.fixture
+@pytest.fixture(scope="module")
+# @pytest.fixture
 def scarlett_os_interface(request, get_bus):
     # ORIG # def scarlett_os_interface(request, session_bus, hamster_service3):  # noqa
     """Provide a covinient interface hook to our hamster-dbus service."""
@@ -547,7 +643,8 @@ def scarlett_os_interface(request, get_bus):
     return get_bus
 
 
-@pytest.fixture
+# @pytest.fixture
+@pytest.fixture(scope="module")
 def get_dbus_proxy_obj_helper(request, get_bus):
     """
     Returns dbus proxy object connected to org.scarlett @ /org/scarlett/Listener  # noqa

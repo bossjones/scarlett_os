@@ -123,7 +123,8 @@ test_requirements = [
     'pytest-sugar==0.8.0',
     # 'pytest-ipdb',
     'objgraph',
-    'xdot'
+    'xdot',
+    'pytest-rerunfailures>=2.1.0'
 
 ]
 

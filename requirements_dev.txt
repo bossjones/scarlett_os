@@ -43,6 +43,7 @@ git+git://github.com/mverteuil/pytest-ipdb.git
 pdbpp==0.8.3
 # pudb
 pytest-sugar
+pytest-rerunfailures>=2.1.0
 
 # # Test runners
 # pytest
