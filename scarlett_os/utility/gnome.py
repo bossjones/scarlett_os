@@ -398,11 +398,9 @@ class _IdleObject(GObject.GObject):
     by emmitting on an idle handler
     """
 
-    # @trace
     def __init__(self):
         GObject.GObject.__init__(self)
 
-    # @trace
     def emit(self, *args):
         GObject.idle_add(GObject.GObject.emit, self, *args)
 
@@ -428,7 +426,6 @@ def abort_on_exception(func):  # noqa
             filename, line_num, func_name, text = traceback.extract_tb(exc_tb)[-1]
             logger.error('Exception Thrown from [%s] on line [%s] via function [%s]' % (filename, line_num, func_name))
             logger.error('Exception type %s: %s' % (e.__class__.__name__, e.message))
-            # NOTE: ORIGINAL # thread_object.log.error('Exception type %s: %s' % (e.__class__.__name__, e.message))
             thread_object.emit('aborted', exc_info)
     return wrapper
 
