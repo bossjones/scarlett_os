@@ -965,3 +965,126 @@ Another option might be to use patch() on whatever you get with type(Note.object
 
 As I've said I don't know much about django so I'm not sure if these things work.
 ```
+
+# Anonymous functions
+
+Lambda expressions (sometimes called lambda forms) are used to create anonymous functions. The expression lambda arguments: expression yields a function object.
+
+The unnamed object behaves like a function object defined with:
+
+```
+def <lambda>(arguments):
+    return expression
+```
+
+# next()
+```
+next(...)
+    next(iterator[, default])
+
+    Return the next item from the iterator. If default is given and the iterator
+    is exhausted, it is returned instead of raising StopIteration.
+```
+
+
+# analyzing functions / classes using dis module
+
+http://stackoverflow.com/questions/1995418/python-generator-expression-vs-yield
+
+
+# envs
+
+`DEBUG_CI_DISABLE_FAKESINK` - If set, disable fakesink so we can hear the sounds play
+
+
+# Current Tasker Workerflow ( Pre Refactor )
+
+Current Tasker workerflow
+
+1. User: Says Scarlett
+2. Listener: Gets a keyword match:
+  a. call result() w/ struct['hypothesis'], set vars failed = 0, kw_found = 1, use dbus_proxy obj to call dbus_proxy.emitKeywordRecognizedSignal
+    i. local var failed_temp = failed + 1
+    ii. if failed > 4, use dbus_proxy obj to call dbus_proxy.emitSttFailedSignal(), then call scarlett_reset_listen()
+  b. If kw_found == 1 and STT can be decoded, then call run_cmd() w/ struct['hypothesis']
+
+3. Tasker: Go into tasker._keyword_recognized_signal_callback() aka player_cb()
+
+  a. player_cb:
+    1a. enumerate args, using i,v
+    2a. find case when v is instance tuple
+    3a. get length of tuple w/ len(v), set to variable tuple_args
+    4a. find number of args based on length. msg, scarlett_sound, command
+    5a. use scarlett_sound to construct wavefile path ( path to audio sound )
+    6a. run no-op function run_player w/ arg player_generator_func which is CALLABLE. player_generator_func is your generator function.
+    7a. player_generator_func gets called via a GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH), yielding data till finished
+
+  b. command_cb:
+    1b. Follow everything from player_cb, playing new acknowledgement sound
+    2b. Run commands.Command.check_cmd, passing in kwarg command_tuple=v), save results to command_run_results.
+    3b. verify command_run_results is NOT a command NO_OP ... if it is, end callback by returning False.
+    4b. Take value of command_run_results and put it into an array using staticmethod SpeakerType.speaker_to_array() w/ arg command_run_results
+    5b. run no-op function run_speaker w/ arg speaker_generator_func which is CALLABLE. speaker_generator_func is your generator function, it calls s = speaker.ScarlettSpeaker w/ kargs text_to_speak, wavpath, and skip_player ... this useses Subprocess class to call espeak to a wav file in a temporary wav location.
+    6b. run player.ScarlettPlayer w/ path to espeak temporary file _wavepath.
+    7b. get instance of DBusRunner
+    8b. via DBusRunner object, get_session_bus()
+    9b. get dbus_proxy object of MPRIS
+    10b. Sleep for 1 second, then call emitListenerCancelSignal()
+
+# Dbus Signal Types
+
+```
+############################################################################
+# EXAMPLE [ready signal]
+# another arg through *arg : :1.0
+# another arg through *arg : /org/scarlett/Listener
+# another arg through *arg : org.scarlett.Listener
+# another arg through *arg : ListenerReadySignal
+# another arg through *arg : ('  ScarlettListener is ready', 'pi-listening')
+############################################################################
+
+#############################################################################
+# EXAMPLE [failed]
+# another arg through *arg : :1.0
+# another arg through *arg : /org/scarlett/Listener
+# another arg through *arg : org.scarlett.Listener
+# another arg through *arg : SttFailedSignal
+# another arg through *arg : ('  ScarlettListener hit Max STT failures', 'pi-response2')
+#############################################################################
+
+#############################################################################
+# EXAMPLE [listener]
+# another arg through *arg : :1.0
+# another arg through *arg : /org/scarlett/Listener
+# another arg through *arg : org.scarlett.Listener
+# another arg through *arg : KeywordRecognizedSignal
+# another arg through *arg : ('  ScarlettListener caught a keyword match', 'pi-listening')
+#############################################################################
+
+##############################################################################
+# EXAMPLE [command]
+# another arg through *arg : :1.0
+# another arg through *arg : /org/scarlett/Listener
+# another arg through *arg : org.scarlett.Listener
+# another arg through *arg : CommandRecognizedSignal
+# another arg through *arg : ('  ScarlettListener caught a command match', 'pi-response', 'what time is it')
+##############################################################################
+
+###############################################################################
+# EXAMPLE [cancel]
+# another arg through *arg : :1.0
+# another arg through *arg : /org/scarlett/Listener
+# another arg through *arg : org.scarlett.Listener
+# another arg through *arg : ListenerCancelSignal
+# another arg through *arg : ('  ScarlettListener cancel speech Recognition', 'pi-cancel')
+###############################################################################
+
+################################################################################
+# EXAMPLE [connect]
+# another arg through *arg : :1.0
+# another arg through *arg : /org/scarlett/Listener
+# another arg through *arg : org.scarlett.Listener
+# another arg through *arg : ConnectedToListener
+# another arg through *arg : ('ScarlettEmitter',)
+################################################################################
+```
