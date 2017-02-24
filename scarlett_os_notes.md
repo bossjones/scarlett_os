@@ -1088,3 +1088,60 @@ Current Tasker workerflow
 # another arg through *arg : ('ScarlettEmitter',)
 ################################################################################
 ```
+
+# Testing Tasker
+
+```
+# NOTE: RUN THIS INSIDE OF IPYTHON
+
+import os
+import sys
+import signal
+import pytest
+import builtins
+import threading
+
+import pydbus
+import scarlett_os
+import scarlett_os.exceptions
+
+import time
+
+from scarlett_os.internal import gi  # noqa
+from scarlett_os.internal.gi import Gio  # noqa
+from scarlett_os.internal.gi import GObject  # noqa
+from scarlett_os.internal.gi import GLib
+
+from scarlett_os import tasker
+
+from scarlett_os.tasker import on_signal_recieved
+from scarlett_os.tasker import call_speaker
+from scarlett_os.tasker import call_espeak_subprocess
+from scarlett_os.tasker import call_player
+
+from scarlett_os.internal.debugger import dump
+
+import scarlett_os.logger
+
+# import faulthandler
+# faulthandler.register(signal.SIGUSR2, all_threads=True)
+
+from scarlett_os.internal.debugger import init_debugger
+init_debugger()
+
+# from scarlett_os.internal.debugger import enable_remote_debugging
+# enable_remote_debugging()
+
+
+loop = GLib.MainLoop()
+
+tskr = tasker.ScarlettTasker()
+
+# tskr.prepare(catchall_handler, catchall_handler, catchall_handler)
+
+tskr.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
+
+tskr.configure()
+
+loop.run()
+```
