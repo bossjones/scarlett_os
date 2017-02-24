@@ -1,0 +1,54 @@
+diff --git a/tests/integration/test_integration_tasker.py b/tests/integration/test_integration_tasker.py
+index d54bbe3..0d55aef 100644
+--- a/tests/integration/test_integration_tasker.py
++++ b/tests/integration/test_integration_tasker.py
+@@ -307,7 +307,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
+         """
+         recieved_signals = []
+ 
+-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
++        # if 'DEBUG_CI_DISABLE_FAKESINK' not in os.environ:
++        #     monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+ 
+         # Append tuple to recieved_signals
+         def catchall_handler(*args, **kwargs):  # pragma: no cover
+@@ -352,7 +353,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
+         """
+         recieved_signals = []
+ 
+-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
++        # if 'DEBUG_CI_DISABLE_FAKESINK' not in os.environ:
++        #     monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+ 
+         # Append tuple to recieved_signals
+         def catchall_handler(*args, **kwargs):  # pragma: no cover
+@@ -393,7 +395,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
+ 
+         recieved_signals = []
+ 
+-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
++        # if 'DEBUG_CI_DISABLE_FAKESINK' not in os.environ:
++        #     monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+ 
+         # Append tuple to recieved_signals
+         def catchall_handler(*args, **kwargs):  # pragma: no cover
+@@ -433,7 +436,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
+         """
+         recieved_signals = []
+ 
+-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
++        # if 'DEBUG_CI_DISABLE_FAKESINK' not in os.environ:
++        #     monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+ 
+         # Append tuple to recieved_signals
+         def catchall_handler(*args, **kwargs):  # pragma: no cover
+@@ -473,7 +477,8 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
+         """
+         recieved_signals = []
+ 
+-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
++        # if 'DEBUG_CI_DISABLE_FAKESINK' not in os.environ:
++        #     monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+ 
+         # Append tuple to recieved_signals
+         def catchall_handler(*args, **kwargs):  # pragma: no cover
