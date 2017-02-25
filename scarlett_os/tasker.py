@@ -352,20 +352,6 @@ def print_args(args):  # pragma: no cover
         print("another arg through *arg : {}".format(v))
 
 
-# def connected_to_listener_cb(*args, **kwargs):
-#     logger.debug('HERE IN connected_to_listener_cb')
-#
-#     print_args(args)
-#     print_keyword_args(**kwargs)
-#
-#     for i, v in enumerate(args):
-#         if isinstance(v, tuple):
-#             # FIXME: This is def a race condition waiting to happen
-#             # FIXME: Convert devices into a real class that has a context manager to deal with things
-#             ScarlettTasker.DEVICES.append(v)
-#             logger.debug("[DEVICES] append: {}".format(v))
-
-
 def call_player(sound):
     """Global function to allow calls to Scarlett Player via generator function. Should help reduce duplicate code."""
     # NOTE: THIS IS WHAT FIXED THE GENERATOR NONSENSE
