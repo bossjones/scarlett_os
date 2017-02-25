@@ -555,8 +555,8 @@ class ScarlettPlayer(_IdleObject):
                 print('self.pipeline already halted, don\'t set_state ... doing nothing')
 
             if hasattr(self, 'pipeline'):
-                print('Delete the pipeline object. This seems to be necessary on Python'
-                      '2, but not Python 3 for some reason: on 3.5, at least, the'
+                print('Delete the pipeline object. This seems to be necessary on Python '
+                      '2, but not Python 3 for some reason: on 3.5, at least, the '
                       'pipeline gets dereferenced automatically.')
                 del self.pipeline
             else:
