@@ -56,10 +56,8 @@ from scarlett_os.utility.generators import GIdleThread
 
 logger = logging.getLogger(__name__)
 
-
 # global pretty print for debugging
 pp = pprint.PrettyPrinter(indent=4)
-# logger = logging.getLogger(__name__)
 
 _INSTANCE = None
 
@@ -109,7 +107,32 @@ class TaskSignalHandler(object):
         """Connect a function + args to dbus_signal dbus_signal on an bus.
 
         Each dbus_signal may only be handled by one callback in this implementation.
+
+        Args:
+            `bus` (pydbus.bus.Bus): Pydbus DBus object to talk to Scarlett Mpris service.
+            `dbus_signal` (ListenerReadySignal,
+                           SttFailedSignal,
+                           KeywordRecognizedSignal,
+                           CommandRecognizedSignal,
+                           ListenerCancelSignal,
+                           ConnectedToListener): The type of dbus signal to subscribe to.
+            `func` (callable): callback function
+            `*args` (extra arguments): Extra arguments required for callback functions
         """
+
+        # """
+        # Create a new empty playlist with the given name.
+        #
+        # Returns a new playlist with the given name and an URI, or :class:`None`
+        # on failure.
+        #
+        # *MUST be implemented by subclass.*
+        #
+        # :param name: name of the new playlist
+        # :type name: string
+        # :rtype: :class:`mopidy.models.Playlist` or :class:`None`
+        # """
+
         assert (bus, dbus_signal) not in self._ids
         self._ids[(bus, dbus_signal)] = bus.subscribe(sender=None,
                                                       iface="org.scarlett.Listener",
