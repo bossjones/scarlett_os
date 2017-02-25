@@ -4,10 +4,20 @@
 
 from __future__ import with_statement, division
 
-from scarlett_os.compat import PY2, text_type, urlparse  # noqa
-from scarlett_os.internal.gi import GObject, Gst, GLib, gi, _gst_available
-from scarlett_os.exceptions import MainRunnerError, MainRunnerAbortedError, DecodeError, NoBackendError
+from scarlett_os.compat import PY2
+from scarlett_os.compat import text_type
+from scarlett_os.compat import urlparse  # noqa
 
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import _gst_available
+
+from scarlett_os.exceptions import MainRunnerError
+from scarlett_os.exceptions import MainRunnerAbortedError
+from scarlett_os.exceptions import DecodeError
+from scarlett_os.exceptions import NoBackendError
 
 import sys
 import os

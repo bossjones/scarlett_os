@@ -102,6 +102,8 @@ def setup_console_logging(verbosity_level):
     else:
         # log_format = "(%(threadName)-9s) %(log_color)s%(levelname)-8s%(reset)s (%(funcName)-5s) %(message_log_color)s%(message)s"
         log_format = "%(levelname)-8s %(asctime)s [%(process)d:%(threadName)s] %(name)s\n  %(message)s"
+        # source: Logging Cookbook — Python 3.6.0 documentation
+        # log_format = "%(asctime)-15s %(name)-5s %(levelname)-8s IP: %(ip)-15s User: %(user)-8s %(message)s"
     formatter = logging.Formatter(log_format)
 
     # if config['logging']['color']:

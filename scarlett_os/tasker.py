@@ -51,48 +51,11 @@ from scarlett_os.utility.generators import GIdleThread
 # import logging.config
 # import logging.handlers
 
-from scarlett_os.const import __version__
-from scarlett_os import log
-
+# from scarlett_os.const import __version__
+# from scarlett_os import log
 
 logger = logging.getLogger(__name__)
 
-# try:
-#     from colorlog import ColoredFormatter
-#     from gettext import gettext as _  # noqa
-#     """Return a logger with a default ColoredFormatter."""
-#     formatter = ColoredFormatter(
-#         "(%(threadName)-9s) %(log_color)s%(levelname)-8s%(reset)s (%(funcName)-5s) %(message_log_color)s%(message)s",  # noqa
-#         datefmt=None,
-#         reset=True,
-#         log_colors={
-#             'DEBUG': 'cyan',
-#             'INFO': 'green',
-#             'WARNING': 'yellow',
-#             'ERROR': 'red',
-#             'CRITICAL': 'bold_red',
-#             'TRACE': 'purple'
-#         },
-#         secondary_log_colors={
-#             'message': {
-#                 'ERROR': 'red',
-#                 'CRITICAL': 'red',
-#                 'DEBUG': 'yellow',
-#                 'INFO': 'yellow,bg_blue'
-#             }
-#         },
-#         style='%'
-#     )
-#
-#     handler = logging.StreamHandler()
-#     handler.setFormatter(formatter)
-#     logger.addHandler(handler)
-#     logger.setLevel(logging.DEBUG)
-# except ImportError:
-#     # No color available, use default config
-#     logging.basicConfig(format='%(levelname)s: %(message)s')
-#     logger.warn("Disabling color, you really want to install colorlog.")
-########################################
 
 # global pretty print for debugging
 pp = pprint.PrettyPrinter(indent=4)
@@ -550,6 +513,9 @@ if __name__ == "__main__":
         from scarlett_os.internal.debugger import enable_remote_debugging
         enable_remote_debugging()
 
+    from scarlett_os.logger import setup_logger
+    setup_logger()
+
     #######################################################################
     # New logging setup - START
     #######################################################################
@@ -563,6 +529,22 @@ if __name__ == "__main__":
     # log.setup_logging(verbosity_level, False)
     #######################################################################
     # New logging setup - END
+    #######################################################################
+
+    #######################################################################
+    # Pitivi logging setup
+    #######################################################################
+    # Init logging as early as possible so we can log startup code
+    # enable_color = not os.environ.get(
+    #     'PITIVI_DEBUG_NO_COLOR', '0') in ('', '1')
+    # # Let's show a human-readable Pitivi debug output by default, and only
+    # # show a crazy unreadable mess when surrounded by gst debug statements.
+    # enable_crack_output = "GST_DEBUG" in os.environ
+    # loggable.init('PITIVI_DEBUG', enable_color, enable_crack_output)
+    #
+    # self.info('starting up')
+    #######################################################################
+    # Pitivi logging setup - END
     #######################################################################
 
     #######################################################################

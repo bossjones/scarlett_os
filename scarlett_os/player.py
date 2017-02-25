@@ -57,6 +57,10 @@ from scarlett_os.internal.path import mkdir_if_does_not_exist
 from scarlett_os.internal.path import fname_exists
 from scarlett_os.internal.path import touch_empty_file
 
+# from scarlett_os.logger import setup_logger
+#
+# setup_logger()
+
 # Alias
 gst = Gst
 
@@ -588,6 +592,9 @@ if __name__ == '__main__':
         init_debugger()
         set_gst_grapviz_tracing()
         # Example of how to use it
+
+    from scarlett_os.logger import setup_logger
+    setup_logger()
 
     wavefile = [
         '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']

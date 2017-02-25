@@ -20,8 +20,6 @@
 # threading.Semaphore.  Note that these don't represent any kind of
 # thread-safety.
 
-# from __future__ import with_statement, division, absolute_import
-
 import sys
 import os
 
@@ -145,6 +143,9 @@ if __name__ == '__main__':
         init_debugger()
         set_gst_grapviz_tracing()
         # Example of how to use it
+
+    from scarlett_os.logger import setup_logger
+    setup_logger()
 
     tts_list = ['Hello sir. How are you doing this afternoon?'
                 ' I am full lee function nall, andd red ee for your commands']
