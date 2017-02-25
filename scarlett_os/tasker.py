@@ -50,9 +50,13 @@ from scarlett_os.utility.generators import Queue
 # FIXME: Temporary, till we figure out best way to approach logging module
 # FIXME: FAM, THIS SHIT IS NOT THREADSAFE AT ALL. LETS SEE HOW MOPIDY/PITIVI/SOMEBODY-ELSE IS HANDLING THINGS
 # import scarlett_os.logger
-import logging
-import logging.config
-import logging.handlers
+# import logging
+# import logging.config
+# import logging.handlers
+
+from scarlett_os.const import __version__
+from scarlett_os import log
+
 
 logger = logging.getLogger(__name__)
 
@@ -318,9 +322,6 @@ class ScarlettTasker(_IdleObject):
         self._cancel_signal_callback = None
         self._connect_signal_callback = None
 
-        # FIXME: testing for the moment
-        # self._gobject_configure()
-
     def prepare(self, player_cb, command_cb, connected_to_listener_cb):
         """Store info we will need when the appsrc element gets installed."""
         self._handler.clear()
@@ -332,8 +333,6 @@ class ScarlettTasker(_IdleObject):
         self._connect_signal_callback = connected_to_listener_cb
         self._prep_tmp_espeak()
 
-    # FIXME: 2/23/2017 TEMP
-    @abort_on_exception
     def configure(self):
         """Configure the supplied bus for use.
         """
@@ -363,27 +362,6 @@ class ScarlettTasker(_IdleObject):
         # even if progress updates are received from other threads.
         # self.emit('tasker-configured')
 
-        # FIXME: testing for the moment
-        # self._gobject_configure()
-
-    # FIXME: 2/23/2017 TEMP
-    @abort_on_exception
-    def _gobject_configure(self):
-        self._id_do_tasker_configured = self.connect('tasker-configured', self.do_tasker_configured)
-        self._id_do_tasker_started = self.connect('tasker-started', self.do_tasker_started)
-        self._id_do_play_sound = self.connect('play-sound', self.do_play_sound)
-
-    # FIXME: 2/23/2017 TEMP
-    @abort_on_exception
-    def _gobject_reset(self):
-        self.disconnect(self._id_do_tasker_configured)
-        self.disconnect(self._id_do_tasker_started)
-        self.disconnect(self._id_do_play_sound)
-
-        self._id_do_tasker_configured = None
-        self._id_do_tasker_started = None
-        self._id_do_play_sound = None
-
 
 def print_keyword_args(**kwargs):
     # kwargs is a dict of the keyword args passed to the function
@@ -408,25 +386,6 @@ def connected_to_listener_cb(*args, **kwargs):
             # FIXME: Convert devices into a real class that has a context manager to deal with things
             ScarlettTasker.DEVICES.append(v)
             logger.debug("[DEVICES] append: {}".format(v))
-
-
-# def get_named_tuple(*args):
-#     for i, v in enumerate(args):
-#         if os.environ.get('SCARLETT_DEBUG_MODE'):
-#             logger.debug("Type v: {}".format(type(v)))
-#             logger.debug("Type i: {}".format(type(i)))
-#         if isinstance(v, tuple):
-#             if os.environ.get('SCARLETT_DEBUG_MODE'):
-#                 logger.debug("THIS SHOULD BE A Tuple now: {}".format(v))
-#
-#             # Unbundle tuples and make sure you know how many items are returned
-#             tuple_args = len(v)
-#             if tuple_args == 1:
-#                 msg = v
-#             elif tuple_args == 2:
-#                 msg, scarlett_sound = v
-#             elif tuple_args == 3:
-#                 msg, scarlett_sound, command = v
 
 
 def call_player(sound):
@@ -454,14 +413,23 @@ def call_player(sound):
                     yield False
 
     def run_player(function):
+        # Create generator function
         gen = function()
+
         # next() - Return the next item from the iterator.
         # If default is given and the iterator
         # is exhausted, it is returned instead of raising StopIteration.
+        # NOTE: OLD WAYS OF DOING THIS.
+        # NOTE: PROBLEM WITH THIS IS THAT ALL OF THESE GUYS WOULD RUN TOGETHER AT THE SAME TIME
         # GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
         # _t = GIdleThread(lambda: next(gen, False))
+
+        # source: https://gist.github.com/bossjones/916fd12b72627b6b5403
+        # Pass generator function to pseudo-"thread" GIdleThread
         _t = GIdleThread(gen)
+        # Run pseudo-"thread" with a given priority
         _t.start(priority=GLib.PRIORITY_HIGH)
+        # Wait till pseudo-"thread" is finished running before continuing forward
         _t.wait()
 
     # Convert this into full path
@@ -473,38 +441,6 @@ def call_player(sound):
 def call_espeak_subprocess(command_run_results):
     logger.info("Running in call_espeak_subprocess")
 
-    # def speaker_generator_func():
-    #     for scarlett_text in tts_list:
-    #         # Yield True if any of the incoming values from generator.send() match the given test_value.
-    #         # Always yield True after the first match is found
-    #         # source: https://wiki.gnome.org/Projects/PyGObject/Threading
-    #         # PyGObject: uses yield True to pass control to the main loop in regular intervals.
-    #         yield True
-    #
-    #         print("scarlett_text in tts_list")
-    #
-    #         _wavepath = SoundType.get_speaker_path()
-    #
-    #         s = speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
-    #                                     wavpath=_wavepath,
-    #                                     skip_player=True)
-    #
-    #         s.close(force=True)
-    #
-    #         yield False
-    #
-    # def run_speaker(function):
-    #     gen = function()
-    #     # next() - Return the next item from the iterator.
-    #     # If default is given and the iterator
-    #     # is exhausted, it is returned instead of raising StopIteration.
-    #     GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
-    #
-    # # 4. Scarlett Speaks
-    # tts_list = SpeakerType.speaker_to_array(command_run_results)
-    # run_speaker(speaker_generator_func)
-
-    #################################################################################################################
     tts_list = SpeakerType.speaker_to_array(command_run_results)
 
     for scarlett_text in tts_list:
@@ -516,7 +452,6 @@ def call_espeak_subprocess(command_run_results):
                                     skip_player=True)
 
         s.close(force=True)
-    #################################################################################################################
 
 
 def call_speaker(command_run_results):
@@ -546,24 +481,29 @@ def call_speaker(command_run_results):
                     yield False
 
     def run_speaker(function):
+        # Create generator function
         gen = function()
+
         # next() - Return the next item from the iterator.
         # If default is given and the iterator
         # is exhausted, it is returned instead of raising StopIteration.
+        # NOTE: OLD WAYS OF DOING THIS.
+        # NOTE: PROBLEM WITH THIS IS THAT ALL OF THESE GUYS WOULD RUN TOGETHER AT THE SAME TIME
         # GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
         # GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_DEFAULT_IDLE)
         # GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
         # _t = GIdleThread(lambda: next(gen, False))
+
+        # source: https://gist.github.com/bossjones/916fd12b72627b6b5403
+        # Pass generator function to pseudo-"thread" GIdleThread
         _s = GIdleThread(gen)
+        # Run pseudo-"thread" with a given priority
         _s.start(priority=GLib.PRIORITY_HIGH)
+        # Wait till pseudo-"thread" is finished running before continuing forward
         _s.wait()
 
     tts_list = SpeakerType.speaker_to_array(command_run_results)
     run_speaker(speaker_generator_func)
-
-
-def call_speaker_finished():
-    pass
 
 
 #######################################################################################################################
@@ -577,12 +517,8 @@ def on_signal_recieved(*args, **kwargs):
         logger.debug("player_cb kwargs")
         print_keyword_args(**kwargs)
 
-    # queue = Queue()
-    # c = GIdleThread(counter(23), queue)
-    # s = GIdleThread(shower(queue))
-    # c.start(priority=GObject.PRIORITY_DEFAULT)
-
     # source: https://gist.github.com/bossjones/916fd12b72627b6b5403
+    # Get mainthread context before running anything that requires a MainLoop
     main = GObject.main_context_default()
 
     if args[3] == 'ListenerReadySignal':
@@ -615,7 +551,7 @@ def on_signal_recieved(*args, **kwargs):
 
         # 4. Espeak gst plugin doesn't work, write sound to wav file
         call_espeak_subprocess(command_run_results)
-        time.sleep(1)
+        # time.sleep(1)
 
         # # 4. Scarlett Speaks
         # tts_list = SpeakerType.speaker_to_array(command_run_results)
@@ -629,7 +565,7 @@ def on_signal_recieved(*args, **kwargs):
         dr = DBusRunner.get_instance()
         bus = dr.get_session_bus()
         ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
-        time.sleep(1)
+        # time.sleep(1)
         ss.emitListenerCancelSignal()
 
     elif args[3] == 'ListenerCancelSignal':
@@ -846,6 +782,21 @@ if __name__ == "__main__":
 
         from scarlett_os.internal.debugger import enable_remote_debugging
         enable_remote_debugging()
+
+    #######################################################################
+    # New logging setup - START
+    #######################################################################
+    # log.bootstrap_delayed_logging()
+    #
+    # logger.info('Starting ScarlettOS Tasker %s', str(__version__))
+    #
+    # # SET VERBOSITY TO DEBUG BY DEFAULT
+    # verbosity_level = 3
+    #
+    # log.setup_logging(verbosity_level, False)
+    #######################################################################
+    # New logging setup - END
+    #######################################################################
 
     #######################################################################
     loop = GLib.MainLoop()

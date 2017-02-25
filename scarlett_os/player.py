@@ -90,7 +90,8 @@ def get_loop_thread():
             _shared_loop_thread.start()
         return _shared_loop_thread
 
-# NOTE: doc updated via https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
+# NOTE: doc updated via
+# https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
 
 
 class MainLoopThread(threading.Thread):
@@ -212,6 +213,7 @@ class ScarlettPlayer(_IdleObject):
         self.caps_handler = self.appsink.get_static_pad("sink").connect(
             "notify::caps", self._notify_caps
         )
+        print('caps_handler: {}'.format(self.caps_handler))
 
         self.pipeline.add(self.queueA)
         self.pipeline.add(self.appsink)
@@ -222,7 +224,7 @@ class ScarlettPlayer(_IdleObject):
         tee_src_pad_to_appsink_bin = self.splitter.get_request_pad('src_%u')
         logger.debug("Obtained request pad "
                      "Name({}) Type({}) for audio branch.".format(
-                     self.splitter.name, self.splitter))
+                         self.splitter.name, self.splitter))
         queueAsinkPad = self.queueA.get_static_pad('sink')
         logger.debug(
             "Obtained sink pad for element ({}) for tee -> queueA.".format(queueAsinkPad))
@@ -515,18 +517,27 @@ class ScarlettPlayer(_IdleObject):
             # Unregister for signals, which we registered for above with
             # `add_signal_watch`. (Without this, GStreamer leaks file
             # descriptors.)
-            try:
-                self.pipeline
-            except NameError:
-                logger.info("well, self.pipeline WASN'T defined after all!")
-            else:
-                logger.info("OK, self.pipeline IS defined.")
-                self.pipeline.get_bus().remove_signal_watch()
+            # FIXME: For some reason we need to keep this so that a stack trace happens and breaks everything
+            # out of endless ide_add loop
+            # Traceback (most recent call last):
+            #     File "/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/utility/generators.py", line 108, in __generator_executer
+            #       result = next(self._generator)
+            #     File "/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/tasker.py", line 412, in player_generator_func
+            #       p.close(force=True)
+            #     File "/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/player.py", line 531, in close
+            #       self.pipeline
+            # AttributeError: 'ScarlettPlayer' object has no attribute 'pipeline'
+            self.pipeline.get_bus().remove_signal_watch()
 
             # Stop reading the file.
             self.source.set_property("uri", None)
             # Block spurious signals.
-            self.appsink.get_static_pad("sink").disconnect(self.caps_handler)
+            if self.caps_handler:
+                print('self.caps_handler = {}'.format(self.caps_handler))
+                self.appsink.get_static_pad("sink").disconnect(self.caps_handler)
+                self.caps_handler = None
+            else:
+                print('self.caps_handler = None ... doing nothing')
 
             # Make space in the output queue to let the decoder thread
             # finish. (Otherwise, the thread blocks on its enqueue and
@@ -537,13 +548,19 @@ class ScarlettPlayer(_IdleObject):
                 pass
 
             # Halt the pipeline (closing file).
-            self.pipeline.set_state(Gst.State.NULL)
-            logger.info("closing generator_player: {}".format(self))
+            if hasattr(self, 'pipeline'):
+                print('Halt the self.pipeline (closing file).')
+                self.pipeline.set_state(Gst.State.NULL)
+            else:
+                print('self.pipeline already halted, don\'t set_state ... doing nothing')
 
-            # Delete the pipeline object. This seems to be necessary on Python
-            # 2, but not Python 3 for some reason: on 3.5, at least, the
-            # pipeline gets dereferenced automatically.
-            del self.pipeline
+            if hasattr(self, 'pipeline'):
+                print('Delete the pipeline object. This seems to be necessary on Python'
+                      '2, but not Python 3 for some reason: on 3.5, at least, the'
+                      'pipeline gets dereferenced automatically.')
+                del self.pipeline
+            else:
+                print('self.pipeline already deleted... doing nothing')
 
     def __del__(self):
         logger.info("delete time")
