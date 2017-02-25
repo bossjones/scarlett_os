@@ -277,7 +277,7 @@ class ScarlettTasker(_IdleObject):
         self._keyword_recognized_signal_callback = None
         self._command_recognized_signal_callback = None
         self._cancel_signal_callback = None
-        self._connect_signal_callback = Nonee
+        self._connect_signal_callback = None
         self._id_do_play_sound = None
 
     # FIXME: Okay, when this file doesn't exist, espeak can hang. For now create in advance to get around it
