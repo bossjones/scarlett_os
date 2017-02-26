@@ -6,13 +6,9 @@ test_dbus_utils
 ----------------------------------
 """
 
-import os
-import sys
-
 import pytest
 import unittest
 import unittest.mock as mock
-from mock import call
 from scarlett_os.utility import dbus_utils
 
 import pydbus
