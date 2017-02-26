@@ -4,10 +4,20 @@
 
 from __future__ import with_statement, division
 
-from scarlett_os.compat import PY2, text_type, urlparse  # noqa
-from scarlett_os.internal.gi import GObject, Gst, GLib, gi, _gst_available
-from scarlett_os.exceptions import MainRunnerError, MainRunnerAbortedError, DecodeError, NoBackendError
+from scarlett_os.compat import PY2
+from scarlett_os.compat import text_type
+from scarlett_os.compat import urlparse  # noqa
 
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import _gst_available
+
+from scarlett_os.exceptions import MainRunnerError
+from scarlett_os.exceptions import MainRunnerAbortedError
+from scarlett_os.exceptions import DecodeError
+from scarlett_os.exceptions import NoBackendError
 
 import sys
 import os
@@ -398,11 +408,9 @@ class _IdleObject(GObject.GObject):
     by emmitting on an idle handler
     """
 
-    # @trace
     def __init__(self):
         GObject.GObject.__init__(self)
 
-    # @trace
     def emit(self, *args):
         GObject.idle_add(GObject.GObject.emit, self, *args)
 
@@ -428,7 +436,6 @@ def abort_on_exception(func):  # noqa
             filename, line_num, func_name, text = traceback.extract_tb(exc_tb)[-1]
             logger.error('Exception Thrown from [%s] on line [%s] via function [%s]' % (filename, line_num, func_name))
             logger.error('Exception type %s: %s' % (e.__class__.__name__, e.message))
-            # NOTE: ORIGINAL # thread_object.log.error('Exception type %s: %s' % (e.__class__.__name__, e.message))
             thread_object.emit('aborted', exc_info)
     return wrapper
 

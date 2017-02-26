@@ -37,6 +37,54 @@ import imp  # Library to help us reload our tasker module
 # py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
 # strace -s 40000 -vvtf python setup.py test > ./strace.out.strace 2>&1
 
+#######################################################################################################################
+# import os
+# import sys
+# import signal
+# import pytest
+# import builtins
+# import threading
+#
+# import pydbus
+# import scarlett_os
+# import scarlett_os.exceptions
+#
+# import time
+#
+# from scarlett_os.internal import gi  # noqa
+# from scarlett_os.internal.gi import Gio  # noqa
+# from scarlett_os.internal.gi import GObject  # noqa
+# from scarlett_os.internal.gi import GLib
+#
+# from scarlett_os import tasker
+#
+# # from scarlett_os.tasker import on_signal_recieved
+# from scarlett_os.tasker import print_args
+# from scarlett_os.tasker import print_keyword_args
+# from scarlett_os.tasker import call_speaker
+# from scarlett_os.tasker import call_espeak_subprocess
+# # from scarlett_os.tasker import call_player
+# from scarlett_os.tasker import SoundType
+#
+# from scarlett_os.internal.debugger import dump
+#
+# import scarlett_os.logger
+#
+#
+# import pydbus
+# from pydbus import SessionBus
+#
+# from scarlett_os.utility.dbus_runner import DBusRunner
+#
+# from scarlett_os.utility.generators import GIdleThread
+# from scarlett_os.utility.generators import QueueEmpty
+# from scarlett_os.utility.generators import QueueFull
+# from scarlett_os.utility.generators import Queue
+# # from scarlett_os.utility.generators import Queue
+# #
+# from scarlett_os.utility.gnome import abort_on_exception
+#######################################################################################################################
+
 
 class TestScarlettTasker(unittest.TestCase):
 
@@ -151,16 +199,13 @@ class TestScarlettTasker(unittest.TestCase):
         _handler = mock_task_signal_handler()
         tskr = tasker.ScarlettTasker()
 
-        def player_cb(*args, **kwargs):
-            print('player_cb')
-
-        def command_cb(*args, **kwargs):
-            print('command_cb')
+        def on_signal_recieved(*args, **kwargs):
+            print('on_signal_recieved')
 
         def connected_to_listener_cb(*args, **kwargs):
             print('connected_to_listener_cb')
 
-        tskr.prepare(player_cb, command_cb, connected_to_listener_cb)
+        tskr.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
 
         self.assertEqual(_handler.clear.call_count, 1)
         self.assertIsNotNone(tskr._failed_signal_callback)

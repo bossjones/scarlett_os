@@ -42,7 +42,6 @@ from scarlett_os.exceptions import NoStreamError
 from scarlett_os.exceptions import FileReadError
 
 import queue
-# from urllib.parse import quote
 
 from scarlett_os.utility.gnome import abort_on_exception
 from scarlett_os.utility.gnome import _IdleObject
@@ -60,6 +59,7 @@ logger = logging.getLogger(__name__)
 
 # Constants
 QUEUE_SIZE = 10
+QUEUE_SIZE = -1
 BUFFER_SIZE = 10
 SENTINEL = '__GSTDEC_SENTINEL__'
 SEMAPHORE_NUM = 0
@@ -510,7 +510,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         # capsfilter_queue.connect('pushing', self._on_pushing)
         # capsfilter_queue.connect('running', self._on_running)
 
-
         self.elements_stack.append(capsfilter_queue)
 
         ident = pipeline.get_by_name('ident')
@@ -528,8 +527,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         pp.pprint(buf)
         pp.pprint(dir(buf))
         logger.debug('on_handoff - %d bytes' % len(buf))
-        # print 'buf =', buf
-        # print 'dir(buf) =', dir(buf)
 
         if self.signed is None:
             # only ever one caps struct on our buffers
@@ -766,9 +763,13 @@ if __name__ == '__main__':
         from scarlett_os.internal.debugger import set_gst_grapviz_tracing
         from scarlett_os.internal.debugger import enable_remote_debugging
         enable_remote_debugging()
+
         init_debugger()
         set_gst_grapviz_tracing()
         # Example of how to use it
+
+    from scarlett_os.logger import setup_logger
+    setup_logger()
 
     demo = ListenerDemo()
     loop.run()

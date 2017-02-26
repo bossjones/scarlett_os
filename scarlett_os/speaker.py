@@ -20,8 +20,6 @@
 # threading.Semaphore.  Note that these don't represent any kind of
 # thread-safety.
 
-# from __future__ import with_statement, division, absolute_import
-
 import sys
 import os
 
@@ -82,13 +80,18 @@ class ScarlettSpeaker(object):
         with s_thread.time_logger('Espeak Subprocess To File'):
             self.running = True
             self.finished = False
+            # FIXME: Looks like we could have a memory/file-descriptors leak here
+            # FIXME: Need to close out self.res when finished
             self.res = subprocess.Subprocess(
                 self._command, name='speaker_tmp', fork=False).run()
             subprocess.check_pid(int(self.res))
             print("Did is run successfully? {}".format(self.res))
 
         # Have Gstreamer play it
-        if skip_player is not True:
+        if skip_player:
+            print("[Speaker] skip_player=True")
+        else:
+            print("[Speaker] skip_player=False")
             for path in self._wavefile:
                 path = os.path.abspath(os.path.expanduser(path))
                 with player.ScarlettPlayer(path, False, False) as f:
@@ -141,8 +144,11 @@ if __name__ == '__main__':
         set_gst_grapviz_tracing()
         # Example of how to use it
 
-    tts_list = [
-        'Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands']
+    from scarlett_os.logger import setup_logger
+    setup_logger()
+
+    tts_list = ['Hello sir. How are you doing this afternoon?'
+                ' I am full lee function nall, andd red ee for your commands']
     for scarlett_text in tts_list:
         with s_thread.time_logger('Scarlett Speaks'):
             ScarlettSpeaker(text_to_speak=scarlett_text,

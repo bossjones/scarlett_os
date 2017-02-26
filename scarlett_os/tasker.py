@@ -41,10 +41,23 @@ from scarlett_os.utility.dbus_runner import DBusRunner
 from scarlett_os.internal.path import touch_empty_file
 from scarlett_os.internal.path import fname_exists
 
+from scarlett_os.utility.generators import GIdleThread
+
+#######################################
+# FIXME: Temporary, till we figure out best way to approach logging module
+# FIXME: FAM, THIS SHIT IS NOT THREADSAFE AT ALL. LETS SEE HOW MOPIDY/PITIVI/SOMEBODY-ELSE IS HANDLING THINGS
+# import scarlett_os.logger
+# import logging
+# import logging.config
+# import logging.handlers
+
+# from scarlett_os.const import __version__
+# from scarlett_os import log
+
+logger = logging.getLogger(__name__)
 
 # global pretty print for debugging
 pp = pprint.PrettyPrinter(indent=4)
-logger = logging.getLogger(__name__)
 
 _INSTANCE = None
 
@@ -54,7 +67,10 @@ SCARLETT_DEBUG = True
 player_run = False
 command_run = False
 
+
 STATIC_SOUNDS_PATH = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
+
+pause_in_seconds = 1
 
 
 class SoundType:
@@ -67,6 +83,10 @@ class SoundType:
     @staticmethod
     def get_path(sound_type):
         return ["{}/{}.wav".format(STATIC_SOUNDS_PATH, sound_type)]
+
+    @staticmethod
+    def get_speaker_path():
+        return ["/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"]
 
 
 class SpeakerType:
@@ -87,7 +107,32 @@ class TaskSignalHandler(object):
         """Connect a function + args to dbus_signal dbus_signal on an bus.
 
         Each dbus_signal may only be handled by one callback in this implementation.
+
+        Args:
+            `bus` (pydbus.bus.Bus): Pydbus DBus object to talk to Scarlett Mpris service.
+            `dbus_signal` (ListenerReadySignal,
+                           SttFailedSignal,
+                           KeywordRecognizedSignal,
+                           CommandRecognizedSignal,
+                           ListenerCancelSignal,
+                           ConnectedToListener): The type of dbus signal to subscribe to.
+            `func` (callable): callback function
+            `*args` (extra arguments): Extra arguments required for callback functions
         """
+
+        # """
+        # Create a new empty playlist with the given name.
+        #
+        # Returns a new playlist with the given name and an URI, or :class:`None`
+        # on failure.
+        #
+        # *MUST be implemented by subclass.*
+        #
+        # :param name: name of the new playlist
+        # :type name: string
+        # :rtype: :class:`mopidy.models.Playlist` or :class:`None`
+        # """
+
         assert (bus, dbus_signal) not in self._ids
         self._ids[(bus, dbus_signal)] = bus.subscribe(sender=None,
                                                       iface="org.scarlett.Listener",
@@ -144,10 +189,39 @@ class ScarlettTasker(_IdleObject):
     # sign_in_status = GObject.Signal('sign-in-status', arg_types=[str, bool])
     # token_changed = GObject.Signal('token-changed', arg_types=[object])
 
-    __gsignals__ = {
-        "tasker-started": (GObject.SignalFlags.RUN_LAST, None, ()),
-        "tasker-configured": (GObject.SignalFlags.RUN_LAST, None, ()),
-    }
+    ###############################################################################################
+    # source: exaile
+    # HACK: Notice that this is not __gsignals__; descendants need to manually
+    # merge this in. This is because new PyGObject doesn't like __gsignals__
+    # coming from mixin. See:
+    # * https://bugs.launchpad.net/bugs/714484
+    # * http://www.daa.com.au/pipermail/pygtk/2011-February/019394.html
+    # _gsignals_ = {
+    #     'playlist-selected': (GObject.SignalFlags.RUN_LAST, None, (object,)),
+    #     'tracks-selected': (GObject.SignalFlags.RUN_LAST, None, (object,)),
+    #     'append-items': (GObject.SignalFlags.RUN_LAST, None, (object, bool)),
+    #     'replace-items': (GObject.SignalFlags.RUN_LAST, None, (object,)),
+    #     'queue-items': (GObject.SignalFlags.RUN_LAST, None, (object,)),
+    # }
+    #
+    # .... later on ....
+    # class PlaylistsPanel(panel.Panel, BasePlaylistPanelMixin):
+    # """
+    #     The playlists panel
+    # """
+    # __gsignals__ = BasePlaylistPanelMixin._gsignals_
+    ###############################################################################################
+
+    ###############################################################################################
+    # SOURCE: scarlett
+    # __gsignals__ = {
+    #     "completed": (
+    #         GObject.SignalFlags.RUN_LAST, None, []),
+    #     "progress": (
+    #         GObject.SignalFlags.RUN_LAST, None, [
+    #             GObject.TYPE_FLOAT])  # percent complete
+    # }
+    ###############################################################################################
 
     # tasker_started = GObject.Signal('tasker-started', arg_types=[str])
     # self.token_changed.emit(self._tokens[id])
@@ -190,12 +264,13 @@ class ScarlettTasker(_IdleObject):
         self._command_recognized_signal_callback = None
         self._cancel_signal_callback = None
         self._connect_signal_callback = None
+        self._id_do_play_sound = None
 
-    def do_tasker_started(self):
-        logger.info("Starting up ScarlettTasker ...")
-
-    def do_tasker_configured(self):
-        logger.info("ScarlettTasker is configured...")
+    # FIXME: Okay, when this file doesn't exist, espeak can hang. For now create in advance to get around it
+    def _prep_tmp_espeak(self, wavepath="/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"):
+        if not fname_exists(wavepath):
+            print('[prep_tmp_espeak]: MISSING TEMP ESPEAK FILE')
+            touch_empty_file(wavepath)
 
     def reset(self):
         """Reset the helper.
@@ -220,6 +295,7 @@ class ScarlettTasker(_IdleObject):
         self._command_recognized_signal_callback = command_cb
         self._cancel_signal_callback = player_cb
         self._connect_signal_callback = connected_to_listener_cb
+        self._prep_tmp_espeak()
 
     def configure(self):
         """Configure the supplied bus for use.
@@ -248,7 +324,7 @@ class ScarlettTasker(_IdleObject):
         # invoked via GLib.idle_add(). Use of idle_add() is necessary
         # to ensure that watchers are always called from the main thread,
         # even if progress updates are received from other threads.
-        self.emit('tasker-configured')
+        # self.emit('tasker-configured')
 
 
 def print_keyword_args(**kwargs):
@@ -262,35 +338,21 @@ def print_args(args):  # pragma: no cover
         print("another arg through *arg : {}".format(v))
 
 
-def connected_to_listener_cb(*args, **kwargs):
-    logging.debug('HERE IN connected_to_listener_cb')
-
-    print_args(args)
-    print_keyword_args(**kwargs)
-
-    for i, v in enumerate(args):
-        if isinstance(v, tuple):
-            # FIXME: This is def a race condition waiting to happen
-            # FIXME: Convert devices into a real class that has a context manager to deal with things
-            ScarlettTasker.DEVICES.append(v)
-            logging.debug("[DEVICES] append: {}".format(v))
-
-
-@abort_on_exception
-def player_cb(*args, **kwargs):
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
-        logger.debug("player_cb args")
-        print_args(args)
-        logger.debug("player_cb kwargs")
-        print_keyword_args(**kwargs)
-
+def call_player(sound):
+    """Global function to allow calls to Scarlett Player via generator function. Should help reduce duplicate code."""
     # NOTE: THIS IS WHAT FIXED THE GENERATOR NONSENSE
     # source: https://www.python.org/dev/peps/pep-0343/
+    # The generator gets instantiated and the next() function, which resumes the execution of the generator, is scheduled using GLib.idle_add(). GLib.idle_add() will re-schedule the call to next() until it returns False which will happen if the generator is exhausted, meaning the function is finished and has returned. Every time the generator yields, GTK+ has time to process events and update the user interface.
     def player_generator_func():
         for path in wavefile:
             path = os.path.abspath(os.path.expanduser(path))
+            # FIXME: fix this comment, slightly true, but stolen from another example
+            # Yield True if any of the incoming values from generator.send() match the given test_value.
+            # Always yield True after the first match is found
+            # Meaning, yield True when we create scarlettPlayer
             yield True
             print("for path in wavefile")
+            logger.info("Running in call_player")
             p = player.ScarlettPlayer(path, False, False)
             while True:
                 try:
@@ -301,79 +363,65 @@ def player_cb(*args, **kwargs):
                     yield False
 
     def run_player(function):
+        # Create generator function
         gen = function()
-        GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
 
-    for i, v in enumerate(args):
-        if os.environ.get('SCARLETT_DEBUG_MODE'):
-            logger.debug("Type v: {}".format(type(v)))
-            logger.debug("Type i: {}".format(type(i)))
-        if isinstance(v, tuple):
-            if os.environ.get('SCARLETT_DEBUG_MODE'):
-                logger.debug("THIS SHOULD BE A Tuple now: {}".format(v))
+        # next() - Return the next item from the iterator.
+        # If default is given and the iterator
+        # is exhausted, it is returned instead of raising StopIteration.
+        # NOTE: OLD WAYS OF DOING THIS.
+        # NOTE: PROBLEM WITH THIS IS THAT ALL OF THESE GUYS WOULD RUN TOGETHER AT THE SAME TIME
+        # GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
+        # _t = GIdleThread(lambda: next(gen, False))
 
-            # Unbundle tuples and make sure you know how many items are returned
-            tuple_args = len(v)
-            if tuple_args == 1:
-                msg = v
-            elif tuple_args == 2:
-                msg, scarlett_sound = v
-            elif tuple_args == 3:
-                msg, scarlett_sound, command = v
+        # source: https://gist.github.com/bossjones/916fd12b72627b6b5403
+        # Pass generator function to pseudo-"thread" GIdleThread
+        _t = GIdleThread(gen)
+        # Run pseudo-"thread" with a given priority
+        _t.start(priority=GLib.PRIORITY_HIGH)
+        # Wait till pseudo-"thread" is finished running before continuing forward
+        _t.wait()
 
-            logger.warning(" msg: {}".format(msg))
-            logger.warning(" scarlett_sound: {}".format(scarlett_sound))
+    # Convert this into full path
+    wavefile = SoundType.get_path(sound)
 
-            wavefile = SoundType.get_path(scarlett_sound)
-            run_player_result = run_player(player_generator_func)
-
-            logger.info('END PLAYING WITH SCARLETTPLAYER OUTSIDE IF')
-        else:
-            logger.debug("THIS IS NOT A GLib.Variant: {} - TYPE {}".format(v, type(v)))
+    run_player(player_generator_func)
 
 
-# NOTE: enumerate req to iterate through tuple and find GVariant
+def call_espeak_subprocess(command_run_results):
+    logger.info("Running in call_espeak_subprocess")
 
-@abort_on_exception
-def command_cb(*args, **kwargs):
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
-        logger.debug("command_cb args")
-        print_args(args)
-        logger.debug("command_cb kwargs")
-        print_keyword_args(**kwargs)
+    # NOTE: Throw results from command into an array for iteratining over
+    tts_list = SpeakerType.speaker_to_array(command_run_results)
 
-        # NOTE: THIS IS WHAT FIXED THE GENERATOR NONSENSE
-        # source: https://www.python.org/dev/peps/pep-0343/
-    def player_generator_func():
-        for path in wavefile:
-            path = os.path.abspath(os.path.expanduser(path))
-            yield True
-            print("for path in wavefile")
-            p = player.ScarlettPlayer(path, False, False)
-            while True:
-                try:
-                    yield next(p)
-                finally:
-                    time.sleep(p.duration)
-                    p.close(force=True)
-                    yield False
+    # iterate through each comannd string
+    for scarlett_text in tts_list:
+        # Get command as string ( ie. first value )
+        _wavepath = SoundType.get_speaker_path()[0]
 
-    def run_player(function):
-        gen = function()
-        GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
+        # Simply write TTS -> Disk
+        s = speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
+                                    wavpath=_wavepath,
+                                    skip_player=True)
+
+        # Close file descriptor for subprocess when finished
+        s.close(force=True)
+
+
+def call_speaker(command_run_results):
+    logger.info("Running in call_speaker")
 
     def speaker_generator_func():
         for scarlett_text in tts_list:
+            # Yield True if any of the incoming values from generator.send() match the given test_value.
+            # Always yield True after the first match is found
+            # source: https://wiki.gnome.org/Projects/PyGObject/Threading
+            # PyGObject: uses yield True to pass control to the main loop in regular intervals.
             yield True
             print("scarlett_text in tts_list")
-            _wavepath = "/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"
-            if not fname_exists(_wavepath):
-                print('[speaker_generator_func]: MISSING TEMP ESPEAK FILE')
-                touch_empty_file(_wavepath)
-
-            s = speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
-                                        wavpath=_wavepath,
-                                        skip_player=True)
+            print("[scarlett_text]: {}".format(scarlett_text))
+            print("type[scarlett_text]: {}".format(type(scarlett_text)))
+            _wavepath = SoundType.get_speaker_path()[0]
             p = player.ScarlettPlayer(_wavepath, False, False)
             logger.error("Duration: p.duration: {}".format(p.duration))
             while True:
@@ -382,61 +430,99 @@ def command_cb(*args, **kwargs):
                 finally:
                     time.sleep(p.duration)
                     p.close(force=True)
-                    s.close(force=True)
+                    # source: https://wiki.gnome.org/Projects/PyGObject/Threading
+                    # PyGObject: uses yield True to pass control to the main loop in regular intervals.
                     yield False
 
     def run_speaker(function):
+        # Create generator function
         gen = function()
-        GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
 
-    for i, v in enumerate(args):
-        if os.environ.get('SCARLETT_DEBUG_MODE'):
-            logger.debug("Type v: {}".format(type(v)))
-            logger.debug("Type i: {}".format(type(i)))
-        if isinstance(v, tuple):
-            if os.environ.get('SCARLETT_DEBUG_MODE'):
-                logger.debug("THIS SHOULD BE A Tuple now: {}".format(v))
+        # next() - Return the next item from the iterator.
+        # If default is given and the iterator
+        # is exhausted, it is returned instead of raising StopIteration.
+        # NOTE: OLD WAYS OF DOING THIS.
+        # NOTE: PROBLEM WITH THIS IS THAT ALL OF THESE GUYS WOULD RUN TOGETHER AT THE SAME TIME
+        # GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
+        # GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_DEFAULT_IDLE)
+        # GObject.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_HIGH)
+        # _t = GIdleThread(lambda: next(gen, False))
 
-            # Unbundle tuples and make sure you know how many items are returned
-            tuple_args = len(v)
-            if tuple_args == 1:
-                msg = v
-            elif tuple_args == 2:
-                msg, scarlett_sound = v
-            elif tuple_args == 3:
-                msg, scarlett_sound, command = v
+        # source: https://gist.github.com/bossjones/916fd12b72627b6b5403
+        # Pass generator function to pseudo-"thread" GIdleThread
+        _s = GIdleThread(gen)
+        # Run pseudo-"thread" with a given priority
+        _s.start(priority=GLib.PRIORITY_HIGH)
+        # Wait till pseudo-"thread" is finished running before continuing forward
+        _s.wait()
 
-            logger.warning(" msg: {}".format(msg))
-            logger.warning(" scarlett_sound: {}".format(scarlett_sound))
-            logger.warning(" command: {}".format(command))
+    tts_list = SpeakerType.speaker_to_array(command_run_results)
+    run_speaker(speaker_generator_func)
 
-            # 1. play sound first
-            wavefile = SoundType.get_path(scarlett_sound)
-            run_player_result = run_player(player_generator_func)
 
-            # 2. Perform command
-            command_run_results = commands.Command.check_cmd(command_tuple=v)
-            logger.debug("[command_run_results]: {}".format(command_run_results))
+def on_signal_recieved(*args, **kwargs):
+    if os.environ.get('SCARLETT_DEBUG_MODE'):
+        logger.debug("player_cb args")
+        print_args(args)
+        logger.debug("player_cb kwargs")
+        print_keyword_args(**kwargs)
 
-            # 3. Verify it is not a command NO_OP
-            if command_run_results == '__SCARLETT_NO_OP__':
-                logger.error("__SCARLETT_NO_OP__")
-                return False
+    # source: https://gist.github.com/bossjones/916fd12b72627b6b5403
+    # Get mainthread context before running anything that requires a MainLoop
+    main = GObject.main_context_default()
 
-            # 4. Scarlett Speaks
-            tts_list = SpeakerType.speaker_to_array(command_run_results)
-            run_speaker_result = run_speaker(speaker_generator_func)
+    if args[3] == 'ListenerReadySignal':
+        msg, scarlett_sound = args[4]
+        call_player(scarlett_sound)
+    elif args[3] == 'SttFailedSignal':
+        msg, scarlett_sound = args[4]
+        call_player(scarlett_sound)
+    elif args[3] == 'KeywordRecognizedSignal':
+        msg, scarlett_sound = args[4]
+        call_player(scarlett_sound)
+    elif args[3] == 'CommandRecognizedSignal':
+        msg, scarlett_sound, command = args[4]
+        logger.debug("[CommandRecognizedSignal] WE WOULD RUN SOMETHING HERE")
 
-            # FIXME: Turn this into a call back function. Pass it to run_speaker
-            # 5. Emit signal to reset keyword match ( need to implement this )
-            dr = DBusRunner.get_instance()
-            bus = dr.get_session_bus()
-            ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
-            time.sleep(1)
-            ss.emitListenerCancelSignal()
-            # 6. Finished call back
-        else:
-            logger.debug("THIS IS NOT A GLib.Variant: {} - TYPE {}".format(v, type(v)))
+        # 1. acknowledge that we are moving forward with running command
+        # FIXME: Turn this into a dbus signal to emit?
+        call_player('pi-response')
+
+        # 2. Perform command
+        print('args[4]')
+        print(args[4])
+        command_run_results = commands.Command.check_cmd(command_tuple=args[4])
+        logger.debug("[command_run_results]: {}".format(command_run_results))
+
+        # 3. Verify it is not a command NO_OP
+        if command_run_results == '__SCARLETT_NO_OP__':
+            logger.error("__SCARLETT_NO_OP__")
+            return False
+
+        # 4. Espeak gst plugin doesn't work, write sound to wav file
+        call_espeak_subprocess(command_run_results)
+
+        # # 4. Scarlett Speaks
+        # tts_list = SpeakerType.speaker_to_array(command_run_results)
+        # run_speaker_result = run_speaker(speaker_generator_func)
+
+        # 5. Play speaker
+        call_speaker(command_run_results)
+
+        # FIXME: Turn this into a call back function. Pass it to run_speaker
+        # 5. Emit signal to reset keyword match ( need to implement this )
+        dr = DBusRunner.get_instance()
+        bus = dr.get_session_bus()
+        ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
+        ss.emitListenerCancelSignal()
+
+    elif args[3] == 'ListenerCancelSignal':
+        msg, scarlett_sound = args[4]
+        call_player(scarlett_sound)
+    elif args[3] == 'ConnectedToListener':
+        msg = args[4]
+        ScarlettTasker.DEVICES.append(msg)
+        logger.debug("[DEVICES] append: {}".format(msg))
 
 
 if __name__ == "__main__":
@@ -450,10 +536,46 @@ if __name__ == "__main__":
         from scarlett_os.internal.debugger import enable_remote_debugging
         enable_remote_debugging()
 
+    from scarlett_os.logger import setup_logger
+    setup_logger()
+
+    #######################################################################
+    # New logging setup - START
+    #######################################################################
+    # log.bootstrap_delayed_logging()
+    #
+    # logger.info('Starting ScarlettOS Tasker %s', str(__version__))
+    #
+    # # SET VERBOSITY TO DEBUG BY DEFAULT
+    # verbosity_level = 3
+    #
+    # log.setup_logging(verbosity_level, False)
+    #######################################################################
+    # New logging setup - END
+    #######################################################################
+
+    #######################################################################
+    # Pitivi logging setup
+    #######################################################################
+    # Init logging as early as possible so we can log startup code
+    # enable_color = not os.environ.get(
+    #     'PITIVI_DEBUG_NO_COLOR', '0') in ('', '1')
+    # # Let's show a human-readable Pitivi debug output by default, and only
+    # # show a crazy unreadable mess when surrounded by gst debug statements.
+    # enable_crack_output = "GST_DEBUG" in os.environ
+    # loggable.init('PITIVI_DEBUG', enable_color, enable_crack_output)
+    #
+    # self.info('starting up')
+    #######################################################################
+    # Pitivi logging setup - END
+    #######################################################################
+
     #######################################################################
     loop = GLib.MainLoop()
     _INSTANCE = st = ScarlettTasker()
-    st.prepare(player_cb, command_cb, connected_to_listener_cb)
+    # NOTE: OLD WAY OF DOING THINGS
+    # st.prepare(player_cb, command_cb, connected_to_listener_cb)
+    st.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
     st.configure()
     #######################################################################
 

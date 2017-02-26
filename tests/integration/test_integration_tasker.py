@@ -36,11 +36,7 @@ from scarlett_os.internal.gi import GObject  # noqa
 from scarlett_os.internal.gi import GLib
 
 from scarlett_os import tasker
-# from scarlett_os.tasker import print_keyword_args
-# from scarlett_os.tasker import print_args
-from scarlett_os.tasker import connected_to_listener_cb
-from scarlett_os.tasker import player_cb
-from scarlett_os.tasker import command_cb
+from scarlett_os.tasker import on_signal_recieved
 
 
 class TestScarlettTasker(IntegrationTestbaseMainloop):
@@ -332,7 +328,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.log.info("setting callback")
 
-        self.tasker.prepare(player_cb, command_cb, connected_to_listener_cb)
+        self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         # Sleep to give time for connection to be established
         # time.sleep(1)
         self.tasker.configure()
@@ -377,7 +373,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.log.info("setting callback")
 
-        self.tasker.prepare(player_cb, command_cb, connected_to_listener_cb)
+        self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='failed')
@@ -418,7 +414,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.log.info("setting callback")
 
-        self.tasker.prepare(player_cb, command_cb, connected_to_listener_cb)
+        self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='kw-rec')
@@ -458,7 +454,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.log.info("setting callback")
 
-        self.tasker.prepare(player_cb, command_cb, connected_to_listener_cb)
+        self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='cmd-rec')
@@ -498,7 +494,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.log.info("setting callback")
 
-        self.tasker.prepare(player_cb, command_cb, connected_to_listener_cb)
+        self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='cancel')

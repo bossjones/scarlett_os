@@ -6,7 +6,8 @@ import stat
 import threading
 import bisect
 
-from scarlett_os import compat, exceptions
+from scarlett_os import compat
+from scarlett_os import exceptions
 
 from scarlett_os.internal import encoding
 
