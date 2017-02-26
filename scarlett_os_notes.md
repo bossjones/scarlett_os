@@ -1145,3 +1145,20 @@ tskr.configure()
 
 loop.run()
 ```
+
+# How to display info about wav file
+
+```
+ ⌁ pi@scarlett-ansible-manual1604-2  ⓔ scarlett_os  ⎇  master S:2 U:19 ?:89  ~/dev/bossjones-github/scarlett_os  soxi fixture_scarlett.wav
+
+Input File     : 'fixture_scarlett.wav'
+Channels       : 1
+Sample Rate    : 16000
+Precision      : 16-bit
+Duration       : 18:38:26.82 = 1073709056 samples ~ 5.03301e+06 CDDA sectors
+File Size      : 149k
+Bit Rate       : 17.8
+Sample Encoding: 16-bit Signed Integer PCM
+
+ ⌁ pi@scarlett-ansible-manual1604-2  ⓔ scarlett_os  ⎇  master S:2 U:19 ?:89  ~/dev/bossjones-github/scarlett_os
+```
