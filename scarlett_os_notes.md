@@ -1162,3 +1162,63 @@ Sample Encoding: 16-bit Signed Integer PCM
 
  ⌁ pi@scarlett-ansible-manual1604-2  ⓔ scarlett_os  ⎇  master S:2 U:19 ?:89  ~/dev/bossjones-github/scarlett_os
 ```
+
+# HOW to make fixture sounds
+
+```
+gst-launch-1.0 alsasrc device=plughw:CARD=Device,DEV=0 ! \
+                                                queue name=capsfilter_queue \
+                                                      leaky=2 \
+                                                      max-size-buffers=0 \
+                                                      max-size-time=0 \
+                                                      max-size-bytes=0 ! \
+                                                capsfilter caps='audio/x-raw,format=(string)S16LE,rate=(int)16000,channels=(int)1,layout=(string)interleaved' ! \
+                                                audioconvert ! \
+                                                audioresample ! \
+                                                wavenc ! \
+                                                filesink location=fixture_what_time_is_it-riff-little-endian-16bit-16kh-wave-file.wav
+```
+
+# HOW to test fixture sounds
+
+```
+
+
+export SCARLETT_FILE_LOCATION=/home/pi/dev/bossjones-github/scarlett_os/tests/data/samples/fixture_scarlett-riff-little-endian-16bit-16kh-wave-file.wav
+
+gst-launch-1.0 filesrc location="${SCARLETT_FILE_LOCATION}" ! \
+                                                queue name=capsfilter_queue \
+                                                      leaky=2 \
+                                                      max-size-buffers=0 \
+                                                      max-size-time=0 \
+                                                      max-size-bytes=0 ! \
+                                                capsfilter caps='audio/x-raw,format=(string)S16LE,rate=(int)16000,channels=(int)1,layout=(string)interleaved' ! \
+                                                audioconvert ! \
+                                                audioresample ! \
+                                                pocketsphinx \
+                                                name=asr \
+                                                lm=~/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm \
+                                                dict=~/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic \
+                                                hmm=~/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us \
+                                                bestpath=true ! \
+                                                queue name=capsfilter_queue \
+                                                      leaky=2 \
+                                                      max-size-buffers=0 \
+                                                      max-size-time=0 \
+                                                      max-size-bytes=0 ! \
+                                                fakesink sync=false
+
+
+# Use this inside of integration testing
+
+gst-launch-1.0 uridecodebin uri="file://${SCARLETT_FILE_LOCATION}" ! \
+                                                audioconvert ! \
+                                                audioresample ! \
+                                                pocketsphinx \
+                                                name=asr \
+                                                lm=~/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm \
+                                                dict=~/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic \
+                                                hmm=~/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us \
+                                                bestpath=true ! \
+                                                fakesink sync=false
+```
