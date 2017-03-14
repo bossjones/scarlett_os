@@ -47,9 +47,12 @@ from scarlett_os.utility.gnome import abort_on_exception
 from scarlett_os.utility.gnome import _IdleObject
 from scarlett_os.utility.thread import ThreadManager
 
+import pydbus
 from pydbus import SessionBus
 
-gst = Gst
+from scarlett_os.utility.dbus_utils import DbusSignalHandler
+from scarlett_os.utility.dbus_runner import DBusRunner
+
 
 # global pretty print for debugging
 pp = pprint.PrettyPrinter(indent=4)
@@ -58,7 +61,7 @@ logger = logging.getLogger(__name__)
 
 
 # Constants
-QUEUE_SIZE = 10
+# QUEUE_SIZE = 10
 QUEUE_SIZE = -1
 BUFFER_SIZE = 10
 SENTINEL = '__GSTDEC_SENTINEL__'
@@ -66,8 +69,6 @@ SEMAPHORE_NUM = 0
 
 gst = Gst
 HERE = os.path.dirname(__file__)
-
-loop = GObject.MainLoop()
 
 # Pocketsphinx defaults
 LANGUAGE_VERSION = 1473
@@ -159,14 +160,22 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     lm = LM_PATH
     dic = DICT_PATH
 
+    __dr = None
+
     def __init__(self, *args):
         threading.Thread.__init__(self)
         _IdleObject.__init__(self)
 
         self.running = False
         self.finished = False
-        self.ready_sem = threading.Semaphore(0)
+        self.ready_sem = threading.Semaphore(SEMAPHORE_NUM)
         self.queue = queue.Queue(QUEUE_SIZE)
+
+        self._handler = DbusSignalHandler()
+
+        # Get a dbus proxy and check if theres a service registered called 'org.scarlett.Listener'
+        # if not, then we can skip all further processing. (The scarlett-os-mpris-dbus seems not to be running)
+        self.__dr = DBusRunner.get_instance()
 
         # This wil get filled with an exception if opening fails.
         self.read_exc = None
@@ -191,7 +200,9 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.create_dot = True
         self.terminate = False
 
-        self.capsfilter_queue_overrun_handler = None
+        self.capsfilter_queue_overrun_handler_id = None
+
+        self._cancel_signal_callback = None
 
         # source: https://github.com/ljmljz/xpra/blob/b32f748e0c29cdbfab836b3901c1e318ea142b33/src/xpra/sound/sound_pipeline.py  # NOQA
         self.bus = None
@@ -204,17 +215,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.state = "stopped"
         self.buffer_count = 0
         self.byte_count = 0
-
-        # # Thread manager, maximum of 1 since it'll be long running
-        # self.manager = ThreadManager(1)
-
-        self._status_ready = "  ScarlettListener is ready"
-        self._status_kw_match = "  ScarlettListener caught a keyword match"
-        self._status_cmd_match = "  ScarlettListener caught a command match"
-        self._status_stt_failed = "  ScarlettListener hit Max STT failures"
-        self._status_cmd_start = "  ScarlettListener emitting start command"
-        self._status_cmd_fin = "  ScarlettListener Emitting Command run finish"
-        self._status_cmd_cancel = "  ScarlettListener cancel speech Recognition"
 
         if self.debug:
             # NOTE: For testing puposes, mainly when in public
@@ -230,24 +230,15 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             self.close(True)
             raise self.read_exc
 
-    def connect_to_dbus(self):
-        # self.dbus_stack.append(bus)
-        # self.dbus_stack.append(path)
-        # logger.debug("Inside self.dbus_stack")
-        # pp.pprint(self.dbus_stack)
-        pass
-
     def scarlett_reset_listen(self):
         self.failed = 0
         self.kw_found = 0
 
-    def cancel_listening(self, *args, **kwargs):
+    def on_cancel_listening(self, *args, **kwargs):
         logger.debug("Inside cancel_listening function")
         self.scarlett_reset_listen()
-        logger.debug("self.failed = %i" % (self.failed))
-        logger.debug(
-            "self.keyword_identified = %i" %
-            (self.kw_found))
+        logger.debug("self.failed = {}".format(self.failed))
+        logger.debug("self.keyword_identified = {}".format(self.kw_found))
 
     def play(self):
         p = self.pipelines_stack[0]
@@ -379,7 +370,29 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                                               object="/org/scarlett/Listener",
                                               arg0=None,
                                               flags=0,
-                                              signal_fired=self.cancel_listening)
+                                              signal_fired=self.on_cancel_listening)
+
+    def reset(self):
+        """Reset the Handler helper.
+
+        Should be called whenever the source changes and we are not setting up
+        a new appsrc.
+        """
+        self._handler.clear()
+        self._cancel_signal_callback = None
+
+    def prepare(self, player_cb, command_cb, connected_to_listener_cb):
+        """Store info we will need when the appsrc element gets installed."""
+        self._handler.clear()
+        self._cancel_signal_callback = player_cb
+
+    def configure(self):
+        """Configure the supplied bus for use.
+        """
+        bus = self.__dr.get_session_bus()
+
+        if self._cancel_signal_callback:
+            self._handler.connect(bus, "ListenerCancelSignal", self._cancel_signal_callback)
 
     # NOTE: This function generates the dot file, checks that graphviz in installed and
     # then finally generates a png file, which it then displays
@@ -427,7 +440,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             (self.kw_found))
         if final_hyp == 'CANCEL':
             self.dbus_proxy.emitListenerCancelSignal()  # CHANGEME
-            self.cancel_listening()
+            self.on_cancel_listening()
         else:
             current_kw_identified = self.kw_found
             self.kw_found = current_kw_identified
@@ -503,7 +516,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         capsfilter_queue.set_property('max-size-time', 0)  # 0 seconds
         capsfilter_queue.set_property('max-size-buffers', 0)
         capsfilter_queue.set_property('max-size-bytes', 0)
-        self.capsfilter_queue_overrun_handler = capsfilter_queue.connect('overrun', self._log_queue_overrun)
+        self.capsfilter_queue_overrun_handler_id = capsfilter_queue.connect('overrun', self._log_queue_overrun)
 
         # capsfilter_queue.connect('overrun', self._on_overrun)
         # capsfilter_queue.connect('underrun', self._on_underrun)
@@ -771,18 +784,75 @@ if __name__ == '__main__':
     from scarlett_os.logger import setup_logger
     setup_logger()
 
-    demo = ListenerDemo()
-    loop.run()
+    loop = GObject.MainLoop()
 
-    def sigint_handler(*args):
-        """Exit on Ctrl+C"""
+    _INSTANCE = demo = ListenerDemo()
+
+    if os.environ.get('TRAVIS_CI'):
+        try:
+            loop.run()
+        except KeyboardInterrupt:
+            logger.warning('***********************************************')
+            logger.warning('Note: Added an exception "pass" for KeyboardInterrupt')
+            logger.warning('It is very possible that this might mask other errors happening with the application.')
+            logger.warning('Remove this while testing manually')
+            logger.warning('***********************************************')
+            demo.quit()
+            loop.quit()
+            pass
+        except:
+            raise
+    else:
+        # Close into a ipython debug shell
+        loop.run()
+
+    def sigint_handler_to_pdb(*args):
+        """Exit on Ctrl+C to PDB"""
 
         # Unregister handler, next Ctrl-C will kill app
         # TODO: figure out if this is really needed or not
+
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         demo.quit()
 
         loop.quit()
 
+    def sigint_handler_exit(*args):
+        """Exit on Ctrl+C from python"""
+
+        demo.quit()
+
+        loop.quit()
+
+        sys.exit(0)
+
+    # quit cleanly if we're in CI
+    if os.environ.get('TRAVIS_CI'):
+        print('registering sigint_handler = sigint_handler_exit')
+        sigint_handler = sigint_handler_exit
+    else:
+        print('registering sigint_handler = sigint_handler_to_pdb')
+        sigint_handler = sigint_handler_to_pdb
+
     signal.signal(signal.SIGINT, sigint_handler)
+
+    # BEFORE REFACTOR
+    # from scarlett_os.logger import setup_logger
+    # setup_logger()
+    #
+    # demo = ListenerDemo()
+    # loop.run()
+    #
+    # def sigint_handler(*args):
+    #     """Exit on Ctrl+C"""
+    #
+    #     # Unregister handler, next Ctrl-C will kill app
+    #     # TODO: figure out if this is really needed or not
+    #     signal.signal(signal.SIGINT, signal.SIG_DFL)
+    #
+    #     demo.quit()
+    #
+    #     loop.quit()
+    #
+    # signal.signal(signal.SIGINT, sigint_handler)
