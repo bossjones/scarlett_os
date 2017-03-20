@@ -1222,3 +1222,72 @@ gst-launch-1.0 uridecodebin uri="file://${SCARLETT_FILE_LOCATION}" ! \
                                                 bestpath=true ! \
                                                 fakesink sync=false
 ```
+
+
+# Todo list for Scarlett Listener to make it more testable 3/20/2017
+
+- Turn gst_pipeline into a property w/ getter/setter ( Might need to use gobject property instead )
+- GstPipeline should be a property instead of part of an array ( I think ) ... maybe dictionary would work too
+- Make calls to get pipeline thread safe, use a lock
+- make several of the elements properties eg, asr(self.pipeline.get_by_name ), "running" ( returns self._pipeline ).
+- create clean functions for start_listening, pause_listening, unpause_listening, stop_listening, reset and close. See Listener_CMU for example. pipeline.py
+- add call back member functions. on_level_cb
+- use a queue to pass messages back and forth ?
+- create a bunch of init_* functions, make sure the complexity isn't too tightly coupled
+- ensure that we have the ability to override gst_parse command for testing, and add a timeout
+- create a handler to deal with all event related stuff
+- borrow logic from ThreadMaster in pitivi especially :
+
+```
+        assert issubclass(threadclass, Thread)
+        self.log("Adding thread of type %r", threadclass)
+        thread = threadclass(*args)
+        thread.connect("done", self._threadDoneCb)
+```
+
+- move or fix up `ListenerDemo`
+
+- Figure out if we are using the right number of arguments in the following callback member functions:
+
+```
+
+    def thread_finished(self, thread):
+        logger.debug("thread_finished.")
+
+    def thread_progress(self, thread):
+        logger.debug("thread_progress.")
+```
+
+- add a member function to perform a join on get_loop_thread(), that might help w/ cleaning it up
+- turn `bus = self._pipeline.get_bus()` into a property as well
+- make listener take source as a kwarg eg `source=self.HELLO_WORLD`
+- ( long term ) think about using a queue to pass along the messages decoded by pocketsphinx, eg:
+
+```
+def test_pipeline_creation( self ):
+        p = self.pipeline = pipeline.QueuePipeline(
+            context=self.context,
+            source=self.HELLO_WORLD
+        )
+        p.start_listening()
+        t = time.time()
+        TIMEOUT = t + 20
+        result = None
+        while time.time() < TIMEOUT:
+            message = p.queue.get( True, TIMEOUT-time.time() )
+            if message['type'] == 'final':
+                result = message
+                break
+        assert result, "No result message received in 20s"
+        assert result['text']
+        assert 'hello world' in result['text'], result
+
+    def test_pipeline_default_source_is_alsa( self ):
+        self.pipeline = pipeline.QueuePipeline(context=self.context)
+        assert self.pipeline.source.continuous
+        fragment = self.pipeline.source.gst_fragment()
+        assert 'alsasrc' in fragment, fragment
+
+        self.pipeline.source = None
+        assert self.pipeline._source is None
+```
