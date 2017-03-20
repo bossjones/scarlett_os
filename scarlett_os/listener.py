@@ -128,6 +128,17 @@ def get_loop_thread():
             _shared_loop_thread.start()
         return _shared_loop_thread
 
+# def stop_loop_thread():
+#     """Get the shared main-loop thread.
+#     """
+#     global _shared_loop_thread
+#     with _loop_thread_lock:
+#         if _shared_loop_thread:
+#             # Start a new thread.
+#             _shared_loop_thread = MainLoopThread()
+#             _shared_loop_thread.start()
+#         return _shared_loop_thread
+
 # NOTE: doc updated via
 # https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
 
@@ -140,11 +151,34 @@ class MainLoopThread(threading.Thread):
 
     def __init__(self):
         super(MainLoopThread, self).__init__()
-        self.loop = GObject.MainLoop()
-        self.daemon = True
+        self.__loop = GObject.MainLoop()
+        self.__daemon = True
 
     def run(self):
-        self.loop.run()
+        try:
+            self.__loop.run()
+        except KeyboardInterrupt:
+            print('MainLoopThread recieved a Ctrl-C. Exiting gracefully...')
+            self.__loop.quit()
+            # self.join(timeout=1)
+            print('MainLoopThread finished ...')
+            return
+
+    @property
+    def loop(self, loop):
+        return self.__loop
+
+    @loop.setter
+    def loop(self, loop):
+        self.__loop = loop
+
+    @property
+    def daemon(self, daemon):
+        return self.__daemon
+
+    @daemon.setter
+    def daemon(self, daemon):
+        self.__daemon = daemon
 
 
 class ScarlettListenerI(threading.Thread, _IdleObject):
@@ -162,7 +196,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
 
     __dr = None
 
-    def __init__(self, *args):
+    def __init__(self, name, *args):
         threading.Thread.__init__(self)
         _IdleObject.__init__(self)
 
@@ -182,7 +216,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.dot_exc = None
 
         self.cancelled = False
-        self.name = args[0]
+        self.name = name
         self.setName("{}".format(self.name))
 
         self.pipelines_stack = []
@@ -320,7 +354,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                            # recording and then the A/V sync is bad for the whole video
                            # (possibly a gstreamer/ALSA bug -- even if it gets caught up, it
                            # should be able to resync without problem)
-                           'progressreport name=progressreport update-freq=1',
+                           # 'progressreport name=progressreport update-freq=1',  # NOTE: comment this in when you want performance information
                            'queue name=capsfilter_queue silent=false leaky=2 max-size-buffers=0 max-size-time=0 max-size-bytes=0',
                            'capsfilter name=capsfilter caps=audio/x-raw,format=S16LE,channels=1,layout=interleaved',
                            'audioconvert name=audioconvert',
@@ -741,10 +775,10 @@ class ListenerDemo:
         self.manager = ThreadManager(1)
         self.add_thread()
 
-    def quit(self):
+    def quit(self, timeout):
         # NOTE: when we connect this as a callback to a signal being emitted, we'll need to chage quit to look
         # like this quit(self, sender, event):
-        self.manager.stop_all_threads(block=True)
+        self.manager.stop_all_threads(block=True, timeout=timeout)
 
     def stop_threads(self, *args):
         self.manager.stop_all_threads()
@@ -786,6 +820,13 @@ if __name__ == '__main__':
 
     loop = GObject.MainLoop()
 
+    ###################################################################################################################
+    # source: http://stackoverflow.com/questions/28465611/python-dbusgmainloop-inside-thread-and-try-and-catch-block
+    # Catch KeyboardInterrupt and stop pipeline from running!
+    # run_event = threading.Event()
+    # run_event.set()
+    ###################################################################################################################
+
     _INSTANCE = demo = ListenerDemo()
 
     if os.environ.get('TRAVIS_CI'):
@@ -797,7 +838,8 @@ if __name__ == '__main__':
             logger.warning('It is very possible that this might mask other errors happening with the application.')
             logger.warning('Remove this while testing manually')
             logger.warning('***********************************************')
-            demo.quit()
+            # NOTE: fixme, we still have a leak in the gst pipeline, it doesn't actually stop.
+            demo.quit(1)
             loop.quit()
             pass
         except:
@@ -814,18 +856,18 @@ if __name__ == '__main__':
 
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        demo.quit()
+        demo.quit(1)
 
         loop.quit()
 
     def sigint_handler_exit(*args):
         """Exit on Ctrl+C from python"""
 
-        demo.quit()
+        # signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+        demo.quit(1)
 
         loop.quit()
-
-        sys.exit(0)
 
     # quit cleanly if we're in CI
     if os.environ.get('TRAVIS_CI'):
