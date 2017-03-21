@@ -43,7 +43,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
     """Test Tasker Signals for various on_* signal-handler methods
     """
 
-    @pytest.mark.flaky(reruns=3)
+    @pytest.mark.flaky(reruns=5)
     def test_signal_ready(self, request, service_on_outside, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
         check that the callback fires initially when the sources are set up
@@ -77,7 +77,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
         # Sleep to give time for connection to be established
-        # time.sleep(1)
+        time.sleep(2)
         self.tasker.configure()
 
         run_emitter_signal(request, get_environment, sig_name='ready')

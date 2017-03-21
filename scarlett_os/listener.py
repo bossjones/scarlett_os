@@ -19,14 +19,13 @@
 
 from __future__ import with_statement, division, absolute_import
 
-import sys
 import os
-
+import sys
+import time
+import pprint
 import signal
 import threading
 import logging
-import pprint
-import time
 import random
 
 from gettext import gettext as _
@@ -35,13 +34,13 @@ from scarlett_os.internal.gi import gi
 from scarlett_os.internal.gi import GObject
 from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import Gst
-from scarlett_os.internal.gi import Gio
-
+# from scarlett_os.internal.gi import Gio
 
 from scarlett_os.exceptions import NoStreamError
 from scarlett_os.exceptions import FileReadError
 
 import queue
+from urllib.parse import quote
 
 from scarlett_os.utility.gnome import abort_on_exception
 from scarlett_os.utility.gnome import _IdleObject
@@ -53,15 +52,14 @@ from pydbus import SessionBus
 from scarlett_os.utility.dbus_utils import DbusSignalHandler
 from scarlett_os.utility.dbus_runner import DBusRunner
 
+logger = logging.getLogger(__name__)
 
 # global pretty print for debugging
 pp = pprint.PrettyPrinter(indent=4)
 
-logger = logging.getLogger(__name__)
-
+_INSTANCE = None
 
 # Constants
-# QUEUE_SIZE = 10
 QUEUE_SIZE = -1
 BUFFER_SIZE = 10
 SENTINEL = '__GSTDEC_SENTINEL__'
@@ -211,6 +209,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         # if not, then we can skip all further processing. (The scarlett-os-mpris-dbus seems not to be running)
         self.__dr = DBusRunner.get_instance()
 
+        logger.info("Initializing ScarlettListenerI")
+
         # This wil get filled with an exception if opening fails.
         self.read_exc = None
         self.dot_exc = None
@@ -249,6 +249,14 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.state = "stopped"
         self.buffer_count = 0
         self.byte_count = 0
+
+        self._status_ready = "  ScarlettListener is ready"
+        self._status_kw_match = "  ScarlettListener caught a keyword match"
+        self._status_cmd_match = "  ScarlettListener caught a command match"
+        self._status_stt_failed = "  ScarlettListener hit Max STT failures"
+        self._status_cmd_start = "  ScarlettListener emitting start command"
+        self._status_cmd_fin = "  ScarlettListener Emitting Command run finish"
+        self._status_cmd_cancel = "  ScarlettListener cancel speech Recognition"
 
         if self.debug:
             # NOTE: For testing puposes, mainly when in public

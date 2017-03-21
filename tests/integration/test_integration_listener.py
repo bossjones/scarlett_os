@@ -1,0 +1,115 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+test_integration_listener
+----------------------------------
+"""
+
+##########################################
+# Original imports
+##########################################
+# import os
+# import sys
+# import signal
+# import pytest
+# import builtins
+# import threading
+#
+# import unittest
+# import unittest.mock as mock
+#
+# import pydbus
+# import scarlett_os
+# import scarlett_os.exceptions
+#
+# from tests.integration.stubs import create_main_loop
+#
+# from tests import PROJECT_ROOT
+# import time
+#
+# from tests.integration.baseclass import run_emitter_signal
+# from tests.integration.baseclass import IntegrationTestbaseMainloop
+#
+# done = 0
+#
+# from scarlett_os.internal import gi  # noqa
+# from scarlett_os.internal.gi import Gio  # noqa
+# from scarlett_os.internal.gi import GObject  # noqa
+# from scarlett_os.internal.gi import GLib
+#
+# from scarlett_os import listener
+#
+#
+###########################################
+
+###########################################
+# Borrowed from test_integration_player - START
+###########################################
+import os
+import sys
+import signal
+import pytest
+import builtins
+import threading
+
+import unittest
+import unittest.mock as mock
+
+import pydbus
+import scarlett_os
+import scarlett_os.exceptions
+
+from tests.integration.stubs import create_main_loop
+
+from scarlett_os import listener
+
+done = 0
+
+###########################################
+# Borrowed from test_integration_player - END
+###########################################
+
+
+class TestScarlettListener(object):
+
+    def test_ScarlettListenerI_init(self, monkeypatch):
+        # we want to use pulsesink by default but in docker we might
+        # not have a pulseaudio server running
+        # test using fakesink in this usecase
+        monkeypatch.setattr(listener.ScarlettListenerI, 'DEFAULT_SINK', 'fakesink')
+
+        listener_data = []
+
+        # Run listener
+        wavefile = [
+            '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']
+        for path in wavefile:
+            path = os.path.abspath(os.path.expanduser(path))
+            with listener.ScarlettListenerI(path, False, False) as f:
+                listener_data.append(f)
+
+        # Test audio info
+        assert listener_data[0].channels == 2
+        assert listener_data[0].samplerate == 44100
+        assert listener_data[0].duration == 2.5
+
+        # Check values of elements
+        assert str(type(listener_data[0].source)) == "<class '__gi__.GstURIDecodeBin'>"
+        assert str(type(listener_data[0].queueA)) == "<class '__gi__.GstQueue'>"
+        assert str(type(listener_data[0].queueB)) == "<class '__gi__.GstQueue'>"
+        assert str(type(listener_data[0].appsink)) == "<class '__gi__.GstAppSink'>"
+        assert str(type(listener_data[0].audioconvert)) == "<class '__gi__.GstAudioConvert'>"
+        assert str(type(listener_data[0].splitter)) == "<class '__gi__.GstTee'>"
+        assert str(type(listener_data[0].pulsesink)) == "<class '__gi__.GstFakeSink'>"
+        # assert str(type(listener_data[0].queueB_sink_pad)) == "<class 'gi.overrides.Gst.Pad'>"
+
+        # Means pipeline was setup correct and ran without error
+        assert listener_data[0].read_exc is None
+        assert listener_data[0].dot_exc is None
+        assert listener_data[0].handle_error is False
+
+        # Test
+        assert listener_data[0].got_caps is True
+        assert listener_data[0].running is False
+        assert listener_data[0].finished is True

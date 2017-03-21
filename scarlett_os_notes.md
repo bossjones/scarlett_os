@@ -1292,3 +1292,18 @@ def test_pipeline_creation( self ):
         assert self.pipeline._source is None
 ```
 - gst_bus_stack should be a property!
+
+
+- it's possible that I broke tests because we're now using these guys:
+
+https://github.com/bossjones/scarlett_os/pull/43/files
+
+CLEAN UP UNIT TESTS, Add same setup as test_tasker and make sure you mock all of the items in there as well.
+
+```
+self._handler = DbusSignalHandler()
+
+# Get a dbus proxy and check if theres a service registered called 'org.scarlett.Listener'
+# if not, then we can skip all further processing. (The scarlett-os-mpris-dbus seems not to be running)
+self.__dr = DBusRunner.get_instance()
+```
