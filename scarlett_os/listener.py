@@ -17,7 +17,7 @@
 # threading.Semaphore.  Note that these don't represent any kind of
 # thread-safety.
 
-from __future__ import with_statement, division, absolute_import
+# from __future__ import with_statement, division, absolute_import
 
 import os
 import sys
@@ -34,7 +34,7 @@ from scarlett_os.internal.gi import gi
 from scarlett_os.internal.gi import GObject
 from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import Gst
-# from scarlett_os.internal.gi import Gio
+from scarlett_os.internal.gi import Gio
 
 from scarlett_os.exceptions import NoStreamError
 from scarlett_os.exceptions import FileReadError
@@ -192,7 +192,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     lm = LM_PATH
     dic = DICT_PATH
 
-    __dr = None
+    # __dr = None
 
     def __init__(self, name, *args):
         threading.Thread.__init__(self)
@@ -203,11 +203,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.ready_sem = threading.Semaphore(SEMAPHORE_NUM)
         self.queue = queue.Queue(QUEUE_SIZE)
 
-        self._handler = DbusSignalHandler()
+        # self._handler = DbusSignalHandler()
 
         # Get a dbus proxy and check if theres a service registered called 'org.scarlett.Listener'
         # if not, then we can skip all further processing. (The scarlett-os-mpris-dbus seems not to be running)
-        self.__dr = DBusRunner.get_instance()
+        # self.__dr = DBusRunner.get_instance()
 
         logger.info("Initializing ScarlettListenerI")
 
@@ -414,27 +414,27 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                                               flags=0,
                                               signal_fired=self.on_cancel_listening)
 
-    def reset(self):
-        """Reset the Handler helper.
+    # def reset(self):
+    #     """Reset the Handler helper.
 
-        Should be called whenever the source changes and we are not setting up
-        a new appsrc.
-        """
-        self._handler.clear()
-        self._cancel_signal_callback = None
+    #     Should be called whenever the source changes and we are not setting up
+    #     a new appsrc.
+    #     """
+    #     self._handler.clear()
+    #     self._cancel_signal_callback = None
 
-    def prepare(self, player_cb, command_cb, connected_to_listener_cb):
-        """Store info we will need when the appsrc element gets installed."""
-        self._handler.clear()
-        self._cancel_signal_callback = player_cb
+    # def prepare(self, player_cb, command_cb, connected_to_listener_cb):
+    #     """Store info we will need when the appsrc element gets installed."""
+    #     self._handler.clear()
+    #     self._cancel_signal_callback = player_cb
 
-    def configure(self):
-        """Configure the supplied bus for use.
-        """
-        bus = self.__dr.get_session_bus()
+    # def configure(self):
+    #     """Configure the supplied bus for use.
+    #     """
+    #     bus = self.__dr.get_session_bus()
 
-        if self._cancel_signal_callback:
-            self._handler.connect(bus, "ListenerCancelSignal", self._cancel_signal_callback)
+    #     if self._cancel_signal_callback:
+    #         self._handler.connect(bus, "ListenerCancelSignal", self._cancel_signal_callback)
 
     # NOTE: This function generates the dot file, checks that graphviz in installed and
     # then finally generates a png file, which it then displays
