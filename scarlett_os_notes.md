@@ -1291,3 +1291,4 @@ def test_pipeline_creation( self ):
         self.pipeline.source = None
         assert self.pipeline._source is None
 ```
+- gst_bus_stack should be a property!
