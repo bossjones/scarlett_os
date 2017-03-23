@@ -193,6 +193,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     dic = DICT_PATH
 
     # __dr = None
+    __instance = None
 
     def __init__(self, name, *args):
         threading.Thread.__init__(self)
