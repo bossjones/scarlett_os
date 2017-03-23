@@ -102,7 +102,7 @@ test_requirements = [
     'flake8-docstrings>=0.2.8',
     'coverage>=4.1',
     'Sphinx>=1.4.5',
-    'cryptography==1.7.2',
+    'cryptography==1.8.1',
     'PyYAML>=3.11',
     'pydocstyle>=1.0.0',
     'mypy-lang>=0.4',
