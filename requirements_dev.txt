@@ -77,4 +77,4 @@ Cython==0.25.2
 pystuck==0.8.5
 
 objgraph==3.1.0
-xdot
+xdot==0.7
