@@ -79,3 +79,4 @@ sphinxbase
 .DS_Store
 *.DS_Store
 *.DS_Store*
+listener.py.diff
