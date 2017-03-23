@@ -243,16 +243,18 @@ class ThreadManager:
                 print("Queuing {}".format(thread))
                 self.pendingFooThreadArgs.append(args)
 
-    def stop_all_threads(self, block=False):
+    def stop_all_threads(self, block=False, timeout=1):
         """
         Stops all threads. If block is True then actually wait for the thread
         to finish (may block the UI)
         """
         for thread in self.fooThreads.values():
             thread.cancel()
+            thread.close(True)
+            print('stop_all_threads: forced close')
             if block:
                 if thread.isAlive():
-                    thread.join()
+                    thread.join(timeout=timeout)
 
 
 def current_thread_name():

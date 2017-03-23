@@ -1145,3 +1145,165 @@ tskr.configure()
 
 loop.run()
 ```
+
+# How to display info about wav file
+
+```
+ ⌁ pi@scarlett-ansible-manual1604-2  ⓔ scarlett_os  ⎇  master S:2 U:19 ?:89  ~/dev/bossjones-github/scarlett_os  soxi fixture_scarlett.wav
+
+Input File     : 'fixture_scarlett.wav'
+Channels       : 1
+Sample Rate    : 16000
+Precision      : 16-bit
+Duration       : 18:38:26.82 = 1073709056 samples ~ 5.03301e+06 CDDA sectors
+File Size      : 149k
+Bit Rate       : 17.8
+Sample Encoding: 16-bit Signed Integer PCM
+
+ ⌁ pi@scarlett-ansible-manual1604-2  ⓔ scarlett_os  ⎇  master S:2 U:19 ?:89  ~/dev/bossjones-github/scarlett_os
+```
+
+# HOW to make fixture sounds
+
+```
+gst-launch-1.0 alsasrc device=plughw:CARD=Device,DEV=0 ! \
+                                                queue name=capsfilter_queue \
+                                                      leaky=2 \
+                                                      max-size-buffers=0 \
+                                                      max-size-time=0 \
+                                                      max-size-bytes=0 ! \
+                                                capsfilter caps='audio/x-raw,format=(string)S16LE,rate=(int)16000,channels=(int)1,layout=(string)interleaved' ! \
+                                                audioconvert ! \
+                                                audioresample ! \
+                                                wavenc ! \
+                                                filesink location=fixture_what_time_is_it-riff-little-endian-16bit-16kh-wave-file.wav
+```
+
+# HOW to test fixture sounds
+
+```
+
+
+export SCARLETT_FILE_LOCATION=/home/pi/dev/bossjones-github/scarlett_os/tests/data/samples/fixture_scarlett-riff-little-endian-16bit-16kh-wave-file.wav
+
+gst-launch-1.0 filesrc location="${SCARLETT_FILE_LOCATION}" ! \
+                                                queue name=capsfilter_queue \
+                                                      leaky=2 \
+                                                      max-size-buffers=0 \
+                                                      max-size-time=0 \
+                                                      max-size-bytes=0 ! \
+                                                capsfilter caps='audio/x-raw,format=(string)S16LE,rate=(int)16000,channels=(int)1,layout=(string)interleaved' ! \
+                                                audioconvert ! \
+                                                audioresample ! \
+                                                pocketsphinx \
+                                                name=asr \
+                                                lm=~/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm \
+                                                dict=~/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic \
+                                                hmm=~/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us \
+                                                bestpath=true ! \
+                                                queue name=capsfilter_queue \
+                                                      leaky=2 \
+                                                      max-size-buffers=0 \
+                                                      max-size-time=0 \
+                                                      max-size-bytes=0 ! \
+                                                fakesink sync=false
+
+
+# Use this inside of integration testing
+
+gst-launch-1.0 uridecodebin uri="file://${SCARLETT_FILE_LOCATION}" ! \
+                                                audioconvert ! \
+                                                audioresample ! \
+                                                pocketsphinx \
+                                                name=asr \
+                                                lm=~/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm \
+                                                dict=~/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic \
+                                                hmm=~/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us \
+                                                bestpath=true ! \
+                                                fakesink sync=false
+```
+
+
+# Todo list for Scarlett Listener to make it more testable 3/20/2017
+
+- Turn gst_pipeline into a property w/ getter/setter ( Might need to use gobject property instead )
+- GstPipeline should be a property instead of part of an array ( I think ) ... maybe dictionary would work too
+- Make calls to get pipeline thread safe, use a lock
+- make several of the elements properties eg, asr(self.pipeline.get_by_name ), "running" ( returns self._pipeline ).
+- create clean functions for start_listening, pause_listening, unpause_listening, stop_listening, reset and close. See Listener_CMU for example. pipeline.py
+- add call back member functions. on_level_cb
+- use a queue to pass messages back and forth ?
+- create a bunch of init_* functions, make sure the complexity isn't too tightly coupled
+- ensure that we have the ability to override gst_parse command for testing, and add a timeout
+- create a handler to deal with all event related stuff
+- borrow logic from ThreadMaster in pitivi especially :
+
+```
+        assert issubclass(threadclass, Thread)
+        self.log("Adding thread of type %r", threadclass)
+        thread = threadclass(*args)
+        thread.connect("done", self._threadDoneCb)
+```
+
+- move or fix up `ListenerDemo`
+
+- Figure out if we are using the right number of arguments in the following callback member functions:
+
+```
+
+    def thread_finished(self, thread):
+        logger.debug("thread_finished.")
+
+    def thread_progress(self, thread):
+        logger.debug("thread_progress.")
+```
+
+- add a member function to perform a join on get_loop_thread(), that might help w/ cleaning it up
+- turn `bus = self._pipeline.get_bus()` into a property as well
+- make listener take source as a kwarg eg `source=self.HELLO_WORLD`
+- ( long term ) think about using a queue to pass along the messages decoded by pocketsphinx, eg:
+
+```
+def test_pipeline_creation( self ):
+        p = self.pipeline = pipeline.QueuePipeline(
+            context=self.context,
+            source=self.HELLO_WORLD
+        )
+        p.start_listening()
+        t = time.time()
+        TIMEOUT = t + 20
+        result = None
+        while time.time() < TIMEOUT:
+            message = p.queue.get( True, TIMEOUT-time.time() )
+            if message['type'] == 'final':
+                result = message
+                break
+        assert result, "No result message received in 20s"
+        assert result['text']
+        assert 'hello world' in result['text'], result
+
+    def test_pipeline_default_source_is_alsa( self ):
+        self.pipeline = pipeline.QueuePipeline(context=self.context)
+        assert self.pipeline.source.continuous
+        fragment = self.pipeline.source.gst_fragment()
+        assert 'alsasrc' in fragment, fragment
+
+        self.pipeline.source = None
+        assert self.pipeline._source is None
+```
+- gst_bus_stack should be a property!
+
+
+- it's possible that I broke tests because we're now using these guys:
+
+https://github.com/bossjones/scarlett_os/pull/43/files
+
+CLEAN UP UNIT TESTS, Add same setup as test_tasker and make sure you mock all of the items in there as well.
+
+```
+self._handler = DbusSignalHandler()
+
+# Get a dbus proxy and check if theres a service registered called 'org.scarlett.Listener'
+# if not, then we can skip all further processing. (The scarlett-os-mpris-dbus seems not to be running)
+self.__dr = DBusRunner.get_instance()
+```

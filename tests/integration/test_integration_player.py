@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-test_integration_mpris
+test_integration_player
 ----------------------------------
 """
 

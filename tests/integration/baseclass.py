@@ -66,6 +66,13 @@ def run_emitter_signal(request, get_environment, sig_name='ready'):
         working_directory=PROJECT_ROOT,
         flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD)
 
+    print('run_emitter_signal: stdout')
+    print(stdout)
+    print('run_emitter_signal: stderr')
+    print(stderr)
+    print('run_emitter_signal: stdin')
+    print(stdin)
+
     # Close file descriptor when finished running scarlett emitter
     pid.close()
 

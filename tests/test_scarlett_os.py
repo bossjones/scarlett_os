@@ -8,7 +8,7 @@ test_scarlett_os
 Tests for `scarlett_os` module.
 """
 
-
+import re
 import sys
 import unittest
 import pytest
@@ -87,8 +87,12 @@ class TestScarlett_os(unittest.TestCase):
             assert GObject.pygobject_version == (3, 22, 0)
         else:
             assert GObject.pygobject_version == (3, 20, 0)
-        assert Gst.version_string() == 'GStreamer 1.8.2'
 
+        # Verify Gstremaer 1.8.2 or 1.8.3
+        gst_version_string = Gst.version_string()
+        m = re.search('(GStreamer 1.8.2|GStreamer 1.8.3)', gst_version_string)
+        # If we get a string match on either of these versions then we have 1.8.2/1.8.3, else None
+        assert m
 
 if __name__ == '__main__':
     sys.exit(unittest.main())

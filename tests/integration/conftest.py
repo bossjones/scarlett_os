@@ -833,6 +833,38 @@ def get_dbus_proxy_obj_helper(request, get_bus):
 #     emitter_cmd.kill()
 
 
+# TODO: Think about implementing this, it allows you to create one DBusRunner per test session
+# source: https://github.com/peuter/gosa/blob/master/client/conftest.py
+# @pytest.fixture(scope="session", autouse=True)
+# def use_test_config(request):
+#     Environment.reset()
+#     Environment.config = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "test_conf")
+#     Environment.noargs = True
+#     env = Environment.getInstance()
+
+#     # Enable DBus runner
+#     dr = DBusRunner()
+#     dr.start()
+
+#     PluginRegistry(component='gosa.client.module')  # @UnusedVariable
+#     env.active = True
+
+#     def shutdown():
+#         env.active = False
+
+#         # Wait for threads to shut down
+#         for t in env.threads:
+#             if hasattr(t, 'stop'):
+#                 t.stop()
+#             if hasattr(t, 'cancel'):
+#                 t.cancel()
+#             t.join(2)
+
+#         PluginRegistry.shutdown()
+#         dr.stop()
+
+#     request.addfinalizer(shutdown)
+
 @pytest.fixture
 def get_environment():
     return environment
