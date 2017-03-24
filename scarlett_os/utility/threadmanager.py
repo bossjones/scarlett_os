@@ -258,7 +258,7 @@ if __name__ == '__main__':
 
     loop = GLib.MainLoop()
 
-    to_complete = 5
+    to_complete = 2
 
     class TestThread (SuspendableThread):
 
@@ -317,9 +317,6 @@ if __name__ == '__main__':
         ('Error 3', TestError())
     ]:
         tm.add_thread(thread)
-
-    def quit(*args):
-        loop.quit()
 
     def get_tm_active_count(*args):
         time.sleep(3)
