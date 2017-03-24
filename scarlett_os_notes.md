@@ -1307,3 +1307,62 @@ self._handler = DbusSignalHandler()
 # if not, then we can skip all further processing. (The scarlett-os-mpris-dbus seems not to be running)
 self.__dr = DBusRunner.get_instance()
 ```
+
+# PEP 3156 -- Asynchronous IO Support Rebooted: the "asyncio" Module
+
+https://www.python.org/dev/peps/pep-3156/
+
+
+# borrowed from gbulb
+
+https://github.com/m-labs/gbulb/blob/5631d56eeeb4de7eb1ea883981e7640d204d1684/README.md
+
+```
+gbulb - a PEP 3156 event loop based on GLib
+Gbulb is a python library that implements a PEP 3156 interface for the GLib main event loop. It is designed to be used together with the tulip reference implementation.
+
+The code needs to be thoroughly tested, it should be considered as unstable for the moment.
+
+Anthony Baire
+```
+
+## Divergences with PEP 3156
+
+In GLib, the concept of event loop is split in two classes: GLib.MainContext
+and GLib.MainLoop.
+
+The thing is mostly implemented by MainContext. MainLoop is just a wrapper
+that implements the run() and quit() functions. MainLoop.run() atomically
+acquires a MainContext and repeatedly calls MainContext.iteration() until
+MainLoop.quit() is called.
+
+A MainContext is not bound to a particular thread, however is cannot be used
+by multiple threads concurrently. If the context is owned by another thread,
+then MainLoop.run() will block until the context is released by the other
+thread.
+
+MainLoop.run() may be called recursively by the same thread (this is mainly
+used for implementing modal dialogs in Gtk).
+
+
+The issue: given a context, GLib provides no ways to know if there is an
+existing event loop running for that context. It implies the following
+divergences with PEP 3156:
+
+ - .run_forever() and .run_until_complete() are not guaranteed to run
+   immediatly. If the context is owned by another thread, then they will
+   block until the context is released by the other thread.
+
+ - .stop() is relevant only when the currently running Glib.MainLoop object
+   was created by this asyncio object (i.e. by calling .run_forever() or
+   .run_until_complete()). The event loop will quit only when it regains
+   control of the context. This can happen in two cases:
+    1. when multiple event loop are enclosed (by creating new MainLoop
+       objects and calling .run() recursively)
+    2. when the event loop has not even yet started because it is still
+       trying to acquire the context
+
+It should be wiser not to use any recursion at all. GLibEventLoop will
+actually prevent you from doing that (in accordance with PEP 3156). However
+you should keep in mind that enclosed loops may be started at any time by
+third-party code calling directly GLib's primitives.

@@ -402,6 +402,8 @@ def re_escape(string, BAD="/.^$*+-?{,\\[]|()<>#=!:"):
     return type(string)().join(map(needs_escape, string))
 
 
+# _IdleObject etc. based on example John Stowers
+# <john.stowers@gmail.com>
 class _IdleObject(GObject.GObject):
     """
     Override GObject.GObject to always emit signals in the main thread
@@ -412,6 +414,8 @@ class _IdleObject(GObject.GObject):
         GObject.GObject.__init__(self)
 
     def emit(self, *args):
+        if args[0] != 'progress':
+            print('emit', args)
         GObject.idle_add(GObject.GObject.emit, self, *args)
 
 
