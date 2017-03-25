@@ -76,11 +76,78 @@ from scarlett_os.internal.gi import GObject  # noqa
 from scarlett_os.internal.gi import GLib
 
 from scarlett_os import listener
+from scarlett_os.utility import threadmanager
 
 
 ###########################################
 # Borrowed from test_integration_player - END
 ###########################################
+
+
+# _shared_loop_thread = None
+# _loop_thread_lock = threading.RLock()
+#
+#
+# def get_loop_thread():
+#     """Get the shared main-loop thread.
+#     """
+#     global _shared_loop_thread
+#     with _loop_thread_lock:
+#         if not _shared_loop_thread:
+#             # Start a new thread.
+#             _shared_loop_thread = MainLoopThread()
+#             _shared_loop_thread.start()
+#         return _shared_loop_thread
+
+# source: test_signal.py in pygobject
+class C(GObject.GObject):
+    """Test class for verifying callbacks."""
+    __gsignals__ = {'my_signal': (GObject.SignalFlags.RUN_FIRST, None,
+                                  (GObject.TYPE_INT,))}
+
+    def do_my_signal(self, arg):
+        self.arg = arg
+
+
+class TestSuspendableMainLoopThread(object):
+
+    def test_SuspendableMainLoopThread(self, monkeypatch):
+
+        def my_signal_handler_cb(*args):
+            assert len(args) == 5
+            assert isinstance(args[0], C)
+            assert args[0] == inst
+
+            assert isinstance(args[1], int)
+            assert args[1] == 42
+
+            assert args[2:] == (1, 2, 3)
+
+        def quit(*args):
+            print('timeout reached, let close out SuspendableMainLoopThread')
+            with _loop_thread_lock:
+                print('attempting to terminate')
+                _shared_loop_thread.terminate()
+                print('attempting to join')
+                _shared_loop_thread.join(2)
+
+        _shared_loop_thread = None
+        _loop_thread_lock = threading.RLock()
+
+        with _loop_thread_lock:
+            if not _shared_loop_thread:
+                # Start a new thread.
+                _shared_loop_thread = listener.SuspendableMainLoopThread()
+                _shared_loop_thread.start()
+
+        inst = C()
+        inst.connect("my_signal", my_signal_handler_cb, 1, 2, 3)
+
+        inst.emit("my_signal", 42)
+        assert inst.arg == 42
+
+        # Create a timeout that checks how many tasks have been completed. When 2 have finished, kill threads and finish.
+        GLib.timeout_add_seconds(10, quit)
 
 
 class TestScarlettListener(object):

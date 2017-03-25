@@ -278,6 +278,7 @@ if __name__ == "__main__":
                 self.emit('progress', n / 1000.0, '%s of 1000' % n)
                 self.check_for_sleep()
 
+    # run forever, we'll want this for listener thread in scarlett
     class TestInterminable(SuspendableThread):
 
         def do_run(self):
@@ -305,6 +306,9 @@ if __name__ == "__main__":
         else:
             print("tm.completed_threads <= to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
 
+            # Return a list of all Thread objects currently alive. The list includes daemonic threads,
+            # dummy thread objects created by current_thread(), and the main thread.
+            # It excludes terminated threads and threads that have not yet been started.
             threads = threading.enumerate()
             if len(threads) > 1:
                 msg = "Another process is in progress"

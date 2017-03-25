@@ -51,6 +51,7 @@ from pydbus import SessionBus
 
 from scarlett_os.utility.dbus_utils import DbusSignalHandler
 from scarlett_os.utility.dbus_runner import DBusRunner
+from scarlett_os.utility.threadmanager import SuspendableThread
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +178,66 @@ class MainLoopThread(threading.Thread):
     @daemon.setter
     def daemon(self, daemon):
         self.__daemon = daemon
+
+
+class SuspendableMainLoopThread(SuspendableThread):
+    """A daemon thread encapsulating a Gobject main loop.
+
+    A mainloop is used by all asynchronous objects to defer handlers and callbacks to. The function run() blocks until the function quit() has been called (and all queued handlers have been executed). The run() function will then execute all the handlers in order.
+    """
+
+    def __init__(self):
+        super(SuspendableMainLoopThread, self).__init__(name="SuspendableMainLoopThread")
+        self.daemon = True
+        self.__loop = GObject.MainLoop()
+        self.__active = False
+
+    def do_run(self):
+        """
+        Start the :func:`GObject.MainLoop` to establish event loop.
+        """
+        if self.__active:
+            return
+
+        self.__active = True
+
+        try:
+            self.__loop.run()
+            # Definition: GLib.MainLoop.get_context
+
+            # The GLib.MainContext with which the source is associated,
+            # or None if the context has not yet been added to a source.
+            # Return type: GLib.MainContext or None
+
+            # Gets the GLib.MainContext with which the source is associated.
+            # You can call this on a source that has been destroyed,
+            # provided that the GLib.MainContext it was attached to still
+            # exists (in which case it will return that GLib.MainContext).
+            # In particular, you can always call this function on the
+            # source returned from GLib.main_current_source().
+            # But calling this function on a source whose
+            # GLib.MainContext has been destroyed is an error.
+            context = self.__loop.get_context()
+            while self.__active:
+                context.iteration(False)
+                if not context.pending():
+                    time.sleep(.1)
+                    self.emit('progress', -1, 'SuspendableMainLoopThread working interminably')
+                    self.check_for_sleep()
+        except KeyboardInterrupt:
+            print('MainLoopThread recieved a Ctrl-C. Exiting gracefully...')
+            self.__active = False
+            self.__loop.quit()
+            print('MainLoopThread finished ...')
+            return
+
+    @property
+    def loop(self, loop):
+        return self.__loop
+
+    @loop.setter
+    def loop(self, loop):
+        self.__loop = loop
 
 
 class ScarlettListenerI(threading.Thread, _IdleObject):
