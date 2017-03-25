@@ -235,14 +235,14 @@ class ThreadManager:
                 thread_to_add.initialize_thread()
 
 
-def get_thread_manager():
+def get_thread_manager(max_concurrent_threads):
     try:
-        return ThreadManager()
+        return ThreadManager(max_concurrent_threads=max_concurrent_threads)
     except ThreadManager as tm:
         return tm
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
+    # Smoke Tests
     if os.environ.get('SCARLETT_DEBUG_MODE'):
         import faulthandler
         faulthandler.register(signal.SIGUSR2, all_threads=True)
@@ -260,7 +260,7 @@ if __name__ == '__main__':
 
     to_complete = 2
 
-    class TestThread (SuspendableThread):
+    class TestThread(SuspendableThread):
 
         def do_run(self):
             for n in range(1000):
@@ -286,29 +286,7 @@ if __name__ == '__main__':
                 self.emit('progress', -1, 'Working interminably')
                 self.check_for_sleep()
 
-        # source: https://github.com/thinkle/gourmet/blob/master/gourmet/exporters/exporter.py
-        # def check_for_sleep (self):
-        #     if self.terminated:
-        #         raise Exception("Exporter Terminated!")
-        #     while self.suspended:
-        #         if self.terminated:
-        #             debug('Thread Terminated!',0)
-        #             raise Exception("Exporter Terminated!")
-        #         if use_threads:
-        #             time.sleep(1)
-        #         else:
-        #             time.sleep(0.1)
-        #
-        # def terminate (self):
-        #     self.terminated = True
-        #
-        # def suspend (self):
-        #     self.suspended = True
-        #
-        # def resume (self):
-        #     self.suspended = False
-
-    tm = get_thread_manager()
+    tm = get_thread_manager(2)
     for desc, thread in [
         ('Interminable 1', TestInterminable()),
         ('Linear 1', TestThread()),
@@ -322,54 +300,45 @@ if __name__ == '__main__':
         time.sleep(3)
         if tm.completed_threads < to_complete:
             print("tm.completed_threads < to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
-            # note keep running callback
+            # NOTE: keep running callback
             return True
         else:
             print("tm.completed_threads <= to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
+
+            threads = threading.enumerate()
+            if len(threads) > 1:
+                msg = "Another process is in progress"
+                for t in threads:
+                    if "import" in t.getName():
+                        msg = _("An import is in progress.")
+                    if "export" in t.getName():
+                        msg = _("An export is in progress.")
+                    if "delete" in t.getName():
+                        msg = _("A delete is in progress.")
+
+            # source: https://github.com/thinkle/gourmet/blob/a97af28b79af7cf1181b8bbd14c61eb396eb7ac6/gourmet/GourmetRecipeManager.py
+            print(msg)
+
+            # Normally this is a diaologe where someone selects "yes i'm sure"
+            quit_anyway = True
+
+            if quit_anyway:
+                for t in threads:
+                    if t.getName() != 'MainThread':
+                        try:
+                            t.terminate()
+                        except:
+                            print("Unable to terminate thread %s" % t)
+                            # try not to lose data if this is going to
+                            # end up in a force quit
+                            return True
+            else:
+                return True
+
             loop.quit()
             # remove callback
             return False
 
-    # # source: pitivi
-    # def create_main_loop():
-    #     mainloop = GLib.MainLoop()
-    #     timed_out = False
-    #
-    #     def quit_cb(unused):
-    #         nonlocal timed_out
-    #         timed_out = True
-    #         mainloop.quit()
-    #
-    #     def run(timeout_seconds=5):
-    #         source = GLib.timeout_source_new_seconds(timeout_seconds)
-    #         source.set_callback(quit_cb)
-    #         source.attach()
-    #         GLib.MainLoop.run(mainloop)
-    #         source.destroy()
-    #         if timed_out:
-    #             raise Exception("Timed out after %s seconds" % timeout_seconds)
-    #
-    #     mainloop.run = run
-    #     return mainloop
-
-    # def run_mainloop(self, timeout=5):
-    #     """Start the MainLoop, set Quit-Counter to Zero"""
-    #     self.quit_count = 0
-    #     GLib.timeout_add_seconds(timeout, self.quit_mainloop)
-    #     self.mainloop.run()
-    #
-    # def quit_mainloop(self, *_):
-    #     """Quit the MainLoop, set Quit-Counter to Zero"""
-    #     self.mainloop.quit()
-    #     self.quit_count = 0
-    #
-    # def quit_mainloop_after(self, call_count):
-    #     """Increment Quit-Counter, if it reaches call_count,
-    #     Quit the MainLoop"""
-    #     self.quit_count += 1
-    #     if self.quit_count == call_count:
-    #         self.quit_mainloop()
-
+    # Create a timeout that checks how many tasks have been completed. When 2 have finished, kill threads and finish.
     GLib.timeout_add_seconds(30, get_tm_active_count)
-    # tmg.dialog.connect('delete-event',quit)
     loop.run()
