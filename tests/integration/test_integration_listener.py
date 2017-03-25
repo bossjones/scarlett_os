@@ -139,6 +139,8 @@ class TestSuspendableMainLoopThread(object):
                 # Start a new thread.
                 _shared_loop_thread = listener.SuspendableMainLoopThread()
                 _shared_loop_thread.start()
+                # assert str(type(_shared_loop_thread.get_loop())) == "<class 'gi.overrides.GLib.MainLoop'>"
+
 
         inst = C()
         inst.connect("my_signal", my_signal_handler_cb, 1, 2, 3)

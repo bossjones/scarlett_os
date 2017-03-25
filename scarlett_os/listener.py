@@ -231,12 +231,10 @@ class SuspendableMainLoopThread(SuspendableThread):
             print('MainLoopThread finished ...')
             return
 
-    @property
-    def loop(self, loop):
+    def get_loop(self):
         return self.__loop
 
-    @loop.setter
-    def loop(self, loop):
+    def set_loop(self, loop):
         self.__loop = loop
 
 
