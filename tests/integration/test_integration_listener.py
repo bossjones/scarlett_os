@@ -105,6 +105,44 @@ class TestSuspendableMainLoopThread(object):
         # kill threads and finish.
         GLib.timeout_add_seconds(10, quit)
 
+    # def test_terminate_SuspendableMainLoopThread(self, monkeypatch):
+
+    #     def my_signal_handler_cb(*args):
+
+    #         with pytest.raises(threadmanager.Terminated):
+    #             _shared_loop_thread.terminate()
+
+    #     def quit(*args):
+    #         print('timeout reached, let close out SuspendableMainLoopThread')
+    #         with _loop_thread_lock:
+    #             print('attempting to terminate')
+    #             _shared_loop_thread.terminate()
+    #             print('attempting to join')
+    #             _shared_loop_thread.join(2)
+
+    #     _shared_loop_thread = None
+    #     _loop_thread_lock = threading.RLock()
+
+    #     with _loop_thread_lock:
+    #         if not _shared_loop_thread:
+    #             # Start a new thread.
+    #             _shared_loop_thread = listener.SuspendableMainLoopThread()
+    #             # get MainLoop
+    #             _shared_loop_thread.get_loop()
+    #             # start thread
+    #             _shared_loop_thread.start()
+    #             # this should simply return
+    #             _shared_loop_thread.do_run()
+
+    #     inst = C()
+    #     inst.connect("my_signal", my_signal_handler_cb, 1, 2, 3)
+
+    #     inst.emit("my_signal", 42)
+
+    #     # Create a timeout that checks how many
+    #     # tasks have been completed. When 2 have finished,
+    #     # kill threads and finish.
+    #     GLib.timeout_add_seconds(10, quit)
 
 class TestScarlettListener(object):
 
