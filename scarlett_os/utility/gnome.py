@@ -127,7 +127,7 @@ def uri_is_valid(uri):
     return bool(urlparse(uri)[0])
 
 
-class DeferredSignal(object):
+class DeferredSignal(object):  # noqa
     """A wrapper for connecting functions to signals.
 
     Some signals may fire hundreds of times, but only require processing
@@ -290,7 +290,7 @@ def is_main_thread():
     return threading.current_thread().name == "MainThread"
 
 
-class MainRunner(object):
+class MainRunner(object):  # noqa
     """Schedule a function call in the main loop from a
     worker thread and wait for the result.
 
@@ -444,7 +444,7 @@ def abort_on_exception(func):  # noqa
     return wrapper
 
 
-def trace(func):
+def trace(func):  # noqa
     """Tracing wrapper to log when function enter/exit happens.
     :param func: Function to wrap
     :type func: callable
