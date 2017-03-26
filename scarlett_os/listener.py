@@ -127,31 +127,23 @@ def get_loop_thread():
             _shared_loop_thread.start()
         return _shared_loop_thread
 
-# def stop_loop_thread():
-#     """Get the shared main-loop thread.
-#     """
-#     global _shared_loop_thread
-#     with _loop_thread_lock:
-#         if _shared_loop_thread:
-#             # Start a new thread.
-#             _shared_loop_thread = MainLoopThread()
-#             _shared_loop_thread.start()
-#         return _shared_loop_thread
-
 # NOTE: doc updated via
 # https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
 
-
 class MainLoopThread(threading.Thread):
-    """A daemon thread encapsulating a Gobject main loop.
-
-    A mainloop is used by all asynchronous objects to defer handlers and callbacks to. The function run() blocks until the function quit() has been called (and all queued handlers have been executed). The run() function will then execute all the handlers in order.
+    """
+    A daemon thread encapsulating a Gobject main loop.
+    A mainloop is used by all asynchronous objects to defer
+    handlers and callbacks to. The function run() blocks until
+    the function quit() has been called
+    (and all queued handlers have been executed).
+    The run() function will then execute all the handlers in order.
     """
 
     def __init__(self):
         super(MainLoopThread, self).__init__()
         self.__loop = GObject.MainLoop()
-        self.__daemon = True
+        self.daemon = True
 
     def run(self):
         try:
@@ -163,21 +155,11 @@ class MainLoopThread(threading.Thread):
             print('MainLoopThread finished ...')
             return
 
-    @property
-    def loop(self, loop):
+    def get_loop(self):
         return self.__loop
 
-    @loop.setter
-    def loop(self, loop):
+    def set_loop(self, loop):
         self.__loop = loop
-
-    @property
-    def daemon(self, daemon):
-        return self.__daemon
-
-    @daemon.setter
-    def daemon(self, daemon):
-        self.__daemon = daemon
 
 
 class SuspendableMainLoopThread(SuspendableThread):
@@ -242,7 +224,8 @@ class SuspendableMainLoopThread(SuspendableThread):
 
 class ScarlettListenerI(threading.Thread, _IdleObject):
     """
-    Attempt to take out all Gstreamer logic and put it in a class ouside the dbus server.
+    Attempt to take out all Gstreamer logic and put it in a
+    class ouside the dbus server.
     Cancellable thread which uses gobject signals to return information
     to the GUI.
     """
