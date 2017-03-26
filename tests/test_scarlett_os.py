@@ -26,21 +26,14 @@ import pprint
 ubuntu_version = verify.get_current_os()
 pp = pprint.PrettyPrinter(indent=4)
 
-from scarlett_os.internal.gi import Gst, GLib, GObject
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import GObject
 
-# from IPython.core.debugger import Tracer  # NOQA
-# from IPython.core import ultratb
-# import traceback
-#
 # import logging
 # logger = logging.getLogger('scarlettlogger')
 # # from pydbus import SessionBus
 # # from pydbus.green import sleep
-#
-# sys.excepthook = ultratb.FormattedTB(mode='Verbose',
-#                                      color_scheme='Linux',
-#                                      call_pdb=True,
-#                                      ostream=sys.__stdout__)
 
 # @pytest.fixture
 # def runner():

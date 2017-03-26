@@ -44,7 +44,7 @@ to_complete = 2
 
 
 @pytest.fixture
-def tmanager(request):
+def tmanager():
     # create threadmanager
     tmanager = threadmanager.get_thread_manager(2)
     # yield it to calling function/test
@@ -55,7 +55,7 @@ def tmanager(request):
     del tmanager
 
 
-class TestThread(threadmanager.SuspendableThread):
+class TThread(threadmanager.SuspendableThread):
 
     def do_run(self):
         for n in range(1000):
@@ -64,7 +64,7 @@ class TestThread(threadmanager.SuspendableThread):
             self.check_for_sleep()
 
 
-class TestError(threadmanager.SuspendableThread):
+class TError(threadmanager.SuspendableThread):
 
     def do_run(self):
         for n in range(1000):
@@ -76,7 +76,7 @@ class TestError(threadmanager.SuspendableThread):
 
 
 # run forever, we'll want this for listener thread in scarlett
-class TestInterminable(threadmanager.SuspendableThread):
+class TInterminable(threadmanager.SuspendableThread):
 
     def do_run(self):
         while 1:

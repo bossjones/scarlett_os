@@ -32,6 +32,7 @@ def bytesting_to_string(a_bytestring):
 #         # python Only, we don't need to cast
 #         return bytestr.decode(locale.getpreferredencoding())
 
+
 def locale_decode(bytestr):
     # try:
         # PY2: text_type = unicode  # noqa

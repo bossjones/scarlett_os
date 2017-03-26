@@ -61,6 +61,10 @@ class Terminated(Exception):
         return repr(self.value)
 
 
+class NotASuspendableThread(Exception):
+    pass
+
+
 class SuspendableThread(threading.Thread, _IdleObject):
     """A class for long-running processes that shouldn't interrupt the
     GUI.
