@@ -52,7 +52,7 @@ from scarlett_os.utility.gnome import _IdleObject
 logger = logging.getLogger(__name__)
 
 
-class Terminated (Exception):
+class Terminated(Exception):
 
     def __init__(self, value):
         self.value = value
