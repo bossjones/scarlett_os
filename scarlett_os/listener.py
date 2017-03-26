@@ -220,6 +220,8 @@ class SuspendableMainLoopThread(SuspendableThread):
             context = self.__loop.get_context()
             while self.__active:
                 context.iteration(False)
+                # Checks if any sources have pending events for the given context.
+                # Return True if events are pending.
                 if not context.pending():
                     time.sleep(.1)
                     self.emit('progress', -1, 'SuspendableMainLoopThread working interminably')
