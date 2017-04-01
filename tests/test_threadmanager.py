@@ -101,23 +101,40 @@ class TestThreadManager(unittest.TestCase):
 
         del tm
 
-    @mock.patch('scarlett_os.tasker.time.sleep', name='mock_time_sleep')
-    @mock.patch('scarlett_os.tasker.logging.Logger.debug', name='mock_logger_debug')
-    @mock.patch('scarlett_os.tasker._IdleObject', name='mock_idle_obj')
-    @mock.patch('scarlett_os.tasker.threading.Thread', spec=scarlett_os.utility.threadmanager.threading.Thread, name='mock_thread_class')
+    @mock.patch('scarlett_os.utility.threadmanager.time.sleep', name='mock_time_sleep')
+    @mock.patch('scarlett_os.utility.threadmanager.logging.Logger.debug', name='mock_logger_debug')
+    @mock.patch('scarlett_os.utility.threadmanager._IdleObject', name='mock_idle_obj')
+    @mock.patch('scarlett_os.utility.threadmanager.threading.Thread', spec=scarlett_os.utility.threadmanager.threading.Thread, name='mock_thread_class')
     def test_threadingmanager_add_thread_assertion_error_init(self, mock_thread_class, mock_idle_obj, mock_logger_debug, mock_time_sleep):
         tm = threadmanager.get_thread_manager(2)
 
+        # import pdb;pdb.set_trace()
+
         NotASuspendableThreadObj = mock.Mock()
+        not_suspendable_obj = NotASuspendableThreadObj()
+        not_suspendable_obj.check_for_sleep = mock.MagicMock(side_effect=None)
 
-        with self.assertRaises(AssertionError):
-            tm.add_thread(NotASuspendableThreadObj)
+        # assert NotASuspendableThreadExc
+        for desc, thread in [
+            ('NotASuspendableThreadObj 1', not_suspendable_obj),
+        ]:
+            with self.assertRaises(scarlett_os.utility.threadmanager.NotASuspendableThreadExc):
+                tm.add_thread(thread)
 
+        # assert NotThreadSafeExc
         for desc, thread in [
             ('NotThreadSafeObj 1', MockSuspendableThreadButNotThreadSafe()),
         ]:
-            with self.assertRaises(TypeError):
+            with self.assertRaises(scarlett_os.utility.threadmanager.NotThreadSafeExc):
                 tm.add_thread(thread)
+
+        # for desc, thread in [
+        #     ('NotThreadSafeObj 2', MockSuspendableThreadButNotThreadSafe()),
+        # ]:
+        #     exception_str = "Thread.*is NotThreadSafe"
+        #
+        #     with self.assertRaisesRegexp(TypeError, exception_str):
+        #         tm.add_thread(thread)
 
         # self.assertEqual(tm.active_count, 0)
         # self.assertEqual(tm.completed_threads, 0)
@@ -127,3 +144,24 @@ class TestThreadManager(unittest.TestCase):
         # self.assertEqual(tm.threads, [])
 
         del tm
+
+    # @mock.patch('scarlett_os.utility.threadmanager.SuspendableThread', name='mock_SuspendableThread')
+    # @mock.patch('scarlett_os.utility.threadmanager.time.sleep', name='mock_time_sleep')
+    # @mock.patch('scarlett_os.utility.threadmanager.logging.Logger.debug', name='mock_logger_debug')
+    # @mock.patch('scarlett_os.utility.threadmanager._IdleObject', name='mock_idle_obj')
+    # @mock.patch('scarlett_os.utility.threadmanager.threading.Thread', spec=scarlett_os.utility.threadmanager.threading.Thread, name='mock_thread_class')
+    # def test_threadingmanager_add_thread(self, mock_thread_class, mock_idle_obj, mock_logger_debug, mock_time_sleep, mock_SuspendableThread):
+    #     tm = threadmanager.get_thread_manager(2)
+    #
+    #     NotASuspendableThreadObj = mock.Mock()
+    #
+    #     with self.assertRaises(AssertionError):
+    #         tm.add_thread(NotASuspendableThreadObj)
+    #
+    #     for desc, thread in [
+    #         ('NotThreadSafeObj 1', MockSuspendableThreadButNotThreadSafe()),
+    #     ]:
+    #         with self.assertRaises(TypeError):
+    #             tm.add_thread(thread)
+    #
+    #     del tm

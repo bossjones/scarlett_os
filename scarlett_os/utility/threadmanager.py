@@ -25,6 +25,7 @@
 # processes.
 #
 
+# import reprlib
 import os
 import sys
 import signal
@@ -61,7 +62,11 @@ class Terminated(Exception):
         return repr(self.value)
 
 
-class NotASuspendableThread(Exception):
+class NotASuspendableThreadExc(Exception):
+    pass
+
+
+class NotThreadSafeExc(Exception):
     pass
 
 
@@ -191,13 +196,39 @@ class ThreadManager:
         self.threads = []
 
     def add_thread(self, thread):
+        # NOTE: https://hynek.me/articles/hasattr/
+        # Don’t use Python’s hasattr() unless you’re writing Python 3-only code and understand how it works.
+        # has_check_for_sleep = getattr(thread, 'check_for_sleep', None)
         try:
-            assert(isinstance(thread, SuspendableThread))
-        except AssertionError:
-            print('Class', thread, type(thread), 'is not a SuspendableThread')
-            raise
-        if isinstance(thread, NotThreadSafe):
-            raise TypeError("Thread %s is NotThreadSafe" % thread)
+            assert("scarlett_os.utility.threadmanager.SuspendableThread" in str(type(thread)))
+            print(
+                'YAY Class {thread_class} of type {thread_type} is a SuspendableThread'.format(
+                    thread_class=repr(thread),
+                    thread_type=type(thread)
+                    ))
+        except:
+            raise NotASuspendableThreadExc(
+                'Class {thread_class} of type {thread_type} is not a SuspendableThread'.format(
+                    thread_class=repr(thread),
+                    thread_type=type(thread))
+            )
+
+        try:
+            assert("scarlett_os.utility.threadmanager.NotThreadSafe" in str(type(thread)))
+        except:
+            raise NotThreadSafeExc(
+                'Class {thread_class} of type {thread_type} is not Thread Safe'.format(
+                    thread_class=repr(thread),
+                    thread_type=type(thread))
+            )
+
+        # try:
+        #     assert(hasattr(thread, 'check_for_sleep'))
+        # except AttributeError:
+        #     print('Class', thread, type(thread), 'is not a SuspendableThread')
+        #     raise
+        # if isinstance(thread, NotThreadSafe):
+        #     raise TypeError("Thread %s is NotThreadSafe" % thread)
         self.threads.append(thread)
         thread.connect('pause', self.register_thread_paused)
         thread.connect('resume', self.register_thread_resume)
