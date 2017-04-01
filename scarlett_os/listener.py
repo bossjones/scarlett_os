@@ -170,6 +170,19 @@ class SuspendableMainLoopThread(SuspendableThread):
 
     def __init__(self):
         super(SuspendableMainLoopThread, self).__init__(name="SuspendableMainLoopThread")
+        #####################
+        # NOTE: A thread can be flagged as a "daemon thread". 
+        # The significance of this flag is that the entire 
+        # Python program exits when only daemon threads are left. 
+        # The initial value is inherited from the creating thread. 
+        # The flag can be set through the daemon property or the daemon constructor argument.
+        #####################
+        # NOTE: Daemon threads are abruptly stopped at shutdown. 
+        # Their resources (such as open files, database transactions, etc.) 
+        # may not be released properly. 
+        # If you want your threads to stop gracefully, 
+        # make them non-daemonic and use a suitable signalling mechanism such as an Event.
+        #####################
         self.daemon = True
         self.__loop = GObject.MainLoop()
         self.__active = False
@@ -208,7 +221,7 @@ class SuspendableMainLoopThread(SuspendableThread):
                     time.sleep(.1)
                     self.emit('progress', -1, 'SuspendableMainLoopThread working interminably')
                     self.check_for_sleep()
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, SystemExit):
             print('MainLoopThread recieved a Ctrl-C. Exiting gracefully...')
             self.__active = False
             self.__loop.quit()

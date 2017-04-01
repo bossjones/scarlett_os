@@ -52,6 +52,22 @@ from scarlett_os.utility.gnome import _IdleObject
 
 logger = logging.getLogger(__name__)
 
+# # source: quodlibet/quodlibet/quodlibet/util/thread.py
+# class Cancellable(object):
+#     """Subset of Gio.Cancellable so it can be used as well"""
+
+#     def __init__(self):
+#         self._cancelled = False
+
+#     def is_cancelled(self):
+#         return self._cancelled
+
+#     def reset(self):
+#         self._cancelled = False
+
+#     def cancel(self):
+#         self._cancelled = True
+
 
 class Terminated(Exception):
 
@@ -87,6 +103,9 @@ class SuspendableThread(threading.Thread, _IdleObject):
         'resume': (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when we resume
         'done': (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when/however we finish
     }
+
+    # Flag to determine if thread is suspendable
+    _suspendable = True
 
     def __init__(self, name=None):
         self.initialized = False
@@ -159,7 +178,9 @@ class SuspendableThread(threading.Thread, _IdleObject):
     def __repr__(self):
         try:
             return threading.Thread.__repr__(self)
-        except AssertionError:
+        # The goal of an AssertionError in Python is to inform developers about unrecoverable errors in a program.
+        # except AssertionError:
+        except TypeError:
             return '<SuspendableThread %s - uninitialized>' % self.name
     #
     # @GObject.Property(type=int)
@@ -178,7 +199,8 @@ class NotThreadSafe:
     will be raised if an object that is an instance of this class is
     added to a thread manager.
     """
-    pass
+
+    _is_thread_safe = False
 
 
 class ThreadManager:
@@ -200,7 +222,8 @@ class ThreadManager:
         # Don’t use Python’s hasattr() unless you’re writing Python 3-only code and understand how it works.
         # has_check_for_sleep = getattr(thread, 'check_for_sleep', None)
         try:
-            assert("scarlett_os.utility.threadmanager.SuspendableThread" in str(type(thread)))
+            getattr(thread, '_suspendable')
+            # assert("scarlett_os.utility.threadmanager.SuspendableThread" in str(type(thread)))
             print(
                 'YAY Class {thread_class} of type {thread_type} is a SuspendableThread'.format(
                     thread_class=repr(thread),
@@ -213,14 +236,24 @@ class ThreadManager:
                     thread_type=type(thread))
             )
 
-        try:
-            assert("scarlett_os.utility.threadmanager.NotThreadSafe" in str(type(thread)))
-        except:
+        # assert("scarlett_os.utility.threadmanager.NotThreadSafe" in str(type(thread)))
+        threadsafe = getattr(thread, '_is_thread_safe', True)
+
+        if not threadsafe:
             raise NotThreadSafeExc(
                 'Class {thread_class} of type {thread_type} is not Thread Safe'.format(
                     thread_class=repr(thread),
                     thread_type=type(thread))
             )
+
+        # try:
+        #     getattr(thread, '_not_thread_safe')
+        # except AttributeError:
+        #     raise NotThreadSafeExc(
+        #         'Class {thread_class} of type {thread_type} is not Thread Safe'.format(
+        #             thread_class=repr(thread),
+        #             thread_type=type(thread))
+        #     )
 
         # try:
         #     assert(hasattr(thread, 'check_for_sleep'))

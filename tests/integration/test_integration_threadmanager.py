@@ -63,7 +63,7 @@ class TThread(SuspendableThread):
     def __init__(self):
         SuspendableThread.__init__(
             self,
-            name=_('TThread')
+            name='TThread'
         )
 
     def do_run(self):
@@ -101,7 +101,7 @@ class NTsafeThread(SuspendableThread, NotThreadSafe):
             self,
             name=_('NTsafeThread')
         )
-        NotThreadSafe.__init__()
+        # NotThreadSafe.__init__()
 
     def do_run(self):
         """Contents of this doesn't matter, just need one defined."""
@@ -160,7 +160,7 @@ class TestThreadManager(object):
 
         def get_tm_active_count(*args):
             time.sleep(3)
-            if tm.completed_threads < to_complete:
+            if int(tm.completed_threads) < to_complete:
                 print("tm.completed_threads < to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
                 # NOTE: keep running callback
                 return True
@@ -180,6 +180,8 @@ class TestThreadManager(object):
                             msg = _("An export is in progress.")
                         if "delete" in t.getName():
                             msg = _("A delete is in progress.")
+                        if "TThread" in t.getName():
+                            msg = _("A TThread delete is in progress.")
 
                 # source: https://github.com/thinkle/gourmet/blob/a97af28b79af7cf1181b8bbd14c61eb396eb7ac6/gourmet/GourmetRecipeManager.py
                 print(msg)
@@ -189,7 +191,7 @@ class TestThreadManager(object):
 
                 if quit_anyway:
                     for t in threads:
-                        if t.getName() != 'MainThread':
+                        if t.getName() != 'MainThread' and t.getName() != 'HistorySavingThread':
                             try:
                                 t.terminate()
                             except:

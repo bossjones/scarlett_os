@@ -39,7 +39,51 @@ endef
 export PRINT_HELP_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
+
+define ASCILOGO
+  ██████  ▄████▄   ▄▄▄       ██▀███   ██▓    ▓█████▄▄▄█████▓▄▄▄█████▓    ███▄ ▄███▓ ▄▄▄       ██ ▄█▀▓█████ 
+▒██    ▒ ▒██▀ ▀█  ▒████▄    ▓██ ▒ ██▒▓██▒    ▓█   ▀▓  ██▒ ▓▒▓  ██▒ ▓▒   ▓██▒▀█▀ ██▒▒████▄     ██▄█▒ ▓█   ▀ 
+░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██ ░▄█ ▒▒██░    ▒███  ▒ ▓██░ ▒░▒ ▓██░ ▒░   ▓██    ▓██░▒██  ▀█▄  ▓███▄░ ▒███   
+  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▒██▀▀█▄  ▒██░    ▒▓█  ▄░ ▓██▓ ░ ░ ▓██▓ ░    ▒██    ▒██ ░██▄▄▄▄██ ▓██ █▄ ▒▓█  ▄ 
+▒██████▒▒▒ ▓███▀ ░ ▓█   ▓██▒░██▓ ▒██▒░██████▒░▒████▒ ▒██▒ ░   ▒██▒ ░    ▒██▒   ░██▒ ▓█   ▓██▒▒██▒ █▄░▒████▒
+▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░ ▒▒   ▓▒█░░ ▒▓ ░▒▓░░ ▒░▓  ░░░ ▒░ ░ ▒ ░░     ▒ ░░      ░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▒ ▓▒░░ ▒░ ░
+░ ░▒  ░ ░  ░  ▒     ▒   ▒▒ ░  ░▒ ░ ▒░░ ░ ▒  ░ ░ ░  ░   ░        ░       ░  ░      ░  ▒   ▒▒ ░░ ░▒ ▒░ ░ ░  ░
+░  ░  ░  ░          ░   ▒     ░░   ░   ░ ░      ░    ░        ░         ░      ░     ░   ▒   ░ ░░ ░    ░   
+      ░  ░ ░            ░  ░   ░         ░  ░   ░  ░                           ░         ░  ░░  ░      ░  ░
+         ░                                                                                                 
+=======================================
+endef
+
+export ASCILOGO
+
+# http://misc.flogisoft.com/bash/tip_colors_and_formatting
+
+RED=\033[0;31m
+GREEN=\033[0;32m
+ORNG=\033[38;5;214m
+BLUE=\033[38;5;81m
+NC=\033[0m
+
+export RED
+export GREEN
+export NC
+export ORNG
+export BLUE
+
+# # verify that certain variables have been defined off the bat
+# check_defined = \
+#     $(foreach 1,$1,$(__check_defined))
+# __check_defined = \
+#     $(if $(value $1),, \
+#       $(error Undefined $1$(if $(value 2), ($(strip $2)))))
+
+# list_allowed_args := product
+
 help:
+	@printf "\033[1m$$ASCILOGO $$NC\n"
+	@printf "\033[21m\n\n"
+	@printf "=======================================\n"
+	@printf "\n"
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 list:
@@ -142,6 +186,15 @@ cover:
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
+.PHONY: cover-travisci
+cover-travisci: export TRAVIS_CI=1
+cover-travisci: display-env
+	# $(pytest) $(cover_args) --benchmark-skip -p no:ipdb 
+	pytest -p no:ipdb -p no:pytestipdb -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --showlocals --trace-config
+	coverage report -m
+	coverage html
+	$(BROWSER) htmlcov/index.html
+
 .PHONY: cover-debug
 cover-debug:
 	# --showlocals # show local variables in tracebacks
@@ -152,6 +205,21 @@ cover-debug:
 
 .PHONY: cover-debug-no-timeout
 cover-debug-no-timeout:
+	pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
+	coverage report -m
+	coverage html
+	$(BROWSER) htmlcov/index.html
+
+.PHONY: display-env
+display-env:
+	@printf "=======================================\n"
+	@printf "$$GREEN TRAVIS_CI:$$NC             $(TRAVIS_CI) \n"
+	@printf "=======================================\n"
+
+# This task simulates a travis environment
+.PHONY: cover-debug-no-timeout-travisci
+cover-debug-no-timeout-travisci: export TRAVIS_CI=1
+cover-debug-no-timeout-travisci: display-env
 	pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
 	coverage report -m
 	coverage html

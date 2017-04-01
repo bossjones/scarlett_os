@@ -71,18 +71,20 @@ class TestSuspendableMainLoopThread(object):
             assert args[2:] == (1, 2, 3)
 
         def quit(*args):
-            print('timeout reached, let close out SuspendableMainLoopThread')
+            print('timeout reached, lets close out SuspendableMainLoopThread in [test_SuspendableMainLoopThread]')
             with _loop_thread_lock:
-                print('attempting to terminate')
+                print('SuspendableMainLoopThread attempting to terminate in [test_SuspendableMainLoopThread]')
                 _shared_loop_thread.terminate()
-                print('attempting to join')
+                print('SuspendableMainLoopThread attempting to join in [test_SuspendableMainLoopThread]')
                 _shared_loop_thread.join(2)
 
         _shared_loop_thread = None
         _loop_thread_lock = threading.RLock()
 
         with _loop_thread_lock:
+            print('SuspendableMainLoopThread _loop_thread_lock acquired in [test_SuspendableMainLoopThread]')
             if not _shared_loop_thread:
+                print('SuspendableMainLoopThread if not _shared_loop_thread in [test_SuspendableMainLoopThread]')
                 # Start a new thread.
                 _shared_loop_thread = listener.SuspendableMainLoopThread()
                 # get MainLoop
@@ -103,7 +105,7 @@ class TestSuspendableMainLoopThread(object):
         # Create a timeout that checks how many
         # tasks have been completed. When 2 have finished,
         # kill threads and finish.
-        GLib.timeout_add_seconds(10, quit)
+        GLib.timeout_add_seconds(10, quit, _shared_loop_thread, _loop_thread_lock)
 
     # def test_terminate_SuspendableMainLoopThread(self, monkeypatch):
 
