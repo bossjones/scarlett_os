@@ -1373,3 +1373,12 @@ third-party code calling directly GLib's primitives.
 - https://github.com/RazerM/represent/blob/c7db3d5b9554f170c7324bc410e77de5ee25687f/represent/core.py
 - https://github.com/RazerM/represent/blob/d6b90468ff67333ce8ae33980d4201a25df88563/tests/test_helper.py
 - https://docs.python.org/3.2/library/reprlib.html
+
+# Visual Studio Code Remote Debug Docker
+
+## install steps
+
+```
+# on os x
+pip3 install ptvsd
+```

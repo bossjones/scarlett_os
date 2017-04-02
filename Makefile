@@ -41,16 +41,16 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 
 define ASCILOGO
-  ██████  ▄████▄   ▄▄▄       ██▀███   ██▓    ▓█████▄▄▄█████▓▄▄▄█████▓    ███▄ ▄███▓ ▄▄▄       ██ ▄█▀▓█████ 
-▒██    ▒ ▒██▀ ▀█  ▒████▄    ▓██ ▒ ██▒▓██▒    ▓█   ▀▓  ██▒ ▓▒▓  ██▒ ▓▒   ▓██▒▀█▀ ██▒▒████▄     ██▄█▒ ▓█   ▀ 
-░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██ ░▄█ ▒▒██░    ▒███  ▒ ▓██░ ▒░▒ ▓██░ ▒░   ▓██    ▓██░▒██  ▀█▄  ▓███▄░ ▒███   
-  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▒██▀▀█▄  ▒██░    ▒▓█  ▄░ ▓██▓ ░ ░ ▓██▓ ░    ▒██    ▒██ ░██▄▄▄▄██ ▓██ █▄ ▒▓█  ▄ 
+  ██████  ▄████▄   ▄▄▄       ██▀███   ██▓    ▓█████▄▄▄█████▓▄▄▄█████▓    ███▄ ▄███▓ ▄▄▄       ██ ▄█▀▓█████
+▒██    ▒ ▒██▀ ▀█  ▒████▄    ▓██ ▒ ██▒▓██▒    ▓█   ▀▓  ██▒ ▓▒▓  ██▒ ▓▒   ▓██▒▀█▀ ██▒▒████▄     ██▄█▒ ▓█   ▀
+░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██ ░▄█ ▒▒██░    ▒███  ▒ ▓██░ ▒░▒ ▓██░ ▒░   ▓██    ▓██░▒██  ▀█▄  ▓███▄░ ▒███
+  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▒██▀▀█▄  ▒██░    ▒▓█  ▄░ ▓██▓ ░ ░ ▓██▓ ░    ▒██    ▒██ ░██▄▄▄▄██ ▓██ █▄ ▒▓█  ▄
 ▒██████▒▒▒ ▓███▀ ░ ▓█   ▓██▒░██▓ ▒██▒░██████▒░▒████▒ ▒██▒ ░   ▒██▒ ░    ▒██▒   ░██▒ ▓█   ▓██▒▒██▒ █▄░▒████▒
 ▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░ ▒▒   ▓▒█░░ ▒▓ ░▒▓░░ ▒░▓  ░░░ ▒░ ░ ▒ ░░     ▒ ░░      ░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▒ ▓▒░░ ▒░ ░
 ░ ░▒  ░ ░  ░  ▒     ▒   ▒▒ ░  ░▒ ░ ▒░░ ░ ▒  ░ ░ ░  ░   ░        ░       ░  ░      ░  ▒   ▒▒ ░░ ░▒ ▒░ ░ ░  ░
-░  ░  ░  ░          ░   ▒     ░░   ░   ░ ░      ░    ░        ░         ░      ░     ░   ▒   ░ ░░ ░    ░   
+░  ░  ░  ░          ░   ▒     ░░   ░   ░ ░      ░    ░        ░         ░      ░     ░   ▒   ░ ░░ ░    ░
       ░  ░ ░            ░  ░   ░         ░  ░   ░  ░                           ░         ░  ░░  ░      ░  ░
-         ░                                                                                                 
+         ░
 =======================================
 endef
 
@@ -189,7 +189,7 @@ cover:
 .PHONY: cover-travisci
 cover-travisci: export TRAVIS_CI=1
 cover-travisci: display-env
-	# $(pytest) $(cover_args) --benchmark-skip -p no:ipdb 
+	# $(pytest) $(cover_args) --benchmark-skip -p no:ipdb
 	pytest -p no:ipdb -p no:pytestipdb -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --showlocals --trace-config
 	coverage report -m
 	coverage html
@@ -324,3 +324,15 @@ create-docker-machine:
 						  --engine-install-url "https://test.docker.com" \
 						  scarlett-1604-packer
 	eval $(docker-machine env scarlett-1604-packer)
+
+docker-compose-build:
+	@docker-compose -f docker-compose-devtools.yml build
+
+docker-compose-build-master:
+	@docker-compose -f docker-compose-devtools.yml build master
+
+docker-compose-run-master:
+	@docker-compose run -f docker-compose-devtools.yml master /bin/bash
+
+docker-compose-up:
+	@docker-compose -f docker-compose-devtools.yml up
