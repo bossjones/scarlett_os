@@ -84,3 +84,6 @@ listener.py.diff
 # source: https://www.sublimetext.com/docs/3/projects.html
 *.sublime-workspace
 .sublime-workspace
+
+_debug/
+espeak_tmp.wav

@@ -32,6 +32,10 @@ class TestScarlettListener(unittest.TestCase):
         """
         self.sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
 
+    # NOTE: Added 1/4/2017
+    # def tearDown(self):
+    #     del self.sl
+
     def test_scarlett_listener_interfaces(self):
         self.assertEqual(self.sl.__repr__(), '<ScarlettListener(org.scarlett, /org/scarlett/Listener)>')
         self.assertEqual(self.sl.LISTENER_IFACE, 'org.scarlett.Listener')

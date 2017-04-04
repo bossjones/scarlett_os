@@ -179,6 +179,12 @@ test-travis-debug:
 	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb --showlocals
 	coverage report -m
 
+.PHONY: test-travis-leaks
+test-travis-leaks: export TRAVIS_CI=1
+test-travis-leaks:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -R :
+	coverage report -m
+
 .PHONY: cover
 cover:
 	$(pytest) $(cover_args) --benchmark-skip

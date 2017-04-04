@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-test_mpris
+test_commands
 ----------------------------------
 """
 
@@ -11,9 +11,8 @@ import sys
 
 from freezegun import freeze_time
 import datetime
-import unittest
 
-# import mock
+import unittest
 import unittest.mock as mock
 
 from scarlett_os.commands import Command, TimeCommand, NO_OP
