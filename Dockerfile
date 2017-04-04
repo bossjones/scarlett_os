@@ -35,8 +35,5 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
     cd anaconda && \
     git checkout 223cc612b0318262535ac488d1f4b4121c2e8f0d
 
-# RUN sudo
-# 223cc612b0318262535ac488d1f4b4121c2e8f0d
-
 ENTRYPOINT ["/docker_entrypoint.sh"]
 CMD true

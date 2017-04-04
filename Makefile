@@ -334,5 +334,8 @@ docker-compose-build-master:
 docker-compose-run-master:
 	@docker-compose run -f docker-compose-devtools.yml master /bin/bash
 
+docker-compose-run-test:
+	@docker-compose run -f docker-compose-devtools.yml test /bin/bash python3 --version
+
 docker-compose-up:
 	@docker-compose -f docker-compose-devtools.yml up
