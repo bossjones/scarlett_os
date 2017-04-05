@@ -11,6 +11,8 @@ dbus-daemon --session --print-address=0 --print-pid=1 --fork 0>"$ADDRESS_FILE" 1
 export DBUS_SESSION_BUS_ADDRESS=$(cat "$ADDRESS_FILE")
 PID=$(cat "$PID_FILE")
 
+echo "export DBUS_SESSION_BUS_ADDRESS=$(cat "$ADDRESS_FILE")" > ~pi/.exports
+
 echo "D-Bus per-session daemon address is: $DBUS_SESSION_BUS_ADDRESS"
 
 trap 'kill -TERM $PID' EXIT

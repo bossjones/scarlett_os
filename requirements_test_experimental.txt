@@ -1,0 +1,6 @@
+pytest-leaks
+pytest-xdist
+unittest2pytest
+pympler
+pydocstyle
+pytest-ordering

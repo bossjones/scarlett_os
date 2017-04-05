@@ -1,14 +1,3 @@
-# scarlett_master:
-#   build: .
-#   environment:
-#     SERVER_LOG_MINIMAL: 1
-#     SERVER_APP_NAME: jhbuild-scarlett-os
-#     S6_KILL_FINISH_MAXTIME: 1
-#     S6_KILL_GRACETIME: 1
-#     SERVER_WORKER_PROCESSES: 1
-#   volumes:
-#   - ./:/home/pi/dev/bossjones-github/scarlett_os:rw
-
 version: '2'
 
 services:
@@ -90,9 +79,5 @@ services:
         - master
     entrypoint:
       - "/docker_entrypoint.sh"
-      - make test-travis
-
-
-# volumes:
-#   config:
-#     external: false
+      - make 
+      - test-travis
