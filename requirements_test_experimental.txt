@@ -4,3 +4,4 @@ unittest2pytest
 pympler
 pydocstyle
 pytest-ordering
+pytest-interactive
