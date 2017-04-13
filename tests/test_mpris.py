@@ -103,6 +103,8 @@ def sl(bus):
     del sl
     print("ran: del sl")
 
+# pip install unittest2pytest
+
 
 @pytest.mark.unittest
 class TestScarlettListener(object):
