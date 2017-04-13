@@ -6,4 +6,4 @@ Fabric3==1.13.1.post1
 PyYAML>=3.0
 jinja2>=2.8
 typing>=3,<4
-voluptuous==0.9.3
+voluptuous==0.10.3
