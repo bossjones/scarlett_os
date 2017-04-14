@@ -26,28 +26,33 @@ from scarlett_os import speaker
 from tests import common
 import signal
 import builtins
+import datetime
 
 import scarlett_os.exceptions
 
 
-class TestScarlettSpeaker(unittest.TestCase):
+# source: https://github.com/darvid/reqwire/blob/4a1c94f4beaa25caab2bf13e7a427a4d8150660d/tests/unit/conftest.py
+FAKE_TIME = datetime.datetime(2020, 1, 1, 0, 0, 0)
 
-    def setUp(self):  # noqa: N802
-        """
-        Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. The default implementation does nothing.
-        """
-        pass
 
-    def tearDown(self):
-        pass
+@pytest.fixture
+def fake_time():
+    yield FAKE_TIME
 
-    @mock.patch('scarlett_os.utility.thread.time_logger', name='mock_time_logger')
-    @mock.patch('scarlett_os.speaker.player', name='mock_scarlett_player')
-    @mock.patch('scarlett_os.speaker.subprocess', name='mock_scarlett_subprocess')
-    def test_speaker_init(self, mock_scarlett_subprocess, mock_scarlett_player, mock_time_logger):
+
+
+class TestScarlettSpeaker(object):
+
+    def test_speaker_init(self, mocker, monkeypatch):
+        mock_time_logger = mocker.patch('scarlett_os.utility.thread.time_logger')
+        mock_scarlett_player = mocker.patch('scarlett_os.speaker.player')
+        mock_scarlett_subprocess = mocker.patch('scarlett_os.speaker.subprocess')
+
         # action
         tts_list = [
-            'Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands']
+            'Hello sir. How are you doing this afternoon?'
+            ' I am full lee function nall, andd red ee for'
+            ' your commands']
 
         test_path = "/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"
 
@@ -56,16 +61,19 @@ class TestScarlettSpeaker(unittest.TestCase):
                 spk = speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
                                               wavpath=test_path)
 
-        self.assertEqual(len(spk._wavefile), 1)
-        self.assertEqual(spk._pitch, 75)
-        self.assertEqual(spk._speed, 175)
-        self.assertEqual(spk._wavpath, "/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav")
-        self.assertEqual(spk._voice, "en+f3")
-        self.assertEqual(spk._text, "Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands")
+        assert len(spk._wavefile) == 1
+        assert spk._pitch == 75
+        assert spk._speed == 175
+        assert spk._wavpath == "/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"
+        assert spk._voice == "en+f3"
+        assert spk._text == "Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands"
 
-        self.assertEqual(spk._word_gap, 1)
-        mock_scarlett_player.ScarlettPlayer.assert_called_once_with(test_path, False, False)
+        assert spk._word_gap == 1
+        mock_scarlett_player.ScarlettPlayer.assert_called_once_with(
+            test_path, False, False)
 
-        self.assertEqual(spk._command, ['espeak', '-p75', '-s175', '-g1', '-w', '/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav', '-ven+f3', '.   Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands   .'])
+        assert spk._command == ['espeak', '-p75', '-s175', '-g1', '-w', '/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav',
+                                        '-ven+f3', '.   Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands   .']
 
-        mock_scarlett_subprocess.Subprocess.assert_called_once_with(['espeak', '-p75', '-s175', '-g1', '-w', '/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav', '-ven+f3', '.   Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands   .'], name='speaker_tmp', fork=False)
+        mock_scarlett_subprocess.Subprocess.assert_called_once_with(['espeak', '-p75', '-s175', '-g1', '-w', '/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav',
+                                                                     '-ven+f3', '.   Hello sir. How are you doing this afternoon? I am full lee function nall, andd red ee for your commands   .'], name='speaker_tmp', fork=False)
