@@ -9,8 +9,8 @@ test_speaker
 import os
 import sys
 
-import unittest
-import unittest.mock as mock
+# import unittest
+# import unittest.mock as mock
 
 import pytest
 
@@ -32,12 +32,12 @@ import scarlett_os.exceptions
 
 
 # source: https://github.com/darvid/reqwire/blob/4a1c94f4beaa25caab2bf13e7a427a4d8150660d/tests/unit/conftest.py
-FAKE_TIME = datetime.datetime(2020, 1, 1, 0, 0, 0)
+# FAKE_TIME = datetime.datetime(2020, 1, 1, 0, 0, 0)
 
 
-@pytest.fixture
-def fake_time():
-    yield FAKE_TIME
+# @pytest.fixture
+# def fake_time():
+#     yield FAKE_TIME
 
 
 
