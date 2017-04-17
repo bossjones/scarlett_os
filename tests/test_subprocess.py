@@ -6,11 +6,16 @@ test_subprocess
 ----------------------------------
 """
 
-import os
+# import os
 import sys
 
+
+# import unittest
+# import unittest.mock as mock
+# from mock import call
 # import unittest
 import pytest
+# from pytest_mock import mocker
 
 # import mock
 # import unittest.mock as mock
@@ -22,21 +27,25 @@ from scarlett_os.subprocess import Subprocess
 # NOTE: We can't add this here, otherwise we won't be able to mock them
 # from scarlett_os.internal.gi import GLib, GObject
 
-from tests import common
+# from tests import common
 import signal
 import builtins
 import re
+# new_callable: allows you to specify a different class, 
+# or callable object, that will be called to create the new object. 
+# By default MagicMock is used.
 
-# kill_mock = mock.Mock(name="kill")
+@pytest.fixture
+def get_kill_mock(mocker):
+    kill_mock = mocker.Mock(name="kill")
+    yield kill_mock
 
-# new_callable: allows you to specify a different class, or callable object, that will be called to create the new object. By default MagicMock is used.
-
-
-# def raise_OSError(*x, **kw):
-#     raise OSError('Fail')
-
-
+# R0201 = Method could be a function Used when a method doesn't use its bound instance,
+# and so could be written as a function.
+# pylint: disable=R0201
+# pylint: disable=C0111
 class TestScarlettSubprocess(object):
+    '''Units tests for Scarlett Subprocess, subclass of GObject.Gobject.'''
 
     # def test_speaker_init(self, mocker, monkeypatch):
     #        mock_time_logger = mocker.patch('scarlett_os.utility.thread.time_logger')
@@ -45,8 +54,15 @@ class TestScarlettSubprocess(object):
 
     # @mock.patch("os.kill", new=mock.Mock(side_effect=OSError))
     def test_check_pid_os_error(self, mocker):
-        kill_mock = mocker.patch('os.kill', side_effect=OSError)
+        kill_mock = mocker.patch('scarlett_os.subprocess.os.kill', side_effect=OSError)
+        # When OSError occurs, throw False
         assert not check_pid(4353634632623)
+        # Verify that os.kill only called once
+        assert kill_mock.call_count == 1
+        # verify that OSError is actually raised correctly
+        import pdb;pdb.set_trace()
+        with pytest.raises(OSError):
+            check_pid(4353634632624)
 
     # @mock.patch("os.kill", kill_mock)
     def test_check_pid(self, mocker):
@@ -54,9 +70,11 @@ class TestScarlettSubprocess(object):
         result = check_pid(123)
         assert kill_mock.called
         # NOTE: test against signal 0
-        # sending the signal 0 to a given PID just checks if any process with the given PID is running and you have the permission to send a signal to it.
+        # sending the signal 0 to a given PID just checks if any
+        # process with the given PID is running and you have the
+        # permission to send a signal to it.
         kill_mock.assert_called_once_with(123, 0)
-        assert result == True
+        assert result is True
 
     # @mock.patch('scarlett_os.subprocess.Subprocess.fork')
     # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
@@ -158,7 +176,7 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
                                               name=test_name,
                                               fork=test_fork)
 
-        assert str(exc_info.value) == 'Variable types should return a list in python3.'
+        assert str(excinfo.value) == 'Variable types should return a list in python3.'
         # assert re.search('Variable types should return a list in python3.',
         #                  excinfo.value)
 
@@ -169,7 +187,7 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
             scarlett_os.subprocess.Subprocess(test_command,
                                               name=test_name,
                                               fork=test_fork)
-        assert str(exc_info.value) == 'Executables and arguments must be str objects. types'
+        assert str(excinfo.value) == 'Executables and arguments must be str objects. types'
         # assert re.search('Executables and arguments must be str objects. types',
         #                  excinfo.value)
 

@@ -5,3 +5,7 @@ pympler
 pydocstyle
 pytest-ordering
 pytest-interactive
+
+# source: https://github.com/pyca/pyopenssl/issues/447
+# source: https://github.com/dropbox/pytest-flakefinder 
+-e git+https://github.com/dropbox/pytest-flakefinder#egg=pytest-flakefinder

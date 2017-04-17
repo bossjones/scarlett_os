@@ -1382,3 +1382,19 @@ third-party code calling directly GLib's primitives.
 # on os x
 pip3 install ptvsd
 ```
+
+# testing ad-hoc notes ( leaks etc )
+
+```
+--benchmark-skip -R :
+
+
+pytest test_mod.py::TestClass::test_method  # run a single method in
+                                             # a single class
+
+pytest -k test_player.py --benchmark-skip -R :
+
+from scarlett_os.internal.debugger import dump
+
+py.test --pdb --showlocals -v -R : -k test_speaker.py
+```
