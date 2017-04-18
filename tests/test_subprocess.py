@@ -60,9 +60,10 @@ class TestScarlettSubprocess(object):
         # Verify that os.kill only called once
         assert kill_mock.call_count == 1
         # verify that OSError is actually raised correctly
-        import pdb;pdb.set_trace()
-        with pytest.raises(OSError):
-            check_pid(4353634632624)
+        # import pdb;pdb.set_trace()
+        # with pytest.raises(OSError):
+        result = check_pid(4353634632624)
+        assert result == False
 
     # @mock.patch("os.kill", kill_mock)
     def test_check_pid(self, mocker):

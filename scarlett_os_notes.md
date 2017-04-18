@@ -1395,6 +1395,7 @@ pytest test_mod.py::TestClass::test_method  # run a single method in
 pytest -k test_player.py --benchmark-skip -R :
 
 from scarlett_os.internal.debugger import dump
+from scarlett_os.internal.debugger import pprint_color
 
 py.test --pdb --showlocals -v -R : -k test_speaker.py
 ```
