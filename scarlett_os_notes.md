@@ -1450,3 +1450,23 @@ test_name  = 'test_who'
 tests/test_subprocess.py:180: Failed
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> entering PDB >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ```
+
+# info on how we're running pytest
+
+```
+pi@99c42ce46358:~/dev/bossjones-github/scarlett_os$ py.test --pdb --showlocals -v -R : -k test_subprocess.py
+/usr/local/lib/python3.5/site-packages/_pdbpp_path_hack/pdb.py:4: ResourceWarning: unclosed file <_io.TextIOWrapper name='/usr/local/lib/python3.5/site-packages/pdb.py' mode='r' encoding='UTF-8'>
+  os.path.dirname(os.path.dirname(__file__)), 'pdb.py')).read(), os.path.join(
+Test session starts (platform: linux, Python 3.5.2, pytest 3.0.7, pytest-sugar 0.8.0)
+cachedir: .cache
+benchmark: 3.1.0a2 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: /home/pi/dev/bossjones-github/scarlett_os, inifile: setup.cfg
+plugins: flakefinder-0.1.0, mock-1.6.0, ipdb-0.1.dev2, ordering-0.5, leaks-0.2.2, xdist-1.15.0, interactive-0.1.1, catchlog-1.2.2, sugar-0.8.0, cov-2.4.0, benchmark-3.1.0a2, timeout-1.2.0, rerunfailures-2.1.0
+timeout: 60.0s method: signal
+[DBUS_SESSION_BUS_ADDRESS]: unix:path=/tmp/dbus_proxy_outside_socket
+
+ tests/test_subprocess.py::TestScarlettSubprocess.test_check_pid_os_error ✓                                              20% ██
+ tests/test_subprocess.py::TestScarlettSubprocess.test_check_pid ✓                                                       40% ████
+ tests/test_subprocess.py::TestScarlettSubprocess.test_subprocess_init ✓                                                 60% ██████
+ tests/test_subprocess.py::TestScarlettSubprocess.test_subprocess_map_type_to_command ✓                                  80% ██████
+```
