@@ -43,7 +43,7 @@ class Subprocess(GObject.GObject):
         'exited': (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_INT, GObject.TYPE_INT))
     }
 
-    def __init__(self, command, name=None, fork=False):
+    def __init__(self, command, name=None, fork=False, run_check_command=True):
         """Create instance of Subprocess."""
 
         GObject.GObject.__init__(self)
@@ -67,8 +67,9 @@ class Subprocess(GObject.GObject):
         #     raise TypeError("executables and arguments must be str objects")
         # logger.debug("Running %r" % " ".join(command))
 
-        # Verify that command is properly formatted and each argument is a str
-        self.check_command_type(command)
+        if run_check_command:
+            # Verify that command is properly formatted and each argument is a str
+            self.check_command_type(command)
 
         self.command = command
         self.name = name

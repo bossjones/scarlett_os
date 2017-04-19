@@ -24,39 +24,39 @@ services:
     volumes:
       - ./:/home/pi/dev/bossjones-github/scarlett_os:rw
 
-  anaconda:
-      image: scarlett_os_master
-      ports:
-          - "19360:19360"
-      environment:
-        SERVER_LOG_MINIMAL: 1
-        SERVER_APP_NAME: jhbuild-scarlett-os
-        S6_KILL_FINISH_MAXTIME: 1
-        S6_KILL_GRACETIME: 1
-        SERVER_WORKER_PROCESSES: 1
-        # Ensure that Python outputs everything that's printed inside
-        # the application rather than buffering it.
-        PYTHONUNBUFFERED: 1
-      stdin_open: true
-      tty: true
-      # volumes:
-          # - /Users/malcolm/.config/sublime_text_3/Packages/Anaconda:/opt/anaconda
-          # OLD # - '/Users/malcolm/Library/Application Support/Sublime Text 3/Packages/Anaconda:/opt/anaconda'
-          # - "/Users/malcolm/Library/Application Support/Sublime Text 3/Packages/Anaconda:/opt/anaconda"
-      depends_on:
-          - master
-      # /usr/local/share/jhbuild/sitecustomize:/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages
-      # pi@45114dc64b90:~$ env | grep -i python
-      # PACKAGES=python3-gi python3-gi-cairo
-      # ENABLE_PYTHON3=yes
-      # PYTHONUNBUFFERED=1
-      # PYTHON_VERSION=3.5
-      # VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
-      # PYTHONSTARTUP=/home/pi/.pythonrc
-      # PYTHON_VERSION_MAJOR=3
-      # PYTHON_PIP_VERSION=8.1.2
-      # PYTHONPATH=/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages
-      # PYTHON=/usr/local/bin/python3
-      # pi@45114dc64b90:~$
-      # /home/pi/.virtualenvs/scarlett_os
-      entrypoint: "/opt/anaconda/anaconda_server/docker/start /usr/local/bin/python3 19360 docker_project /home/pi/dev/bossjones-github/scarlett_os /home/pi/jhbuild/lib/python3.5/site-packages,/home/pi/.virtualenvs/scarlett_os,/usr/lib/python3.5/site-packages"
+  # anaconda:
+  #     image: scarlett_os_master
+  #     ports:
+  #         - "19360:19360"
+  #     environment:
+  #       SERVER_LOG_MINIMAL: 1
+  #       SERVER_APP_NAME: jhbuild-scarlett-os
+  #       S6_KILL_FINISH_MAXTIME: 1
+  #       S6_KILL_GRACETIME: 1
+  #       SERVER_WORKER_PROCESSES: 1
+  #       # Ensure that Python outputs everything that's printed inside
+  #       # the application rather than buffering it.
+  #       PYTHONUNBUFFERED: 1
+  #     stdin_open: true
+  #     tty: true
+  #     # volumes:
+  #         # - /Users/malcolm/.config/sublime_text_3/Packages/Anaconda:/opt/anaconda
+  #         # OLD # - '/Users/malcolm/Library/Application Support/Sublime Text 3/Packages/Anaconda:/opt/anaconda'
+  #         # - "/Users/malcolm/Library/Application Support/Sublime Text 3/Packages/Anaconda:/opt/anaconda"
+  #     depends_on:
+  #         - master
+  #     # /usr/local/share/jhbuild/sitecustomize:/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages
+  #     # pi@45114dc64b90:~$ env | grep -i python
+  #     # PACKAGES=python3-gi python3-gi-cairo
+  #     # ENABLE_PYTHON3=yes
+  #     # PYTHONUNBUFFERED=1
+  #     # PYTHON_VERSION=3.5
+  #     # VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+  #     # PYTHONSTARTUP=/home/pi/.pythonrc
+  #     # PYTHON_VERSION_MAJOR=3
+  #     # PYTHON_PIP_VERSION=8.1.2
+  #     # PYTHONPATH=/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages
+  #     # PYTHON=/usr/local/bin/python3
+  #     # pi@45114dc64b90:~$
+  #     # /home/pi/.virtualenvs/scarlett_os
+  #     entrypoint: "/opt/anaconda/anaconda_server/docker/start /usr/local/bin/python3 19360 docker_project /home/pi/dev/bossjones-github/scarlett_os /home/pi/jhbuild/lib/python3.5/site-packages,/home/pi/.virtualenvs/scarlett_os,/usr/lib/python3.5/site-packages"

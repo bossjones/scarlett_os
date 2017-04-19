@@ -59,15 +59,10 @@ class TestScarlettSubprocess(object):
         assert not check_pid(4353634632623)
         # Verify that os.kill only called once
         assert kill_mock.call_count == 1
-        # verify that OSError is actually raised correctly
-        # import pdb;pdb.set_trace()
-        # with pytest.raises(OSError):
-        result = check_pid(4353634632624)
-        assert result == False
-
+        
     # @mock.patch("os.kill", kill_mock)
     def test_check_pid(self, mocker):
-        kill_mock = mocker.patch('os.kill')
+        kill_mock = mocker.patch('scarlett_os.subprocess.os.kill')
         result = check_pid(123)
         assert kill_mock.called
         # NOTE: test against signal 0
@@ -110,14 +105,14 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
                                                    fork=test_fork)
 
         # action
-        assert s_test.check_command_type(test_command) == True
+        assert s_test.check_command_type(test_command) is True
         mock_check_command_type.assert_called_with(['who'])
-        assert s_test.process == None
-        assert s_test.pid == None
+        assert not s_test.process
+        assert not s_test.pid
         assert s_test.name == 'test_who'
-        assert s_test.forked == False
-        assert s_test.stdout == True
-        assert s_test.stderr == True
+        assert not s_test.forked
+        assert s_test.stdout is True
+        assert s_test.stderr is True
         assert s_test.stdout != False
         assert s_test.stderr != False
 
@@ -164,18 +159,25 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         test_name = 'test_who'
         test_fork = False
 
-        mock_map_type_to_command = mocker.patch('scarlett_os.subprocess.Subprocess.map_type_to_command')  # 1
-        mock_logging = mocker.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
-        mock_fork = mocker.patch('scarlett_os.subprocess.Subprocess.fork')  # 3
+        # Mock logger right off the bat
+        mocker.patch('scarlett_os.subprocess.logging.Logger.debug')
 
-        # mock
+        # Create instance of Subprocess, disable all checks
+        sub = scarlett_os.subprocess.Subprocess(test_command,
+                                                name=test_name,
+                                                fork=test_fork,
+                                                run_check_command=False)
+
+        # Mock instance member functions
+        mock_map_type_to_command = mocker.patch.object(sub, 'map_type_to_command')
+        mocker.patch.object(sub, 'fork')
+
+        # Set mock return types
         mock_map_type_to_command.return_value = int
 
         # action
         with pytest.raises(TypeError) as excinfo:
-            scarlett_os.subprocess.Subprocess(test_command,
-                                              name=test_name,
-                                              fork=test_fork)
+            sub.check_command_type(test_command)
 
         assert str(excinfo.value) == 'Variable types should return a list in python3.'
         # assert re.search('Variable types should return a list in python3.',
@@ -185,9 +187,8 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         mock_map_type_to_command.return_value = [int, int]
 
         with pytest.raises(TypeError) as excinfo:
-            scarlett_os.subprocess.Subprocess(test_command,
-                                              name=test_name,
-                                              fork=test_fork)
+            sub.check_command_type(test_command)
+
         assert str(excinfo.value) == 'Executables and arguments must be str objects. types'
         # assert re.search('Executables and arguments must be str objects. types',
         #                  excinfo.value)
