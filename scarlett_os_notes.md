@@ -1399,3 +1399,54 @@ from scarlett_os.internal.debugger import pprint_color
 
 py.test --pdb --showlocals -v -R : -k test_speaker.py
 ```
+
+
+# traceback in pytest
+
+```
+ tests/test_subprocess.py::TestScarlettSubprocess.test_subprocess_map_type_to_command ✓                                  80% ████████
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> traceback >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+self = <tests.test_subprocess.TestScarlettSubprocess object at 0x7fcb6508ca80>
+mocker = <pytest_mock.MockFixture object at 0x7fcb6508cd58>
+
+    def test_subprocess_check_command_type(self, mocker):
+        """Using the mock.patch decorator (removes the need to import builtins)"""
+
+        test_command = ["who", "-b"]
+        test_name = 'test_who'
+        test_fork = False
+
+        # Mock logger right off the bat
+        mocker.patch('scarlett_os.subprocess.logging.Logger.debug')
+
+        # Create instance of Subprocess, disable all checks
+        sub = scarlett_os.subprocess.Subprocess(test_command,
+                                                name=test_name,
+                                                fork=test_fork,
+                                                run_check_command=False)
+
+        # Mock instance member functions
+        mock_map_type_to_command = mocker.patch.object(sub, 'map_type_to_command')
+        mocker.patch.object(sub, 'fork')
+
+        # Set mock return types
+        mock_map_type_to_command.return_value = int
+
+        # action
+        with pytest.raises(TypeError) as excinfo:
+>           sub.check_command_type(test_command)
+E           Failed: DID NOT RAISE <class 'TypeError'>
+
+excinfo    = <[AttributeError("'ExceptionInfo' object has no attribute 'typename'") raised in repr()] ExceptionInfo object at 0x7fcb650b7ae8>
+mock_map_type_to_command = <MagicMock name='map_type_to_command' id='140511550299064'>
+mocker     = <pytest_mock.MockFixture object at 0x7fcb6508cd58>
+self       = <tests.test_subprocess.TestScarlettSubprocess object at 0x7fcb6508ca80>
+sub        = <subprocess.Subprocess object at 0x7fcb718882b0 (Subprocess at 0x332d580)>
+test_command = ['who', '-b']
+test_fork  = False
+test_name  = 'test_who'
+
+tests/test_subprocess.py:180: Failed
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> entering PDB >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+```
