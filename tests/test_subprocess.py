@@ -15,14 +15,16 @@ import sys
 # from mock import call
 # import unittest
 import pytest
+from mock import Mock
 # from pytest_mock import mocker
 
 # import mock
 # import unittest.mock as mock
 
 import scarlett_os
-from scarlett_os.subprocess import check_pid
-from scarlett_os.subprocess import Subprocess
+from scarlett_os import subprocess as ssubprocess
+# from scarlett_os.subprocess import check_pid
+# from scarlett_os.subprocess import Subprocess
 
 # NOTE: We can't add this here, otherwise we won't be able to mock them
 # from scarlett_os.internal.gi import GLib, GObject
@@ -36,10 +38,10 @@ import re
 # By default MagicMock is used.
 
 
-@pytest.fixture
-def get_kill_mock(mocker):
-    kill_mock = mocker.Mock(name="kill")
-    yield kill_mock
+# @pytest.fixture
+# def get_kill_mock(mocker):
+#     kill_mock = mocker.Mock(name="kill")
+#     yield kill_mock
 
 # R0201 = Method could be a function Used when a method doesn't use its bound instance,
 # and so could be written as a function.
@@ -55,18 +57,23 @@ class TestScarlettSubprocess(object):
     #        mock_scarlett_player = mocker.patch('scarlett_os.speaker.player')
     #        mock_scarlett_subprocess = mocker.patch('scarlett_os.speaker.subprocess')
 
-    # @mock.patch("os.kill", new=mock.Mock(side_effect=OSError))
-    def test_check_pid_os_error(self, mocker):
-        kill_mock = mocker.patch('scarlett_os.subprocess.os.kill', side_effect=OSError)
+    def test_check_pid_os_error(self, mocker, monkeypatch):
+        # mock
+        kill_mock = Mock()
+        kill_mock.side_effect = OSError
+
+        # monkeypatch
+        monkeypatch.setattr('scarlett_os.subprocess.os.kill',
+                            kill_mock)
+
         # When OSError occurs, throw False
-        assert not check_pid(4353634632623)
+        assert not ssubprocess.check_pid(4353634632623)
         # Verify that os.kill only called once
         assert kill_mock.call_count == 1
 
-    # @mock.patch("os.kill", kill_mock)
-    def test_check_pid(self, mocker):
+    def test_check_pid(self, mocker, monkeypatch):
         kill_mock = mocker.patch('scarlett_os.subprocess.os.kill')
-        result = check_pid(123)
+        result = ssubprocess.check_pid(123)
         assert kill_mock.called
         # NOTE: test against signal 0
         # sending the signal 0 to a given PID just checks if any
@@ -75,37 +82,30 @@ class TestScarlettSubprocess(object):
         kill_mock.assert_called_once_with(123, 0)
         assert result is True
 
-    # @mock.patch('scarlett_os.subprocess.Subprocess.fork')
-    # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
-    # @mock.patch('scarlett_os.subprocess.Subprocess.check_command_type')
-    # def test_subprocess_init(self, mock_check_command_type, mock_logging, mock_fork):
-    def test_subprocess_init(self, mocker):
-        test_result = '''
-pi       tty7         2016-11-24 11:19 (:0)
-pi       pts/5        2016-11-24 11:20 (10.0.2.2)
-pi       pts/17       2016-11-24 11:20 (10.0.2.2)
-'''
+    def test_subprocess_init(self, mocker, monkeypatch):
+        # mock
+        mock_fork = Mock()
+        mock_logging = Mock()
+        mock_check_command_type = Mock()
+        mock_check_command_type.return_value = True
 
-        mock_fork = \
-            mocker.patch('scarlett_os.subprocess.Subprocess.fork')
-        mock_logging = \
-            mocker.patch('scarlett_os.subprocess.logging.Logger.debug')
-        mock_check_command_type = \
-            mocker.patch('scarlett_os.subprocess.Subprocess.check_command_type')  # noqa
+        # monkeypatch
+        monkeypatch.setattr('scarlett_os.subprocess.Subprocess.check_command_type',
+                            mock_check_command_type)
+        monkeypatch.setattr('scarlett_os.subprocess.Subprocess.fork',
+                            mock_fork)
+        monkeypatch.setattr('scarlett_os.subprocess.logging.Logger.debug',
+                            mock_logging)
+
         # NOTE: On purpose this is an invalid cmd. Should be of type array
         test_command = ['who']
 
         test_name = 'test_who'
         test_fork = False
-        # test_return_tuple = (23241, None, None, None)
 
-        # mock
-        mock_check_command_type.return_value = True
-
-        # command, name=None, fork=False
-        s_test = scarlett_os.subprocess.Subprocess(test_command,
-                                                   name=test_name,
-                                                   fork=test_fork)
+        s_test = ssubprocess.Subprocess(test_command,
+                                        name=test_name,
+                                        fork=test_fork)
 
         # action
         assert s_test.check_command_type(test_command) is True
@@ -145,9 +145,9 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         mock_check_command_type.return_value = True
 
         # create subprocess object
-        s_test = scarlett_os.subprocess.Subprocess(test_command,
-                                                   name=test_name,
-                                                   fork=test_fork)
+        s_test = ssubprocess.Subprocess(test_command,
+                                        name=test_name,
+                                        fork=test_fork)
         map_output = s_test.map_type_to_command(test_command)
 
         # test
@@ -162,18 +162,21 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         test_name = 'test_who'
         test_fork = False
 
-        monkeypatch.setattr(Subprocess,
-                            'map_type_to_command',
-                            mocker.Mock(name='mock_map_type_to_command',
-                                        return_value=int))
+        # mock
+        mock_map_type_to_command = Mock()
+        mock_map_type_to_command.return_value = int
+        mock_fork = Mock()
+        mock_logging_debug = Mock()
 
-        monkeypatch.setattr(Subprocess,
-                            'fork',
-                            mocker.Mock())
+        # monkeypatch to mocks
+        monkeypatch.setattr('scarlett_os.subprocess.Subprocess.map_type_to_command',
+                            mock_map_type_to_command)
 
-        monkeypatch.setattr(scarlett_os.subprocess.logging.Logger,
-                            'debug',
-                            mocker.MagicMock())
+        monkeypatch.setattr('scarlett_os.subprocess.Subprocess.fork',
+                            mock_fork)
+
+        monkeypatch.setattr('scarlett_os.subprocess.logging.Logger.debug',
+                            mock_logging_debug)
 
         # Current thought, we aren't mocking from the correct context.
         # We're importing Subclass object,
@@ -184,17 +187,18 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         #mocker.patch('scarlett_os.subprocess.logging.Logger.debug')
 
         # Create instance of Subprocess, disable all checks
-        # sub = scarlett_os.subprocess.Subprocess(test_command,
-        #                                         name=test_name,
-        #                                         fork=test_fork,
-        #                                         run_check_command=False)
+        sub = ssubprocess.Subprocess(test_command,
+                                     name=test_name,
+                                     fork=test_fork,
+                                     run_check_command=False)
 
-        sub = Subprocess(test_command,
-                         name=test_name,
-                         fork=test_fork,
-                         run_check_command=False)
+        # sub = Subprocess(test_command,
+        #                  name=test_name,
+        #                  fork=test_fork,
+        #                  run_check_command=False)
 
-        # import pdb;pdb.set_trace()
+        import pdb
+        pdb.set_trace()
 
         # Mock instance member functions
         # mock_map_type_to_command = mocker.patch.object(sub, 'map_type_to_command', autospec=True)

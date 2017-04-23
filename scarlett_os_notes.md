@@ -1398,6 +1398,8 @@ from scarlett_os.internal.debugger import dump
 from scarlett_os.internal.debugger import pprint_color
 
 py.test --pdb --showlocals -v -R : -k test_speaker.py
+
+py.test --pdb --showlocals -v -R : -k test_subprocess.py
 ```
 
 
