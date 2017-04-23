@@ -31,9 +31,10 @@ from scarlett_os.subprocess import Subprocess
 import signal
 import builtins
 import re
-# new_callable: allows you to specify a different class, 
-# or callable object, that will be called to create the new object. 
+# new_callable: allows you to specify a different class,
+# or callable object, that will be called to create the new object.
 # By default MagicMock is used.
+
 
 @pytest.fixture
 def get_kill_mock(mocker):
@@ -44,6 +45,8 @@ def get_kill_mock(mocker):
 # and so could be written as a function.
 # pylint: disable=R0201
 # pylint: disable=C0111
+
+
 class TestScarlettSubprocess(object):
     '''Units tests for Scarlett Subprocess, subclass of GObject.Gobject.'''
 
@@ -59,7 +62,7 @@ class TestScarlettSubprocess(object):
         assert not check_pid(4353634632623)
         # Verify that os.kill only called once
         assert kill_mock.call_count == 1
-        
+
     # @mock.patch("os.kill", kill_mock)
     def test_check_pid(self, mocker):
         kill_mock = mocker.patch('scarlett_os.subprocess.os.kill')
@@ -152,28 +155,53 @@ pi       pts/17       2016-11-24 11:20 (10.0.2.2)
         assert s_test.check_command_type(test_command)
         assert s_test.check_command_type(test_command) == mock_check_command_type.return_value
 
-    def test_subprocess_check_command_type(self, mocker):
+    def test_subprocess_check_command_type(self, mocker, monkeypatch):
         """Using the mock.patch decorator (removes the need to import builtins)"""
 
         test_command = ["who", "-b"]
         test_name = 'test_who'
         test_fork = False
 
+        monkeypatch.setattr(Subprocess,
+                            'map_type_to_command',
+                            mocker.Mock(name='mock_map_type_to_command',
+                                        return_value=int))
+
+        monkeypatch.setattr(Subprocess,
+                            'fork',
+                            mocker.Mock())
+
+        monkeypatch.setattr(scarlett_os.subprocess.logging.Logger,
+                            'debug',
+                            mocker.MagicMock())
+
+        # Current thought, we aren't mocking from the correct context.
+        # We're importing Subclass object,
+        # but we're still trying to mock the remote object in the module instead of
+        # in here.
+
         # Mock logger right off the bat
-        mocker.patch('scarlett_os.subprocess.logging.Logger.debug')
+        #mocker.patch('scarlett_os.subprocess.logging.Logger.debug')
 
         # Create instance of Subprocess, disable all checks
-        sub = scarlett_os.subprocess.Subprocess(test_command,
-                                                name=test_name,
-                                                fork=test_fork,
-                                                run_check_command=False)
+        # sub = scarlett_os.subprocess.Subprocess(test_command,
+        #                                         name=test_name,
+        #                                         fork=test_fork,
+        #                                         run_check_command=False)
+
+        sub = Subprocess(test_command,
+                         name=test_name,
+                         fork=test_fork,
+                         run_check_command=False)
+
+        # import pdb;pdb.set_trace()
 
         # Mock instance member functions
-        mock_map_type_to_command = mocker.patch.object(sub, 'map_type_to_command')
-        mocker.patch.object(sub, 'fork')
+        # mock_map_type_to_command = mocker.patch.object(sub, 'map_type_to_command', autospec=True)
+        # mocker.patch.object(sub, 'fork')
 
         # Set mock return types
-        mock_map_type_to_command.return_value = int
+        # mock_map_type_to_command.return_value = int
 
         # action
         with pytest.raises(TypeError) as excinfo:
