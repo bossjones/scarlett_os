@@ -22,7 +22,7 @@ from mock import Mock
 # import unittest.mock as mock
 
 import scarlett_os
-from scarlett_os import subprocess as ssubprocess
+# from scarlett_os import subprocess as ssubprocess
 # from scarlett_os.subprocess import check_pid
 # from scarlett_os.subprocess import Subprocess
 
@@ -53,11 +53,6 @@ import re
 class TestScarlettSubprocess(object):
     '''Units tests for Scarlett Subprocess, subclass of GObject.Gobject.'''
 
-    # def test_speaker_init(self, monkeypatch):
-    #        mock_time_logger = mocker.patch('scarlett_os.utility.thread.time_logger')
-    #        mock_scarlett_player = mocker.patch('scarlett_os.speaker.player')
-    #        mock_scarlett_subprocess = mocker.patch('scarlett_os.speaker.subprocess')
-
     def test_check_pid_os_error(self, monkeypatch, mocker):
         mocker.stopall()
         # mock
@@ -69,7 +64,7 @@ class TestScarlettSubprocess(object):
                             kill_mock)
 
         # When OSError occurs, throw False
-        assert not ssubprocess.check_pid(4353634632623)
+        assert not scarlett_os.subprocess.check_pid(4353634632623)
         # Verify that os.kill only called once
         assert kill_mock.call_count == 1
 
@@ -82,7 +77,7 @@ class TestScarlettSubprocess(object):
         monkeypatch.setattr('scarlett_os.subprocess.os.kill',
                             kill_mock)
 
-        result = ssubprocess.check_pid(123)
+        result = scarlett_os.subprocess.check_pid(123)
         assert kill_mock.called
         # NOTE: test against signal 0
         # sending the signal 0 to a given PID just checks if any
@@ -113,9 +108,9 @@ class TestScarlettSubprocess(object):
         test_name = 'test_who'
         test_fork = False
 
-        s_test = ssubprocess.Subprocess(test_command,
-                                        name=test_name,
-                                        fork=test_fork)
+        s_test = scarlett_os.subprocess.Subprocess(test_command,
+                                                   name=test_name,
+                                                   fork=test_fork)
 
         # action
         assert s_test.check_command_type(test_command) is True
@@ -163,9 +158,9 @@ class TestScarlettSubprocess(object):
         mock_check_command_type.return_value = True
 
         # create subprocess object
-        s_test = ssubprocess.Subprocess(test_command,
-                                        name=test_name,
-                                        fork=test_fork)
+        s_test = scarlett_os.subprocess.Subprocess(test_command,
+                                                   name=test_name,
+                                                   fork=test_fork)
         map_output = s_test.map_type_to_command(test_command)
 
         # test
@@ -188,16 +183,6 @@ class TestScarlettSubprocess(object):
         mock_map_type_to_command.side_effect = [int, [int, int]]
         mock_fork = mocker.Mock(name="mock_fork")
         mock_logging_debug = mocker.Mock(name="mock_logging_debug")
-
-        # monkeypatch to mocks
-        # monkeypatch.setattr('scarlett_os.subprocess.Subprocess.map_type_to_command',
-        #                     mock_map_type_to_command)
-
-        # monkeypatch.setattr('scarlett_os.subprocess.Subprocess.fork',
-        #                     mock_fork)
-
-        # monkeypatch.setattr('scarlett_os.subprocess.logging.Logger.debug',
-        #                     mock_logging_debug)
 
         mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
         mocker.patch.object(scarlett_os.subprocess.Subprocess, 'map_type_to_command', mock_map_type_to_command)
@@ -234,8 +219,6 @@ class TestScarlettSubprocess(object):
 
         # action
         with pytest.raises(TypeError) as excinfo:
-            # sub_instance.check_command_type(test_command)
-            # sub.check_command_type(test_command)
             scarlett_os.subprocess.Subprocess(test_command,
                                               name=test_name,
                                               fork=test_fork,
