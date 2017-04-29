@@ -18,5 +18,7 @@
       ".vscode/*.py",
       "**/site-packages/**/*.py"
     ],
-    "python.venvPath": "~/.virtualenvs"
+    "python.venvPath": "~/.virtualenvs",
+    "terminal.integrated.shellArgs.osx": ["-l"],
+    "terminal.integrated.shellArgs.linux": ["-l"]
 }
