@@ -197,8 +197,6 @@ class TestScarlettSubprocess(object):
         test_name = 'test_who'
         test_fork = False
 
-        import pdb;pdb.set_trace()
-
         # create subprocess object
         s_test = scarlett_os.subprocess.Subprocess(test_command,
                                                    name=test_name,
