@@ -124,7 +124,8 @@ test_requirements = [
     # 'pytest-ipdb',
     'objgraph==3.1.0',
     'xdot',
-    'pytest-rerunfailures>=2.1.0'
+    'pytest-rerunfailures>=2.1.0',
+    'pytest-mock'
 
 ]
 
