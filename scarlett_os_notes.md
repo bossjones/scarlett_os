@@ -1400,6 +1400,8 @@ from scarlett_os.internal.debugger import pprint_color
 py.test --pdb --showlocals -v -R : -k test_speaker.py
 
 py.test --pdb --showlocals -v -R : -k test_subprocess.py
+
+py.test --trace-config --debug --pdb --showlocals -v -R : -k test_subprocess_check_command_type
 ```
 
 
@@ -1471,4 +1473,21 @@ timeout: 60.0s method: signal
  tests/test_subprocess.py::TestScarlettSubprocess.test_check_pid ✓                                                       40% ████
  tests/test_subprocess.py::TestScarlettSubprocess.test_subprocess_init ✓                                                 60% ██████
  tests/test_subprocess.py::TestScarlettSubprocess.test_subprocess_map_type_to_command ✓                                  80% ██████
+```
+
+# python 3.5.2 unittest.mock vs mock ( THEY ARE DIFFERENT )
+
+https://mock.readthedocs.io/en/latest/
+
+IS IT WORKING: 
+https://travis-ci.org/testing-cabal/mock
+
+```
+mock is a library for testing in Python. It allows you to replace parts of your system under test with mock objects and make assertions about how they have been used.
+
+mock is now part of the Python standard library, available as unittest.mock in Python 3.3 onwards. However, if you are writing code that runs on multiple versions of Python the mock package is better, as you get the newest features from the latest release of Python available for all Pythons.
+
+The mock package contains a rolling backport of the standard library mock code compatible with Python 2.6 and up, and 3.3 and up. Python 3.2 is supported by mock 1.3.0 and below - with pip no longer supporting 3.2, we cannot test against that version anymore.
+
+Please see the standard library documentation for usage details.
 ```
