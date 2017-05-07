@@ -12,6 +12,14 @@
         "**/.hg": true,
         "**/.DS_Store": true
 	},
+    "files.trimTrailingWhitespace": true,
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/.vscode/tags": true,
+        "**/.vendor": true,
+        "**/build": true
+    },
     "python.pythonPath": "/Users/malcolm/.virtualenvs/scarlett-os-venv2/bin/python3",
     "python.formatting.provider": "autopep8",
     "python.linting.ignorePatterns": [
@@ -19,6 +27,17 @@
       "**/site-packages/**/*.py"
     ],
     "python.venvPath": "~/.virtualenvs",
+    "python.sortImports.path": "/Users/malcolm/.virtualenvs/scarlett-os-venv2/bin/isort",
+    "python.autoComplete.extraPaths": [
+        ""
+        // /usr/local/Cellar/gst-python/1.6.2/lib/python2.7/site-packages
+        // "/Users/malcolm/dev/gnome/pygobject-3.18.2"
+        // "/usr/local/Cellar/pygobject3/3.18.2/lib/python2.7/site-packages"
+        // "/usr/local/Cellar/cmu-sphinxbase/HEAD/lib/python2.7/site-packages"
+        // "/usr/local/Cellar/cmu-pocketsphinx/HEAD/lib/python2.7/site-packages"
+        // "/Users/malcolm/dev/gnome/pydbus-v0.5.1"
+
+    ],
     "terminal.integrated.shellArgs.osx": ["-l"],
     "terminal.integrated.shellArgs.linux": ["-l"]
 }

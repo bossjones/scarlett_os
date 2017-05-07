@@ -1,29 +1,21 @@
 # -*- coding: utf-8 -*-
-import pytest
-
-import signal
-
+import logging
 import os
 from os import environ
-
+import select
+import signal
+import subprocess
+from subprocess import Popen, call
 import sys
 import tempfile
-
 import time
 from time import sleep
-import subprocess
-from subprocess import Popen
-from subprocess import call
-
 import unittest
 import unittest.mock as mock
 
 import pydbus
-from pydbus import SessionBus
-from pydbus import connect
-
-import logging
-import select
+from pydbus import SessionBus, connect
+import pytest
 
 from tests import PROJECT_ROOT
 
@@ -71,6 +63,28 @@ def wait_until(f, timeout_secs=10):
 
 # OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
 # INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
+
+# https://stackoverflow.com/questions/25072126/why-does-python-lint-want-me-to-use-different-local-variable-name-than-a-global
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT def _setup():
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     if 'TRAVIS_CI' in os.environ:
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT         if 'DISPLAY' not in os.environ:
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT             # TODO: Should this be on :99 ?
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT             os.environ['DISPLAY'] = ':0'
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT         print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     # Setup an environment for the fixtures to share so the bus address is the same for all  # noqa
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     environment = environ.copy()
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     # Setup an environment for the fixtures to share so the bus address is the same for all
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
+# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"]))
 
 
 # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
@@ -495,8 +509,17 @@ def get_bus(request, create_session_bus):
         accepting a request object into your fixture function and can
         call its request.addfinalizer one or multiple times:
         """
+        # NOTE: # SessionBus() and SystemBus() are not closed automatically, so this should work
+        # source: https://github.com/xZise/pydbus/blob/addf3913368cdc7225039525f3e53ab62b2a0f70/pydbus/bus.py#L31
+        # NOTE: bus.dbus = @property from pydbus bus object.
+        # NOTE: When you try to grab the property and it doesn't exist,
+        # NOTE: it assigns a dbus connection again via: self._dbus = self.get(".DBus")[""]
+        # NOTE: That's why we delete it each time
+        # print("running: bus.con.close()")
+        # bus.con.close()
+
+        print("running: del bus._dbus")
         del bus._dbus
-        print("ran: del bus._dbus")
 
     # The finalizer is called after all of the tests that use the fixture.
     # If you’ve used parameterized fixtures,
@@ -1087,8 +1110,8 @@ class ProcessMonitor(subprocess.Popen):
                 self.log.debug("match found, returning")
                 return
 
+
 if __name__ == "__main__":
     print('testing_create_session_bus')
-    create_session_bus()
+    # create_session_bus()
     print('testing_create_session_bus_end')
-    #     pytest.main(['-s', '-v', __file__])

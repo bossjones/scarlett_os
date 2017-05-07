@@ -54,7 +54,11 @@ class TestThreadManager(unittest.TestCase):
 
     def setUp(self):  # noqa: N802
         """
-        Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. The default implementation does nothing.
+        Method called to prepare the test fixture.
+        This is called immediately before calling the test method;
+        other than AssertionError or SkipTest,
+        any exception raised by this method will be considered an error rather than a test failure.
+        The default implementation does nothing.
         """
         # source: http://stackoverflow.com/questions/7667567/can-i-patch-a-python-decorator-before-it-wraps-a-function
         # Do cleanup first so it is ready if an exception is raised
@@ -97,7 +101,7 @@ class TestThreadManager(unittest.TestCase):
         imp.reload(threadmanager)  # Reloads the tasker.py module which applies our patched decorator
 
     def test_threadingmanager_init(self):
-        tm = threadmanager.get_thread_manager(2)
+        tm = threadmanager.ThreadManager.get_instance(2)
 
         self.assertEqual(tm.active_count, 0)
         self.assertEqual(tm.completed_threads, 0)
@@ -113,9 +117,8 @@ class TestThreadManager(unittest.TestCase):
     @mock.patch('scarlett_os.utility.threadmanager._IdleObject', name='mock_idle_obj')
     @mock.patch('scarlett_os.utility.threadmanager.threading.Thread', spec=scarlett_os.utility.threadmanager.threading.Thread, name='mock_thread_class')
     def test_threadingmanager_add_thread_assertion_error_init(self, mock_thread_class, mock_idle_obj, mock_logger_debug, mock_time_sleep):
-        tm = threadmanager.get_thread_manager(2)
+        tm = threadmanager.ThreadManager.get_instance(2)
 
-        # import pdb;pdb.set_trace()
         class NotASuspendableThreadObj:
             pass
 

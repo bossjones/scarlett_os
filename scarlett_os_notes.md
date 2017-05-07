@@ -1399,7 +1399,11 @@ from scarlett_os.internal.debugger import pprint_color
 
 py.test --pdb --showlocals -v -R : -k test_speaker.py
 
+py.test --pdb --showlocals -v -R : -k test_integration_threadmanager.py
+
 py.test --pdb --showlocals -v -R : -k test_subprocess.py
+
+py.test --trace-config --debug -p no:pytestipdb -p no:leaks -p no:pbdinvoke --showlocals -v -k test_integration_threadmanager.py
 
 py.test --trace-config --debug --pdb --showlocals -v -R : -k test_subprocess_check_command_type
 ```

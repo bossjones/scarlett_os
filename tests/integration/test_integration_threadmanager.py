@@ -2,63 +2,62 @@
 # -*- coding: utf-8 -*-
 
 """
-test_integration_listener
+test_integration_threadmanager
 ----------------------------------
 """
 
-###########################################
+
 # Borrowed from test_integration_player - START
 ###########################################
-import os
-import sys
-import signal
-import pytest
+###########################################
 import builtins
-import threading
 from gettext import gettext as _
-
+import os
+import signal
+import sys
+import threading
+import time
 import unittest
 import unittest.mock as mock
 
-import pydbus
+# import pydbus
+import pytest
+
 import scarlett_os
 import scarlett_os.exceptions
-
+from scarlett_os.internal import gi  # noqa
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import GObject  # noqa
+from scarlett_os.internal.gi import Gio  # noqa
+from scarlett_os.utility import threadmanager
+from scarlett_os.utility.threadmanager import NotThreadSafe, SuspendableThread
+from tests import PROJECT_ROOT
+from tests.integration.baseclass import IntegrationTestbaseMainloop, run_emitter_signal
 from tests.integration.stubs import create_main_loop
 
-from tests import PROJECT_ROOT
-import time
-
-from tests.integration.baseclass import run_emitter_signal
-from tests.integration.baseclass import IntegrationTestbaseMainloop
+import hunter
+hunter.trace(module='threadmanager', action=hunter.CallPrinter)
 
 done = 0
 
-from scarlett_os.internal import gi  # noqa
-from scarlett_os.internal.gi import Gio  # noqa
-from scarlett_os.internal.gi import GObject  # noqa
-from scarlett_os.internal.gi import GLib
-
-from scarlett_os.utility import threadmanager
-from scarlett_os.utility.threadmanager import SuspendableThread
-from scarlett_os.utility.threadmanager import NotThreadSafe
-
-from gettext import gettext as _
-
-
 @pytest.fixture
 def tmanager():
+    """Create a fixture of ThreadManager"""
     # create threadmanager
-    tmanager = threadmanager.get_thread_manager(2)
+    tmanager = threadmanager.ThreadManager.get_instance(2)  # pylint: disable=W0621
     # yield it to calling function/test
     yield tmanager
+    # when we get control again after test finishes, nuke tmanager.__instance
+    print('\n[teardown] tmanager.__instance = None ...')
+    tmanager.__instance = None
     # when we get control again after test finishes, print this
-    print('\n[teardown] test_ThreadManager, killing threadmanager ...')
+    print('\n[teardown] del tmanager ...')
     # then nuke object
     del tmanager
 
 
 class TThread(SuspendableThread):
+    """Short for Test Thread. Suspendable"""
 
     def __init__(self):
         SuspendableThread.__init__(
@@ -67,16 +66,17 @@ class TThread(SuspendableThread):
         )
 
     def do_run(self):
-        for n in range(1000):
+        for n in range(1000):  # pylint: disable=C0103
             time.sleep(0.01)
             self.emit('progress', n / 1000.0, '%s of 1000' % n)
             self.check_for_sleep()
 
 
 class TError(SuspendableThread):
+    """Thread that raises an exception"""
 
     def do_run(self):
-        for n in range(1000):
+        for n in range(1000):  # pylint: disable=C0103
             time.sleep(0.01)
             if n == 100:
                 raise AttributeError("This is a phony error")
@@ -86,6 +86,7 @@ class TError(SuspendableThread):
 
 # run forever, we'll want this for listener thread in scarlett
 class TInterminable(SuspendableThread):
+    """Test Thread that never dies"""
 
     def do_run(self):
         while 1:
@@ -95,6 +96,7 @@ class TInterminable(SuspendableThread):
 
 
 class NTsafeThread(SuspendableThread, NotThreadSafe):
+    """Non Thread Safe test thread"""
 
     def __init__(self):
         SuspendableThread.__init__(
@@ -112,9 +114,11 @@ class NTsafeThread(SuspendableThread, NotThreadSafe):
 
 
 class TestThreadManager(object):
+    """TestThreadManager. Real test case."""
 
-    def test_ThreadManager(self, monkeypatch, tmanager):
-        tm = tmanager
+    # 5/7/2017 def test_ThreadManager(self, monkeypatch, tmanager):
+    def test_ThreadManager(self, tmanager):  # pylint: disable=C0111
+        tm = tmanager  # pylint: disable=C0103
 
         assert str(type(tm)) == "<class 'scarlett_os.utility.threadmanager.ThreadManager'>"
 
@@ -125,17 +129,8 @@ class TestThreadManager(object):
         assert tm.thread_queue == []
         assert tm.threads == []
 
-        # for desc, thread in [
-        #     ('Interminable 1', TestInterminable()),
-        #     ('Linear 1', TestThread()),
-        #     ('Linear 2', TestThread()),
-        #     ('Interminable 2', TestInterminable()),
-        #     ('Error 3', TestError())
-        # ]:
-        #     tm.add_thread(thread)
-
-    def test_ThreadManager_TThread(self, monkeypatch, tmanager):
-        tm = tmanager
+    def test_ThreadManager_TThread(self, tmanager):
+        tm = tmanager  # pylint: disable=C0103
 
         loop = GLib.MainLoop()
 
@@ -173,14 +168,14 @@ class TestThreadManager(object):
                 threads = threading.enumerate()
                 if len(threads) > 1:
                     msg = "Another process is in progress"
-                    for t in threads:
-                        if "import" in t.getName():
+                    for t_in_progress_intgr in threads:
+                        if "import" in t_in_progress_intgr.getName():
                             msg = _("An import is in progress.")
-                        if "export" in t.getName():
+                        if "export" in t_in_progress_intgr.getName():
                             msg = _("An export is in progress.")
-                        if "delete" in t.getName():
+                        if "delete" in t_in_progress_intgr.getName():
                             msg = _("A delete is in progress.")
-                        if "TThread" in t.getName():
+                        if "TThread" in t_in_progress_intgr.getName():
                             msg = _("A TThread delete is in progress.")
 
                 # source: https://github.com/thinkle/gourmet/blob/a97af28b79af7cf1181b8bbd14c61eb396eb7ac6/gourmet/GourmetRecipeManager.py
@@ -190,12 +185,13 @@ class TestThreadManager(object):
                 quit_anyway = True
 
                 if quit_anyway:
-                    for t in threads:
-                        if t.getName() != 'MainThread' and t.getName() != 'HistorySavingThread':
+                    for t_quit_anyway_intgr in threads:  # pylint: disable=C0103
+                        if t_quit_anyway_intgr.getName() != 'MainThread' and t_quit_anyway_intgr.getName() != 'HistorySavingThread':
                             try:
-                                t.terminate()
-                            except:
-                                print("Unable to terminate thread %s" % t)
+                                t_quit_anyway_intgr.terminate()
+                            except BaseException as t_quit_anyway_intgr_exec:  # pylint: disable=C0103
+                                print("Unable to terminate thread %s" % t_quit_anyway_intgr)
+                                print("[t.terminate()] Recieved: {}".format(str(t_quit_anyway_intgr_exec)))
                                 # try not to lose data if this is going to
                                 # end up in a force quit
                                 return True
