@@ -46,6 +46,22 @@ from scarlett_os.utility import threadmanager
 # Borrowed from test_integration_player - END
 ###########################################
 
+import imp
+
+# source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
+@pytest.fixture(scope='function')
+def listener_mocker_stopall(mocker):
+    "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
+    print('Called [setup]: mocker.stopall()')
+    mocker.stopall()
+    print('Called [setup]: imp.reload(threadmanager)')
+    imp.reload(listener)
+    yield mocker
+    print('Called [teardown]: mocker.stopall()')
+    mocker.stopall()
+    print('Called [setup]: imp.reload(threadmanager)')
+    imp.reload(listener)
+
 # source: test_signal.py in pygobject
 class C(GObject.GObject):
     """Test class for verifying callbacks."""
@@ -58,7 +74,7 @@ class C(GObject.GObject):
 
 class TestSuspendableMainLoopThread(object):
 
-    def test_SuspendableMainLoopThread(self, monkeypatch):
+    def test_SuspendableMainLoopThread(self, listener_mocker_stopall):
 
         def my_signal_handler_cb(*args):
             assert len(args) == 5
@@ -86,12 +102,16 @@ class TestSuspendableMainLoopThread(object):
             if not _shared_loop_thread:
                 print('SuspendableMainLoopThread if not _shared_loop_thread in [test_SuspendableMainLoopThread]')
                 # Start a new thread.
+                print('[start] new listener.SuspendableMainLoopThread()')
                 _shared_loop_thread = listener.SuspendableMainLoopThread()
                 # get MainLoop
+                print('[start] _shared_loop_thread.get_loop()')
                 _shared_loop_thread.get_loop()
                 # start thread
+                print('[start] _shared_loop_thread.start()')
                 _shared_loop_thread.start()
                 # this should simply return
+                print('[start] _shared_loop_thread.do_run()')
                 _shared_loop_thread.do_run()
                 # FIXME: This is still returning a Mock
                 # assert str(type(_shared_loop_thread.get_loop())) == "<class 'gi.overrides.GLib.MainLoop'>"
@@ -148,7 +168,7 @@ class TestSuspendableMainLoopThread(object):
 
 class TestScarlettListener(object):
 
-    def test_ScarlettListenerI_init(self, monkeypatch):
+    def test_ScarlettListenerI_init(self, listener_mocker_stopall):
 
         sl = listener.ScarlettListenerI('scarlett_listener')
 

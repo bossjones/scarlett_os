@@ -186,7 +186,7 @@ class TestThreadManager(object):
 
                 if quit_anyway:
                     for t_quit_anyway_intgr in threads:  # pylint: disable=C0103
-                        if t_quit_anyway_intgr.getName() != 'MainThread' and t_quit_anyway_intgr.getName() != 'HistorySavingThread':
+                        if t_quit_anyway_intgr.getName() not in 'MainThread' and t_quit_anyway_intgr.getName() not in 'HistorySavingThread':
                             try:
                                 t_quit_anyway_intgr.terminate()
                             except BaseException as t_quit_anyway_intgr_exec:  # pylint: disable=C0103

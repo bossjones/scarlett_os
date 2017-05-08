@@ -88,3 +88,4 @@ listener.py.diff
 _debug/
 espeak_tmp.wav
 .vscode/tags
+src/

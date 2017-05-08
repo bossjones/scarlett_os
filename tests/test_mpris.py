@@ -94,6 +94,7 @@ def bus():
 
 @pytest.fixture(scope='module')
 def sl(bus):
+    # FIXME: 5/7/2017. I don't think we cleaned this guy up 100% correctly. Investigate.
     from scarlett_os.mpris import ScarlettListener
     sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
     print('\n[initalize] scarlett_os.mpris.ScarlettListener ...')
@@ -103,14 +104,11 @@ def sl(bus):
     del sl
     print("ran: del sl")
 
-# pip install unittest2pytest
-
 
 @pytest.mark.unittest
 class TestScarlettListener(object):
 
     def test_scarlett_listener_interfaces(self, sl, main_loop):
-        # import pdb;pdb.set_trace()
         assert sl.__repr__() == '<ScarlettListener(org.scarlett, /org/scarlett/Listener)>'
         assert sl.LISTENER_IFACE == 'org.scarlett.Listener'
         assert sl.LISTENER_PLAYER_IFACE == 'org.scarlett.Listener.Player'
@@ -119,7 +117,6 @@ class TestScarlettListener(object):
         assert sl.LISTENER_EVENTS_IFACE == 'org.scarlett.Listener.event'
         assert isinstance(sl.bus_conn, Gio.DBusConnection)
         assert sl.path == '/org/scarlett/Listener'
-        # main_loop.run()
 
     def test_scarlett_listener_emit_methods(self, sl, main_loop):
         assert hasattr(sl, 'emitKeywordRecognizedSignal')

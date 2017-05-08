@@ -28,6 +28,10 @@ from tests import PROJECT_ROOT
     * dbus has already been started up by Docker or is running on your OS
 """
 
+# source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
+@pytest.fixture(scope='function')
+def empty():
+    return object()
 
 # source: https://github.com/wmanley/pulsevideo/blob/d8259f2ce2f3951e380e319c80b9d124b47efdf2/tests/integration_test.py
 def wait_until(f, timeout_secs=10):

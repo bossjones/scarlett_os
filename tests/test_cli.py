@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-test_scarlett_os
+test_cli
 ----------------------------------
 
-Tests for `scarlett_os` module.
+Tests for `test_cli` module.
 """
 
 
@@ -27,13 +27,10 @@ ubuntu_version = verify.get_current_os()
 pp = pprint.PrettyPrinter(indent=4)
 
 
-class TestScarlettCli(unittest.TestCase):
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
+# pylint: disable=C0111
+# pylint: disable=R0201
+# pylint: disable=C0103
+class TestScarlettCli(object):
 
     def test_command_line_interface_help(self):
         runner = CliRunner()
@@ -45,7 +42,3 @@ class TestScarlettCli(unittest.TestCase):
         assert help_result.exit_code == 0
         print(help_result.output)
         assert 'dbus_server|listener|tasker|check_all_services' in help_result.output
-
-
-if __name__ == '__main__':
-    sys.exit(unittest.main())
