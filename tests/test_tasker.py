@@ -56,6 +56,7 @@ def tasker_unit_mocker_stopall(mocker):
 # pylint: disable=W0212
 # pylint: disable=W0621
 # pylint: disable=W0612
+@pytest.mark.unittest
 class TestScarlettTasker(object):
 
     def test_tasker_init(self, tasker_unit_mocker_stopall):
@@ -197,6 +198,7 @@ class TestScarlettTasker(object):
         assert tskr._connect_signal_callback is not None
 
 
+@pytest.mark.unittest
 class TestSoundType(object):
 
     def test_soundtype_get_path(self):
@@ -209,6 +211,7 @@ class TestSoundType(object):
         assert tasker.SoundType.get_path('pi-response2') == ["{}/pi-response2.wav".format(path_to_sound)]
 
 
+@pytest.mark.unittest
 class TestTaskSignalHandler(object):
 
     def test_connect_then_disconnect(self, tasker_unit_mocker_stopall):
@@ -299,6 +302,7 @@ class TestTaskSignalHandler(object):
         assert len(_handler._ids) == 0
 
 
+@pytest.mark.unittest
 class TestSpeakerType(object):
 
     def test_speakertype_speaker_to_array(self):

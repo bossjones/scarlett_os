@@ -191,7 +191,7 @@ class TestThreadManager(object):
                                 t_quit_anyway_intgr.terminate()
                             except BaseException as t_quit_anyway_intgr_exec:  # pylint: disable=C0103
                                 print("Unable to terminate thread %s" % t_quit_anyway_intgr)
-                                print("[t.terminate()] Recieved: {}".format(str(t_quit_anyway_intgr_exec)))
+                                print("[t_quit_anyway_intgr.terminate()] Recieved: {}".format(str(t_quit_anyway_intgr_exec)))
                                 # try not to lose data if this is going to
                                 # end up in a force quit
                                 return True

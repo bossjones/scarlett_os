@@ -93,7 +93,7 @@ clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and 
 
 .PHONY: bootstrap
 bootstrap:
-	[ "$$VIRTUAL_ENV" != "" ]
+	# [ "$$VIRTUAL_ENV" != "" ]
 	rm -rf *.egg-info || true
 	pip install -r requirements.txt
 	pip install -r requirements_dev.txt
@@ -352,6 +352,9 @@ docker-compose-down:
 docker-version:
 	@docker --version
 	@docker-compose --version
+
+docker-exec:
+	@scripts/docker/exec-master
 
 docker-exec-master:
 	@scripts/docker/exec-master

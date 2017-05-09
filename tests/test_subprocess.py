@@ -56,6 +56,7 @@ def monkeysession(request):
     yield mpatch
     mpatch.undo()
 
+@pytest.mark.unittest
 class TestScarlettSubprocess(object):
     '''Units tests for Scarlett Subprocess, subclass of GObject.Gobject.'''
 
@@ -96,7 +97,7 @@ class TestScarlettSubprocess(object):
 
         mocker.stopall()
 
-    # FIXME: This guy is causing the problem somehow! 
+    # FIXME: This guy is causing the problem somehow!
     def test_subprocess_init(self, mocker):
         mocker.stopall()
         # monkeypatch.undo()
@@ -207,8 +208,8 @@ class TestScarlettSubprocess(object):
         assert isinstance(s_test.map_type_to_command(test_command), list)
         # NOTE: According to this blog post, assert_called_once didn't get added till 3.6??
         # source: https://allanderek.github.io/posts/unittestmock-small-gotcha/
-        # "So Python 3.4 and 3.6 pass as we expect. But Python3.5 gives an error stating that 
-        # there is no assert_called_once method on the mock object, which is true since that 
+        # "So Python 3.4 and 3.6 pass as we expect. But Python3.5 gives an error stating that
+        # there is no assert_called_once method on the mock object, which is true since that
         # method was not added until version 3.6. This is arguably what Python3.4 should have done."
         # assert s_test.map_type_to_command.assert_called_once_with(test_command)
         spy.assert_called_once_with(test_command)
@@ -300,7 +301,7 @@ class TestScarlettSubprocess(object):
 
         assert str(
             excinfo.value) == "Executables and arguments must be str objects. types: <class 'int'>"
-        
+
         mocker.stopall()
 
     # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2

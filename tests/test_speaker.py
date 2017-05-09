@@ -40,7 +40,7 @@ import scarlett_os.exceptions
 #     yield FAKE_TIME
 
 
-
+@pytest.mark.unittest
 class TestScarlettSpeaker(object):
 
     def test_speaker_init(self, mocker, monkeypatch):
