@@ -125,7 +125,8 @@ test_requirements = [
     'objgraph==3.1.0',
     'xdot',
     'pytest-rerunfailures>=2.1.0',
-    'pytest-mock'
+    'pytest-mock',
+    'isort'
 
 ]
 
