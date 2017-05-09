@@ -1483,7 +1483,7 @@ timeout: 60.0s method: signal
 
 https://mock.readthedocs.io/en/latest/
 
-IS IT WORKING: 
+IS IT WORKING:
 https://travis-ci.org/testing-cabal/mock
 
 ```
@@ -1496,7 +1496,7 @@ The mock package contains a rolling backport of the standard library mock code c
 Please see the standard library documentation for usage details.
 ```
 
-# pytest-mock, python 3.5.2, unittest, and why we need to keep running stopall() 
+# pytest-mock, python 3.5.2, unittest, and why we need to keep running stopall()
 
 ### This was the first working commit I had w/ the technologies above working correctly together
 https://github.com/bossjones/scarlett_os/pull/47/commits/2b7d190db9276f6f37b67ab2f5c092c1a7061dd3
@@ -1508,7 +1508,7 @@ https://github.com/bossjones/scarlett_os/pull/47/commits/2b7d190db9276f6f37b67ab
 - command we used: `py.test --pdb --showlocals -v -R : -k test_subprocess.py`
 
 ```
-NOTE: 
+NOTE:
 source: https://github.com/ryanhiebert/tox-travis/blob/master/tox.ini#L5
 # mock is required to allow mock_use_standalone_module
 # Coverage doesn't work on PyPy or Python 3.2
@@ -1549,3 +1549,19 @@ async def test_async_func2(mocker):
 - "PYTEST: MORE ADVANCED FEATURES FOR EASIER TESTING" - http://programeveryday.com/post/pytest-more-advanced-features-for-easier-testing/
 - "WHERE TO PATCH: Mocks and Monkeypatching in Python" https://semaphoreci.com/community/tutorials/mocks-and-monkeypatching-in-python
 - https://github.com/ryanhiebert/tox-travis/blob/master/tox.ini#L5
+
+
+# pytest 3.0.7 monkeypath busted?
+
+### Workaround:
+
+```
+# source: https://github.com/pytest-dev/pytest/issues/363
+@pytest.fixture(scope="session")
+def monkeysession(request):
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+```
+
+See https://github.com/pytest-dev/pytest/issues/363

@@ -346,6 +346,9 @@ docker-compose-run-test:
 docker-compose-up:
 	@docker-compose -f docker-compose-devtools.yml up
 
+docker-compose-up-build:
+	@docker-compose -f docker-compose-devtools.yml up --build
+
 docker-compose-down:
 	@docker-compose -f docker-compose-devtools.yml down
 

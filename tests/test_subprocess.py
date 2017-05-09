@@ -50,6 +50,7 @@ import re
 # pylint: disable=R0201
 # pylint: disable=C0111
 
+# source: https://github.com/pytest-dev/pytest/issues/363
 @pytest.fixture(scope="session")
 def monkeysession(request):
     mpatch = MonkeyPatch()
