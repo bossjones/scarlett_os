@@ -7,7 +7,8 @@ import scarlett_os.utility.dt as dt_util
 
 TEST_TIME_ZONE = 'America/Los_Angeles'
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class TestDateUtil(unittest.TestCase):
     """Test util date methods."""
 

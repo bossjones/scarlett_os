@@ -35,8 +35,8 @@ from tests import PROJECT_ROOT
 from tests.integration.baseclass import IntegrationTestbaseMainloop, run_emitter_signal
 from tests.integration.stubs import create_main_loop
 
-import hunter
-hunter.trace(module='threadmanager', action=hunter.CallPrinter)
+# import hunter
+# hunter.trace(module='threadmanager', action=hunter.CallPrinter)
 
 done = 0
 
@@ -112,7 +112,8 @@ class NTsafeThread(SuspendableThread, NotThreadSafe):
             self.emit('progress', -1, 'Working interminably')
             self.check_for_sleep()
 
-
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyintgr
 class TestThreadManager(object):
     """TestThreadManager. Real test case."""
 

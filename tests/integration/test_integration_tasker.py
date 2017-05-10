@@ -38,7 +38,8 @@ from scarlett_os.internal.gi import GLib
 from scarlett_os import tasker
 from scarlett_os.tasker import on_signal_recieved
 
-
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyintgr
 class TestScarlettTasker(IntegrationTestbaseMainloop):
     """Test Tasker Signals for various on_* signal-handler methods
     """

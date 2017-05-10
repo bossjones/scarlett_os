@@ -15,7 +15,8 @@ import pydbus
 from pydbus import SessionBus
 import imp  # Library to help us reload our tasker module
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class TestDbusSignalHandler(unittest.TestCase):
 
     def setUp(self):  # noqa: N802

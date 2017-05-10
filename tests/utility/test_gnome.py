@@ -11,7 +11,8 @@ from scarlett_os.internal.gi import Gst, GLib, GObject
 
 from scarlett_os.utility.gnome import gdecode, escape, unescape
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class TestScarlettUtilityGnome(unittest.TestCase):
 
     def setUp(self):

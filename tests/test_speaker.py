@@ -9,8 +9,8 @@ test_speaker
 import os
 import sys
 
-# import unittest
-# import unittest.mock as mock
+import unittest
+import unittest.mock as mock
 
 import pytest
 
@@ -41,6 +41,8 @@ import scarlett_os.exceptions
 
 
 @pytest.mark.unittest
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyunittest
 class TestScarlettSpeaker(object):
 
     def test_speaker_init(self, mocker, monkeypatch):

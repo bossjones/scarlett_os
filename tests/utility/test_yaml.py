@@ -9,7 +9,8 @@ from scarlett_os.utility import yaml
 from scarlett_os.config import YAML_CONFIG_FILE, load_yaml_config_file
 from tests.common import get_test_config_dir, patch_yaml_files
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class TestYaml(unittest.TestCase):
     """Test utility.yaml loader."""
     # pylint: disable=no-self-use,invalid-name

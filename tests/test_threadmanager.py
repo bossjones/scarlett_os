@@ -64,8 +64,9 @@ class MockSuspendableThreadButNotThreadSafeUnit(threadmanager.SuspendableThread,
             self.emit('progress', n / 1000.0, '%s of 1000' % n)
             self.check_for_sleep()
 
-
+@pytest.mark.scarlettonly
 @pytest.mark.unittest
+@pytest.mark.scarlettonlyunittest
 class TestThreadManagerUnit(object):  # pylint: disable=C0111
 
     # def test_threadingmanager_init(self, threadmanager_kill_patches):

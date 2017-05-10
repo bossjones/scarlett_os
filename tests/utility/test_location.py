@@ -25,7 +25,8 @@ COORDINATES_NEW_YORK = (40.730610, -73.935242)
 DISTANCE_KM = 5846.39
 DISTANCE_MILES = 3632.78
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class TestLocationUtil(TestCase):
     """Test util location methods."""
 

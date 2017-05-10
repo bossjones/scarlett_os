@@ -73,7 +73,9 @@ def player_unit_mocker_stopall(mocker):
 # pylint: disable=W0212
 # pylint: disable=W0621
 # pylint: disable=W0612
+@pytest.mark.scarlettonly
 @pytest.mark.unittest
+@pytest.mark.scarlettonlyunittest
 class TestScarlettPlayer(object):
 
     def test_get_loop_thread(self, player_unit_mocker_stopall):

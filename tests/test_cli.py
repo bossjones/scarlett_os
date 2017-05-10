@@ -30,6 +30,8 @@ pp = pprint.PrettyPrinter(indent=4)
 # pylint: disable=C0111
 # pylint: disable=R0201
 # pylint: disable=C0103
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyunittest
 class TestScarlettCli(object):
 
     def test_command_line_interface_help(self):

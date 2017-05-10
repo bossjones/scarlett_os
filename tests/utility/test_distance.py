@@ -8,7 +8,8 @@ from scarlett_os.const import (LENGTH_KILOMETERS, LENGTH_METERS, LENGTH_FEET,
 INVALID_SYMBOL = 'bob'
 VALID_SYMBOL = LENGTH_KILOMETERS
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class TestDistanceUtil(unittest.TestCase):
     """Test the distance utility functions."""
 

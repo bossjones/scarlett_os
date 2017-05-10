@@ -21,7 +21,8 @@ from scarlett_os.const import (
 SYSTEM_NAME = 'TEST'
 INVALID_UNIT = 'INVALID'
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class TestUnitSystem(unittest.TestCase):
     """Test the unit system helper."""
 

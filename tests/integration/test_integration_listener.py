@@ -71,7 +71,10 @@ class C(GObject.GObject):
     def do_my_signal(self, arg):
         self.arg = arg
 
-
+@pytest.mark.threading
+@pytest.mark.gobject
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyintgr
 class TestSuspendableMainLoopThread(object):
 
     def test_SuspendableMainLoopThread(self, listener_mocker_stopall):

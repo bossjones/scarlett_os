@@ -26,7 +26,8 @@ from scarlett_os import player
 
 done = 0
 
-
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyintgr
 class TestScarlettPlayer(object):
 
     def test_ScarlettPlayer_listening(self, monkeypatch):

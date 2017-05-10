@@ -10,7 +10,8 @@ from scarlett_os.internal import encoding
 # ipdb> str(bytestr)
 # "b'[Errno 98] Adresse d\\xe9j\\xe0 utilis\\xe9e'"
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 @mock.patch('scarlett_os.internal.encoding.locale.getpreferredencoding')
 class LocaleDecodeTest(unittest.TestCase):
 

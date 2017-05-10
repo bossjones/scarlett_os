@@ -106,6 +106,9 @@ def sl(bus):
 
 
 @pytest.mark.unittest
+@pytest.mark.wonky
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyunittest
 class TestScarlettListener(object):
 
     def test_scarlett_listener_interfaces(self, sl, main_loop):

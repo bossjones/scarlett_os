@@ -18,7 +18,8 @@ from scarlett_os.const import (
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class DepsTest(unittest.TestCase):
 
     def test_format_dependency_list(self):

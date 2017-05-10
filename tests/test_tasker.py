@@ -56,7 +56,9 @@ def tasker_unit_mocker_stopall(mocker):
 # pylint: disable=W0212
 # pylint: disable=W0621
 # pylint: disable=W0612
+@pytest.mark.scarlettonly
 @pytest.mark.unittest
+@pytest.mark.scarlettonlyunittest
 class TestScarlettTasker(object):
 
     def test_tasker_init(self, tasker_unit_mocker_stopall):

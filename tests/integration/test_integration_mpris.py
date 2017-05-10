@@ -26,7 +26,8 @@ import time
 
 done = 0
 
-
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyintgr
 class TestScarlettSpeaker(object):
 
 

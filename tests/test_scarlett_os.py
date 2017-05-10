@@ -32,6 +32,8 @@ from scarlett_os.internal.gi import GObject
 
 
 @pytest.mark.unittest
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyunittest
 class TestScarlett_os(object):
 
     def test_imports_something(self):

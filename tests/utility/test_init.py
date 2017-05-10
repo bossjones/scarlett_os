@@ -7,7 +7,8 @@ from datetime import datetime, timedelta
 from scarlett_os import utility
 import scarlett_os.utility.dt as dt_utility
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class TestUtil(unittest.TestCase):
     """Test utility methods."""
 

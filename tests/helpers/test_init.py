@@ -7,7 +7,9 @@ from scarlett_os import helpers
 
 from tests.common import get_test_scarlett_os
 
-
+# FIXME: Turn this into pytest
+# FIXME: Make sure we need to use this guy at the moment, otherwise, exclude it for now
+# FIXME: 5/10/2017
 class TestHelpers(unittest.TestCase):
     """Tests scarlett_os.helpers module."""
 

@@ -174,6 +174,30 @@ test-travis:
 	$(pytest) $(test_args_no_xml) --benchmark-skip
 	coverage report -m
 
+.PHONY: test-travis-scarlettonly
+test-travis-scarlettonly: export TRAVIS_CI=1
+test-travis-scarlettonly:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonly
+	coverage report -m
+
+.PHONY: test-travis-scarlettonlyintgr
+test-travis-scarlettonlyintgr: export TRAVIS_CI=1
+test-travis-scarlettonlyintgr:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr
+	coverage report -m
+
+.PHONY: test-travis-scarlettonlyunittest
+test-travis-scarlettonlyunittest: export TRAVIS_CI=1
+test-travis-scarlettonlyunittest:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyunittest
+	coverage report -m
+
+.PHONY: test-travis-unittest
+test-travis-unittest: export TRAVIS_CI=1
+test-travis-unittest:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m unittest
+	coverage report -m
+
 .PHONY: test-travis-debug
 test-travis-debug:
 	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb --showlocals

@@ -57,7 +57,9 @@ def monkeysession(request):
     yield mpatch
     mpatch.undo()
 
+@pytest.mark.scarlettonly
 @pytest.mark.unittest
+@pytest.mark.scarlettonlyunittest
 class TestScarlettSubprocess(object):
     '''Units tests for Scarlett Subprocess, subclass of GObject.Gobject.'''
 

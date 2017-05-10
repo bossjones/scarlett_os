@@ -24,7 +24,8 @@ import tests
 def bad_read():
     raise UnicodeDecodeError('utf-8', b'0x80', 0, 1, 'invalid start byte')
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 class PathToFileURITest(unittest.TestCase):
 
     def setUp(self):
