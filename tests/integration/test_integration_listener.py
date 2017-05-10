@@ -89,6 +89,7 @@ class TestSuspendableMainLoopThread(object):
         def quit(*args):
             print('timeout reached, lets close out SuspendableMainLoopThread in [test_SuspendableMainLoopThread]')
             with _loop_thread_lock:
+                time.sleep(0.5)
                 print('SuspendableMainLoopThread attempting to terminate in [test_SuspendableMainLoopThread]')
                 _shared_loop_thread.terminate()
                 # FIXME: DISABLED 5/9/2017 # SINCE YOU CAN'T JOIN CURRENT THREAD # print('SuspendableMainLoopThread attempting to join in [test_SuspendableMainLoopThread]')
@@ -106,7 +107,7 @@ class TestSuspendableMainLoopThread(object):
                 _shared_loop_thread = listener.SuspendableMainLoopThread()
                 # get MainLoop
                 print('[start] _shared_loop_thread.get_loop()')
-                _shared_loop_thread.get_loop()
+                _ = _shared_loop_thread.get_loop()
                 # start thread
                 print('[start] _shared_loop_thread.start()')
                 _shared_loop_thread.start()

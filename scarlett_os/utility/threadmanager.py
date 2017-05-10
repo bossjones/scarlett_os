@@ -155,12 +155,15 @@ class SuspendableThread(threading.Thread, _IdleObject):
         raise NotImplementedError
 
     def suspend(self):
+        print("[{}]:{}".format(__name__, self.name))
         self.suspended = True
 
     def resume(self):
+        print("[{}]:{}".format(__name__, self.name))
         self.suspended = False
 
     def terminate(self):
+        print("[{}]:{}".format(__name__, self.name))
         self.terminated = True
         self.emit('stopped')
 
