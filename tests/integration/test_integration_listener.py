@@ -91,8 +91,8 @@ class TestSuspendableMainLoopThread(object):
             with _loop_thread_lock:
                 print('SuspendableMainLoopThread attempting to terminate in [test_SuspendableMainLoopThread]')
                 _shared_loop_thread.terminate()
-                print('SuspendableMainLoopThread attempting to join in [test_SuspendableMainLoopThread]')
-                _shared_loop_thread.join(2)
+                # FIXME: DISABLED 5/9/2017 # SINCE YOU CAN'T JOIN CURRENT THREAD # print('SuspendableMainLoopThread attempting to join in [test_SuspendableMainLoopThread]')
+                # FIXME: DISABLED 5/9/2017 # SINCE YOU CAN'T JOIN CURRENT THREAD # _shared_loop_thread.join(2)
 
         _shared_loop_thread = None
         _loop_thread_lock = threading.RLock()
