@@ -167,6 +167,7 @@ class TestThreadManager(object):
                 if len(threads) > 1:
                     msg = "Another process is in progress"
                     for t_in_progress_intgr in threads:
+                        print("Current Thread via t_in_progress_intgr.getName(): [{}]".format(t_in_progress_intgr.getName()))
                         if "import" in t_in_progress_intgr.getName():
                             msg = _("An import is in progress.")
                         if "export" in t_in_progress_intgr.getName():
