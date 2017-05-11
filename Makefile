@@ -186,6 +186,12 @@ test-travis-scarlettonlyintgr:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr
 	coverage report -m
 
+.PHONY: test-travis-scarlettonlyintgr-no-timeout
+test-travis-scarlettonlyintgr-no-timeout: export TRAVIS_CI=1
+test-travis-scarlettonlyintgr-no-timeout:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr -p no:timeout
+	coverage report -m
+
 .PHONY: test-travis-scarlettonlyunittest
 test-travis-scarlettonlyunittest: export TRAVIS_CI=1
 test-travis-scarlettonlyunittest:

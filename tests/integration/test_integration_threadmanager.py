@@ -25,10 +25,10 @@ import pytest
 
 import scarlett_os
 import scarlett_os.exceptions
-from scarlett_os.internal import gi  # noqa
+from scarlett_os.internal import gi
 from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import GObject  # noqa
-from scarlett_os.internal.gi import Gio  # noqa
+from scarlett_os.internal.gi import GObject
+from scarlett_os.internal.gi import Gio
 from scarlett_os.utility import threadmanager
 from scarlett_os.utility.threadmanager import NotThreadSafe, SuspendableThread
 from tests import PROJECT_ROOT
@@ -39,6 +39,7 @@ from tests.integration.stubs import create_main_loop
 # hunter.trace(module='threadmanager', action=hunter.CallPrinter)
 
 done = 0
+
 
 @pytest.fixture
 def tmanager():
@@ -62,13 +63,14 @@ class TThread(SuspendableThread):
     def __init__(self):
         SuspendableThread.__init__(
             self,
-            name='TThread'
+            name=_('TThread')
         )
 
     def do_run(self):
         for n in range(1000):  # pylint: disable=C0103
             time.sleep(0.01)
             self.emit('progress', n / 1000.0, '%s of 1000' % n)
+            print('progress', n / 1000.0, '%s of 1000' % n)
             self.check_for_sleep()
 
 
@@ -112,14 +114,17 @@ class NTsafeThread(SuspendableThread, NotThreadSafe):
             self.emit('progress', -1, 'Working interminably')
             self.check_for_sleep()
 
+
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyintgr
 class TestThreadManager(object):
     """TestThreadManager. Real test case."""
 
     # 5/7/2017 def test_ThreadManager(self, monkeypatch, tmanager):
-    def test_ThreadManager(self, tmanager):  # pylint: disable=C0111
-        tm = tmanager  # pylint: disable=C0103
+    # pylint: disable=C0111
+    # pylint: disable=C0103
+    def test_ThreadManager(self, tmanager):
+        tm = tmanager
 
         assert str(type(tm)) == "<class 'scarlett_os.utility.threadmanager.ThreadManager'>"
 
@@ -131,22 +136,14 @@ class TestThreadManager(object):
         assert tm.threads == []
 
     def test_ThreadManager_TThread(self, tmanager):
-        tm = tmanager  # pylint: disable=C0103
+        tm = tmanager
+
+        # import pdb
+        # pdb.set_trace()
 
         loop = GLib.MainLoop()
 
         to_complete = 2
-
-        # assert str(type(tm)) == "<class 'scarlett_os.utility.threadmanager.ThreadManager'>"
-        #
-        # assert tm.active_count == 0
-        # assert tm.completed_threads == 0
-        # assert tm.count == 0
-        # assert tm.max_concurrent_threads == 2
-        # assert tm.thread_queue == []
-        # assert tm.threads == []
-
-        # import pdb;pdb.set_trace()
 
         for desc, thread in [
             ('Linear 1', TThread()),
