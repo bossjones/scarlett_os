@@ -38,7 +38,7 @@ pytest-timeout>=1.0.0
 pytest-catchlog>=1.2.2
 pytest-benchmark[histogram]>=3.0.0rc1
 python-dbusmock==0.16.7
-freezegun==0.3.8
+freezegun==0.3.9
 git+git://github.com/mverteuil/pytest-ipdb.git
 pdbpp==0.8.3
 # pudb
