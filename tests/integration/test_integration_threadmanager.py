@@ -160,16 +160,28 @@ class TestThreadManager(object):
             else:
                 print("tm.completed_threads <= to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
 
+                # tm.completed_threads < to_complete: 0 < 2 friends.
+                # tm.completed_threads <= to_complete: 2 < 2 friends.
+                # Current Thread via t_in_progress_intgr.getName(): [MainThread]
+                # Current Thread via t_in_progress_intgr.getName(): [IPythonHistorySavingThread]
+                # Current Thread via t_in_progress_intgr.getName(): [IPythonHistorySavingThread]
+                # Current Thread via t_in_progress_intgr.getName(): [Dummy-5]
+                # Current Thread via t_in_progress_intgr.getName(): [Dummy-2]
+                # Current Thread via t_in_progress_intgr.getName(): [SuspendableMainLoopThread]
+                # Current Thread via t_in_progress_intgr.getName(): [Thread-1]
+                # Another process is in progress
+                #########################################################################################
                 # Return a list of all Thread objects currently alive. The list includes daemonic threads,
                 # dummy thread objects created by current_thread(), and the main thread.
                 # It excludes terminated threads and threads that have not yet been started.
+                #########################################################################################
                 threads = threading.enumerate()
                 if len(threads) > 1:
                     msg = "Another process is in progress"
                     for t_in_progress_intgr in threads:
                         print("Current Thread via t_in_progress_intgr.getName(): [{}]".format(t_in_progress_intgr.getName()))
-                        if "import" in t_in_progress_intgr.getName():
-                            msg = _("An import is in progress.")
+                        if "SuspendableMainLoopThread" in t_in_progress_intgr.getName():
+                            msg = _("An SuspendableMainLoopThread is in progress.")
                         if "export" in t_in_progress_intgr.getName():
                             msg = _("An export is in progress.")
                         if "delete" in t_in_progress_intgr.getName():
