@@ -13,6 +13,7 @@ import os
 import sys
 import signal
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 import builtins
 import threading
 
@@ -49,6 +50,14 @@ from scarlett_os.utility import threadmanager
 import imp
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
+
+# source: https://github.com/pytest-dev/pytest/issues/363
+@pytest.fixture(scope="function")
+def listener_monkeyfunc(request):
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+
 @pytest.fixture(scope='function')
 def listener_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
@@ -63,6 +72,8 @@ def listener_mocker_stopall(mocker):
     imp.reload(listener)
 
 # source: test_signal.py in pygobject
+
+
 class C(GObject.GObject):
     """Test class for verifying callbacks."""
     __gsignals__ = {'my_signal': (GObject.SignalFlags.RUN_FIRST, None,
@@ -71,13 +82,14 @@ class C(GObject.GObject):
     def do_my_signal(self, arg):
         self.arg = arg
 
+
 @pytest.mark.threading
 @pytest.mark.gobject
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyintgr
 class TestSuspendableMainLoopThread(object):
 
-    def test_SuspendableMainLoopThread(self, listener_mocker_stopall):
+    def test_SuspendableMainLoopThread(self, listener_mocker_stopall, listener_monkeyfunc):
 
         def my_signal_handler_cb(*args):
             assert len(args) == 5
@@ -94,12 +106,16 @@ class TestSuspendableMainLoopThread(object):
             with _loop_thread_lock:
                 time.sleep(0.5)
                 print('SuspendableMainLoopThread attempting to terminate in [test_SuspendableMainLoopThread]')
+                print('running: _shared_loop_thread.terminate()')
                 _shared_loop_thread.terminate()
+                # print('running: stop_event.set()')
+                # stop_event.set()
                 # FIXME: DISABLED 5/9/2017 # SINCE YOU CAN'T JOIN CURRENT THREAD # print('SuspendableMainLoopThread attempting to join in [test_SuspendableMainLoopThread]')
                 # FIXME: DISABLED 5/9/2017 # SINCE YOU CAN'T JOIN CURRENT THREAD # _shared_loop_thread.join(2)
 
         _shared_loop_thread = None
         _loop_thread_lock = threading.RLock()
+        # stop_event = threading.Event()
 
         with _loop_thread_lock:
             print('SuspendableMainLoopThread _loop_thread_lock acquired in [test_SuspendableMainLoopThread]')
@@ -107,10 +123,18 @@ class TestSuspendableMainLoopThread(object):
                 print('SuspendableMainLoopThread if not _shared_loop_thread in [test_SuspendableMainLoopThread]')
                 # Start a new thread.
                 print('[start] new listener.SuspendableMainLoopThread()')
+                # _shared_loop_thread = listener.SuspendableMainLoopThread(stop_event)
                 _shared_loop_thread = listener.SuspendableMainLoopThread()
                 # get MainLoop
                 print('[start] _shared_loop_thread.get_loop()')
                 _ = _shared_loop_thread.get_loop()
+                # disable daemon thread for testing
+                # that way thread dies after .terminate() is called
+                # instead of during garbage collection during exit() of python interperter
+                print("[start] listener_monkeyfunc.setattr(__name__ + '.listener.SuspendableMainLoopThread.daemon', False)")
+                listener_monkeyfunc.setattr(__name__ + '.listener.SuspendableMainLoopThread.daemon', False)
+                # validate monkeypatch worked
+                assert _shared_loop_thread.daemon is False
                 # start thread
                 print('[start] _shared_loop_thread.start()')
                 _shared_loop_thread.start()
@@ -129,6 +153,7 @@ class TestSuspendableMainLoopThread(object):
         # Create a timeout that checks how many
         # tasks have been completed. When 2 have finished,
         # kill threads and finish.
+        # GLib.timeout_add_seconds(10, quit, _shared_loop_thread, _loop_thread_lock, stop_event)
         GLib.timeout_add_seconds(10, quit, _shared_loop_thread, _loop_thread_lock)
 
     # def test_terminate_SuspendableMainLoopThread(self, monkeypatch):
@@ -169,6 +194,7 @@ class TestSuspendableMainLoopThread(object):
     #     # tasks have been completed. When 2 have finished,
     #     # kill threads and finish.
     #     GLib.timeout_add_seconds(10, quit)
+
 
 class TestScarlettListener(object):
 

@@ -40,7 +40,6 @@ from tests.integration.stubs import create_main_loop
 
 done = 0
 
-
 @pytest.fixture
 def tmanager():
     """Create a fixture of ThreadManager"""
@@ -124,6 +123,8 @@ class TestThreadManager(object):
     # pylint: disable=C0111
     # pylint: disable=C0103
     def test_ThreadManager(self, tmanager):
+        ignore_threads = ['MainThread', 'HistorySavingThread', 'IPythonHistorySavingThread', 'Dummy', 'Thread']
+
         tm = tmanager
 
         assert str(type(tm)) == "<class 'scarlett_os.utility.threadmanager.ThreadManager'>"
@@ -136,6 +137,9 @@ class TestThreadManager(object):
         assert tm.threads == []
 
     def test_ThreadManager_TThread(self, tmanager):
+        ignore_threads = ['MainThread', 'HistorySavingThread', 'IPythonHistorySavingThread', 'Dummy', 'Thread']
+        ignore_threads = ['MainThread', 'HistorySavingThread', 'IPythonHistorySavingThread', 'Dummy', 'Thread']
+
         tm = tmanager
 
         # import pdb
@@ -152,6 +156,7 @@ class TestThreadManager(object):
             tm.add_thread(thread)
 
         def get_tm_active_count(*args):
+            print('time.sleep(3)')
             time.sleep(3)
             if int(tm.completed_threads) < to_complete:
                 print("tm.completed_threads < to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
@@ -176,6 +181,14 @@ class TestThreadManager(object):
                 # It excludes terminated threads and threads that have not yet been started.
                 #########################################################################################
                 threads = threading.enumerate()
+                print("threads = threading.enumerate(): {}".format(threads))
+                for t_print in threads:
+                    print('****************************')
+                    print(t_print)
+                    print(t_print.getName())
+                    print('****************************')
+
+                # FIXME: Filter by thread types before entering into this
                 if len(threads) > 1:
                     msg = "Another process is in progress"
                     for t_in_progress_intgr in threads:
@@ -197,8 +210,9 @@ class TestThreadManager(object):
 
                 if quit_anyway:
                     for t_quit_anyway_intgr in threads:  # pylint: disable=C0103
-                        if (t_quit_anyway_intgr.getName() not in 'MainThread') and (t_quit_anyway_intgr.getName() not in 'HistorySavingThread') and (t_quit_anyway_intgr.getName() not in 'IPythonHistorySavingThread'):
+                        if t_quit_anyway_intgr.getName() not in ignore_threads:
                             try:
+                                print("QUIT ANYWAY t_in_progress_intgr.getName(): [{}]".format(t_quit_anyway_intgr.getName()))
                                 t_quit_anyway_intgr.terminate()
                             except BaseException as t_quit_anyway_intgr_exec:  # pylint: disable=C0103
                                 print("Unable to terminate thread %s" % t_quit_anyway_intgr)
