@@ -548,35 +548,36 @@ class TestScarlettSubprocess(object):
     #                                 GLib.child_watch_add = before_path_child_watch_add
     #  mocker.stopall()
 
-    # NOTE: Decorators get applied BOTTOM to TOP
-    def test_check_command_type_is_array_of_str(self, mocker):
-        mocker.stopall()
+    # # NOTE: Decorators get applied BOTTOM to TOP
+    # def test_check_command_type_is_array_of_str(self, mocker):
+    #     mocker.stopall()
 
-        mock_init = mocker.MagicMock(name='mock_init',
-                                    #  spec=scarlett_os.subprocess.Subprocess.__init__,
-                                     autospec=scarlett_os.subprocess.Subprocess.__init__,
-                                     return_value=None)
+    #     mock_init = mocker.MagicMock(name='mock_init',
+    #                                 #  spec=scarlett_os.subprocess.Subprocess.__init__,
+    #                                  autospec=scarlett_os.subprocess.Subprocess.__init__,
+    #                                  return_value=None)
 
-        mocker.patch.object(scarlett_os.subprocess.Subprocess, '__init__', mock_init)
+    #     mocker.patch.object(scarlett_os.subprocess.Subprocess, '__init__', mock_init)
 
 
 
-        # # source: http://stackoverflow.com/questions/28181867/how-do-a-mock-a-superclass-that-is-part-of-a-library
-        # with pytest.raises(Exception):
-        #     scarlett_os.subprocess.Subprocess()  # Normal implementation raise Exception
+    #     # # source: http://stackoverflow.com/questions/28181867/how-do-a-mock-a-superclass-that-is-part-of-a-library
+    #     # with pytest.raises(Exception):
+    #     #     scarlett_os.subprocess.Subprocess()  # Normal implementation raise Exception
 
-        # # Pay attention to return_value MUST be None for all __init__ methods
-        # with mocker.patch("scarlett_os.subprocess.Subprocess.__init__", autospec=True, return_value=None) as mock_init:
-        #     with pytest.raises(TypeError):
-        #         scarlett_os.subprocess.Subprocess()  # Wrong argument: autospec=True let as to catch it
-        #     s = scarlett_os.subprocess.Subprocess(['who'])  # Ok now it works
-        #     mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
-        #     assert s.check_command_type(['who']) == True
+    #     # # Pay attention to return_value MUST be None for all __init__ methods
+    #     # with mocker.patch("scarlett_os.subprocess.Subprocess.__init__", autospec=True, return_value=None) as mock_init:
+    #     #     with pytest.raises(TypeError):
+    #     #         scarlett_os.subprocess.Subprocess()  # Wrong argument: autospec=True let as to catch it
+    #     #     s = scarlett_os.subprocess.Subprocess(['who'])  # Ok now it works
+    #     #     mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
+    #     #     assert s.check_command_type(['who']) == True
 
-        # with pytest.raises(TypeError) as excinfo:
-        #     scarlett_os.subprocess.Subprocess()  # Wrong argument: autospec=True let as to catch it
-        # assert str(excinfo.value) == "Executables and arguments must be str objects. types: <class 'int'>"
-        # s = scarlett_os.subprocess.Subprocess(['who'])  # Ok now it works
-        # mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
-        # assert s.check_command_type(['who']) == True
+    #     # with pytest.raises(TypeError) as excinfo:
+    #     #     scarlett_os.subprocess.Subprocess()  # Wrong argument: autospec=True let as to catch it
+    #     # assert str(excinfo.value) == "Executables and arguments must be str objects. types: <class 'int'>"
+    #     # s = scarlett_os.subprocess.Subprocess(['who'])  # Ok now it works
+    #     # mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
+    #     # assert s.check_command_type(['who']) == True
+    #     # mocker.stopall()
 
