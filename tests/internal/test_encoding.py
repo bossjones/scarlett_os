@@ -1,21 +1,38 @@
 
-
+import imp
 import unittest
-
-# import mock
 import unittest.mock as mock
 
+import pytest
+
+import scarlett_os
 from scarlett_os.internal import encoding
+
+
+@pytest.fixture(scope='function')
+def encoding_mocker_stopall(mocker):
+    "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
+    print('Called [setup]: mocker.stopall()')
+    mocker.stopall()
+    print('Called [setup]: imp.reload(encoding)')
+    imp.reload(encoding)
+    yield mocker
+    print('Called [teardown]: mocker.stopall()')
+    mocker.stopall()
+    print('Called [setup]: imp.reload(encoding)')
+    imp.reload(encoding)
 
 # ipdb> str(bytestr)
 # "b'[Errno 98] Adresse d\\xe9j\\xe0 utilis\\xe9e'"
 
-# FIXME: Convert to pytest
-# FIXME: 5/10/2017
-@mock.patch('scarlett_os.internal.encoding.locale.getpreferredencoding')
-class LocaleDecodeTest(unittest.TestCase):
+class TestLocaleDecode(object):
 
-    def test_can_decode_utf8_strings_with_french_content(self, mock):
+    def test_can_decode_utf8_strings_with_french_content(self, encoding_mocker_stopall):
+        # mock
+        mock_getpreferredencoding = encoding_mocker_stopall.MagicMock(name="mock_getpreferredencoding")
+        # patch
+        encoding_mocker_stopall.patch.object(scarlett_os.internal.encoding.locale, 'getpreferredencoding', mock_getpreferredencoding)
+
         mock.return_value = 'UTF-8'
 
         # source: http://pythoncentral.io/encoding-and-decoding-strings-in-python-3-x/
@@ -24,7 +41,7 @@ class LocaleDecodeTest(unittest.TestCase):
         result = encoding.locale_decode(
             b'[Errno 98] Adresse d\xc3\xa9j\xc3\xa0 utilis\xc3\xa9e')
 
-        self.assertEqual("b'[Errno 98] Adresse d\\xc3\\xa9j\\xc3\\xa0 utilis\\xc3\\xa9e'", result)
+        assert "b'[Errno 98] Adresse d\\xc3\\xa9j\\xc3\\xa0 utilis\\xc3\\xa9e'" == result
 
     # def test_can_decode_an_ioerror_with_french_content(self, mock):
     #     mock.return_value = 'UTF-8'
