@@ -57,6 +57,7 @@ def monkeysession(request):
     yield mpatch
     mpatch.undo()
 
+
 @pytest.mark.scarlettonly
 @pytest.mark.unittest
 @pytest.mark.scarlettonlyunittest
@@ -307,126 +308,190 @@ class TestScarlettSubprocess(object):
 
         mocker.stopall()
 
-    # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
-    # def test_subprocess_fork(self, mock_logging):
-    #     """Test fork class method process."""
-
-    #     test_command = ["who", "-b"]
-    #     test_name = 'test_who'
-    #     test_fork = True
-    #     pid = 7
-
-    #     # mock
-    #     with mock.patch('scarlett_os.subprocess.os.fork', mock.Mock(return_value=pid)) as mock_os_fork:
-    #         with mock.patch('scarlett_os.subprocess.sys.exit', mock.Mock()) as mock_sys_exit:
-    #             with mock.patch('scarlett_os.subprocess.os.chdir', mock.Mock()) as mock_os_chdir:
-    #                 with mock.patch('scarlett_os.subprocess.os.setsid', mock.Mock()) as mock_os_setsid:
-    # with mock.patch('scarlett_os.subprocess.os.umask', mock.Mock()) as
-    # mock_os_umask:
-
-    #                         tfork1 = scarlett_os.subprocess.Subprocess(test_command,
-    #                                                                    name=test_name,
-    # fork=test_fork)
-
-    #                         assert mock_sys_exit.call_count == 2
-    #                         assert tfork1.stdout == False
-    #                         assert tfork1.stderr == False
-    #                         assert mock_os_chdir.call_count == 1
-    #                         assert mock_os_setsid.call_count == 1
-    #                         assert mock_os_umask.call_count == 1
-    #                         assert mock_os_fork.call_count == 2
-
-    #                         mock_os_chdir.assert_called_once_with("/")
+    ############################### START HERE HERON ###############################################
 
     # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
-    # def test_subprocess_fork_exception(self, mock_logging):
-    #     """Test fork class method process."""
+    def test_subprocess_fork(self, mocker):
+        """Test fork class method process."""
+        mocker.stopall()
 
-    #     test_command = ["fake", "command"]
-    #     test_name = 'fake_command'
-    #     test_fork = True
+        test_command = ["who", "-b"]
+        test_name = 'test_who'
+        test_fork = True
+        pid = 7
 
-    #     # mock
-    #     with mock.patch('scarlett_os.subprocess.os.fork', mock.Mock(side_effect=OSError), create=True) as mock_os_fork:
-    #         with mock.patch('scarlett_os.subprocess.sys.exit', mock.Mock()) as mock_sys_exit:
-    #             with mock.patch('scarlett_os.subprocess.os.chdir', mock.Mock()) as mock_os_chdir:
-    #                 with mock.patch('scarlett_os.subprocess.os.setsid', mock.Mock()) as mock_os_setsid:
-    # with mock.patch('scarlett_os.subprocess.os.umask', mock.Mock()) as
-    # mock_os_umask:
+        # mock
+        mock_logging_debug = mocker.MagicMock(name="mock_logging_debug")
+        mock_os_fork = mocker.MagicMock(name='mock_os_fork', return_value=pid)
+        mock_sys_exit = mocker.MagicMock(name="mock_sys_exit")
+        mock_os_chdir = mocker.MagicMock(name="mock_os_chdir")
+        mock_os_setsid = mocker.MagicMock(name="mock_os_setsid")
+        mock_os_umask = mocker.MagicMock(name="mock_os_umask")
 
-    #                         tfork2 = scarlett_os.subprocess.Subprocess(test_command,
-    #                                                                    name=test_name,
-    # fork=test_fork)
+        # patch
+        mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
+        mocker.patch.object(scarlett_os.subprocess.os, 'fork', mock_os_fork)
+        mocker.patch.object(scarlett_os.subprocess.sys, 'exit', mock_sys_exit)
+        mocker.patch.object(scarlett_os.subprocess.os, 'chdir', mock_os_chdir)
+        mocker.patch.object(scarlett_os.subprocess.os, 'setsid', mock_os_setsid)
+        mocker.patch.object(scarlett_os.subprocess.os, 'umask', mock_os_umask)
 
-    #                         # NOTE: Bit of duplication we have going here.
-    #                         assert mock_sys_exit.call_count == 2
-    #                         assert tfork2.stdout == False
-    #                         assert tfork2.stderr == False
-    #                         assert mock_os_chdir.call_count == 1
-    #                         assert mock_os_setsid.call_count == 1
-    #                         assert mock_os_umask.call_count == 1
-    #                         assert mock_os_fork.call_count == 2
+        tfork1 = scarlett_os.subprocess.Subprocess(test_command,
+                                                   name=test_name,
+                                                   fork=test_fork)
 
-    #                         mock_os_chdir.assert_called_once_with("/")
+        assert mock_sys_exit.call_count == 2
+        assert tfork1.stdout == False
+        assert tfork1.stderr == False
+        assert mock_os_chdir.call_count == 1
+        assert mock_os_setsid.call_count == 1
+        assert mock_os_umask.call_count == 1
+        assert mock_os_fork.call_count == 2
+
+        mock_os_chdir.assert_called_once_with("/")
+
+        mocker.stopall()
+
+    # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
+    def test_subprocess_fork_exception(self, mocker):
+        """Test fork class method process."""
+        mocker.stopall()
+
+        test_command = ["fake", "command"]
+        test_name = 'fake_command'
+        test_fork = True
+
+        # mock
+        mock_logging_debug = mocker.MagicMock(name="mock_logging_debug")
+        mock_os_fork = mocker.MagicMock(name='mock_os_fork', side_effect=OSError)
+        mock_sys_exit = mocker.MagicMock(name="mock_sys_exit")
+        mock_os_chdir = mocker.MagicMock(name="mock_os_chdir")
+        mock_os_setsid = mocker.MagicMock(name="mock_os_setsid")
+        mock_os_umask = mocker.MagicMock(name="mock_os_umask")
+
+        # patch
+        mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
+        mocker.patch.object(scarlett_os.subprocess.os, 'fork', mock_os_fork)
+        mocker.patch.object(scarlett_os.subprocess.sys, 'exit', mock_sys_exit)
+        mocker.patch.object(scarlett_os.subprocess.os, 'chdir', mock_os_chdir)
+        mocker.patch.object(scarlett_os.subprocess.os, 'setsid', mock_os_setsid)
+        mocker.patch.object(scarlett_os.subprocess.os, 'umask', mock_os_umask)
+
+        # mock
+        # with mock.patch('scarlett_os.subprocess.os.fork', mocker.Mock(side_effect=OSError), create=True) as mock_os_fork:
+        #     with mock.patch('scarlett_os.subprocess.sys.exit', mocker.Mock()) as mock_sys_exit:
+        #         with mock.patch('scarlett_os.subprocess.os.chdir', mocker.Mock()) as mock_os_chdir:
+        #             with mock.patch('scarlett_os.subprocess.os.setsid', mocker.Mock()) as mock_os_setsid:
+        #                 with mock.patch('scarlett_os.subprocess.os.umask', mocker.Mock()) as mock_os_umask:
+
+        tfork2 = scarlett_os.subprocess.Subprocess(test_command,
+                                                    name=test_name,
+                                                    fork=test_fork)
+
+        # NOTE: Bit of duplication we have going here.
+        assert mock_sys_exit.call_count == 2
+        assert tfork2.stdout == False
+        assert tfork2.stderr == False
+        assert mock_os_chdir.call_count == 1
+        assert mock_os_setsid.call_count == 1
+        assert mock_os_umask.call_count == 1
+        assert mock_os_fork.call_count == 2
+
+        mock_os_chdir.assert_called_once_with("/")
+
+        mocker.stopall()
 
     # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
-    # def test_subprocess_fork_pid0(self, mock_logging):
-    #     """Test fork class method process."""
+    def test_subprocess_fork_pid0(self, mocker):
+        """Test fork class method process."""
+        mocker.stopall()
 
-    #     test_command = ["who", "-b"]
-    #     test_name = 'test_who'
-    #     test_fork = True
-    #     pid = 0
+        test_command = ["who", "-b"]
+        test_name = 'test_who'
+        test_fork = True
+        pid = 0
 
-    #     # mock
-    #     with mock.patch('scarlett_os.subprocess.os.fork', mock.Mock(return_value=pid)) as mock_os_fork:  # noqa
-    #         with mock.patch('scarlett_os.subprocess.sys.exit', mock.Mock()) as mock_sys_exit:  # noqa
-    #             with mock.patch('scarlett_os.subprocess.os.chdir', mock.Mock()) as mock_os_chdir:  # noqa
-    #                 with mock.patch('scarlett_os.subprocess.os.setsid', mock.Mock()) as mock_os_setsid:  # noqa
-    #                     with mock.patch('scarlett_os.subprocess.os.umask', mock.Mock()) as mock_os_umask:  # noqa
+        # mock
+        mock_logging_debug = mocker.MagicMock(name="mock_logging_debug")
+        mock_os_fork = mocker.MagicMock(name='mock_os_fork', return_value=pid)
+        mock_sys_exit = mocker.MagicMock(name="mock_sys_exit")
+        mock_os_chdir = mocker.MagicMock(name="mock_os_chdir")
+        mock_os_setsid = mocker.MagicMock(name="mock_os_setsid")
+        mock_os_umask = mocker.MagicMock(name="mock_os_umask")
 
-    #                         scarlett_os.subprocess.Subprocess(test_command,
-    #                                                           name=test_name,
-    #                                                           fork=test_fork)
+        # patch
+        mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
+        mocker.patch.object(scarlett_os.subprocess.os, 'fork', mock_os_fork)
+        mocker.patch.object(scarlett_os.subprocess.sys, 'exit', mock_sys_exit)
+        mocker.patch.object(scarlett_os.subprocess.os, 'chdir', mock_os_chdir)
+        mocker.patch.object(scarlett_os.subprocess.os, 'setsid', mock_os_setsid)
+        mocker.patch.object(scarlett_os.subprocess.os, 'umask', mock_os_umask)
 
-    #                         assert mock_sys_exit.call_count == 0
+        # mock
+        # with mock.patch('scarlett_os.subprocess.os.fork', mocker.Mock(return_value=pid)) as mock_os_fork:  # noqa
+        #     with mock.patch('scarlett_os.subprocess.sys.exit', mocker.Mock()) as mock_sys_exit:  # noqa
+        #         with mock.patch('scarlett_os.subprocess.os.chdir', mocker.Mock()) as mock_os_chdir:  # noqa
+        #             with mock.patch('scarlett_os.subprocess.os.setsid', mocker.Mock()) as mock_os_setsid:  # noqa
+        #                 with mock.patch('scarlett_os.subprocess.os.umask', mocker.Mock()) as mock_os_umask:  # noqa
 
-    # @mock.patch('scarlett_os.subprocess.logging.Logger.error')
-    # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
-    # def test_subprocess_fork_pid0_exception(self, mock_logging_debug, mock_logging_error):
-    #     """Test fork class method process."""
+        scarlett_os.subprocess.Subprocess(test_command,
+                                          name=test_name,
+                                          fork=test_fork)
 
-    #     test_command = ["who", "-b"]
-    #     test_name = 'test_who'
-    #     test_fork = True
-    #     pid = 0
+        assert mock_sys_exit.call_count == 0
 
-    #     # mock
-    #     with mock.patch('scarlett_os.subprocess.os.fork', mock.Mock(side_effect=[pid, OSError]), create=True) as mock_os_fork:  # noqa
-    #         with mock.patch('scarlett_os.subprocess.sys.exit', mock.Mock()) as mock_sys_exit:  # noqa
-    #             with mock.patch('scarlett_os.subprocess.os.chdir', mock.Mock()) as mock_os_chdir:  # noqa
-    #                 with mock.patch('scarlett_os.subprocess.os.setsid', mock.Mock()) as mock_os_setsid:  # noqa
-    #                     with mock.patch('scarlett_os.subprocess.os.umask', mock.Mock()) as mock_os_umask:  # noqa
-    #                         scarlett_os.subprocess.Subprocess(test_command,
-    #                                                           name=test_name,
-    #                                                           fork=test_fork)
+        mocker.stopall()
 
-    #                         mock_logging_error.assert_any_call("Error forking process second time")
+    def test_subprocess_fork_pid0_exception(self, mocker):
+        """Test fork class method process."""
+        mocker.stopall()
+
+        test_command = ["who", "-b"]
+        test_name = 'test_who'
+        test_fork = True
+        pid = 0
+
+        # mock
+        mock_logging_debug = mocker.MagicMock(name="mock_logging_debug")
+        mock_logging_error = mocker.MagicMock(name="mock_logging_error")
+        mock_os_fork = mocker.MagicMock(name='mock_os_fork', side_effect=[pid, OSError])
+        mock_sys_exit = mocker.MagicMock(name="mock_sys_exit")
+        mock_os_chdir = mocker.MagicMock(name="mock_os_chdir")
+        mock_os_setsid = mocker.MagicMock(name="mock_os_setsid")
+        mock_os_umask = mocker.MagicMock(name="mock_os_umask")
+
+        # patch
+        mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
+        mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logging_error)
+        mocker.patch.object(scarlett_os.subprocess.os, 'fork', mock_os_fork)
+        mocker.patch.object(scarlett_os.subprocess.sys, 'exit', mock_sys_exit)
+        mocker.patch.object(scarlett_os.subprocess.os, 'chdir', mock_os_chdir)
+        mocker.patch.object(scarlett_os.subprocess.os, 'setsid', mock_os_setsid)
+        mocker.patch.object(scarlett_os.subprocess.os, 'umask', mock_os_umask)
+
+        scarlett_os.subprocess.Subprocess(test_command,
+                                          name=test_name,
+                                          fork=test_fork)
+
+        mock_logging_error.assert_any_call("Error forking process second time")
+
+        mocker.stopall()
 
     # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
     # def test_subprocess_fork_and_spawn_command(self, mock_logging_debug):
     #     """Test a full run connamd of Subprocess.run()"""
+    #     mocker.stopall()
 
     #     test_command = ["who", "-b"]
     #     test_name = 'test_who'
     #     test_fork = False
 
     #     # mock
-    #     with mock.patch('scarlett_os.subprocess.os.fork', mock.Mock(name='mock_os_fork')) as mock_os_fork:  # noqa
-    #         with mock.patch('scarlett_os.subprocess.sys.exit', mock.Mock(name='mock_sys_exit')) as mock_sys_exit:  # noqa
-    #             with mock.patch('scarlett_os.subprocess.os.chdir', mock.Mock(name='mock_os_chdir')) as mock_os_chdir:  # noqa
-    #                 with mock.patch('scarlett_os.subprocess.os.setsid', mock.Mock(name='mock_os_setsid')) as mock_os_setsid:  # noqa
-    #                     with mock.patch('scarlett_os.subprocess.os.umask', mock.Mock(name='mock_os_umask')) as mock_os_umask:  # noqa
+    #     with mock.patch('scarlett_os.subprocess.os.fork', mocker.Mock(name='mock_os_fork')) as mock_os_fork:  # noqa
+    #         with mock.patch('scarlett_os.subprocess.sys.exit', mocker.Mock(name='mock_sys_exit')) as mock_sys_exit:  # noqa
+    #             with mock.patch('scarlett_os.subprocess.os.chdir', mocker.Mock(name='mock_os_chdir')) as mock_os_chdir:  # noqa
+    #                 with mock.patch('scarlett_os.subprocess.os.setsid', mocker.Mock(name='mock_os_setsid')) as mock_os_setsid:  # noqa
+    #                     with mock.patch('scarlett_os.subprocess.os.umask', mocker.Mock(name='mock_os_umask')) as mock_os_umask:  # noqa
 
     #                         # Import module locally for testing purposes
     #                         from scarlett_os.internal.gi import gi, GLib
@@ -436,9 +501,9 @@ class TestScarlettSubprocess(object):
     #                         before_path_glib_spawn_async = GLib.spawn_async
     #                         before_path_child_watch_add = GLib.child_watch_add
 
-    #                         test_pid = mock.Mock(spec=gi._gi._glib.Pid, return_value=23241, name='Mockgi._gi._glib.Pid')
+    #                         test_pid = mocker.Mock(spec=gi._gi._glib.Pid, return_value=23241, name='Mockgi._gi._glib.Pid')
     #                         test_pid.real = 23241
-    #                         test_pid.close = mock.Mock(name='Mockgi._gi._glib.Pid.close')
+    #                         test_pid.close = mocker.Mock(name='Mockgi._gi._glib.Pid.close')
 
     #                         # Mock function GLib function spawn_async
     #                         GLib.spawn_async = mock.create_autospec(GLib.spawn_async, return_value=(test_pid, None, None, None), name='MockGLib.spawn_async')
@@ -449,15 +514,11 @@ class TestScarlettSubprocess(object):
     #                         # action
     #                         tfork1 = scarlett_os.subprocess.Subprocess(test_command,
     #                                                                    name=test_name,
-    # fork=test_fork)
+    #                                                                    fork=test_fork)
 
-    # with mock.patch('scarlett_os.subprocess.Subprocess.exited_cb',
-    # mock.Mock(name='mock_exited_cb',
-    # spec=scarlett_os.subprocess.Subprocess.exited_cb)) as mock_exited_cb:
+    #                         with mock.patch('scarlett_os.subprocess.Subprocess.exited_cb', mocker.Mock(name='mock_exited_cb', spec=scarlett_os.subprocess.Subprocess.exited_cb)) as mock_exited_cb:
 
-    # with mock.patch('scarlett_os.subprocess.Subprocess.emit',
-    # mock.Mock(name='mock_emit',
-    # spec=scarlett_os.subprocess.Subprocess.emit)) as mock_emit:
+    #                             with mock.patch('scarlett_os.subprocess.Subprocess.emit', mocker.Mock(name='mock_emit', spec=scarlett_os.subprocess.Subprocess.emit)) as mock_emit:
 
     #                                 # action, kick off subprocess run
     #                                 tfork1.run()
@@ -485,17 +546,37 @@ class TestScarlettSubprocess(object):
     #                                 gi._gi._glib.Pid = before_patch_gi_pid
     #                                 GLib.spawn_async = before_path_glib_spawn_async
     #                                 GLib.child_watch_add = before_path_child_watch_add
+    #  mocker.stopall()
 
-    # # NOTE: Decorators get applied BOTTOM to TOP
-    # def test_check_command_type_is_array_of_str(self):
-    #     # source: http://stackoverflow.com/questions/28181867/how-do-a-mock-a-superclass-that-is-part-of-a-library
-    #     with pytest.raises(Exception):
-    #         Subprocess()  # Normal implementation raise Exception
+    # NOTE: Decorators get applied BOTTOM to TOP
+    def test_check_command_type_is_array_of_str(self, mocker):
+        mocker.stopall()
 
-    #     # Pay attention to return_value MUST be None for all __init__ methods
-    #     with mock.patch("scarlett_os.subprocess.Subprocess.__init__", autospec=True, return_value=None) as mock_init:
-    #         with pytest.raises(TypeError):
-    #             Subprocess()  # Wrong argument: autospec=True let as to catch it
-    #         s = Subprocess(['who'])  # Ok now it works
-    #         mock_init.assert_called_with(mock.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
-    #         assert s.check_command_type(['who']) == True
+        mock_init = mocker.MagicMock(name='mock_init',
+                                    #  spec=scarlett_os.subprocess.Subprocess.__init__,
+                                     autospec=scarlett_os.subprocess.Subprocess.__init__,
+                                     return_value=None)
+
+        mocker.patch.object(scarlett_os.subprocess.Subprocess, '__init__', mock_init)
+
+
+
+        # # source: http://stackoverflow.com/questions/28181867/how-do-a-mock-a-superclass-that-is-part-of-a-library
+        # with pytest.raises(Exception):
+        #     scarlett_os.subprocess.Subprocess()  # Normal implementation raise Exception
+
+        # # Pay attention to return_value MUST be None for all __init__ methods
+        # with mocker.patch("scarlett_os.subprocess.Subprocess.__init__", autospec=True, return_value=None) as mock_init:
+        #     with pytest.raises(TypeError):
+        #         scarlett_os.subprocess.Subprocess()  # Wrong argument: autospec=True let as to catch it
+        #     s = scarlett_os.subprocess.Subprocess(['who'])  # Ok now it works
+        #     mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
+        #     assert s.check_command_type(['who']) == True
+
+        # with pytest.raises(TypeError) as excinfo:
+        #     scarlett_os.subprocess.Subprocess()  # Wrong argument: autospec=True let as to catch it
+        # assert str(excinfo.value) == "Executables and arguments must be str objects. types: <class 'int'>"
+        # s = scarlett_os.subprocess.Subprocess(['who'])  # Ok now it works
+        # mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
+        # assert s.check_command_type(['who']) == True
+
