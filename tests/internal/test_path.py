@@ -20,40 +20,59 @@ from scarlett_os.internal.gi import Gst
 
 import tests
 
+import imp  # Library to help us reload our tasker module
+
+
+@pytest.fixture(scope='function')
+def path_mocker_stopall(mocker):
+    "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
+    print('Called [setup]: mocker.stopall()')
+    mocker.stopall()
+    print('Called [setup]: imp.reload(s_path)')
+    imp.reload(s_path)
+    yield mocker
+    print('Called [teardown]: mocker.stopall()')
+    mocker.stopall()
+    print('Called [setup]: imp.reload(s_path)')
+    imp.reload(s_path)
+
 
 def bad_read():
     raise UnicodeDecodeError('utf-8', b'0x80', 0, 1, 'invalid start byte')
 
-# FIXME: Convert to pytest
-# FIXME: 5/10/2017
-class PathToFileURITest(unittest.TestCase):
 
-    def setUp(self):
-        """
-        Method called to prepare the test fixture. This is called immediately before calling the test method; other than AssertionError or SkipTest, any exception raised by this method will be considered an error rather than a test failure. The default implementation does nothing.
-        """
+@pytest.mark.scarlettonly
+@pytest.mark.unittest
+@pytest.mark.scarlettonlyunittest
+@pytest.mark.pathtest
+class TestPathToFileURI(object):
 
-        # spec: This can be either a list of strings or an existing object (a class or instance) that acts as the specification for the mock object. If you pass in an object then a list of strings is formed by calling dir on the object (excluding unsupported magic attributes and methods). Accessing any attribute not in this list will raise an AttributeError.
-        # self.mock = mock.Mock(spec=scarlett_os.subprocess.Subprocess)  # raise
-        # an exception if you try to access an attribute that doesn't exist on
-        # this class
+    def test_get_parent_dir(self, path_mocker_stopall):
+        # mock
+        mock_logger_info = path_mocker_stopall.MagicMock(name="mock_logger_info")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'info', mock_logger_info)
 
-    @mock.patch('scarlett_os.internal.path.logging.Logger.info', name='mock_logger_info')
-    def test_get_parent_dir(self, mock_logger_info):
         path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot'
 
         # run test
         result = s_path.get_parent_dir(path)
 
-        self.assertEqual(mock_logger_info.call_count, 1)
+        assert mock_logger_info.call_count == 1
 
         mock_logger_info.assert_any_call("get_parent_dir: {}".format(path))
-        self.assertEqual(result, '/home/pi/dev/bossjones-github/scarlett_os/_debug')
+        assert result == '/home/pi/dev/bossjones-github/scarlett_os/_debug'
 
-    @mock.patch('scarlett_os.internal.path.logging.Logger.info', name='mock_logger_info')
-    @mock.patch('scarlett_os.internal.path.dir_exists', name='mock_dir_exists')
-    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
-    def test_mkdir_p(self, mock_path, mock_dir_exists, mock_logger_info):
+    def test_mkdir_p(self, path_mocker_stopall):
+        # mock
+        mock_logger_info = path_mocker_stopall.MagicMock(name="mock_logger_info")
+        mock_dir_exists = path_mocker_stopall.MagicMock(name="mock_dir_exists")
+        mock_path = path_mocker_stopall.MagicMock(name="mock_path")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'info', mock_logger_info)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'dir_exists', mock_dir_exists)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+
         path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
 
         mock_dir_exists.return_value = True
@@ -62,32 +81,42 @@ class PathToFileURITest(unittest.TestCase):
         s_path.mkdir_p(path)
 
         # assert
-        self.assertEqual(mock_logger_info.call_count, 1)
+        assert mock_logger_info.call_count == 1
         mock_path.assert_called_once_with(path)
         # from scarlett_os.internal.debugger import dump
         mock_path().mkdir.assert_any_call(parents=True, exist_ok=True)
         mock_logger_info.assert_any_call("Verify mkdir_p ran: {}".format(mock_dir_exists.return_value))
 
-    @mock.patch('scarlett_os.internal.path.logging.Logger.error', name='mock_logger_error')
-    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
-    def test_dir_exists_false(self, mock_path, mock_logger_error):
+    def test_dir_exists_false(self, path_mocker_stopall):
+        # mock
+        mock_logger_error = path_mocker_stopall.MagicMock(name="mock_logger_error")
+        mock_path = path_mocker_stopall.MagicMock(name="mock_path")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logger_error)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+
         path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
 
         mock_path_instance = mock_path()
-        #
+
         mock_path_instance.is_dir.return_value = False
 
         # run test
         s_path.dir_exists(path)
 
         # assert
-        self.assertEqual(mock_logger_error.call_count, 1)
-        self.assertEqual(mock_path_instance.is_dir.call_count, 2)
+        assert mock_logger_error.call_count == 1
+        assert mock_path_instance.is_dir.call_count == 2
         mock_logger_error.assert_any_call("This is not a dir: {}".format(path))
 
-    @mock.patch('scarlett_os.internal.path.logging.Logger.error', name='mock_logger_error')
-    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
-    def test_dir_exists_true(self, mock_path, mock_logger_error):
+    def test_dir_exists_true(self, path_mocker_stopall):
+        # mock
+        mock_logger_error = path_mocker_stopall.MagicMock(name="mock_logger_error")
+        mock_path = path_mocker_stopall.MagicMock(name="mock_path")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logger_error)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+
         path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
 
         mock_path_instance = mock_path()
@@ -98,74 +127,93 @@ class PathToFileURITest(unittest.TestCase):
         s_path.dir_exists(path)
 
         # assert
-        self.assertEqual(mock_logger_error.call_count, 0)
-        self.assertEqual(mock_path_instance.is_dir.call_count, 2)
+        assert mock_logger_error.call_count == 0
+        assert mock_path_instance.is_dir.call_count == 2
         mock_logger_error.assert_not_called()
 
-    @mock.patch('scarlett_os.internal.path.mkdir_p', name='mock_mkdir_p')
-    @mock.patch('scarlett_os.internal.path.dir_exists', return_value=False, name='mock_dir_exists')
-    def test_mkdir_if_does_not_exist_false(self, mock_dir_exists, mock_mkdir_p):
+    def test_mkdir_if_does_not_exist_false(self, path_mocker_stopall):
+        # mock
+        mock_mkdir_p = path_mocker_stopall.MagicMock(name="mock_mkdir_p")
+        mock_dir_exists = path_mocker_stopall.MagicMock(name="mock_dir_exists", return_value=False)
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'mkdir_p', mock_mkdir_p)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'dir_exists', mock_dir_exists)
+
         path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
 
         # run test
         result = s_path.mkdir_if_does_not_exist(path)
 
         # assert
-        self.assertEqual(mock_mkdir_p.call_count, 1)
-        self.assertEqual(mock_dir_exists.call_count, 1)
-        self.assertEqual(result, True)
+        assert mock_mkdir_p.call_count == 1
+        assert mock_dir_exists.call_count == 1
+        assert result == True
 
-    @mock.patch('scarlett_os.internal.path.mkdir_p', name='mock_mkdir_p')
-    @mock.patch('scarlett_os.internal.path.dir_exists', return_value=True, name='mock_dir_exists')
-    def test_mkdir_if_does_not_exist_true(self, mock_dir_exists, mock_mkdir_p):
+    def test_mkdir_if_does_not_exist_true(self, path_mocker_stopall):
+        # mock
+        mock_mkdir_p = path_mocker_stopall.MagicMock(name="mock_mkdir_p")
+        mock_dir_exists = path_mocker_stopall.MagicMock(name="mock_dir_exists", return_value=True)
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'mkdir_p', mock_mkdir_p)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'dir_exists', mock_dir_exists)
+
         path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
 
         # run test
         result = s_path.mkdir_if_does_not_exist(path)
 
         # assert
-        self.assertEqual(mock_mkdir_p.call_count, 0)
-        self.assertEqual(mock_dir_exists.call_count, 1)
-        self.assertEqual(result, False)
+        assert mock_mkdir_p.call_count == 0
+        assert mock_dir_exists.call_count == 1
+        assert result == False
 
-    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
-    def test_fname_exists_true(self, mock_path):
+    def test_fname_exists_true(self, path_mocker_stopall):
+        # mock
+        mock_path = path_mocker_stopall.MagicMock(name="mock_path")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+
         path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot'
 
-        # def fname_exists(path):
-        #     p = Path(path)
-        #     return p.exists()
-
         mock_path_instance = mock_path()
-        #
+
         mock_path_instance.exists.return_value = True
 
         # run test
         result = s_path.fname_exists(path)
 
-        self.assertEqual(mock_path_instance.exists.call_count, 1)
+        assert mock_path_instance.exists.call_count == 1
         mock_path.assert_any_call(path)
-        self.assertEqual(result, True)
+        assert result == True
 
-    @mock.patch('scarlett_os.internal.path.Path', name='mock_path')
-    def test_fname_exists_false(self, mock_path):
+    def test_fname_exists_false(self, path_mocker_stopall):
+        # mock
+        mock_path = path_mocker_stopall.MagicMock(name="mock_path")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+
         path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot'
 
         mock_path_instance = mock_path()
-        #
+
         mock_path_instance.exists.return_value = False
 
         # run test
         result = s_path.fname_exists(path)
 
-        self.assertEqual(mock_path_instance.exists.call_count, 1)
+        assert mock_path_instance.exists.call_count == 1
         mock_path_instance.exists.assert_called_once_with()
         mock_path.assert_any_call(path)
-        self.assertEqual(result, False)
+        assert result == False
 
-    @mock.patch('scarlett_os.internal.path.os.access')
-    @mock.patch('scarlett_os.internal.path.os.path.isdir')
-    def test_dir_isWritable(self, mock_os_path_isdir, mock_os_access):
+    def test_dir_isWritable(self, path_mocker_stopall):
+        # mock
+        mock_os_access = path_mocker_stopall.MagicMock(name="mock_os_access")
+        mock_os_path_isdir = path_mocker_stopall.MagicMock(name="mock_os_path_isdir")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.internal.path.os, 'access', mock_os_access)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path.os.path, 'isdir', mock_os_path_isdir)
+
         path = 'file:///tmp'
 
         # patch return values
@@ -178,11 +226,16 @@ class PathToFileURITest(unittest.TestCase):
         # tests
         mock_os_path_isdir.assert_called_once_with('file:///tmp')
         mock_os_access.assert_called_once_with('file:///tmp', os.W_OK)
-        self.assertEqual(result, True)
+        assert result == True
 
-    @mock.patch('scarlett_os.internal.path.os.access')
-    @mock.patch('scarlett_os.internal.path.os.path.isdir')
-    def test_file_isWritable(self, mock_os_path_isdir, mock_os_access):
+    def test_file_isWritable(self, path_mocker_stopall):
+        # mock
+        mock_os_access = path_mocker_stopall.MagicMock(name="mock_os_access")
+        mock_os_path_isdir = path_mocker_stopall.MagicMock(name="mock_os_path_isdir")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.internal.path.os, 'access', mock_os_access)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path.os.path, 'isdir', mock_os_path_isdir)
+
         path = 'file:///tmp/fake_file'
 
         # patch return values
@@ -195,7 +248,7 @@ class PathToFileURITest(unittest.TestCase):
         # tests
         mock_os_path_isdir.assert_called_once_with('file:///tmp/fake_file')
         mock_os_access.assert_called_once_with('file:///tmp', os.W_OK)
-        self.assertEqual(result, True)
+        assert result == True
 
     # TODO: Need to figure out how to throw a fake UnicodeDecodeError
     # @mock.patch('scarlett_os.internal.path.os.access')
@@ -221,7 +274,7 @@ class PathToFileURITest(unittest.TestCase):
             result = s_path.isReadable(tmpdir)
 
             # tests
-            self.assertEqual(result, True)
+            assert result == True
         finally:
             # nuke
             shutil.rmtree(tmpdir, ignore_errors=True)
@@ -234,15 +287,24 @@ class PathToFileURITest(unittest.TestCase):
             result = s_path.isReadable(path)
 
             # tests
-            self.assertTrue(result)
+            assert result
         finally:
             os.remove(path)
 
-    @mock.patch('scarlett_os.internal.path.logging.Logger.error')
-    @mock.patch('scarlett_os.internal.path.unicode_error_dialog')
-    @mock.patch('scarlett_os.internal.path.os.access')
-    @mock.patch('scarlett_os.internal.path.os.path.isdir')
-    def test_unicode_decode_error_isWritable(self, mock_os_path_isdir, mock_os_access, mock_unicode_error_dialog, mock_error_logger):
+    def test_unicode_decode_error_isWritable(self, path_mocker_stopall):
+
+        # mock
+        mock_os_path_isdir = path_mocker_stopall.MagicMock(name="mock_os_path_isdir")
+        mock_os_access = path_mocker_stopall.MagicMock(name="mock_os_access")
+        mock_unicode_error_dialog = path_mocker_stopall.MagicMock(name="mock_unicode_error_dialog")
+        mock_logger_error = path_mocker_stopall.MagicMock(name="mock_logger_error")
+
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.internal.path.os.path, 'isdir', mock_os_path_isdir)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path.os, 'access', mock_os_access)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'unicode_error_dialog', mock_unicode_error_dialog)
+        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logger_error)
+
 
         path = b'file:///tmp/fake_file'
 
@@ -250,83 +312,86 @@ class PathToFileURITest(unittest.TestCase):
         mock_os_path_isdir.side_effect = UnicodeDecodeError('', b'', 1, 0, '')
         s_path.isWritable(path)
 
-        self.assertEqual(mock_unicode_error_dialog.call_count, 1)
+        assert mock_unicode_error_dialog.call_count == 1
 
-    @mock.patch('scarlett_os.internal.path.logging.Logger.error')
-    def test_unicode_error_dialog(self, mock_error_logger):
+    def test_unicode_error_dialog(self, path_mocker_stopall):
+        # mock
+        mock_logger_error = path_mocker_stopall.MagicMock(name="mock_logger_error")
+        # patch
+        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logger_error)
 
         s_path.unicode_error_dialog()
 
-        self.assertEqual(mock_error_logger.call_count, 1)
+        assert mock_logger_error.call_count == 1
 
         _message = _("The system's locale that you are using is not UTF-8 capable. "
                      "Unicode support is required for Python3 software like Pitivi. "
                      "Please correct your system settings; if you try to use Pitivi "
                      "with a broken locale, weird bugs will happen.")
 
-        mock_error_logger.assert_any_call(_message)
+        mock_logger_error.assert_any_call(_message)
 
     def test_path_to_uri(self):
         result = s_path.path_to_uri('/etc/fstab')
-        self.assertEqual(result, b'file:///etc/fstab')
-        self.assertTrue(type(result) == compat.bytes)
+        assert result == b'file:///etc/fstab'
+        assert type(result) == compat.bytes
 
     def test_uri_is_valid_bytes(self):
         uri = b'file:///etc/fstab'
-        self.assertTrue(s_path.uri_is_valid(uri))
+        assert s_path.uri_is_valid(uri)
 
     def test_path_from_uri_bytes(self):
         raw_uri = b'file:///etc/fstab'
         result = s_path.path_from_uri(raw_uri)
-        self.assertEqual(result, '/etc/fstab')
+        assert result == '/etc/fstab'
 
     def test_filename_from_uri_bytes(self):
         uri = b'file:///etc/fstab'
         result = s_path.filename_from_uri(uri)
-        self.assertEqual(result, 'fstab')
+        assert result == 'fstab'
 
     def test_filename_from_uri_str(self):
         uri = 'file:///etc/fstab'
         result = s_path.filename_from_uri(uri)
-        self.assertEqual(result, 'fstab')
+        assert result == 'fstab'
 
     def test_quote_uri_byte_to_str(self):
         uri = b'file:///etc/fstab'
         result = s_path.quote_uri(uri)
-        self.assertEqual(result, 'file:///etc/fstab')
-        self.assertTrue(type(result) == compat.text_type)
+        assert result == 'file:///etc/fstab'
+        assert type(result) == compat.text_type
 
     def test_quantize(self):
         result = s_path.quantize(100.00, 3.00)
-        self.assertEqual(result, 99.0)
+        assert result == 99.0
 
     def test_binary_search_EmptyList(self):
-        self.assertEqual(s_path.binary_search([], 10), -1)
+        assert s_path.binary_search([], 10) == -1
 
     def test_binary_search_Existing(self):
         A = [10, 20, 30]
         for index, element in enumerate(A):
-            self.assertEqual(s_path.binary_search([10, 20, 30], element), index)
+            assert s_path.binary_search([10, 20, 30], element) == index
 
     def test_binary_search_MissingLeft(self):
-        self.assertEqual(s_path.binary_search([10, 20, 30], 1), 0)
-        self.assertEqual(s_path.binary_search([10, 20, 30], 16), 1)
-        self.assertEqual(s_path.binary_search([10, 20, 30], 29), 2)
+        assert s_path.binary_search([10, 20, 30], 1) == 0
+        assert s_path.binary_search([10, 20, 30], 16) == 1
+        assert s_path.binary_search([10, 20, 30], 29) == 2
 
     def test_binary_search_MissingRight(self):
-        self.assertEqual(s_path.binary_search([10, 20, 30], 11), 0)
-        self.assertEqual(s_path.binary_search([10, 20, 30], 24), 1)
-        self.assertEqual(s_path.binary_search([10, 20, 30], 40), 2)
+        assert s_path.binary_search([10, 20, 30], 11) == 0
+        assert s_path.binary_search([10, 20, 30], 24) == 1
+        assert s_path.binary_search([10, 20, 30], 40) == 2
 
     def test_uri_to_path_str(self):
         uri = 'file:///etc/fstab'
         result = s_path.uri_to_path(uri)
-        self.assertEqual(result, '/etc/fstab')
+        assert result == '/etc/fstab'
 
     def test_uri_to_path_bytes(self):
         uri = b'file:///etc/fstab'
         result = s_path.uri_to_path(uri)
-        self.assertEqual(result, '/etc/fstab')
+        assert result == '/etc/fstab'
 
 ##################################################################################
 # Pitivi - BEGIN
