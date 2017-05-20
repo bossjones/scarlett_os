@@ -100,6 +100,10 @@ bootstrap:
 	python setup.py install
 	pip install -e .[test]
 
+.PHONY: bootstrap-experimental
+bootstrap-experimental:
+	pip install -r requirements_test_experimental.txt
+
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/

@@ -122,8 +122,15 @@ class TestThreadManager(object):
     # 5/7/2017 def test_ThreadManager(self, monkeypatch, tmanager):
     # pylint: disable=C0111
     # pylint: disable=C0103
-    def test_ThreadManager(self, tmanager):
-        ignore_threads = ['MainThread', 'HistorySavingThread', 'IPythonHistorySavingThread', 'Dummy', 'Thread']
+    def test_ThreadManager_TThread(self, tmanager):
+        blacklist_threads = ['MainThread', 'HistorySavingThread', 'IPythonHistorySavingThread', 'Dummy', 'Thread']
+        whitelist_threads = ['SuspendableMainLoopThread', 'NTsafeThread', 'TInterminable', 'TError', 'TThread']
+        # MainThread
+        # IPythonHistorySavingThread
+        # SuspendableMainLoopThread
+        # IPythonHistorySavingThread
+        # Dummy-6
+        # Thread-1
 
         tm = tmanager
 
@@ -135,12 +142,6 @@ class TestThreadManager(object):
         assert tm.max_concurrent_threads == 2
         assert tm.thread_queue == []
         assert tm.threads == []
-
-    def test_ThreadManager_TThread(self, tmanager):
-        ignore_threads = ['MainThread', 'HistorySavingThread', 'IPythonHistorySavingThread', 'Dummy', 'Thread']
-        ignore_threads = ['MainThread', 'HistorySavingThread', 'IPythonHistorySavingThread', 'Dummy', 'Thread']
-
-        tm = tmanager
 
         # import pdb
         # pdb.set_trace()
@@ -154,6 +155,8 @@ class TestThreadManager(object):
             ('Linear 2', TThread())
         ]:
             tm.add_thread(thread)
+
+        # import pdb;pdb.set_trace()
 
         def get_tm_active_count(*args):
             print('time.sleep(3)')
@@ -181,17 +184,18 @@ class TestThreadManager(object):
                 # It excludes terminated threads and threads that have not yet been started.
                 #########################################################################################
                 threads = threading.enumerate()
-                print("threads = threading.enumerate(): {}".format(threads))
-                for t_print in threads:
+                # FIXME: Filter by thread types before entering into this
+                filtered_threads = [elem for elem in threads if elem.getName() in whitelist_threads]
+                print("threads = threading.enumerate(): {}".format(filtered_threads))
+                for t_print in filtered_threads:
                     print('****************************')
                     print(t_print)
                     print(t_print.getName())
                     print('****************************')
 
-                # FIXME: Filter by thread types before entering into this
-                if len(threads) > 1:
+                if len(filtered_threads) > 1:
                     msg = "Another process is in progress"
-                    for t_in_progress_intgr in threads:
+                    for t_in_progress_intgr in filtered_threads:
                         print("Current Thread via t_in_progress_intgr.getName(): [{}]".format(t_in_progress_intgr.getName()))
                         if "SuspendableMainLoopThread" in t_in_progress_intgr.getName():
                             msg = _("An SuspendableMainLoopThread is in progress.")
@@ -201,16 +205,15 @@ class TestThreadManager(object):
                             msg = _("A delete is in progress.")
                         if "TThread" in t_in_progress_intgr.getName():
                             msg = _("A TThread delete is in progress.")
-
-                # source: https://github.com/thinkle/gourmet/blob/a97af28b79af7cf1181b8bbd14c61eb396eb7ac6/gourmet/GourmetRecipeManager.py
-                print(msg)
+                    # source: https://github.com/thinkle/gourmet/blob/a97af28b79af7cf1181b8bbd14c61eb396eb7ac6/gourmet/GourmetRecipeManager.py
+                    print(msg)
 
                 # Normally this is a diaologe where someone selects "yes i'm sure"
                 quit_anyway = True
 
                 if quit_anyway:
-                    for t_quit_anyway_intgr in threads:  # pylint: disable=C0103
-                        if t_quit_anyway_intgr.getName() not in ignore_threads:
+                    for t_quit_anyway_intgr in filtered_threads:  # pylint: disable=C0103
+                        if t_quit_anyway_intgr.getName() in whitelist_threads:
                             try:
                                 print("QUIT ANYWAY t_in_progress_intgr.getName(): [{}]".format(t_quit_anyway_intgr.getName()))
                                 t_quit_anyway_intgr.terminate()
@@ -220,11 +223,20 @@ class TestThreadManager(object):
                                 # try not to lose data if this is going to
                                 # end up in a force quit
                                 return True
+                        else:
+                            print('t_quit_anyway_intgr.getName() in whitelist_threads == FALSE, continue callback')
+                            # thread is not part of the whitelist threads list, continue callback
+                            return True
+                        # end - if t_quit_anyway_intgr.getName() in whitelist_threads:
                 else:
+                    print('quit_anyway set to false. continue callback')
+                    # continue callback
                     return True
 
+                print(__name__ + '.loop.quit()')
                 loop.quit()
                 # remove callback
+                print(__name__ + ': remove callback')
                 return False
 
         GLib.timeout_add_seconds(10, get_tm_active_count)
