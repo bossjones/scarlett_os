@@ -20,6 +20,8 @@ DBUS_SESSION_BUS_ADDRESS = os.getenv("DBUS_SESSION_BUS_ADDRESS")
 
 RUN_TIMEOUT = 5
 
+import imp
+
 # from pydbus import SessionBus
 # bus = SessionBus()
 # # TODO: own_name() is deprecated, use request_name() instead.
@@ -82,7 +84,6 @@ def bus():
     print("ran: del bus._dbus")
     del bus
     print("ran: del bus")
-
 
 # from __main__
 # from pydbus import SessionBus
