@@ -6,7 +6,7 @@ pydocstyle
 pytest-ordering
 pytest-interactive
 
-ptpdb
+ptpdb==0.17
 ptpython
 
 # source: https://github.com/pyca/pyopenssl/issues/447
