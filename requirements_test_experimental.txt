@@ -1,7 +1,7 @@
 pytest-leaks
 pytest-xdist
 unittest2pytest
-pympler
+pympler==0.5
 pydocstyle
 pytest-ordering
 pytest-interactive
