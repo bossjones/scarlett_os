@@ -20,7 +20,7 @@ pylint>=1.5.6
 # NOTE: We need to install android as well
 # python -m pip install astroid
 # NOTE: We need isort too
-isort
+isort==4.2.5
 coveralls>=1.1
 
 # data science
