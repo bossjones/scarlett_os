@@ -1,5 +1,5 @@
 pytest-leaks
-pytest-xdist
+pytest-xdist==1.16.0
 unittest2pytest
 pympler
 pydocstyle
