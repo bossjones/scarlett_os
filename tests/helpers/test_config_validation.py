@@ -13,7 +13,8 @@ import scarlett_os.helpers.config_validation as cv
 
 from tests.common import get_test_scarlett_os
 
-
+# FIXME: Convert to pytest
+# FIXME: 5/10/2017
 def test_boolean():
     """Test boolean validation."""
     schema = vol.Schema(cv.boolean)

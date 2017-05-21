@@ -1366,3 +1366,202 @@ It should be wiser not to use any recursion at all. GLibEventLoop will
 actually prevent you from doing that (in accordance with PEP 3156). However
 you should keep in mind that enclosed loops may be started at any time by
 third-party code calling directly GLib's primitives.
+
+
+# __repr__ and recursive_repr
+
+- https://github.com/RazerM/represent/blob/c7db3d5b9554f170c7324bc410e77de5ee25687f/represent/core.py
+- https://github.com/RazerM/represent/blob/d6b90468ff67333ce8ae33980d4201a25df88563/tests/test_helper.py
+- https://docs.python.org/3.2/library/reprlib.html
+
+# Visual Studio Code Remote Debug Docker
+
+## install steps
+
+```
+# on os x
+pip3 install ptvsd
+```
+
+# testing ad-hoc notes ( leaks etc )
+
+```
+--benchmark-skip -R :
+
+
+pytest test_mod.py::TestClass::test_method  # run a single method in
+                                             # a single class
+
+pytest -k test_player.py --benchmark-skip -R :
+
+from scarlett_os.internal.debugger import dump
+from scarlett_os.internal.debugger import pprint_color
+
+py.test --pdb --showlocals -v -R : -k test_speaker.py
+
+py.test --pdb --showlocals -v -R : -k test_integration_threadmanager.py
+
+py.test --pdb --showlocals -v -R : -k test_subprocess.py
+
+py.test --trace-config --debug -p no:pytestipdb -p no:leaks -p no:pbdinvoke --showlocals -v -k test_integration_threadmanager.py
+
+py.test --trace-config --debug --pdb --showlocals -v -R : -k test_subprocess_check_command_type
+```
+
+
+# traceback in pytest
+
+```
+ tests/test_subprocess.py::TestScarlettSubprocess.test_subprocess_map_type_to_command ✓                                  80% ████████
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> traceback >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+self = <tests.test_subprocess.TestScarlettSubprocess object at 0x7fcb6508ca80>
+mocker = <pytest_mock.MockFixture object at 0x7fcb6508cd58>
+
+    def test_subprocess_check_command_type(self, mocker):
+        """Using the mock.patch decorator (removes the need to import builtins)"""
+
+        test_command = ["who", "-b"]
+        test_name = 'test_who'
+        test_fork = False
+
+        # Mock logger right off the bat
+        mocker.patch('scarlett_os.subprocess.logging.Logger.debug')
+
+        # Create instance of Subprocess, disable all checks
+        sub = scarlett_os.subprocess.Subprocess(test_command,
+                                                name=test_name,
+                                                fork=test_fork,
+                                                run_check_command=False)
+
+        # Mock instance member functions
+        mock_map_type_to_command = mocker.patch.object(sub, 'map_type_to_command')
+        mocker.patch.object(sub, 'fork')
+
+        # Set mock return types
+        mock_map_type_to_command.return_value = int
+
+        # action
+        with pytest.raises(TypeError) as excinfo:
+>           sub.check_command_type(test_command)
+E           Failed: DID NOT RAISE <class 'TypeError'>
+
+excinfo    = <[AttributeError("'ExceptionInfo' object has no attribute 'typename'") raised in repr()] ExceptionInfo object at 0x7fcb650b7ae8>
+mock_map_type_to_command = <MagicMock name='map_type_to_command' id='140511550299064'>
+mocker     = <pytest_mock.MockFixture object at 0x7fcb6508cd58>
+self       = <tests.test_subprocess.TestScarlettSubprocess object at 0x7fcb6508ca80>
+sub        = <subprocess.Subprocess object at 0x7fcb718882b0 (Subprocess at 0x332d580)>
+test_command = ['who', '-b']
+test_fork  = False
+test_name  = 'test_who'
+
+tests/test_subprocess.py:180: Failed
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> entering PDB >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+```
+
+# info on how we're running pytest
+
+```
+pi@99c42ce46358:~/dev/bossjones-github/scarlett_os$ py.test --pdb --showlocals -v -R : -k test_subprocess.py
+/usr/local/lib/python3.5/site-packages/_pdbpp_path_hack/pdb.py:4: ResourceWarning: unclosed file <_io.TextIOWrapper name='/usr/local/lib/python3.5/site-packages/pdb.py' mode='r' encoding='UTF-8'>
+  os.path.dirname(os.path.dirname(__file__)), 'pdb.py')).read(), os.path.join(
+Test session starts (platform: linux, Python 3.5.2, pytest 3.0.7, pytest-sugar 0.8.0)
+cachedir: .cache
+benchmark: 3.1.0a2 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: /home/pi/dev/bossjones-github/scarlett_os, inifile: setup.cfg
+plugins: flakefinder-0.1.0, mock-1.6.0, ipdb-0.1.dev2, ordering-0.5, leaks-0.2.2, xdist-1.15.0, interactive-0.1.1, catchlog-1.2.2, sugar-0.8.0, cov-2.4.0, benchmark-3.1.0a2, timeout-1.2.0, rerunfailures-2.1.0
+timeout: 60.0s method: signal
+[DBUS_SESSION_BUS_ADDRESS]: unix:path=/tmp/dbus_proxy_outside_socket
+
+ tests/test_subprocess.py::TestScarlettSubprocess.test_check_pid_os_error ✓                                              20% ██
+ tests/test_subprocess.py::TestScarlettSubprocess.test_check_pid ✓                                                       40% ████
+ tests/test_subprocess.py::TestScarlettSubprocess.test_subprocess_init ✓                                                 60% ██████
+ tests/test_subprocess.py::TestScarlettSubprocess.test_subprocess_map_type_to_command ✓                                  80% ██████
+```
+
+# python 3.5.2 unittest.mock vs mock ( THEY ARE DIFFERENT )
+
+https://mock.readthedocs.io/en/latest/
+
+IS IT WORKING:
+https://travis-ci.org/testing-cabal/mock
+
+```
+mock is a library for testing in Python. It allows you to replace parts of your system under test with mock objects and make assertions about how they have been used.
+
+mock is now part of the Python standard library, available as unittest.mock in Python 3.3 onwards. However, if you are writing code that runs on multiple versions of Python the mock package is better, as you get the newest features from the latest release of Python available for all Pythons.
+
+The mock package contains a rolling backport of the standard library mock code compatible with Python 2.6 and up, and 3.3 and up. Python 3.2 is supported by mock 1.3.0 and below - with pip no longer supporting 3.2, we cannot test against that version anymore.
+
+Please see the standard library documentation for usage details.
+```
+
+# pytest-mock, python 3.5.2, unittest, and why we need to keep running stopall()
+
+### This was the first working commit I had w/ the technologies above working correctly together
+https://github.com/bossjones/scarlett_os/pull/47/commits/2b7d190db9276f6f37b67ab2f5c092c1a7061dd3
+
+### How to get the error to come back?
+- Remove mocker.stopall() from either the beginning of each test, or the end of each test.
+- Switch back to using mock instead of unittest.mock on python 3.5.2 when `mock_use_standalone_module = True` inside of setup.cfg ( or tox.ini, pytest.ini )
+- Seems like it only works on instance objects, and possibly their method functions
+- command we used: `py.test --pdb --showlocals -v -R : -k test_subprocess.py`
+
+```
+NOTE:
+source: https://github.com/ryanhiebert/tox-travis/blob/master/tox.ini#L5
+# mock is required to allow mock_use_standalone_module
+# Coverage doesn't work on PyPy or Python 3.2
+```
+
+
+### Resources used to debug issue
+- "unittest.mock small gotcha - a humbling tale of failure 2017 article" - https://allanderek.github.io/posts/unittestmock-small-gotcha/
+- https://github.com/pytest-dev/pytest-mock/blob/master/pytest_mock.py#L13 ( _get_mock_module )
+- https://github.com/pytest-dev/pytest-mock/commit/891ee7e6daaec99fffa0ab5db34e3bfe044c3dd6 this version of above ^
+- This gave me the hint that this wasn't actually working on all python versions out there: https://github.com/pytest-dev/pytest-mock/blob/master/test_pytest_mock.py#L11
+- dump() and pprint_color() functions
+- https://github.com/search?p=3&q=%22yield+mpatch%22&type=Code&utf8=%E2%9C%93
+- pattern! Everything in pytest 3.5.2 seems to be dealing with some sort of weird issue isolated to THAT version of python! https://github.com/pytest-dev/pytest/issues/2180
+- python 3.5.2 monkeypatcing issues again https://github.com/pytest-dev/pytest/issues/1938
+- Started to give me the idea that we might need to undo manually on each test run https://github.com/pytest-dev/pytest/commit/5eaac194164ed09f55ee6578860ceeb0797fdae0#diff-b7f6c224f9e3b3dd1ed445e9b2f0fa55
+- This guy gave a good hint on proper locations to mock from, etc.. ( originally found him in gitter in a russian chat about the same issue ) https://github.com/pytest-dev/pytest-mock/issues/60
+
+https://gitter.im/dev-ua/python/archives/2016/08/24
+
+```
+@pytest.mark.asyncio
+async def test_async_func2(mocker):
+    mock_async_func2 = mocker.patch(__name__ + '.async_func2')
+    async def return_async_value(val):
+        return val
+    mock_async_func2.return_value = return_async_value('something')
+    res = await async_func1()
+    mock_async_func2.assert_called_once_with()
+    assert res == 'something'
+```
+
+- More github searchs this time on `mocker.patch(__name__` - https://github.com/search?p=2&q=mocker.patch%28__name__&type=Code&utf8=%E2%9C%93
+- githun search `"yield mpatch"` - https://github.com/search?p=3&q=%22yield+mpatch%22&type=Code&utf8=%E2%9C%93
+- "I need to mock a function and all references which point to this function." - http://widequestion.com/question/mock-function-and-references-to-this-function/
+- "How to patch a module's internal functions with mock? [Resolved]" - http://blogs.candoerz.com/question/185650/how-to-patch-a-module39s-internal-functions-with-mock.aspx
+- "Python - Mocking chained function calls" - https://stackoverflow.com/questions/34308511/python-mocking-chained-function-calls
+- "PYTEST: MORE ADVANCED FEATURES FOR EASIER TESTING" - http://programeveryday.com/post/pytest-more-advanced-features-for-easier-testing/
+- "WHERE TO PATCH: Mocks and Monkeypatching in Python" https://semaphoreci.com/community/tutorials/mocks-and-monkeypatching-in-python
+- https://github.com/ryanhiebert/tox-travis/blob/master/tox.ini#L5
+
+
+# pytest 3.0.7 monkeypath busted?
+
+### Workaround:
+
+```
+# source: https://github.com/pytest-dev/pytest/issues/363
+@pytest.fixture(scope="session")
+def monkeysession(request):
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+```
+
+See https://github.com/pytest-dev/pytest/issues/363

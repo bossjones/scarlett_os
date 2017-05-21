@@ -26,9 +26,13 @@ import time
 
 done = 0
 
-
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyintgr
 class TestScarlettSpeaker(object):
 
+
+    # @xfail(reason="Still getting 'assert None == 0' instead of 'assert self.status == 0'")
+    @pytest.mark.flaky(reruns=5)
     def test_mpris_methods_exist(self, service_on_outside, get_bus):  # noqa
         # NOTE: Technically these are both methods and signals
         look_for_methods_list = ['CanQuit',

@@ -1,39 +1,33 @@
 # from __future__ import absolute_import, unicode_literals
 
-import unittest
 import sys
+import unittest
+
 import pytest
 
 import scarlett_os
-from scarlett_os.compat import text_type, PY2
-from scarlett_os.internal.gi import Gst, GLib, GObject
-# from scarlett_os.utility.gnome import *
-
-from scarlett_os.utility.gnome import gdecode, escape, unescape
+from scarlett_os.compat import PY2, text_type
+from scarlett_os.internal.gi import GLib, GObject, Gst
+from scarlett_os.utility.gnome import escape, gdecode, unescape
 
 
-class TestScarlettUtilityGnome(unittest.TestCase):
+class TestScarlettUtilityGnome(object):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
 
     def test_gdecode(self):
         if PY2:
-            self.assertTrue(isinstance(gdecode(b"foo"), text_type))
+            assert isinstance(gdecode(b"foo"), text_type)
         else:
-            self.assertTrue(isinstance(gdecode(u"foo"), text_type))
+            assert isinstance(gdecode(u"foo"), text_type)
 
     def test_escape_empty(self):
-        self.failUnlessEqual(escape(""), "")
+        assert escape("") == ""
 
     def test_roundtrip(self):
-            for s in ["foo&amp;", "<&>", "&", "&amp;", "<&testing&amp;>amp;"]:
-                esc = escape(s)
-                self.failIfEqual(s, esc)
-                self.failUnlessEqual(s, unescape(esc))
+        for s in ["foo&amp;", "<&>", "&", "&amp;", "<&testing&amp;>amp;"]:
+            esc = escape(s)
+            assert s != esc
+            assert s == unescape(esc)
 
     def test_unescape_empty(self):
-        self.failUnlessEqual(unescape(""), "")
+        assert unescape("") == ""

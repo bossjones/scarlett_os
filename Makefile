@@ -39,7 +39,51 @@ endef
 export PRINT_HELP_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
+
+define ASCILOGO
+  ██████  ▄████▄   ▄▄▄       ██▀███   ██▓    ▓█████▄▄▄█████▓▄▄▄█████▓    ███▄ ▄███▓ ▄▄▄       ██ ▄█▀▓█████
+▒██    ▒ ▒██▀ ▀█  ▒████▄    ▓██ ▒ ██▒▓██▒    ▓█   ▀▓  ██▒ ▓▒▓  ██▒ ▓▒   ▓██▒▀█▀ ██▒▒████▄     ██▄█▒ ▓█   ▀
+░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██ ░▄█ ▒▒██░    ▒███  ▒ ▓██░ ▒░▒ ▓██░ ▒░   ▓██    ▓██░▒██  ▀█▄  ▓███▄░ ▒███
+  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▒██▀▀█▄  ▒██░    ▒▓█  ▄░ ▓██▓ ░ ░ ▓██▓ ░    ▒██    ▒██ ░██▄▄▄▄██ ▓██ █▄ ▒▓█  ▄
+▒██████▒▒▒ ▓███▀ ░ ▓█   ▓██▒░██▓ ▒██▒░██████▒░▒████▒ ▒██▒ ░   ▒██▒ ░    ▒██▒   ░██▒ ▓█   ▓██▒▒██▒ █▄░▒████▒
+▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░ ▒▒   ▓▒█░░ ▒▓ ░▒▓░░ ▒░▓  ░░░ ▒░ ░ ▒ ░░     ▒ ░░      ░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▒ ▓▒░░ ▒░ ░
+░ ░▒  ░ ░  ░  ▒     ▒   ▒▒ ░  ░▒ ░ ▒░░ ░ ▒  ░ ░ ░  ░   ░        ░       ░  ░      ░  ▒   ▒▒ ░░ ░▒ ▒░ ░ ░  ░
+░  ░  ░  ░          ░   ▒     ░░   ░   ░ ░      ░    ░        ░         ░      ░     ░   ▒   ░ ░░ ░    ░
+      ░  ░ ░            ░  ░   ░         ░  ░   ░  ░                           ░         ░  ░░  ░      ░  ░
+         ░
+=======================================
+endef
+
+export ASCILOGO
+
+# http://misc.flogisoft.com/bash/tip_colors_and_formatting
+
+RED=\033[0;31m
+GREEN=\033[0;32m
+ORNG=\033[38;5;214m
+BLUE=\033[38;5;81m
+NC=\033[0m
+
+export RED
+export GREEN
+export NC
+export ORNG
+export BLUE
+
+# # verify that certain variables have been defined off the bat
+# check_defined = \
+#     $(foreach 1,$1,$(__check_defined))
+# __check_defined = \
+#     $(if $(value $1),, \
+#       $(error Undefined $1$(if $(value 2), ($(strip $2)))))
+
+# list_allowed_args := product
+
 help:
+	@printf "\033[1m$$ASCILOGO $$NC\n"
+	@printf "\033[21m\n\n"
+	@printf "=======================================\n"
+	@printf "\n"
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 list:
@@ -49,12 +93,16 @@ clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and 
 
 .PHONY: bootstrap
 bootstrap:
-	[ "$$VIRTUAL_ENV" != "" ]
+	# [ "$$VIRTUAL_ENV" != "" ]
 	rm -rf *.egg-info || true
 	pip install -r requirements.txt
 	pip install -r requirements_dev.txt
 	python setup.py install
 	pip install -e .[test]
+
+.PHONY: bootstrap-experimental
+bootstrap-experimental:
+	pip install -r requirements_test_experimental.txt
 
 clean-build: ## remove build artifacts
 	rm -fr build/
@@ -130,14 +178,59 @@ test-travis:
 	$(pytest) $(test_args_no_xml) --benchmark-skip
 	coverage report -m
 
+.PHONY: test-travis-scarlettonly
+test-travis-scarlettonly: export TRAVIS_CI=1
+test-travis-scarlettonly:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonly
+	coverage report -m
+
+.PHONY: test-travis-scarlettonlyintgr
+test-travis-scarlettonlyintgr: export TRAVIS_CI=1
+test-travis-scarlettonlyintgr:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr
+	coverage report -m
+
+.PHONY: test-travis-scarlettonlyintgr-no-timeout
+test-travis-scarlettonlyintgr-no-timeout: export TRAVIS_CI=1
+test-travis-scarlettonlyintgr-no-timeout:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr -p no:timeout
+	coverage report -m
+
+.PHONY: test-travis-scarlettonlyunittest
+test-travis-scarlettonlyunittest: export TRAVIS_CI=1
+test-travis-scarlettonlyunittest:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyunittest
+	coverage report -m
+
+.PHONY: test-travis-unittest
+test-travis-unittest: export TRAVIS_CI=1
+test-travis-unittest:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -m unittest
+	coverage report -m
+
 .PHONY: test-travis-debug
 test-travis-debug:
 	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb --showlocals
 	coverage report -m
 
+.PHONY: test-travis-leaks
+test-travis-leaks: export TRAVIS_CI=1
+test-travis-leaks:
+	$(pytest) $(test_args_no_xml) --benchmark-skip -R :
+	coverage report -m
+
 .PHONY: cover
 cover:
 	$(pytest) $(cover_args) --benchmark-skip
+	coverage report -m
+	coverage html
+	$(BROWSER) htmlcov/index.html
+
+.PHONY: cover-travisci
+cover-travisci: export TRAVIS_CI=1
+cover-travisci: display-env
+	# $(pytest) $(cover_args) --benchmark-skip -p no:ipdb
+	pytest -p no:ipdb -p no:pytestipdb -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --showlocals --trace-config
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
@@ -152,6 +245,21 @@ cover-debug:
 
 .PHONY: cover-debug-no-timeout
 cover-debug-no-timeout:
+	pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
+	coverage report -m
+	coverage html
+	$(BROWSER) htmlcov/index.html
+
+.PHONY: display-env
+display-env:
+	@printf "=======================================\n"
+	@printf "$$GREEN TRAVIS_CI:$$NC             $(TRAVIS_CI) \n"
+	@printf "=======================================\n"
+
+# This task simulates a travis environment
+.PHONY: cover-debug-no-timeout-travisci
+cover-debug-no-timeout-travisci: export TRAVIS_CI=1
+cover-debug-no-timeout-travisci: display-env
 	pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
 	coverage report -m
 	coverage html
@@ -256,3 +364,34 @@ create-docker-machine:
 						  --engine-install-url "https://test.docker.com" \
 						  scarlett-1604-packer
 	eval $(docker-machine env scarlett-1604-packer)
+
+docker-compose-build:
+	@docker-compose -f docker-compose-devtools.yml build
+
+docker-compose-build-master:
+	@docker-compose -f docker-compose-devtools.yml build master
+
+docker-compose-run-master:
+	@docker-compose -f docker-compose-devtools.yml run --name scarlett_master --rm master bash
+
+docker-compose-run-test:
+	@docker-compose -f docker-compose-devtools.yml run --name scarlett_test --rm test bash python3 --version
+
+docker-compose-up:
+	@docker-compose -f docker-compose-devtools.yml up
+
+docker-compose-up-build:
+	@docker-compose -f docker-compose-devtools.yml up --build
+
+docker-compose-down:
+	@docker-compose -f docker-compose-devtools.yml down
+
+docker-version:
+	@docker --version
+	@docker-compose --version
+
+docker-exec:
+	@scripts/docker/exec-master
+
+docker-exec-master:
+	@scripts/docker/exec-master

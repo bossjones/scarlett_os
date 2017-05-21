@@ -17,6 +17,8 @@ import unittest
 import unittest.mock as mock
 
 import pydbus
+from _pytest.monkeypatch import MonkeyPatch
+
 import scarlett_os
 import scarlett_os.exceptions
 
@@ -24,16 +26,42 @@ from tests.integration.stubs import create_main_loop
 
 from scarlett_os import player
 
+import imp
+
 done = 0
 
 
+# source: https://github.com/pytest-dev/pytest/issues/363
+@pytest.fixture(scope="function")
+def player_monkeyfunc(request):
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+
+
+@pytest.fixture(scope='function')
+def player_mocker_stopall(mocker):
+    "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
+    print('Called [setup]: mocker.stopall()')
+    mocker.stopall()
+    print('Called [setup]: imp.reload(threadmanager)')
+    imp.reload(player)
+    yield mocker
+    print('Called [teardown]: mocker.stopall()')
+    mocker.stopall()
+    print('Called [setup]: imp.reload(threadmanager)')
+    imp.reload(player)
+
+
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyintgr
 class TestScarlettPlayer(object):
 
-    def test_ScarlettPlayer_listening(self, monkeypatch):
+    def test_ScarlettPlayer_listening(self, player_monkeyfunc, player_mocker_stopall):
         # we want to use pulsesink by default but in docker we might
         # not have a pulseaudio server running
         # test using fakesink in this usecase
-        monkeypatch.setattr(player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+        player_monkeyfunc.setattr(__name__ + '.player.ScarlettPlayer.DEFAULT_SINK', 'fakesink')
 
         player_data = []
 

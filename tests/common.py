@@ -33,15 +33,15 @@ _TEST_INSTANCE_PORT = SERVER_PORT
 logger = logging.getLogger(__name__)
 
 
-def clean_scarlett_os_subprocess_mock(sub_p):
-    sub_p.process = None
-    sub_p.pid = None
+# def clean_scarlett_os_subprocess_mock(sub_p):
+#     sub_p.process = None
+#     sub_p.pid = None
 
 
-def create_scarlett_os_subprocess_mock(sub_p):
-    sub_p = mock.MagicMock()
+# def create_scarlett_os_subprocess_mock(sub_p):
+#     sub_p = mock.MagicMock()
 
-    return sub_p
+#     return sub_p
 
 
 # def create_pitivi_mock(**settings):

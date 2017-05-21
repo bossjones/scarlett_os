@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+_container_id=$(docker ps | grep scarlett_os_master | cut -d" " -f1 | awk '{print $1}')
+
+docker exec -it $_container_id bash

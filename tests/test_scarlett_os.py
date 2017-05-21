@@ -26,43 +26,15 @@ import pprint
 ubuntu_version = verify.get_current_os()
 pp = pprint.PrettyPrinter(indent=4)
 
-from scarlett_os.internal.gi import Gst, GLib, GObject
-
-# from IPython.core.debugger import Tracer  # NOQA
-# from IPython.core import ultratb
-# import traceback
-#
-# import logging
-# logger = logging.getLogger('scarlettlogger')
-# # from pydbus import SessionBus
-# # from pydbus.green import sleep
-#
-# sys.excepthook = ultratb.FormattedTB(mode='Verbose',
-#                                      color_scheme='Linux',
-#                                      call_pdb=True,
-#                                      ostream=sys.__stdout__)
-
-# @pytest.fixture
-# def runner():
-#     """
-#     Click's test helper.
-#     """
-#     return CliRunner()
+from scarlett_os.internal.gi import Gst
+from scarlett_os.internal.gi import GLib
+from scarlett_os.internal.gi import GObject
 
 
-# @pytest.fixture
-# def ubuntu_version():
-#     """ubuntu_version."""
-#     return ubuntu_version
-
-
-class TestScarlett_os(unittest.TestCase):
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
+@pytest.mark.unittest
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyunittest
+class TestScarlett_os(object):
 
     def test_imports_something(self):
         assert importlib.util.find_spec("platform") is not None
@@ -91,8 +63,6 @@ class TestScarlett_os(unittest.TestCase):
         # Verify Gstremaer 1.8.2 or 1.8.3
         gst_version_string = Gst.version_string()
         m = re.search('(GStreamer 1.8.2|GStreamer 1.8.3)', gst_version_string)
-        # If we get a string match on either of these versions then we have 1.8.2/1.8.3, else None
+        # If we get a string match on either of these versions then we have
+        # 1.8.2/1.8.3, else None
         assert m
-
-if __name__ == '__main__':
-    sys.exit(unittest.main())

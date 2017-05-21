@@ -32,8 +32,6 @@ before_install:
 cache:
   apt: true
   directories:
-  # - "$HOME/.cache/pip"
-  # - "$HOME/virtualenv/python3.5.2/lib/python3.5/site-packages"
   - "$HOME/.ccache"
   - "$HOME/jhbuild"
   - "$HOME/gnome"

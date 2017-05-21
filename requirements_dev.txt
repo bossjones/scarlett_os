@@ -20,7 +20,7 @@ pylint>=1.5.6
 # NOTE: We need to install android as well
 # python -m pip install astroid
 # NOTE: We need isort too
-# isort
+isort
 coveralls>=1.1
 
 # data science
@@ -31,19 +31,19 @@ gnureadline>=6.3.0
 python-dbusmock==0.16.7
 
 # pytest
-coveralls>=1.1
 pytest>=2.9.2
 pytest-cov>=2.3.1
 pytest-timeout>=1.0.0
 pytest-catchlog>=1.2.2
 pytest-benchmark[histogram]>=3.0.0rc1
-python-dbusmock==0.16.7
 freezegun==0.3.8
 git+git://github.com/mverteuil/pytest-ipdb.git
 pdbpp==0.8.3
 # pudb
 pytest-sugar==0.8.0
 pytest-rerunfailures>=2.1.0
+pytest-mock
+pytest-leaks
 
 # # Test runners
 # pytest

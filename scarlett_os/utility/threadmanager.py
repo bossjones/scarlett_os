@@ -25,6 +25,7 @@
 # processes.
 #
 
+# import reprlib
 import os
 import sys
 import signal
@@ -33,32 +34,62 @@ import logging
 import threading
 
 # atexit.register(func, *args, **kargs)
-#     Register func as a function to be executed at termination. Any optional arguments that are to be passed to func must be passed as arguments to register(). It is possible to register the same function and arguments more than once.
+#     Register func as a function to be executed at termination.
+#     Any optional arguments that are to be passed to func must be passed as arguments to register().
+#     It is possible to register the same function and arguments more than once.
 #
-#     At normal program termination (for instance, if sys.exit() is called or the main module’s execution completes), all functions registered are called in last in, first out order. The assumption is that lower level modules will normally be imported before higher level modules and thus must be cleaned up later.
+#     At normal program termination (for instance, if sys.exit() is called or the main module’s execution completes),
+#     all functions registered are called in last in, first out order.
+#     The assumption is that lower level modules will normally be imported before higher level modules and thus must be cleaned up later.
 #
-#     If an exception is raised during execution of the exit handlers, a traceback is printed (unless SystemExit is raised) and the exception information is saved. After all exit handlers have had a chance to run the last exception to be raised is re-raised.
+#     If an exception is raised during execution of the exit handlers,
+#     a traceback is printed (unless SystemExit is raised) and the exception information is saved.
+#     After all exit handlers have had a chance to run the last exception to be raised is re-raised.
 #
 #     This function returns func, which makes it possible to use it as a decorator.
 import atexit
 
 from gettext import gettext as _
 from gettext import ngettext
-from scarlett_os.internal.gi import gi
+from scarlett_os.internal.gi import gi  # pylint: disable=W0611
 from scarlett_os.internal.gi import GObject
 from scarlett_os.internal.gi import GLib
 from scarlett_os.utility.gnome import _IdleObject
 
 logger = logging.getLogger(__name__)
 
+# # source: quodlibet/quodlibet/quodlibet/util/thread.py
+# class Cancellable(object):
+#     """Subset of Gio.Cancellable so it can be used as well"""
 
-class Terminated (Exception):
+#     def __init__(self):
+#         self._cancelled = False
+
+#     def is_cancelled(self):
+#         return self._cancelled
+
+#     def reset(self):
+#         self._cancelled = False
+
+#     def cancel(self):
+#         self._cancelled = True
+
+
+class Terminated(Exception):
 
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return repr(self.value)
+
+
+class NotASuspendableThreadExc(Exception):
+    pass
+
+
+class NotThreadSafeExc(Exception):
+    pass
 
 
 class SuspendableThread(threading.Thread, _IdleObject):
@@ -78,6 +109,9 @@ class SuspendableThread(threading.Thread, _IdleObject):
         'resume': (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when we resume
         'done': (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when/however we finish
     }
+
+    # Flag to determine if thread is suspendable
+    _suspendable = True
 
     def __init__(self, name=None):
         self.initialized = False
@@ -121,12 +155,15 @@ class SuspendableThread(threading.Thread, _IdleObject):
         raise NotImplementedError
 
     def suspend(self):
+        print("[{}]:{}".format(__name__, self.name))
         self.suspended = True
 
     def resume(self):
+        print("[{}]:{}".format(__name__, self.name))
         self.suspended = False
 
     def terminate(self):
+        print("[{}]:{}".format(__name__, self.name))
         self.terminated = True
         self.emit('stopped')
 
@@ -150,7 +187,9 @@ class SuspendableThread(threading.Thread, _IdleObject):
     def __repr__(self):
         try:
             return threading.Thread.__repr__(self)
-        except AssertionError:
+        # The goal of an AssertionError in Python is to inform developers about unrecoverable errors in a program.
+        # except AssertionError:
+        except TypeError:
             return '<SuspendableThread %s - uninitialized>' % self.name
     #
     # @GObject.Property(type=int)
@@ -169,16 +208,17 @@ class NotThreadSafe:
     will be raised if an object that is an instance of this class is
     added to a thread manager.
     """
-    pass
+
+    _is_thread_safe = False
 
 
 class ThreadManager:
 
-    __single = None
+    __instance = None
 
     def __init__(self, max_concurrent_threads=2):
-        if ThreadManager.__single:
-            raise ThreadManager.__single
+        # DISABLED: 5/7/2017 ... going with other singelton route # if ThreadManager.__single:
+        # DISABLED: 5/7/2017 ... going with other singelton route #     raise ThreadManager.__single
         self.max_concurrent_threads = max_concurrent_threads
         self.thread_queue = []
         self.count = 0
@@ -187,13 +227,50 @@ class ThreadManager:
         self.threads = []
 
     def add_thread(self, thread):
+        # NOTE: https://hynek.me/articles/hasattr/
+        # Don’t use Python’s hasattr() unless you’re writing Python 3-only code and understand how it works.
+        # has_check_for_sleep = getattr(thread, 'check_for_sleep', None)
         try:
-            assert(isinstance(thread, SuspendableThread))
-        except AssertionError:
-            print('Class', thread, type(thread), 'is not a SuspendableThread')
-            raise
-        if isinstance(thread, NotThreadSafe):
-            raise TypeError("Thread %s is NotThreadSafe" % thread)
+            getattr(thread, '_suspendable')
+            # assert("scarlett_os.utility.threadmanager.SuspendableThread" in str(type(thread)))
+            print(
+                'YAY Class {thread_class} of type {thread_type} is a SuspendableThread'.format(
+                    thread_class=repr(thread),
+                    thread_type=type(thread)
+                ))
+        except:
+            raise NotASuspendableThreadExc(
+                'Class {thread_class} of type {thread_type} is not a SuspendableThread'.format(
+                    thread_class=repr(thread),
+                    thread_type=type(thread))
+            )
+
+        # assert("scarlett_os.utility.threadmanager.NotThreadSafe" in str(type(thread)))
+        threadsafe = getattr(thread, '_is_thread_safe', True)
+
+        if not threadsafe:
+            raise NotThreadSafeExc(
+                'Class {thread_class} of type {thread_type} is not Thread Safe'.format(
+                    thread_class=repr(thread),
+                    thread_type=type(thread))
+            )
+
+        # try:
+        #     getattr(thread, '_not_thread_safe')
+        # except AttributeError:
+        #     raise NotThreadSafeExc(
+        #         'Class {thread_class} of type {thread_type} is not Thread Safe'.format(
+        #             thread_class=repr(thread),
+        #             thread_type=type(thread))
+        #     )
+
+        # try:
+        #     assert(hasattr(thread, 'check_for_sleep'))
+        # except AttributeError:
+        #     print('Class', thread, type(thread), 'is not a SuspendableThread')
+        #     raise
+        # if isinstance(thread, NotThreadSafe):
+        #     raise TypeError("Thread %s is NotThreadSafe" % thread)
         self.threads.append(thread)
         thread.connect('pause', self.register_thread_paused)
         thread.connect('resume', self.register_thread_resume)
@@ -234,12 +311,24 @@ class ThreadManager:
             else:
                 thread_to_add.initialize_thread()
 
+    @staticmethod
+    def get_instance(max_concurrent_threads):
+        """
+        Singleton to return a DBusRunner object.
 
-def get_thread_manager(max_concurrent_threads):
-    try:
-        return ThreadManager(max_concurrent_threads=max_concurrent_threads)
-    except ThreadManager as tm:
-        return tm
+        ``Return:`` :class:`scarlett_os.internal.dbus_runner.DBusRunner`
+        """
+        if not ThreadManager.__instance:
+            ThreadManager.__instance = ThreadManager(max_concurrent_threads=max_concurrent_threads)
+        return ThreadManager.__instance
+
+
+# def get_thread_manager(max_concurrent_threads):
+#     try:
+#         return ThreadManager(max_concurrent_threads=max_concurrent_threads)
+#     except ThreadManager as tm:
+#         return tm
+
 
 if __name__ == "__main__":
     # Smoke Tests
@@ -287,7 +376,7 @@ if __name__ == "__main__":
                 self.emit('progress', -1, 'Working interminably')
                 self.check_for_sleep()
 
-    tm = get_thread_manager(2)
+    tm = ThreadManager.get_instance(2)
     for desc, thread in [
         ('Interminable 1', TestInterminable()),
         ('Linear 1', TestThread()),
@@ -297,7 +386,7 @@ if __name__ == "__main__":
     ]:
         tm.add_thread(thread)
 
-    def get_tm_active_count(*args):
+    def get_tm_active_count(*args):  # pylint: disable=C0111
         time.sleep(3)
         if tm.completed_threads < to_complete:
             print("tm.completed_threads < to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
@@ -312,12 +401,12 @@ if __name__ == "__main__":
             threads = threading.enumerate()
             if len(threads) > 1:
                 msg = "Another process is in progress"
-                for t in threads:
-                    if "import" in t.getName():
+                for t_in_progress in threads:
+                    if "import" in t_in_progress.getName():
                         msg = _("An import is in progress.")
-                    if "export" in t.getName():
+                    if "export" in t_in_progress.getName():
                         msg = _("An export is in progress.")
-                    if "delete" in t.getName():
+                    if "delete" in t_in_progress.getName():
                         msg = _("A delete is in progress.")
 
             # source: https://github.com/thinkle/gourmet/blob/a97af28b79af7cf1181b8bbd14c61eb396eb7ac6/gourmet/GourmetRecipeManager.py
@@ -327,12 +416,13 @@ if __name__ == "__main__":
             quit_anyway = True
 
             if quit_anyway:
-                for t in threads:
-                    if t.getName() != 'MainThread':
+                for t_quit_anyway in threads:
+                    if t_quit_anyway.getName() != 'MainThread':
                         try:
-                            t.terminate()
-                        except:
-                            print("Unable to terminate thread %s" % t)
+                            t_quit_anyway.terminate()
+                        except BaseException as t_quit_anyway_exec:  # pylint: disable=C0103
+                            print("Unable to terminate thread %s" % t_quit_anyway)
+                            print("[t_quit_anyway.terminate()] Recieved: {}".format(str(t_quit_anyway_exec)))
                             # try not to lose data if this is going to
                             # end up in a force quit
                             return True

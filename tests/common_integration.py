@@ -27,10 +27,10 @@ import scarlett_os.utility.yaml as yaml
 from scarlett_os.const import STATE_ON
 from scarlett_os.const import STATE_OFF
 from scarlett_os.const import DEVICE_DEFAULT_NAME
-from scarlett_os.const import EVENT_TIME_CHANGED,
+from scarlett_os.const import EVENT_TIME_CHANGED
 from scarlett_os.const import EVENT_STATE_CHANGED
 from scarlett_os.const import EVENT_PLATFORM_DISCOVERED
-from scarlett_os.const import ATTR_SERVICE,
+from scarlett_os.const import ATTR_SERVICE
 from scarlett_os.const import ATTR_DISCOVERED
 from scarlett_os.const import SERVER_PORT
 

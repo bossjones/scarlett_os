@@ -1,0 +1,48 @@
+{
+  "build_systems":
+  [
+    {
+      "file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+      "name": "ScarlettOS Python Builder",
+      "selector": "source.python",
+      "shell_cmd": "\"tcp://localhost:19360?pathmap=~/dev/bossjones/scarlett_os,/home/pi/dev/bossjones/scarlett_os\" -u \"$file\""
+    },
+    {
+            "name": "ScarlettOS List",
+            "shell_cmd": "ls -l"
+    }
+  ],
+  "folders":
+  [
+    {
+      "follow_symlinks": true,
+      "path": "."
+    }
+  ],
+  "settings":
+    {
+        "anaconda_linting": true,
+        "anaconda_linting_behaviour": "always",
+        "pep257": false,
+        "python_interpreter": "tcp://localhost:19360?pathmap=~/dev/bossjones/scarlett_os,/home/pi/dev/bossjones/scarlett_os",
+        "test_command": "make docker-compose-run-test",
+        "use_pylint": false,
+        "validate_imports": true,
+
+        "auto_formatting": false,
+        "autoformat_ignore":
+        [
+            "E309",
+            "E501"
+        ],
+        "pep8_ignore":
+        [
+            "E309",
+            "E501"
+        ],
+        "anaconda_linter_underlines": false,
+        "anaconda_linter_mark_style": "outline",
+        "display_signatures": true,
+        "disable_anaconda_completion": true
+    }
+}

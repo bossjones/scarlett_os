@@ -85,6 +85,21 @@ def dump(obj):
         if hasattr(obj, attr):
             print("obj.%s = %s" % (attr, getattr(obj, attr)))
 
+
+def get_pprint():
+    import pprint
+    # global pretty print for debugging
+    pp = pprint.PrettyPrinter(indent=4)
+    return pp
+
+def pprint_color(obj):
+    # source: https://gist.github.com/EdwardBetts/0814484fdf7bbf808f6f
+    from pygments import highlight
+    from pygments.lexers import PythonLexer
+    from pygments.formatters import Terminal256Formatter
+    from pprint import pformat
+    print(highlight(pformat(obj), PythonLexer(), Terminal256Formatter()))
+
 # example dump
 # In [3]: dump(_p)
 # obj.__bytes__ = <bound method PurePath.__bytes__ of PosixPath('/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot')>

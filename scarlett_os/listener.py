@@ -168,11 +168,28 @@ class SuspendableMainLoopThread(SuspendableThread):
     A mainloop is used by all asynchronous objects to defer handlers and callbacks to. The function run() blocks until the function quit() has been called (and all queued handlers have been executed). The run() function will then execute all the handlers in order.
     """
 
+    # DISABLED 5/15/2017 # def __init__(self, stop_event):
     def __init__(self):
         super(SuspendableMainLoopThread, self).__init__(name="SuspendableMainLoopThread")
+        #####################
+        # NOTE: A thread can be flagged as a "daemon thread".
+        # The significance of this flag is that the entire
+        # Python program exits when only daemon threads are left.
+        # The initial value is inherited from the creating thread.
+        # The flag can be set through the daemon property or the daemon constructor argument.
+        #####################
+        # NOTE: Daemon threads are abruptly stopped at shutdown.
+        # Their resources (such as open files, database transactions, etc.)
+        # may not be released properly.
+        # If you want your threads to stop gracefully,
+        # make them non-daemonic and use a suitable signalling mechanism such as an Event.
+        #####################
         self.daemon = True
         self.__loop = GObject.MainLoop()
         self.__active = False
+        # NOTE: How to stop a daemon thread
+        # source: https://stackoverflow.com/questions/41131117/how-to-stop-daemon-thread
+        # self.__stop_event = stop_event
 
     def do_run(self):
         """
@@ -200,6 +217,7 @@ class SuspendableMainLoopThread(SuspendableThread):
             # But calling this function on a source whose
             # GLib.MainContext has been destroyed is an error.
             context = self.__loop.get_context()
+            # DISABLED: 5/15/2017 # while not self.stop_event.is_set():
             while self.__active:
                 context.iteration(False)
                 # Checks if any sources have pending events for the given context.
@@ -208,12 +226,28 @@ class SuspendableMainLoopThread(SuspendableThread):
                     time.sleep(.1)
                     self.emit('progress', -1, 'SuspendableMainLoopThread working interminably')
                     self.check_for_sleep()
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, SystemExit):
             print('MainLoopThread recieved a Ctrl-C. Exiting gracefully...')
             self.__active = False
+            # 5/15/2017: do we need this below???
+            # self.emit('stopped')
             self.__loop.quit()
             print('MainLoopThread finished ...')
-            return
+            ##############################################################################################
+            # https://stackoverflow.com/questions/15300550/python-return-return-none-and-no-return-at-all#
+            # Using return.
+            # This is used for the same reason as break in loops.
+            # The return value doesn't matter and you only want to exit the whole function.
+            # It's extremely useful in some places, even tho you don't need it that often.
+            # We got 15 prisoners and we know one of them has a knife.
+            # We loop through each prisoner one by one to check if they have a knife.
+            # If we hit the person with a knife,
+            # we can just exit the function cause we know there's only one knife and no reason the check rest of the prisoners.
+            # If we don't find the prisoner with a knife, we raise an the alert.
+            # This could be done in many different ways and using return is probably not even the best way,
+            # but it's just an example to show how to use return for exiting a function.
+            ##############################################################################################
+            return  # no need to check rest of the prisoners nor raise an alert
 
     def get_loop(self):
         return self.__loop
