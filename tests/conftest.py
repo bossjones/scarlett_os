@@ -28,6 +28,10 @@ from tests import PROJECT_ROOT
     * dbus has already been started up by Docker or is running on your OS
 """
 
+OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
+INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
+
+
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
 @pytest.fixture(scope='function')
 def empty():
@@ -43,65 +47,42 @@ def wait_until(f, timeout_secs=10):
         if time.time() > expiry_time:
             return val  # falsy
 
-########################################################################
-#       code from pydbus
-########################################################################
-# DBUS_SESSION_BUS_ADDRESS = os.getenv("DBUS_SESSION_BUS_ADDRESS")
-
-# with connect(DBUS_SESSION_BUS_ADDRESS) as bus:
-#   bus.dbus
-
-# del bus._dbus
-# try:
-#   bus.dbus
-#   assert(False)
-# except RuntimeError:
-#   pass
-
-# with SessionBus() as bus:
-#   pass
-
-# # SessionBus() and SystemBus() are not closed automatically, so this should work:  # noqa
-# bus.dbus
-########################################################################
-
-# OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
-# INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
-
 # https://stackoverflow.com/questions/25072126/why-does-python-lint-want-me-to-use-different-local-variable-name-than-a-global
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT def _setup():
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     if 'TRAVIS_CI' in os.environ:
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT         if 'DISPLAY' not in os.environ:
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT             # TODO: Should this be on :99 ?
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT             os.environ['DISPLAY'] = ':0'
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT         print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     # Setup an environment for the fixtures to share so the bus address is the same for all  # noqa
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     environment = environ.copy()
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     # Setup an environment for the fixtures to share so the bus address is the same for all
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT
-# TODO: 5/7/2017: ENABLE THIS AND GET RID OF GLOBAL VARS ASSIGNMENT     print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"]))
+def setup_environment():
+    # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
+    if 'TRAVIS_CI' in os.environ:
+        if 'DISPLAY' not in os.environ:
+            # TODO: Should this be on :99 ?
+            os.environ['DISPLAY'] = ':0'
+
+    if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
+        print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
+
+    # Setup an environment for the fixtures to share so the bus address is the same for all  # noqa
+    environment = environ.copy()
+
+    # Setup an environment for the fixtures to share so the bus address is the same for all
+    environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
+
+    print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"]))
+    return environment
 
 
-# source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
-if 'TRAVIS_CI' in os.environ:
-    if 'DISPLAY' not in os.environ:
-        # TODO: Should this be on :99 ?
-        os.environ['DISPLAY'] = ':0'
+@pytest.fixture(scope="session")
+def get_environment():
+    yield setup_environment()
 
-if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
-    print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
+# # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
+# if 'TRAVIS_CI' in os.environ:
+#     if 'DISPLAY' not in os.environ:
+#         # TODO: Should this be on :99 ?
+#         os.environ['DISPLAY'] = ':0'
 
-# Setup an environment for the fixtures to share so the bus address is the same for all  # noqa
-environment = environ.copy()
+# if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
+#     print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
+
+# # Setup an environment for the fixtures to share so the bus address is the same for all  # noqa
+# environment = environ.copy()
 
 ########################################################################
 # NOTE: unix sockets, abstract ( eg 'unix:abstract=' )
@@ -127,7 +108,6 @@ environment = environ.copy()
 # DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-MAIDjJlN9C,guid=1f05155ec6139a513e017f81587a8693
 # environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
 
-# TODO: own_name() is deprecated, use request_name() instead.
 # bus.own_name(name='org.scarlett')
 
 ########################################################################
@@ -204,14 +184,14 @@ environment = environ.copy()
 # file descriptor 0,1,2 meaning - END
 ########################################################################
 
-OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
-INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
+# OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
+# INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
 
 
-# Setup an environment for the fixtures to share so the bus address is the same for all
-environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
+# # Setup an environment for the fixtures to share so the bus address is the same for all
+# environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
 
-print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"]))
+# print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"]))
 
 # DISABLED # # As historical note, another way to write teardown code is by
 # DISABLED # # accepting a request object into your fixture function and can
@@ -248,7 +228,7 @@ print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDR
 # FROM: dbus-proxy # @pytest.fixture(scope="function")
 # @pytest.fixture
 @pytest.fixture(scope="module")
-def create_session_bus(request):
+def create_session_bus(request, get_environment):
     # source: dbus-proxy
     """
     Create a session bus.
@@ -275,7 +255,7 @@ def create_session_bus(request):
         # as recommended in the docs.
         dbus_daemon = Popen(
             "".join(start_dbus_daemon_command),
-            env=environment,
+            env=get_environment,
             shell=True,
             stdout=sys.stdout)
         print('\n[setup] create_session_bus, dbus-daemon running ...')
@@ -298,7 +278,7 @@ def create_session_bus(request):
 
 @pytest.fixture(scope="module")
 # @pytest.fixture
-def service_on_outside(request, create_session_bus):
+def service_on_outside(request, get_environment, create_session_bus):
     # FROM: dbus-proxy
     """
     Start the service on the "outside" as seen from the proxy.
@@ -318,7 +298,7 @@ def service_on_outside(request, create_session_bus):
                 "-m",
                 "scarlett_os.mpris"
             ],
-            env=environment,
+            env=get_environment,
             stdout=sys.stdout,
             cwd=scarlett_root)
         # Allow time for the service to show up on the bus
@@ -340,7 +320,7 @@ def service_on_outside(request, create_session_bus):
 
 
 @pytest.fixture
-def service_tasker(request):
+def service_tasker(request, get_environment):
     """
     Start the Scarlett Tasker Service after the mpris is already running
 
@@ -358,7 +338,7 @@ def service_tasker(request):
                 "-m",
                 "scarlett_os.tasker"
             ],
-            env=environment,
+            env=get_environment,
             stdout=sys.stdout,
             cwd=scarlett_root)
         # Allow time for the service to show up on the bus
@@ -377,100 +357,8 @@ def service_tasker(request):
     request.addfinalizer(teardown)
 
 
-# @pytest.fixture
-# def create_tasker_object(request):
-#     # source: dbus-proxy
-#     """
-#     Create a Scarlett Tasker Object
-#
-#     """
-#
-#     # Return return code for running shell out command
-#     def cb(pid, status):
-#         """
-#         Set return code for emitter shell script.
-#         """
-#         test_status = status
-#
-#     # Append tuple to recieved_signals
-#     def catchall_handler(*args, **kwargs):  # pragma: no cover
-#         """
-#         Catch all handler.
-#         Catch and print information about all singals.
-#         """
-#         # unpack tuple to variables ( Taken from Tasker )
-#         for i, v in enumerate(args):
-#             if isinstance(v, tuple):
-#                 tuple_args = len(v)
-#                 if tuple_args == 1:
-#                     msg = v
-#                 elif tuple_args == 2:
-#                     msg, scarlett_sound = v
-#                 elif tuple_args == 3:
-#                     msg, scarlett_sound, command = v
-#
-#         test_recieved_signals.append(v)
-#
-#         print('--- [args] ---')
-#         for arg in args:
-#             print("another arg through *arg : {}".format(arg))
-#
-#         print('--- [kargs] ---')
-#         if kwargs is not None:
-#             for key, value in kwargs.items():
-#                 print("{} = {}".format(key, value))
-#
-#         print("\n")
-#
-#         loop.quit()
-#
-#     # TODO: Parametrize the socket path.
-#
-#     tskr = tasker.ScarlettTasker()
-#
-#     tskr.prepare(catchall_handler, catchall_handler, catchall_handler)
-#     tskr.configure()
-#
-#     # dbus_daemon = None
-#     # # The 'exec' part is a workaround to make the whole process group be killed
-#     # # later when kill() is caled and not just the shell. This is only needed when
-#     # # 'shell' is set to True like in the later Popen() call below.
-#     # start_dbus_daemon_command = [
-#     #     "exec",
-#     #     " dbus-daemon",
-#     #     " --session",
-#     #     " --nofork",
-#     #     " --address=" + "unix:path=" + OUTSIDE_SOCKET
-#     # ]
-#     # try:
-#     #     # For some reason shell needs to be set to True,
-#     #     # which is the reason the command is passed as
-#     #     # a string instead as an argument list,
-#     #     # as recommended in the docs.
-#     #     dbus_daemon = Popen(
-#     #         "".join(start_dbus_daemon_command),
-#     #         env=environment,
-#     #         shell=True,
-#     #         stdout=sys.stdout)
-#     #     # Allow time for the bus daemon to start
-#     #     sleep(0.3)
-#     # except OSError as e:
-#     #     print("Error starting dbus-daemon: {}".format(str(e)))
-#     #     sys.exit(1)
-#
-#     def teardown():
-#         dbus_daemon.kill()
-#         os.remove(OUTSIDE_SOCKET)
-#
-#     # The finalizer is called after all of the tests that use the fixture.
-#     # If you’ve used parameterized fixtures,
-#     # the finalizer is called between instances of the parameterized fixture changes.
-#     request.addfinalizer(teardown)
-
-
 @pytest.fixture(scope='module')
-# @pytest.fixture
-def get_bus(request, create_session_bus):
+def get_bus(request, get_environment, create_session_bus):
     """
     Provide the session bus instance.
 
@@ -483,9 +371,9 @@ def get_bus(request, create_session_bus):
     # all the code after the yield
     # statement serves as the teardown code.:
     # if os.environ.get('DBUS_SESSION_BUS_ADDRESS'):
-    if environment['DBUS_SESSION_BUS_ADDRESS']:
+    if get_environment['DBUS_SESSION_BUS_ADDRESS']:
         print("[get_bus] inside if environment['DBUS_SESSION_BUS_ADDRESS']")
-        bus = connect(environment["DBUS_SESSION_BUS_ADDRESS"])
+        bus = connect(get_environment["DBUS_SESSION_BUS_ADDRESS"])
         # yield bus
         # print("teardown new session bus")
         # return dbus.bus.BusConnection(os.environ['DBUS_SESSION_BUS_ADDRESS'])
@@ -627,6 +515,7 @@ def get_bus(request, create_session_bus):
 ########################################################################
 #
 
+# TODO: See if this is something we want to do or not
 # @pytest.fixture
 # def hamster_service3(request, session_bus):
 #     """
@@ -657,8 +546,7 @@ def get_bus(request, create_session_bus):
 #     return process
 
 @pytest.fixture(scope="module")
-# @pytest.fixture
-def scarlett_os_interface(request, get_bus):
+def scarlett_os_interface(request, get_environment, get_bus):
     # ORIG # def scarlett_os_interface(request, session_bus, hamster_service3):  # noqa
     """Provide a covinient interface hook to our hamster-dbus service."""
     time.sleep(2)
@@ -672,7 +560,7 @@ def scarlett_os_interface(request, get_bus):
 
 # @pytest.fixture
 @pytest.fixture(scope="module")
-def get_dbus_proxy_obj_helper(request, get_bus):
+def get_dbus_proxy_obj_helper(request, get_environment, get_bus):
     """
     Returns dbus proxy object connected to org.scarlett @ /org/scarlett/Listener  # noqa
 
@@ -680,184 +568,7 @@ def get_dbus_proxy_obj_helper(request, get_bus):
     """
     time.sleep(2)
     print("[get_dbus_proxy_obj_helper] ('org.scarlett','/org/scarlett/Listener')")  # noqa
-    # In [1]: from pydbus import SessionBus
-
-    # In [2]: from pydbus import connect
-
-    # In [3]: bus = connect('unix:abstract=/tmp/dbus-nJ52F5C5hQ,guid=fd01ec563d96b1011e5afea8587bd0bc')  # noqa
-
-    # In [4]: bus
-    # Out[4]: <pydbus.bus.Bus at 0x7ff0ec397468>
-
-    # In [5]: help(bus.request_name)
-
-    # In [6]: help(bus.get)
-
-    # In [7]: ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # noqa
-
-    # In [8]: ss
-    # Out[8]: <DBUS.<CompositeObject>(org.scarlett.Listener1+org.freedesktop.DBus.Introspectable+org.freedesktop.DBus.Properties) at 0x7ff0ec3b14d0>  # noqa
-
-    # In [9]: dir(ss)
-    # Out[9]:
-    # ['CanQuit',
-    #  'CanRaise',
-    #  'CommandRecognizedSignal',
-    #  'ConnectedToListener',
-    #  'DesktopEntry',
-    #  'Fullscreen',
-    #  'Get',
-    #  'GetAll',
-    #  'HasTrackList',
-    #  'Identity',
-    #  'Introspect',
-    #  'KeywordRecognizedSignal',
-    #  'ListenerCancelSignal',
-    #  'ListenerReadySignal',
-    #  'Quit',
-    #  'Set',
-    #  'SttFailedSignal',
-    #  '_Introspect',
-    #  '__class__',
-    #  '__delattr__',
-    #  '__dict__',
-    #  '__dir__',
-    #  '__doc__',
-    #  '__eq__',
-    #  '__format__',
-    #  '__ge__',
-    #  '__getattribute__',
-    #  '__getitem__',
-    #  '__gt__',
-    #  '__hash__',
-    #  '__init__',
-    #  '__le__',
-    #  '__lt__',
-    #  '__module__',
-    #  '__ne__',
-    #  '__new__',
-    #  '__reduce__',
-    #  '__reduce_ex__',
-    #  '__repr__',
-    #  '__setattr__',
-    #  '__sizeof__',
-    #  '__str__',
-    #  '__subclasshook__',
-    #  '__weakref__',
-    #  '_bus',
-    #  '_bus_name',
-    #  '_object',
-    #  '_path',
-    #  'emitCommandRecognizedSignal',
-    #  'emitConnectedToListener',
-    #  'emitKeywordRecognizedSignal',
-    #  'emitListenerCancelSignal',
-    #  'emitListenerMessage',
-    #  'emitListenerReadySignal',
-    #  'emitSttFailedSignal',
-    #  'onCommandRecognizedSignal',
-    #  'onConnectedToListener',
-    #  'onKeywordRecognizedSignal',
-    #  'onListenerCancelSignal',
-    #  'onListenerReadySignal',
-    #  'onSttFailedSignal']
     return get_bus.get("org.scarlett", object_path='/org/scarlett/Listener')
-
-
-# def dbus_send_sbuprocess(self, session_bus, service_on_outside, dbus_proxy):
-#     """ Assert dbus-proxy doesn't crash due to fd and zombie process leaks.
-#         The history behind this test is that there was a bug reported that
-#         dbus-proxy always crashed after 544 calls on D-Bus.
-#         Test steps:
-#           * Configure dbus-proxy.
-#           * Call a method on D-Bus from "inside".
-#           * Assert the method call can be performed 1024 times, i.e.
-#             dbus-proxy didn't crash.
-#     """
-
-#     dbus_send_command = [
-#         "dbus-send",
-#         "--address=" + dbus_proxy.INSIDE_SOCKET,
-#         "--print-reply",
-#         "--dest=" + stubs.BUS_NAME,
-#         stubs.OPATH_1,
-#         stubs.IFACE_1 + "." + stubs.EXT_1 + "." + stubs.METHOD_1,
-#         'string:"My unique key"']
-
-#     environment = environ.copy()
-#     for _x in range(0, 1024):
-#         dbus_send_process = Popen(dbus_send_command,
-#                                   env=environment,
-#                                   stdout=PIPE)
-#         Popen.communicate(input=None) Interact with process:
-#         Send data to stdin. Read data from stdout and stderr,
-#         until end-of-file is reached.
-#         Wait for process to terminate.
-#         The optional input argument should be a string to be sent
-#         to the child process, or None,
-#         if no data should be sent to the child.
-#
-#         captured_stdout = dbus_send_process.communicate()[0]
-#         assert "My unique key" in captured_stdout
-
-# dbus-send \
-# --address=unix:abstract=/tmp/dbus-jDEVlaa4gH,guid=0731db7bb15b0f356987abe7587bf5f6 \
-# --print-reply \
-# --dest=org.scarlett \
-# /org/scarlett/Listener \
-# org.scarlett.Listener \
-# emitConnectedToListener \
-# 'string:"ScarlettEmitter"'
-
-# def create_main_loop():
-#     mainloop = GLib.MainLoop()
-#     timed_out = False
-
-#     def quit_cb(unused):
-#         nonlocal timed_out  # noqa
-#         timed_out = True
-#         mainloop.quit()
-
-#     def run(timeout_seconds=5):
-#         source = GLib.timeout_source_new_seconds(timeout_seconds)
-#         source.set_callback(quit_cb)
-#         source.attach()
-#         GLib.MainLoop.run(mainloop)
-#         source.destroy()
-#         if timed_out:
-#             raise Exception("Timed out after %s seconds" % timeout_seconds)
-
-#     mainloop.run = run
-#     return mainloop
-
-# def run_emitter(cmd, environment):
-#     """
-#     Run emitter in subshell to test dbus signals are being sent correctly
-#     """
-#     emitter_cmd = None
-#     scarlett_root = r"{}".format(PROJECT_ROOT)
-#     print("[run_emitter]: {}".format(scarlett_root))
-#
-#     try:
-#         emitter_cmd = subprocess.Popen(
-#             [
-#                 "python3",
-#                 "-m",
-#                 "scarlett_os.emitter",
-#                 "-s ",
-#                 cmd
-#             ],
-#             env=environment,
-#             stdout=sys.stdout,
-#             cwd=scarlett_root)
-#         # Allow time for the service to show up on the bus
-#         # before consuming tests can try to use it.
-#         time.sleep(0.3)
-#     except OSError as e:
-#         print("Error starting service on outside: {}".format(str(e)))
-#         sys.exit(1)
-#
-#     emitter_cmd.kill()
 
 
 # TODO: Think about implementing this, it allows you to create one DBusRunner per test session
@@ -893,12 +604,7 @@ def get_dbus_proxy_obj_helper(request, get_bus):
 #     request.addfinalizer(shutdown)
 
 @pytest.fixture
-def get_environment():
-    return environment
-
-
-@pytest.fixture
-def service_receiver(request):
+def service_receiver(request, get_environment):
     """
     Start the Scarlett Tasker Service after the mpris is already running
 
@@ -914,7 +620,7 @@ def service_receiver(request):
     ]
 
     try:
-        receiver_service = ProcessMonitor(receiver_cmd)
+        receiver_service = ProcessMonitor(receiver_cmd, environment=get_environment)
         # Allow time for the service to show up on the bus
         # before consuming tests can try to use it.
         sleep(0.3)
@@ -975,7 +681,7 @@ class ProcessMonitor(subprocess.Popen):
     output into a file
     """
 
-    def __init__(self, cmd, cmd_output_target=sys.stderr, environment=environment):
+    def __init__(self, cmd, cmd_output_target=sys.stderr, environment=None):
         self.log = logging.getLogger('server-output-monitor')
 
         # Logfile to write to
@@ -1117,5 +823,4 @@ class ProcessMonitor(subprocess.Popen):
 
 if __name__ == "__main__":
     print('testing_create_session_bus')
-    # create_session_bus()
     print('testing_create_session_bus_end')
