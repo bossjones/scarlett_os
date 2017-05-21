@@ -477,6 +477,7 @@ class TestScarlettSubprocess(object):
 
         mocker.stopall()
 
+    # FIXME: Re-enable these guys
     # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
     # def test_subprocess_fork_and_spawn_command(self, mock_logging_debug):
     #     """Test a full run connamd of Subprocess.run()"""
