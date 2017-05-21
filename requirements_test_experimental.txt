@@ -2,7 +2,7 @@ pytest-leaks
 pytest-xdist
 unittest2pytest
 pympler
-pydocstyle
+pydocstyle==2.0.0
 pytest-ordering
 pytest-interactive
 
