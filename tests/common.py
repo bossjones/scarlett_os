@@ -28,29 +28,6 @@ _TEST_INSTANCE_PORT = SERVER_PORT
 logger = logging.getLogger(__name__)
 
 
-# def clean_scarlett_os_subprocess_mock(sub_p):
-#     sub_p.process = None
-#     sub_p.pid = None
-
-
-# def create_scarlett_os_subprocess_mock(sub_p):
-#     sub_p = mock.MagicMock()
-
-#     return sub_p
-
-
-# def create_pitivi_mock(**settings):
-#     app = mock.MagicMock()
-#
-#     app.write_action = mock.MagicMock(spec=Pitivi.write_action)
-#     check.check_requirements()
-#
-#     app.settings = __create_settings(**settings)
-#     app.proxy_manager = ProxyManager(app)
-#
-#     return app
-
-
 def get_test_config_dir(*add_path):
     """Return a path to a test config dir."""
     return os.path.join(os.path.dirname(__file__), "testing_config", *add_path)

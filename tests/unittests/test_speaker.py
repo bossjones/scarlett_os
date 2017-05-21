@@ -23,20 +23,6 @@ from scarlett_os.utility.gnome import _IdleObject, abort_on_exception, trace
 from tests import common
 
 
-# NOTE: We can't add this here, otherwise we won't be able to mock them
-
-
-
-
-# source: https://github.com/darvid/reqwire/blob/4a1c94f4beaa25caab2bf13e7a427a4d8150660d/tests/unit/conftest.py
-# FAKE_TIME = datetime.datetime(2020, 1, 1, 0, 0, 0)
-
-
-# @pytest.fixture
-# def fake_time():
-#     yield FAKE_TIME
-
-
 @pytest.mark.unittest
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyunittest
