@@ -1,9 +1,9 @@
 """Test component helpers."""
+# pylint: disable=protected-access,too-many-public-methods
+from collections import OrderedDict
 import imp
 import unittest
 import unittest.mock as mock
-# pylint: disable=protected-access,too-many-public-methods
-from collections import OrderedDict
 
 import pytest
 

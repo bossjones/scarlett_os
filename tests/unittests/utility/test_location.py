@@ -7,7 +7,6 @@ import requests
 import requests_mock
 
 import scarlett_os.utility.location as location_util
-
 from tests.common import load_fixture
 
 # Paris

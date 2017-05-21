@@ -6,33 +6,28 @@ test_tasker
 ----------------------------------
 """
 
+# NOTE: We can't add this here, otherwise we won't be able to mock them
+# from tests import common
+import builtins
+import imp
 import os
+import signal
 import sys
-
-import pytest
+import time
 import unittest
 import unittest.mock as mock
+
 from mock import call
+import pydbus
+from pydbus import SessionBus
+import pytest
 
 import scarlett_os
 from scarlett_os import tasker  # Module with our thing to test
+import scarlett_os.exceptions
+from scarlett_os.internal.gi import Gio, GLib, GObject, gi
 from scarlett_os.utility import gnome  # Module with the decorator we need to replace
 
-import time
-from scarlett_os.internal.gi import gi
-from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import GObject
-from scarlett_os.internal.gi import Gio
-import pydbus
-from pydbus import SessionBus
-
-# NOTE: We can't add this here, otherwise we won't be able to mock them
-# from tests import common
-import signal
-import builtins
-import scarlett_os.exceptions
-
-import imp
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
 @pytest.fixture(scope='function')

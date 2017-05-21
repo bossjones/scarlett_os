@@ -8,34 +8,31 @@ test_player
 
 # import ipdb
 
-import os
-import sys
-
-import unittest
-
 # import mock
+import builtins
+import imp
+import os
+import signal
+import sys
+import unittest
 import unittest.mock as mock
 
 # import threading
 import pytest
 
-
 import scarlett_os
-from scarlett_os.utility.gnome import trace
-from scarlett_os.utility.gnome import abort_on_exception
-from scarlett_os.utility.gnome import _IdleObject
-
 from scarlett_os import player
+import scarlett_os.exceptions
+from scarlett_os.utility.gnome import _IdleObject, abort_on_exception, trace
+from tests import common
+
+
 # DISABLED 5/8/2017 LETS TRY TO DO EVERYTHING FROM player # from scarlett_os.player import get_loop_thread, MainLoopThread, ScarlettPlayer
 
 # NOTE: We can't add this here, otherwise we won't be able to mock them
 # from scarlett_os.internal.gi import GLib, GObject
 
-from tests import common
-import signal
-import builtins
 
-import scarlett_os.exceptions
 
 # from scarlett_os.exceptions import (IncompleteGStreamerError, MetadataMissingError, NoStreamError, FileReadError, UnknownTypeError, InvalidUri, UriReadError)
 
@@ -49,7 +46,6 @@ import scarlett_os.exceptions
 # In [3]: ScarlettPlayer(path)
 # TypeError: __init__() missing 1 required positional argument: 'callback'
 
-import imp
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
 @pytest.fixture(scope='function')

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import doctest
 import sys
 import time
+import unittest
 
 import scarlett_os
 

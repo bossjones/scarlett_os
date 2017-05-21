@@ -1,38 +1,26 @@
 """Test the helper method for writing tests."""
-import os
-
-import contextlib
-import gc
-import tempfile
-import unittest
-import unittest.mock as mock
-
 # from datetime import timedelta
-from unittest.mock import patch
+import contextlib
+from contextlib import contextmanager
+import gc
 from io import StringIO
 import logging
+import os
+import tempfile
 import threading
-from contextlib import contextmanager
+import unittest
+import unittest.mock as mock
+from unittest.mock import patch
 
-from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import Gio
-from scarlett_os.internal.gi import GObject
-from scarlett_os.internal.gi import Gst
-
-from scarlett_os import core as s, loader
-from scarlett_os.utility.unit_system import METRIC_SYSTEM
+from scarlett_os import core as s
+from scarlett_os import loader
+from scarlett_os.const import (
+    ATTR_DISCOVERED, ATTR_SERVICE, DEVICE_DEFAULT_NAME, EVENT_PLATFORM_DISCOVERED, EVENT_STATE_CHANGED, EVENT_TIME_CHANGED, SERVER_PORT,
+    STATE_OFF, STATE_ON)
+from scarlett_os.internal.gi import Gio, GLib, GObject, Gst
 import scarlett_os.utility.dt as date_utility
+from scarlett_os.utility.unit_system import METRIC_SYSTEM
 import scarlett_os.utility.yaml as yaml
-
-from scarlett_os.const import STATE_ON
-from scarlett_os.const import STATE_OFF
-from scarlett_os.const import DEVICE_DEFAULT_NAME
-from scarlett_os.const import EVENT_TIME_CHANGED
-from scarlett_os.const import EVENT_STATE_CHANGED
-from scarlett_os.const import EVENT_PLATFORM_DISCOVERED
-from scarlett_os.const import ATTR_SERVICE
-from scarlett_os.const import ATTR_DISCOVERED
-from scarlett_os.const import SERVER_PORT
 
 _TEST_INSTANCE_PORT = SERVER_PORT
 logger = logging.getLogger(__name__)

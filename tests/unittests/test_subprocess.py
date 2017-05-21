@@ -6,23 +6,29 @@ test_subprocess
 ----------------------------------
 """
 
+# from tests import common
+import builtins
 import os
+import re
+import signal
 import sys
 
-
-# import unittest
-# import unittest.mock as mock
 # from mock import call
 # import unittest
-import pytest
+# import unittest
+# import unittest.mock as mock
 from _pytest.monkeypatch import MonkeyPatch
+import pytest
+
+import scarlett_os
+
+
 # import mock
 # from mock import Mock
 # from pytest_mock import mocker
 
 # import unittest.mock as mock
 
-import scarlett_os
 # from scarlett_os import subprocess as ssubprocess
 # from scarlett_os.subprocess import check_pid
 # from scarlett_os.subprocess import Subprocess
@@ -30,10 +36,6 @@ import scarlett_os
 # NOTE: We can't add this here, otherwise we won't be able to mock them
 # from scarlett_os.internal.gi import GLib, GObject
 
-# from tests import common
-import signal
-import builtins
-import re
 # new_callable: allows you to specify a different class,
 # or callable object, that will be called to create the new object.
 # By default MagicMock is used.
@@ -581,4 +583,3 @@ class TestScarlettSubprocess(object):
     #     # mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
     #     # assert s.check_command_type(['who']) == True
     #     # mocker.stopall()
-

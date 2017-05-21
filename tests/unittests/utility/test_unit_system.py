@@ -1,22 +1,8 @@
 """Test the unit system helper."""
 import unittest
 
-from scarlett_os.utility.unit_system import (
-    UnitSystem,
-    METRIC_SYSTEM,
-    IMPERIAL_SYSTEM,
-)
-from scarlett_os.const import (
-    LENGTH_METERS,
-    LENGTH_KILOMETERS,
-    MASS_GRAMS,
-    VOLUME_LITERS,
-    TEMP_CELSIUS,
-    LENGTH,
-    MASS,
-    TEMPERATURE,
-    VOLUME
-)
+from scarlett_os.const import LENGTH, LENGTH_KILOMETERS, LENGTH_METERS, MASS, MASS_GRAMS, TEMP_CELSIUS, TEMPERATURE, VOLUME, VOLUME_LITERS
+from scarlett_os.utility.unit_system import IMPERIAL_SYSTEM, METRIC_SYSTEM, UnitSystem
 
 SYSTEM_NAME = 'TEST'
 INVALID_UNIT = 'INVALID'

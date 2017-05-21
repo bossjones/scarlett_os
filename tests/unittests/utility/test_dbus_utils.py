@@ -6,16 +6,17 @@ test_dbus_utils
 ----------------------------------
 """
 
-import pytest
+import imp  # Library to help us reload our tasker module
 import unittest
 import unittest.mock as mock
+
+import pydbus
+from pydbus import SessionBus
+import pytest
 
 import scarlett_os
 from scarlett_os.utility import dbus_utils
 
-import pydbus
-from pydbus import SessionBus
-import imp  # Library to help us reload our tasker module
 
 @pytest.fixture(scope='function')
 def dbus_utils_mocker_stopall(mocker):
