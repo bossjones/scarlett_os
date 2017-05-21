@@ -1,4 +1,4 @@
-pytest-leaks
+pytest-leaks==0.2.2
 pytest-xdist
 unittest2pytest
 pympler
