@@ -36,20 +36,18 @@ pytest-cov>=2.3.1
 pytest-timeout>=1.0.0
 pytest-catchlog>=1.2.2
 pytest-benchmark[histogram]>=3.0.0rc1
-freezegun==0.3.8
+freezegun==0.3.9
 git+git://github.com/mverteuil/pytest-ipdb.git
 pdbpp==0.8.3
 # pudb
 pytest-sugar==0.8.0
 pytest-rerunfailures>=2.1.0
-pytest-mock
-pytest-leaks
+pytest-mock==1.6.0
+pytest-leaks==0.2.2
 
 # # Test runners
-# pytest
 # pytest-capturelog
 # pytest-cov
-# pytest-xdist
 # pytest-faulthandler
 
 # # To make wheel packages
@@ -75,6 +73,5 @@ Cython==0.25.2
 
 # trace python process
 pystuck==0.8.5
-
 objgraph==3.1.0
 xdot==0.7

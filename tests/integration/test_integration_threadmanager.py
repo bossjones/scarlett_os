@@ -184,7 +184,7 @@ class TestThreadManager(object):
                 # It excludes terminated threads and threads that have not yet been started.
                 #########################################################################################
                 threads = threading.enumerate()
-                # FIXME: Filter by thread types before entering into this
+                # source: http://www.diveintopython.net/power_of_introspection/filtering_lists.html
                 filtered_threads = [elem for elem in threads if elem.getName() in whitelist_threads]
                 print("threads = threading.enumerate(): {}".format(filtered_threads))
                 for t_print in filtered_threads:

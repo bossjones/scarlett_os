@@ -76,15 +76,15 @@ def read_requirements(filename):
 
 requirements = [
     'Click>=6.0',
-    'click-plugins',
+    'click-plugins>=1.0',
     'pydbus>=0.5.0',
     'colorlog>=2.7',
     'jinja2>=2.8',
     'typing>=3,<4',
     'psutil>=4.3.0',
     'six',
-    'voluptuous==0.9.3',
-    'Fabric3==1.12.post1',
+    'voluptuous==0.10.5',
+    'Fabric3==1.13.1.post1',
     'PyYAML>=3.0'
 ]
 
@@ -115,7 +115,7 @@ test_requirements = [
     'mock',
     'pytest-benchmark[histogram]>=3.0.0rc1',
     'python-dbusmock',
-    'freezegun',
+    'freezegun==0.3.9',
     'hunter==1.4.1',
     'Cython==0.25.2',
     'pystuck==0.8.5',
@@ -125,9 +125,20 @@ test_requirements = [
     'objgraph==3.1.0',
     'xdot',
     'pytest-rerunfailures>=2.1.0',
-    'pytest-mock',
-    'isort'
+    'pytest-mock==1.6.0',
+    'isort==4.2.5'
 
+]
+
+experimental_requirements  = [
+    'pytest-xdist==1.16.0',
+    'unittest2pytest==0.3',
+    'pympler==0.5',
+    'pydocstyle==2.0.0',
+    'pytest-ordering==0.5',
+    'pytest-interactive==0.1.1',
+    'ptpdb==0.17',
+    'ptpython==0.39'
 ]
 
 # 0.1.dev2
@@ -161,7 +172,6 @@ class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = ['tests', '--ignore', 'tests/sandbox', '--verbose']
-        # self.test_args = []
         self.test_suite = True
 
     def run_tests(self):
@@ -169,10 +179,6 @@ class PyTest(TestCommand):
         import pytest
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
-
-
-# check_python_version()
-
 
 setup(
     name=PROJECT_PACKAGE_NAME,
@@ -217,6 +223,7 @@ setup(
     # dataset=mapboxcli.scripts.datasets:datasets
     extras_require={
         'test': test_requirements,
+        'experimental': experimental_requirements
     },
     include_package_data=True,
     install_requires=requirements,

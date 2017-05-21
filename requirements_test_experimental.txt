@@ -1,13 +1,12 @@
-pytest-leaks
-pytest-xdist
-unittest2pytest
-pympler
-pydocstyle
-pytest-ordering
-pytest-interactive
+pytest-xdist==1.16.0
+unittest2pytest==0.3
+pympler==0.5
+pydocstyle==2.0.0
+pytest-ordering==0.5
+pytest-interactive==0.1.1
 
-ptpdb
-ptpython
+ptpdb==0.17
+ptpython==0.39
 
 # source: https://github.com/pyca/pyopenssl/issues/447
 # source: https://github.com/dropbox/pytest-flakefinder
