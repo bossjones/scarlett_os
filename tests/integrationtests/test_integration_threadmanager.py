@@ -32,8 +32,8 @@ from scarlett_os.internal.gi import Gio
 from scarlett_os.utility import threadmanager
 from scarlett_os.utility.threadmanager import NotThreadSafe, SuspendableThread
 from tests import PROJECT_ROOT
-from tests.integration.baseclass import IntegrationTestbaseMainloop, run_emitter_signal
-from tests.integration.stubs import create_main_loop
+from tests.integrationtests.baseclass import IntegrationTestbaseMainloop, run_emitter_signal
+from tests.integrationtests.stubs import create_main_loop
 
 # import hunter
 # hunter.trace(module='threadmanager', action=hunter.CallPrinter)
