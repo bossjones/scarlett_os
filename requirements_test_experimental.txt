@@ -1,6 +1,6 @@
 pytest-leaks
 pytest-xdist
-unittest2pytest
+unittest2pytest==0.3
 pympler
 pydocstyle
 pytest-ordering
