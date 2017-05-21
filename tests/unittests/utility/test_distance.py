@@ -1,9 +1,9 @@
 """Test homeasssitant distance utility functions."""
 
 import unittest
+
+from scarlett_os.const import LENGTH_FEET, LENGTH_KILOMETERS, LENGTH_METERS, LENGTH_MILES
 import scarlett_os.utility.distance as distance_util
-from scarlett_os.const import (LENGTH_KILOMETERS, LENGTH_METERS, LENGTH_FEET,
-                                 LENGTH_MILES)
 
 INVALID_SYMBOL = 'bob'
 VALID_SYMBOL = LENGTH_KILOMETERS

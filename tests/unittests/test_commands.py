@@ -6,22 +6,22 @@ test_commands
 ----------------------------------
 """
 
+import datetime
+import imp
 import os
 import sys
-
-from freezegun import freeze_time
-import datetime
-
-import pytest
 import unittest
 import unittest.mock as mock
+
+from freezegun import freeze_time
+import pytest
 
 import scarlett_os
 from scarlett_os import commands
 
+
 # from scarlett_os.commands import Command, TimeCommand, NO_OP
 
-import imp
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
 @pytest.fixture(scope='function')

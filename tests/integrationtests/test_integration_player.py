@@ -22,7 +22,7 @@ from _pytest.monkeypatch import MonkeyPatch
 import scarlett_os
 import scarlett_os.exceptions
 
-from tests.integration.stubs import create_main_loop
+from tests.integrationtests.stubs import create_main_loop
 
 from scarlett_os import player
 

@@ -6,44 +6,16 @@ test_subprocess
 ----------------------------------
 """
 
+import builtins
 import os
+import re
+import signal
 import sys
 
-
-# import unittest
-# import unittest.mock as mock
-# from mock import call
-# import unittest
-import pytest
 from _pytest.monkeypatch import MonkeyPatch
-# import mock
-# from mock import Mock
-# from pytest_mock import mocker
-
-# import unittest.mock as mock
+import pytest
 
 import scarlett_os
-# from scarlett_os import subprocess as ssubprocess
-# from scarlett_os.subprocess import check_pid
-# from scarlett_os.subprocess import Subprocess
-
-# NOTE: We can't add this here, otherwise we won't be able to mock them
-# from scarlett_os.internal.gi import GLib, GObject
-
-# from tests import common
-import signal
-import builtins
-import re
-# new_callable: allows you to specify a different class,
-# or callable object, that will be called to create the new object.
-# By default MagicMock is used.
-
-
-# @pytest.fixture
-# def get_kill_mock(mocker):
-#     kill_mock = mocker.Mock(name="kill")
-#     yield kill_mock
-
 
 # R0201 = Method could be a function Used when a method doesn't use its bound instance,
 # and so could be written as a function.
@@ -66,7 +38,7 @@ class TestScarlettSubprocess(object):
 
     def test_check_pid_os_error(self, mocker):
         mocker.stopall()
-        # monkeypatch.undo()
+
         # mock
         kill_mock = mocker.MagicMock(name=__name__ + "_kill_mock_OSError")
         kill_mock.side_effect = OSError
@@ -83,7 +55,6 @@ class TestScarlettSubprocess(object):
 
     def test_check_pid(self, mocker):
         mocker.stopall()
-        # monkeypatch.undo()
 
         # mock
         kill_mock = mocker.MagicMock(name=__name__ + "_kill_mock")
@@ -101,10 +72,8 @@ class TestScarlettSubprocess(object):
 
         mocker.stopall()
 
-    # FIXME: This guy is causing the problem somehow!
     def test_subprocess_init(self, mocker):
         mocker.stopall()
-        # monkeypatch.undo()
 
         mock_check_command_type = mocker.MagicMock(name=__name__ + "_mock_check_command_type")
         mock_check_command_type.return_value = True
@@ -115,20 +84,6 @@ class TestScarlettSubprocess(object):
         mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
         mocker.patch.object(scarlett_os.subprocess.Subprocess, 'check_command_type', mock_check_command_type)
         mocker.patch.object(scarlett_os.subprocess.Subprocess, 'fork', mock_fork)
-
-        # # mock
-        # mock_fork = MagicMock()
-        # mock_logging = MagicMock()
-        # mock_check_command_type = MagicMock()
-        # mock_check_command_type.return_value = True
-
-        # # monkeypatch
-        # monkeypatch.setattr('scarlett_os.subprocess.Subprocess.check_command_type',
-        #                     mock_check_command_type)
-        # monkeypatch.setattr('scarlett_os.subprocess.Subprocess.fork',
-        #                     mock_fork)
-        # monkeypatch.setattr('scarlett_os.subprocess.logging.Logger.debug',
-        #                     mock_logging)
 
         # NOTE: On purpose this is an invalid cmd. Should be of type array
         test_command = ['who']
@@ -159,43 +114,14 @@ class TestScarlettSubprocess(object):
 
         mocker.stopall()
 
-    # FIXME: This guy is causing problems too!
     def test_subprocess_map_type_to_command(self, mocker):
         """Using the mock.patch decorator (removes the need to import builtins)"""
         mocker.stopall()
-        # monkeypatch.undo()
 
-        # mock
-        # mock_fork = MagicMock()
-        # mock_logging = MagicMock()
-        # mock_check_command_type = mocker.MagicMock(name=__name__ + "_mock_check_command_type")
-        # mock_check_command_type.return_value = True
-        # mock_fork = mocker.MagicMock(name=__name__ + "_mock_fork")
         mock_logging_debug = mocker.MagicMock(name=__name__ + "_mock_logging_debug")
 
         # mock
         mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
-        # mocker.patch.object(scarlett_os.subprocess.Subprocess, 'check_command_type', mock_check_command_type)
-        # mocker.patch.object(scarlett_os.subprocess.Subprocess, 'fork', mock_fork)
-
-        # monkeypatch
-        # monkeypatch.setattr('scarlett_os.subprocess.Subprocess.check_command_type',
-        #                     mock_check_command_type)
-        # monkeypatch.setattr('scarlett_os.subprocess.Subprocess.fork',
-        #                     mock_fork)
-        # monkeypatch.setattr('scarlett_os.subprocess.logging.Logger.debug',
-        #                     mock_logging)
-
-        # # mock
-        # mock_map_type_to_command = mocker.MagicMock(name="mock_map_type_to_command")
-        # # mock_map_type_to_command.return_value = int
-        # mock_map_type_to_command.side_effect = [int, [int, int]]
-        # mock_fork = mocker.MagicMock(name="mock_fork")
-        # mock_logging_debug = mocker.MagicMock(name="mock_logging_debug")
-
-        # mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
-        # mocker.patch.object(scarlett_os.subprocess.Subprocess, 'map_type_to_command', mock_map_type_to_command)
-        # mocker.patch.object(scarlett_os.subprocess.Subprocess, 'fork', mock_fork)
 
         # NOTE: On purpose this is an invalid cmd. Should be of type array
         test_command = ["who", "-b"]
@@ -229,7 +155,6 @@ class TestScarlettSubprocess(object):
     def test_subprocess_check_command_type(self, mocker):
         """Using the mock.patch decorator (removes the need to import builtins)"""
         mocker.stopall()
-        # monkeypatch.undo()
 
         test_command = ["who", "-b"]
         test_name = 'test_who'
@@ -245,48 +170,6 @@ class TestScarlettSubprocess(object):
         mocker.patch.object(scarlett_os.subprocess.logging.Logger, 'debug', mock_logging_debug)
         mocker.patch.object(scarlett_os.subprocess.Subprocess, 'map_type_to_command', mock_map_type_to_command)
         mocker.patch.object(scarlett_os.subprocess.Subprocess, 'fork', mock_fork)
-
-        # source: https://github.com/pytest-dev/pytest-mock/issues/60
-        # @pytest.mark.asyncio
-        # async def test_async_func2(mocker):
-        #     mock_async_func2 = mocker.patch(__name__ + '.async_func2')
-        #     mock_async_func2.return_value = return_async_value('something')
-        #     res = await async_func1()
-        #     mock_async_func2.assert_called_once_with()
-        #     assert res == 'something'
-
-        # mocker.patch(__name__ + '.scarlett_os.subprocess.logging.Logger.debug', mock_logging_debug)
-        # mocker.patch(__name__ + '.scarlett_os.subprocess.Subprocess.map_type_to_command', mock_map_type_to_command)
-        # mocker.patch(__name__ + '.scarlett_os.subprocess.Subprocess.fork', mock_fork)
-
-        # import pdb
-        # pdb.set_trace()
-
-        # Current thought, we aren't mocking from the correct context.
-        # We're importing Subclass object,
-        # but we're still trying to mock the remote object in the module instead of
-        # in here.
-
-        # Mock logger right off the bat
-        # mocker.patch('scarlett_os.subprocess.logging.Logger.debug')
-
-        # Create instance of Subprocess, disable all checks
-        # sub_instance = ssubprocess.Subprocess(test_command,
-        #                                       name=test_name,
-        #                                       fork=test_fork,
-        #                                       run_check_command=False)
-
-        # sub_instance = Subprocess(test_command,
-        #                  name=test_name,
-        #                  fork=test_fork,
-        #                  run_check_command=False)
-
-        # Mock instance member functions
-        # mock_map_type_to_command = mocker.patch.object(sub, 'map_type_to_command', autospec=True)
-        # mocker.patch.object(sub, 'fork')
-
-        # Set mock return types
-        # mock_map_type_to_command.return_value = int
 
         # action
         with pytest.raises(TypeError) as excinfo:
@@ -352,7 +235,6 @@ class TestScarlettSubprocess(object):
 
         mocker.stopall()
 
-    # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')  # 2
     def test_subprocess_fork_exception(self, mocker):
         """Test fork class method process."""
         mocker.stopall()
@@ -377,16 +259,9 @@ class TestScarlettSubprocess(object):
         mocker.patch.object(scarlett_os.subprocess.os, 'setsid', mock_os_setsid)
         mocker.patch.object(scarlett_os.subprocess.os, 'umask', mock_os_umask)
 
-        # mock
-        # with mock.patch('scarlett_os.subprocess.os.fork', mocker.Mock(side_effect=OSError), create=True) as mock_os_fork:
-        #     with mock.patch('scarlett_os.subprocess.sys.exit', mocker.Mock()) as mock_sys_exit:
-        #         with mock.patch('scarlett_os.subprocess.os.chdir', mocker.Mock()) as mock_os_chdir:
-        #             with mock.patch('scarlett_os.subprocess.os.setsid', mocker.Mock()) as mock_os_setsid:
-        #                 with mock.patch('scarlett_os.subprocess.os.umask', mocker.Mock()) as mock_os_umask:
-
         tfork2 = scarlett_os.subprocess.Subprocess(test_command,
-                                                    name=test_name,
-                                                    fork=test_fork)
+                                                   name=test_name,
+                                                   fork=test_fork)
 
         # NOTE: Bit of duplication we have going here.
         assert mock_sys_exit.call_count == 2
@@ -401,7 +276,6 @@ class TestScarlettSubprocess(object):
 
         mocker.stopall()
 
-    # @mock.patch('scarlett_os.subprocess.logging.Logger.debug')
     def test_subprocess_fork_pid0(self, mocker):
         """Test fork class method process."""
         mocker.stopall()
@@ -426,13 +300,6 @@ class TestScarlettSubprocess(object):
         mocker.patch.object(scarlett_os.subprocess.os, 'chdir', mock_os_chdir)
         mocker.patch.object(scarlett_os.subprocess.os, 'setsid', mock_os_setsid)
         mocker.patch.object(scarlett_os.subprocess.os, 'umask', mock_os_umask)
-
-        # mock
-        # with mock.patch('scarlett_os.subprocess.os.fork', mocker.Mock(return_value=pid)) as mock_os_fork:  # noqa
-        #     with mock.patch('scarlett_os.subprocess.sys.exit', mocker.Mock()) as mock_sys_exit:  # noqa
-        #         with mock.patch('scarlett_os.subprocess.os.chdir', mocker.Mock()) as mock_os_chdir:  # noqa
-        #             with mock.patch('scarlett_os.subprocess.os.setsid', mocker.Mock()) as mock_os_setsid:  # noqa
-        #                 with mock.patch('scarlett_os.subprocess.os.umask', mocker.Mock()) as mock_os_umask:  # noqa
 
         scarlett_os.subprocess.Subprocess(test_command,
                                           name=test_name,
@@ -563,22 +430,3 @@ class TestScarlettSubprocess(object):
 
 
     #     # # source: http://stackoverflow.com/questions/28181867/how-do-a-mock-a-superclass-that-is-part-of-a-library
-    #     # with pytest.raises(Exception):
-    #     #     scarlett_os.subprocess.Subprocess()  # Normal implementation raise Exception
-
-    #     # # Pay attention to return_value MUST be None for all __init__ methods
-    #     # with mocker.patch("scarlett_os.subprocess.Subprocess.__init__", autospec=True, return_value=None) as mock_init:
-    #     #     with pytest.raises(TypeError):
-    #     #         scarlett_os.subprocess.Subprocess()  # Wrong argument: autospec=True let as to catch it
-    #     #     s = scarlett_os.subprocess.Subprocess(['who'])  # Ok now it works
-    #     #     mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
-    #     #     assert s.check_command_type(['who']) == True
-
-    #     # with pytest.raises(TypeError) as excinfo:
-    #     #     scarlett_os.subprocess.Subprocess()  # Wrong argument: autospec=True let as to catch it
-    #     # assert str(excinfo.value) == "Executables and arguments must be str objects. types: <class 'int'>"
-    #     # s = scarlett_os.subprocess.Subprocess(['who'])  # Ok now it works
-    #     # mock_init.assert_called_with(mocker.ANY, ['who'])  # Use autospec=True inject self as first argument -> use Any to discard it
-    #     # assert s.check_command_type(['who']) == True
-    #     # mocker.stopall()
-

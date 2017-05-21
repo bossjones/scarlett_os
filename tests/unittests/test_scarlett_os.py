@@ -8,27 +8,25 @@ test_scarlett_os
 Tests for `scarlett_os` module.
 """
 
+from contextlib import contextmanager
+import importlib
+import pprint
 import re
 import sys
 import unittest
-import pytest
+
 import click
-import importlib
-from contextlib import contextmanager
 from click.testing import CliRunner
+import pytest
 
 import scarlett_os
+from scarlett_os.internal.gi import GLib, GObject, Gst
 from scarlett_os.scripts.cli import main_group
 from scarlett_os.tools import verify
-
-import pprint
 
 ubuntu_version = verify.get_current_os()
 pp = pprint.PrettyPrinter(indent=4)
 
-from scarlett_os.internal.gi import Gst
-from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import GObject
 
 
 @pytest.mark.unittest

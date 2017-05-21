@@ -1,7 +1,7 @@
 """Test Home Assistant date util methods."""
 # pylint: disable=too-many-public-methods
-import unittest
 from datetime import datetime, timedelta
+import unittest
 
 import scarlett_os.utility.dt as dt_util
 

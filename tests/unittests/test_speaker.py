@@ -6,38 +6,21 @@ test_speaker
 ----------------------------------
 """
 
+import builtins
+import datetime
 import os
+import signal
 import sys
-
 import unittest
 import unittest.mock as mock
 
 import pytest
 
 import scarlett_os
-from scarlett_os.utility.gnome import trace
-from scarlett_os.utility.gnome import abort_on_exception
-from scarlett_os.utility.gnome import _IdleObject
-
 from scarlett_os import speaker
-
-# NOTE: We can't add this here, otherwise we won't be able to mock them
-
-from tests import common
-import signal
-import builtins
-import datetime
-
 import scarlett_os.exceptions
-
-
-# source: https://github.com/darvid/reqwire/blob/4a1c94f4beaa25caab2bf13e7a427a4d8150660d/tests/unit/conftest.py
-# FAKE_TIME = datetime.datetime(2020, 1, 1, 0, 0, 0)
-
-
-# @pytest.fixture
-# def fake_time():
-#     yield FAKE_TIME
+from scarlett_os.utility.gnome import _IdleObject, abort_on_exception, trace
+from tests import common
 
 
 @pytest.mark.unittest

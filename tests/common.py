@@ -1,59 +1,31 @@
 """Test the helper method for writing tests."""
-import os
-
-import contextlib
-import gc
-import tempfile
-import unittest
-from unittest import mock
-
 # from datetime import timedelta
-from unittest.mock import patch
+import contextlib
+from contextlib import contextmanager
+import gc
 from io import StringIO
 import logging
+import os
+import tempfile
 import threading
-from contextlib import contextmanager
+import unittest
+from unittest import mock
+from unittest.mock import patch
 
-from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import Gio
-from scarlett_os.internal.gi import GObject
-from scarlett_os.internal.gi import Gst
-
-from scarlett_os import core as s, loader
-from scarlett_os.utility.unit_system import METRIC_SYSTEM
-import scarlett_os.utility.dt as date_utility
-import scarlett_os.utility.yaml as yaml
+from scarlett_os import core as s
+from scarlett_os import loader
 from scarlett_os.const import (
-    STATE_ON, STATE_OFF, DEVICE_DEFAULT_NAME, EVENT_TIME_CHANGED,
-    EVENT_STATE_CHANGED, EVENT_PLATFORM_DISCOVERED, ATTR_SERVICE,
-    ATTR_DISCOVERED, SERVER_PORT)
+    ATTR_DISCOVERED, ATTR_SERVICE, DEVICE_DEFAULT_NAME, EVENT_PLATFORM_DISCOVERED, EVENT_STATE_CHANGED, EVENT_TIME_CHANGED, SERVER_PORT,
+    STATE_OFF, STATE_ON)
+from scarlett_os.internal.gi import Gio, GLib, GObject, Gst
+import scarlett_os.utility.dt as date_utility
+from scarlett_os.utility.unit_system import METRIC_SYSTEM
+import scarlett_os.utility.yaml as yaml
+
 # from scarlett_os.automations import sun, mqtt
 
 _TEST_INSTANCE_PORT = SERVER_PORT
 logger = logging.getLogger(__name__)
-
-
-# def clean_scarlett_os_subprocess_mock(sub_p):
-#     sub_p.process = None
-#     sub_p.pid = None
-
-
-# def create_scarlett_os_subprocess_mock(sub_p):
-#     sub_p = mock.MagicMock()
-
-#     return sub_p
-
-
-# def create_pitivi_mock(**settings):
-#     app = mock.MagicMock()
-#
-#     app.write_action = mock.MagicMock(spec=Pitivi.write_action)
-#     check.check_requirements()
-#
-#     app.settings = __create_settings(**settings)
-#     app.proxy_manager = ProxyManager(app)
-#
-#     return app
 
 
 def get_test_config_dir(*add_path):

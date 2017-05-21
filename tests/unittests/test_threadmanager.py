@@ -6,33 +6,27 @@ test_threadmanager
 ----------------------------------
 """
 
-import os
-import sys
-import time
-
-import pytest
-import unittest
-import unittest.mock as mock
-from mock import call
-
-import scarlett_os
-from scarlett_os.utility import threadmanager
-from scarlett_os.utility import gnome  # Module with the decorator we need to replace
-
-from scarlett_os.internal.gi import gi
-from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import GObject
-from scarlett_os.internal.gi import Gio
-import pydbus
-from pydbus import SessionBus
-
 # NOTE: We can't add this here, otherwise we won't be able to mock them
 # from tests import common
-import signal
 import builtins
-import scarlett_os.exceptions
-
 import imp
+import os
+import signal
+import sys
+import time
+import unittest
+import unittest.mock as mock
+
+from mock import call
+import pydbus
+from pydbus import SessionBus
+import pytest
+
+import scarlett_os
+import scarlett_os.exceptions
+from scarlett_os.internal.gi import Gio, GLib, GObject, gi
+from scarlett_os.utility import gnome  # Module with the decorator we need to replace
+from scarlett_os.utility import threadmanager
 
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
@@ -128,4 +122,3 @@ class TestThreadManagerUnit(object):  # pylint: disable=C0111
         ]:
             with pytest.raises(scarlett_os.utility.threadmanager.NotASuspendableThreadExc) as excinfo:
                 tm.add_thread(thread)
-

@@ -6,21 +6,20 @@ test_mpris
 ----------------------------------
 """
 
+import imp
 import os
 import sys
-import time
-import pytest
 import threading
+import time
 
-from scarlett_os.internal.gi import GLib
-from scarlett_os.internal.gi import Gio
-from scarlett_os.internal.gi import GObject
+import pytest
+
+from scarlett_os.internal.gi import Gio, GLib, GObject
 
 DBUS_SESSION_BUS_ADDRESS = os.getenv("DBUS_SESSION_BUS_ADDRESS")
 
 RUN_TIMEOUT = 5
 
-import imp
 
 # from pydbus import SessionBus
 # bus = SessionBus()

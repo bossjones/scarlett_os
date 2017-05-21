@@ -20,7 +20,7 @@ import pydbus
 import scarlett_os
 import scarlett_os.exceptions
 
-from tests.integration.stubs import create_main_loop
+from tests.integrationtests.stubs import create_main_loop
 
 import time
 

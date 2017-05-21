@@ -24,13 +24,13 @@ import pydbus
 import scarlett_os
 import scarlett_os.exceptions
 
-from tests.integration.stubs import create_main_loop
+from tests.integrationtests.stubs import create_main_loop
 
 from tests import PROJECT_ROOT
 import time
 
-from tests.integration.baseclass import run_emitter_signal
-from tests.integration.baseclass import IntegrationTestbaseMainloop
+from tests.integrationtests.baseclass import run_emitter_signal
+from tests.integrationtests.baseclass import IntegrationTestbaseMainloop
 
 done = 0
 
