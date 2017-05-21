@@ -16,9 +16,9 @@ import unittest.mock as mock
 import pydbus
 from pydbus import SessionBus, connect
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 from tests import PROJECT_ROOT
-
 
 """ Component test fixtures.
     This module makes the following assumptions:
@@ -31,6 +31,22 @@ from tests import PROJECT_ROOT
 OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
 INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
 
+# source: https://github.com/pytest-dev/pytest/issues/363
+@pytest.fixture(scope="function")
+def monkeysession(request):
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+
+# source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
+@pytest.fixture(scope='function')
+def mockersession(mocker):
+    '''Stop previous mocks, yield mocker plugin obj, then stopall mocks again'''
+    print('Called [setup]: mocker.stopall()')
+    mocker.stopall()
+    yield mocker
+    print('Called [teardown]: mocker.stopall()')
+    mocker.stopall()
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
 @pytest.fixture(scope='function')
@@ -38,6 +54,8 @@ def empty():
     return object()
 
 # source: https://github.com/wmanley/pulsevideo/blob/d8259f2ce2f3951e380e319c80b9d124b47efdf2/tests/integration_test.py
+
+
 def wait_until(f, timeout_secs=10):
     expiry_time = time.time() + timeout_secs
     while True:
@@ -47,7 +65,9 @@ def wait_until(f, timeout_secs=10):
         if time.time() > expiry_time:
             return val  # falsy
 
-# https://stackoverflow.com/questions/25072126/why-does-python-lint-want-me-to-use-different-local-variable-name-than-a-global
+# source: https://stackoverflow.com/questions/25072126/why-does-python-lint-want-me-to-use-different-local-variable-name-than-a-global
+
+
 def setup_environment():
     # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
     if 'TRAVIS_CI' in os.environ:
@@ -72,18 +92,6 @@ def setup_environment():
 def get_environment():
     yield setup_environment()
 
-# # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
-# if 'TRAVIS_CI' in os.environ:
-#     if 'DISPLAY' not in os.environ:
-#         # TODO: Should this be on :99 ?
-#         os.environ['DISPLAY'] = ':0'
-
-# if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
-#     print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
-
-# # Setup an environment for the fixtures to share so the bus address is the same for all  # noqa
-# environment = environ.copy()
-
 ########################################################################
 # NOTE: unix sockets, abstract ( eg 'unix:abstract=' )
 ########################################################################
@@ -103,12 +111,6 @@ def get_environment():
 # and the name of the socket is contained in the first
 # (addrlen - sizeof(sa_family_t)) bytes of sun_path.
 ########################################################################
-#
-########################################################################
-# DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-MAIDjJlN9C,guid=1f05155ec6139a513e017f81587a8693
-# environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
-
-# bus.own_name(name='org.scarlett')
 
 ########################################################################
 # NOTE: pytest.fixture scopes:
@@ -118,28 +120,6 @@ def get_environment():
 # session -Run once per session
 ########################################################################
 
-# from pydbus import SessionBus
-
-# done = 0
-
-
-# def get_session_bus():
-#     bus = SessionBus()
-#     bus.own_name(name='org.scarlett')
-#     return bus
-
-
-# class TestScarlettSpeaker(unittest.TestCase):
-
-#     def __load_dbus_service(self):
-
-#       bus = get_session_bus()
-
-#       sl = mpris.ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
-
-#       pass
-#
-#
 ########################################################################
 # from pydbus - BEGIN
 ########################################################################
@@ -184,49 +164,7 @@ def get_environment():
 # file descriptor 0,1,2 meaning - END
 ########################################################################
 
-# OUTSIDE_SOCKET = "/tmp/dbus_proxy_outside_socket"
-# INSIDE_SOCKET = "/tmp/dbus_proxy_inside_socket"
 
-
-# # Setup an environment for the fixtures to share so the bus address is the same for all
-# environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
-
-# print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"]))
-
-# DISABLED # # As historical note, another way to write teardown code is by
-# DISABLED # # accepting a request object into your fixture function and can
-# DISABLED # # call its request.addfinalizer one or multiple times:
-# DISABLED # # source: https://github.com/projecthamster/hamster-dbus/blob/cfd4cabda55779d2f07649c6c364e2e781e3d7c5/tests/conftest.py
-# DISABLED # @pytest.fixture
-# DISABLED # def init_session_bus(request):
-# DISABLED #     """
-# DISABLED #     Provide a new private session bus so we don't polute the regular one.
-# DISABLED #
-# DISABLED #     This is a straight copy of: https://github.com/martinpitt/python-dbusmock/blob/master/dbusmock/testcase.py#L92
-# DISABLED #
-# DISABLED #     Returns:
-# DISABLED #         tuple: (pid, address) pair.
-# DISABLED #     """
-# DISABLED #     def fin():
-# DISABLED #         # [FIXME]
-# DISABLED #         # We propably could be a bit more gentle then this.
-# DISABLED #         os.kill(pid, signal.SIGKILL)
-# DISABLED #
-# DISABLED #     argv = ['dbus-launch']
-# DISABLED #     out = subprocess.check_output(argv, universal_newlines=True)
-# DISABLED #     variables = {}
-# DISABLED #     for line in out.splitlines():
-# DISABLED #         (k, v) = line.split('=', 1)
-# DISABLED #         variables[k] = v
-# DISABLED #     pid = int(variables['DBUS_SESSION_BUS_PID'])
-# DISABLED #     request.addfinalizer(fin)
-# DISABLED #     return (pid, variables['DBUS_SESSION_BUS_ADDRESS'])
-
-
-# @pytest.fixture(scope="module", autouse=True)
-# hamster-dbus # @pytest.fixture
-# FROM: dbus-proxy # @pytest.fixture(scope="function")
-# @pytest.fixture
 @pytest.fixture(scope="module")
 def create_session_bus(request, get_environment):
     # source: dbus-proxy
@@ -380,20 +318,6 @@ def get_bus(request, get_environment, create_session_bus):
     else:
         print('\n[get_bus] default SessionBus')
         bus = SessionBus()
-        # yield bus
-        # print("teardown existing session bus")
-        # Out[4]: <DBUS.org.freedesktop.DBus at 0x7fb8f40389b0>
-
-    # try:
-    #     yield bus
-    # finally:
-    #     print("Tearing down session bus object")
-    #     del bus._dbus
-    #     print("ran: del bus._dbus")
-    #     # os.remove(socket_path)
-    #     # dbus_daemon.kill()
-    #     # dbus_daemon.wait()
-    #     # 1/14/2017 # NOTE: RE-ENABLE THIS # del os.environ['DBUS_SESSION_BUS_ADDRESS']  # noqa
 
     def teardown():
         """

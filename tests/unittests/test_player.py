@@ -54,7 +54,6 @@ import imp
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
 @pytest.fixture(scope='function')
 def player_unit_mocker_stopall(mocker):
-    "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
     print('Called [setup]: mocker.stopall()')
     mocker.stopall()
     print('Called [setup]: imp.reload(player)')
