@@ -42,7 +42,7 @@ pdbpp==0.8.3
 # pudb
 pytest-sugar==0.8.0
 pytest-rerunfailures>=2.1.0
-pytest-mock
+pytest-mock==1.6.0
 pytest-leaks
 
 # # Test runners
