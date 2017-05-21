@@ -7,7 +7,7 @@ pytest-ordering
 pytest-interactive
 
 ptpdb
-ptpython
+ptpython==0.39
 
 # source: https://github.com/pyca/pyopenssl/issues/447
 # source: https://github.com/dropbox/pytest-flakefinder
