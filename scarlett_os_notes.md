@@ -1565,3 +1565,32 @@ def monkeysession(request):
 ```
 
 See https://github.com/pytest-dev/pytest/issues/363
+
+
+# aufs bug
+### AKA: Permission denied for directories created automatically by Dockerfile ADD command
+
+Taken from https://github.com/moby/moby/issues/1295
+
+I'm going to lock the discussion on this issue, because it has become a kitchensink for anything related to "permissions".
+
+The original issue reported here was fixed more than 3 years ago in docker#1316. Some issues
+remained due to an issue in aufs; issue (#783), and are resolved by newer aufs versions. To quote jpetazzo again on that issue:
+
+```
+When a directory has a given permission mask in a lower layer, the upper layers cannot have a broader mask.
+I was able to work around the Permission denied error by switching to devicemapper instead of aufs, since changing the image was not a practical solution to me.
+Note that that only applies to those that run aufs and run an old version of it.
+```
+
+For other issues discussed here;
+
+- When ADD-ing or COPY-ing files to an image, those files are always owned by root. If you have a USER instruction in your Dockerfile, that may result in that user not being able to read, chown or chmod those files. This is expected behavior. A pull request for changing this behavior through a --user flag is currently reviewed; docker#28499
+
+- When bind-mounting files from your host to the container at runtime and on a Linux host, permissions of the files on the host are maintained. This can result in the process in the container not being able to access them (i.e., because the process is not running as "your personal account on the host"). Change permissions of the files to match the uid/gid of the process in the container, also see my answer on StackOverflow for some hints.
+
+- When bind-mounting files from your host to the container at runtime on a Mac or Windows machine, and docker runs in a VirtualBox VM; those files are always owned by uid:gid 1000:1000. You cannot change permissions on those files, which is due to limitations in VirtualBox guest additions. Use an actual volume (docker volume create) for those files, or run the process inside the container as 1000:1000, but this may require changes to your Dockerfile / image. Read the discussion on issue #581 in the boot2docker issue tracker for more information
+
+- When bind-mounting files from your host to the container on a Mac running Docker for Mac, there is some "magic" built-in to ignore ownership; the process inside the container always gets access. Read the troubleshooting section for Docker for Mac or Docker for Windows if you're running into issues.
+
+For other issues; open a new bug report if you suspect there's a bug, but please make sure there's no existing issue, or if your problem falls in one of those mentioned above.

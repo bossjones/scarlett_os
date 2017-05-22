@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: scarlett_os_master
+    working_dir: /home/pi/dev/bossjones-github/scarlett_os
+    environment:
+      SERVER_LOG_MINIMAL: 1
+      SERVER_APP_NAME: jhbuild-scarlett-os
+      S6_KILL_FINISH_MAXTIME: 1
+      S6_KILL_GRACETIME: 1
+      SERVER_WORKER_PROCESSES: 1
+      # Ensure that Python outputs everything that's printed inside
+      # the application rather than buffering it.
+      PYTHONUNBUFFERED: 1
+    stdin_open: true
+    tty: true
+    entrypoint:
+      - "/docker_entrypoint.sh"
+      - "/bin/bash"
+    volumes:
+      - ./:/home/pi/dev/bossjones-github/scarlett_os:rw
