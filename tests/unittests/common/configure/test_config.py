@@ -125,3 +125,4 @@ class TestFilterMatcher(object):
                                             'wip': '1e-4',
                                             'bestpath': 0
                                            }
+        assert fake_config.coordinates == (40.7056308, -73.9780034)
