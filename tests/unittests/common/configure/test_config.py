@@ -109,34 +109,11 @@ class TestFilterMatcher(object):
     def test_config_from_file(self, fake_config):
         """Test Config object and properties."""
         assert fake_config.scarlett_name == 'ScarlettOS'
-
-    # def test_ignored(self):
-    #     """Test the FilterMatcher.is_ignored() method."""
-    #     self.assertTrue(
-    #         self.ignore_device(
-    #             TestDev('/ignore', 'vfat', 'IGNORED-device')))
-    #     self.assertFalse(
-    #         self.ignore_device(
-    #             TestDev('/options', 'vfat', 'device-with-options')))
-    #     self.assertFalse(
-    #         self.ignore_device(
-    #             TestDev('/nomatch', 'vfat', 'no-matching-id')))
-
-    # def test_options(self):
-    #     """Test the FilterMatcher.get_mount_options() method."""
-    #     self.assertEqual(
-    #         ['noatime', 'nouser'],
-    #         self.mount_options(
-    #             TestDev('/options', 'vfat', 'device-with-options')))
-    #     self.assertEqual(
-    #         ['noatime', 'nouser'],
-    #         self.mount_options(
-    #             TestDev('/optonly', 'ext', 'device-with-options')))
-    #     self.assertEqual(
-    #         ['ro', 'nouser'],
-    #         self.mount_options(
-    #             TestDev('/fsonly', 'vfat', 'no-matching-id')))
-    #     self.assertEqual(
-    #         None,
-    #         self.mount_options(
-    #             TestDev('/nomatch', 'ext', 'no-matching-id')))
+        assert fake_config.latitude == 40.7056308
+        assert fake_config.longitude == -73.9780034
+        assert fake_config.elevation == 665
+        assert fake_config.unit_system == 'metric'
+        assert fake_config.time_zone == 'America/New_York'
+        assert fake_config.owner_name == 'Hair Ron Jones'
+        assert fake_config.keyword_list == ['scarlett', 'SCARLETT']
+        assert fake_config.features_enabled == ['time']

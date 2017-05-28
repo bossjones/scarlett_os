@@ -247,7 +247,7 @@ class Config(object):
         # NOTE: copy()
         # Return a shallow copy of x.
         # source: https://docs.python.org/3/library/copy.html
-        return self._data.get('keywords', [])
+        return self._data.get('keywords_list', [])
 
     @property
     def features_enabled(self):
