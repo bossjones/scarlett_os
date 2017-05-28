@@ -117,3 +117,11 @@ class TestFilterMatcher(object):
         assert fake_config.owner_name == 'Hair Ron Jones'
         assert fake_config.keyword_list == ['scarlett', 'SCARLETT']
         assert fake_config.features_enabled == ['time']
+        # NOTE: If we want to use these values we need to run them through a filter so that they get casted to their proper types
+        assert fake_config.pocketsphinx == {'hmm': '/home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us',
+                                            'lm': '/home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm',
+                                            'dict': '/home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic',
+                                            'silprob': 0.1,
+                                            'wip': '1e-4',
+                                            'bestpath': 0
+                                           }

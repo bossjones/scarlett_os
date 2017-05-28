@@ -138,44 +138,9 @@ class Config(object):
     #     ignore_device = map(IgnoreDevice, self._data.get('ignore_device', []))
     #     return list(device_config) + list(mount_options) + list(ignore_device)
 
-    # @property
-    # def program_options(self):
-    #     """Get the program options dictionary from the config file."""
-    #     # NOTE: copy()
-    #     # Return a shallow copy of x.
-    #     # source: https://docs.python.org/3/library/copy.html
-    #     return self._data.get('program_options', {}).copy()
-
-    # @property
-    # def notifications(self):
-    #     """Get the notification timeouts dictionary from the config file."""
-    #     # NOTE: copy()
-    #     # Return a shallow copy of x.
-    #     # source: https://docs.python.org/3/library/copy.html
-    #     return self._data.get('notifications', {}).copy()
-
-    # @property
-    # def icon_names(self):
-    #     """Get the icon names dictionary from the config file."""
-    #     # NOTE: copy()
-    #     # Return a shallow copy of x.
-    #     # source: https://docs.python.org/3/library/copy.html
-    #     return self._data.get('icon_names', {}).copy()
-
-    # @property
-    # def notification_actions(self):
-    #     """Get the notification actions dictionary from the config file."""
-    #     # NOTE: copy()
-    #     # Return a shallow copy of x.
-    #     # source: https://docs.python.org/3/library/copy.html
-    #     return self._data.get('notification_actions', {}).copy()
-
     @property
     def scarlett_name(self):
         """Get ScarlettOS name setting."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('name', 'scarlett')
 
     @property
@@ -188,17 +153,11 @@ class Config(object):
     @property
     def longitude(self):
         """Get longitude setting."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('longitude', 0)
 
     @property
     def latitude(self):
         """Get latitude setting."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('latitude', 0)
 
     @property
@@ -212,47 +171,29 @@ class Config(object):
     @property
     def elevation(self):
         """Get elevation settings."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('elevation', 0)
 
     @property
     def unit_system(self):
         """Get unit system settings."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('unit_system', 0)
 
     @property
     def time_zone(self):
         """Get time zone settings."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('time_zone', 'UTC')
 
     @property
     def owner_name(self):
         """Get owner name settings."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('owner', 'commander keen')
 
     @property
     def keyword_list(self):
         """Get keyword list settings."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('keywords_list', [])
 
     @property
     def features_enabled(self):
         """Get features settings."""
-        # NOTE: copy()
-        # Return a shallow copy of x.
-        # source: https://docs.python.org/3/library/copy.html
         return self._data.get('features', [])
