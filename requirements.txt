@@ -7,3 +7,4 @@ PyYAML>=3.0
 jinja2>=2.8
 typing>=3,<4
 voluptuous==0.10.5
+xdg>=1.0.4

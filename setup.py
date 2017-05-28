@@ -85,7 +85,9 @@ requirements = [
     'six',
     'voluptuous==0.10.5',
     'Fabric3==1.13.1.post1',
-    'PyYAML>=3.0'
+    'PyYAML>=3.0',
+    'xdg>=1.0.4',
+    'yapf==0.16.2'
 ]
 
 

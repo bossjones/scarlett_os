@@ -75,3 +75,6 @@ Cython==0.25.2
 pystuck==0.8.5
 objgraph==3.1.0
 xdot==0.7
+
+# googles smarter autoformatter to conform to autopep8
+yapf==0.16.2
