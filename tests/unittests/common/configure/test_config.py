@@ -88,6 +88,35 @@ features:
     shutil.rmtree(base)
 
 
+@pytest.fixture(scope='function')
+def fake_config_no_values():
+    """Create a temporary config file."""
+    base = tempfile.mkdtemp()
+    config_file = os.path.join(base, 'config.yaml')
+
+    temp_config = config.Config.from_file(config_file)
+
+    yield temp_config
+
+    shutil.rmtree(base)
+
+@pytest.fixture(scope='function')
+def fake_config_empty():
+    """Create a temporary config file."""
+    base = tempfile.mkdtemp()
+    config_file = os.path.join(base, 'config.yaml')
+
+    with open(config_file, 'wt') as f:
+        f.write('''
+---
+''')
+    temp_config = config.Config.from_file(config_file)
+
+    yield temp_config
+
+    shutil.rmtree(base)
+
+
 # pylint: disable=R0201
 # pylint: disable=C0111
 # pylint: disable=C0123
@@ -126,3 +155,70 @@ class TestFilterMatcher(object):
                                             'bestpath': 0
                                            }
         assert fake_config.coordinates == (40.7056308, -73.9780034)
+
+    def test_config_file_not_found(self):
+        """test usecase when file not found."""
+
+        base = tempfile.mkdtemp()
+        config_file = os.path.join(base, 'config.yaml')
+
+        with pytest.raises(FileNotFoundError):
+            temp_config = config.Config.from_file(config_file)
+
+        shutil.rmtree(base)
+
+    def test_config_from_file_no_values_set(self, fake_config_empty):
+        """Test Config object and properties."""
+        assert fake_config_no_values.scarlett_name == 'scarlett'
+        assert fake_config_no_values.latitude == 0
+        assert fake_config_no_values.longitude == 0
+        assert fake_config_no_values.elevation == 0
+        assert fake_config_no_values.unit_system == 'imperial'
+        assert fake_config_no_values.time_zone == 'UTC'
+        assert fake_config_no_values.owner_name == 'commander keen'
+        assert fake_config_no_values.keyword_list == []
+        assert fake_config_no_values.features_enabled == []
+        assert fake_config_no_values.pocketsphinx == {}
+        assert fake_config_no_values.coordinates == (0, 0)
+
+
+        # In [6]: dump(temp_config)
+        # obj.__class__ = <class 'scarlett_os.common.configure.config.Config'>
+        # obj.__delattr__ = <method-wrapper '__delattr__' of Config object at 0x7f7a8c5336d8>
+        # obj.__dict__ = {'_data': {}}
+        # obj.__dir__ = <built-in method __dir__ of Config object at 0x7f7a8c5336d8>
+        # obj.__doc__ = ScarlettOS config in memory representation.
+        # obj.__eq__ = <method-wrapper '__eq__' of Config object at 0x7f7a8c5336d8>
+        # obj.__format__ = <built-in method __format__ of Config object at 0x7f7a8c5336d8>
+        # obj.__ge__ = <method-wrapper '__ge__' of Config object at 0x7f7a8c5336d8>
+        # obj.__getattribute__ = <method-wrapper '__getattribute__' of Config object at 0x7f7a8c5336d8>
+        # obj.__gt__ = <method-wrapper '__gt__' of Config object at 0x7f7a8c5336d8>
+        # obj.__hash__ = <method-wrapper '__hash__' of Config object at 0x7f7a8c5336d8>
+        # obj.__init__ = <bound method Config.__init__ of <scarlett_os.common.configure.config.Config object at 0x7f7a8c5336d8>>
+        # obj.__le__ = <method-wrapper '__le__' of Config object at 0x7f7a8c5336d8>
+        # obj.__lt__ = <method-wrapper '__lt__' of Config object at 0x7f7a8c5336d8>
+        # obj.__module__ = scarlett_os.common.configure.config
+        # obj.__ne__ = <method-wrapper '__ne__' of Config object at 0x7f7a8c5336d8>
+        # obj.__new__ = <built-in method __new__ of type object at 0x7f7a97455ae0>
+        # obj.__reduce__ = <built-in method __reduce__ of Config object at 0x7f7a8c5336d8>
+        # obj.__reduce_ex__ = <built-in method __reduce_ex__ of Config object at 0x7f7a8c5336d8>
+        # obj.__repr__ = <method-wrapper '__repr__' of Config object at 0x7f7a8c5336d8>
+        # obj.__setattr__ = <method-wrapper '__setattr__' of Config object at 0x7f7a8c5336d8>
+        # obj.__sizeof__ = <built-in method __sizeof__ of Config object at 0x7f7a8c5336d8>
+        # obj.__str__ = <method-wrapper '__str__' of Config object at 0x7f7a8c5336d8>
+        # obj.__subclasshook__ = <built-in method __subclasshook__ of type object at 0x3045ca8>
+        # obj.__weakref__ = None
+        # obj._data = {}
+        # obj.coordinates = Coordinates(latitude=0, longitude=0)
+        # obj.default_pathes = <bound method Config.default_pathes of <class 'scarlett_os.common.configure.config.Config'>>
+        # obj.elevation = 0
+        # obj.features_enabled = []
+        # obj.from_file = <bound method Config.from_file of <class 'scarlett_os.common.configure.config.Config'>>
+        # obj.keyword_list = []
+        # obj.latitude = 0
+        # obj.longitude = 0
+        # obj.owner_name = commander keen
+        # obj.pocketsphinx = {}
+        # obj.scarlett_name = scarlett
+        # obj.time_zone = UTC
+        # obj.unit_system = imperial
