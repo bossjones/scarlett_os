@@ -172,7 +172,7 @@ class Subprocess(GObject.GObject):
     def fork(self):
         """Fork the process."""
         try:
-            # first fork
+            # STEP: Create first fork
             pid = os.fork()
             if pid > 0:
                 logger.debug('pid greater than 0 first time')
@@ -187,13 +187,14 @@ class Subprocess(GObject.GObject):
         # Description: setsid() creates a new session if the calling process is not a process group leader. The calling process is the leader of the new session, the process group leader of the new process group, and has no controlling terminal. The process group ID and session ID of the calling process are set to the PID of the calling process. The calling process will be the only process in this new process group and in this new session.
 
         # Return Value: On success, the (new) session ID of the calling process is returned. On error, (pid_t) -1 is returned, and errno is set to indicate the error.
+        # STEP: Decouple fork
         os.setsid()
 
         # Set the current numeric umask and return the previous umask.
         os.umask(0)
 
         try:
-            # second fork
+            # Create second fork
             pid = os.fork()
             if pid > 0:
                 logger.debug('pid greater than 0 second time')
@@ -201,3 +202,16 @@ class Subprocess(GObject.GObject):
         except OSError as e:
             logger.error('Error forking process second time')
             sys.exit(1)
+
+        # TODO: This might be worth looking into
+        # source: home-assistant
+        # redirect standard file descriptors to devnull
+        # infd = open(os.devnull, 'r')
+        # outfd = open(os.devnull, 'a+')
+        # sys.stdout.flush()
+        # sys.stderr.flush()
+        # os.dup2(infd.fileno(), sys.stdin.fileno())
+        # os.dup2(outfd.fileno(), sys.stdout.fileno())
+        # os.dup2(outfd.fileno(), sys.stderr.fileno())
+
+
