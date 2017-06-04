@@ -34,6 +34,13 @@ import scarlett_os.helpers.config_validation as cv
 from scarlett_os.utility import dt as date_util, location as loc_util
 from scarlett_os.internal import path as path_internal
 
+from scarlett_os.internal.path import isReadable
+from scarlett_os.internal.path import path_from_uri
+from scarlett_os.internal.path import get_parent_dir
+from scarlett_os.internal.path import mkdir_if_does_not_exist
+from scarlett_os.internal.path import fname_exists
+from scarlett_os.internal.path import touch_empty_file
+
 logger = logging.getLogger(__name__)
 
 # NOTE: We are using https://github.com/srstevenson/xdg
@@ -324,7 +331,7 @@ def get_version_file_path():
     config_sub_dir = get_config_sub_dir_path()
     version_file = os.path.join(config_sub_dir, VERSION_FILE)
     print('Ran {}| version_file={}'.format(sys._getframe().f_code.co_name, version_file))
-    return version_file if os.path.isfile(version_file) else None
+    return version_file
 
 
 class Config(object):
@@ -378,7 +385,7 @@ class Config(object):
         Creating a default one if needed.
         Return path to the config file.
         """
-        import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace()
 
         config_path = get_config_file_path()
 
@@ -400,7 +407,6 @@ class Config(object):
         """
 
         config_sub_dir_path = get_config_sub_dir_path()
-        # FIXME: This is returning NONE, yikes
         print('Ran {}| config_sub_dir_path={}'.format(sys._getframe().f_code.co_name, config_sub_dir_path))
 
         config_path = cls.ensure_config_exists(config_sub_dir_path, True)
@@ -414,7 +420,7 @@ class Config(object):
 
     # check if config exists
     @classmethod
-    def ensure_config_path(cls, config_dir: str) -> None:
+    def ensure_config_dir_path(cls, config_dir: str) -> None:
         # NOTE: borrowed from home-assistant
         """Validate the configuration directory."""
         # lib_dir = os.path.join(config_dir, 'deps')
@@ -424,13 +430,16 @@ class Config(object):
             if config_dir != get_config_sub_dir_path():
                 print(('Fatal Error: Specified configuration directory does '
                        'not exist {} ').format(config_dir))
+                # FIXME: Do we want this to exit?
                 sys.exit(1)
 
             try:
-                os.mkdir(config_dir)
+                print('Ran {}| os.mkdir(config_dir)={}'.format(sys._getframe().f_code.co_name, config_dir))
+                mkdir_if_does_not_exist(config_dir)
             except OSError:
                 print(('Fatal Error: Unable to create default configuration '
                        'directory {} ').format(config_dir))
+                # FIXME: Do we want this to exit?
                 sys.exit(1)
 
         # # Test if library directory exists
@@ -519,11 +528,28 @@ class Config(object):
         Return dictonary describing config data if success, None if failed.
         """
 
-        # Step 1. Make sure $HOME/.config/scarlett dir exists.
+        # FIXME: Move these guys into their own classmethod
+        # Step 1: get $HOME/.config/scarlett dir
+        config_sub_dir = get_config_sub_dir_path()
+        config_home = get_config_file_path()
+        version_path = get_version_file_path()
+
+        # Step 2: Make sure that folder is created already
+        mkdir_if_does_not_exist(config_sub_dir)
+
+        if not fname_exists(config_home):
+            touch_empty_file(config_home)
+
+        if not fname_exists(version_path):
+            touch_empty_file(version_path)
+
+        # cls.ensure_config_dir_path(config_sub_dir)
+
+        # Step 3. Make sure $HOME/.config/scarlett dir exists.
         # If it doesn't exists, then it creates a default one
         config_file_path = cls.ensure_config_file()
 
-        # Step 2. load in config file to dict
+        # Step 4. load in config file to dict
         config_dict = cls.from_file(config_file_path)
 
         return config_dict
