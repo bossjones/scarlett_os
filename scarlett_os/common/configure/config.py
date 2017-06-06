@@ -75,7 +75,6 @@ DEFAULT_CORE_CONFIG = (
                                              CONF_UNIT_SYSTEM_IMPERIAL)),
     (CONF_TIME_ZONE, 'UTC', 'time_zone', 'Pick yours from here: http://en.wiki'
      'pedia.org/wiki/List_of_tz_database_time_zones'),
-    # FIXME: Figure out where to put this # (CONF_OWNERS_NAME, 'Hair Ron Jones', 'owner_name', 'Name for Scarlett to call user'),
 )  # type: Tuple[Tuple[str, Any, Any, str], ...]
 
 
@@ -220,7 +219,6 @@ CORE_CONFIG_SCHEMA = CUSTOMIZE_CONFIG_SCHEMA.extend({
     CONF_UNIT_SYSTEM: cv.unit_system,
     CONF_TIME_ZONE: cv.time_zone,
     vol.Optional(CONF_PACKAGES, default={}): PACKAGES_CONFIG_SCHEMA,
-    CONF_OWNERS_NAME: vol.Coerce(str),
 })
 
 
@@ -370,6 +368,60 @@ def get_version_file_path():
     print('Ran {}| version_file={}'.format(sys._getframe().f_code.co_name, version_file))
     return version_file
 
+def _get_path(yaml_config, path):
+    # source: dcos-cli
+    """
+    :param config: Dict with the configuration values
+    :type config: dict
+    :param path: Path to the value. E.g. 'path.to.value'
+    :type path: str
+    :returns: Value stored at the given path
+    :rtype: double, int, str, list or dict
+    """
+
+    for section in path.split('.'):
+        yaml_config = yaml_config[section]
+
+    return yaml_config
+
+def _iterator(parent, dictionary):
+    # source: dcos-cli
+    """
+    :param parent: Path to the value parameter
+    :type parent: str
+    :param dictionary: Value of the key
+    :type dictionary: collection.Mapping
+    :returns: An iterator of tuples for each property and value
+    :rtype: iterator of (str, any) where any can be str, int, double, list
+    """
+
+    for key, value in dictionary.items():
+
+        new_key = key
+        if parent is not None:
+            new_key = "{}.{}".format(parent, key)
+
+        if not isinstance(value, dict):
+            yield (new_key, value)
+        else:
+            for x in _iterator(new_key, value):
+                yield x
+
+def split_key(name):
+    # source: dcos-cli
+    """
+    :param name: the full property path - e.g. marathon.url
+    :type name: str
+    :returns: the section and property name
+    :rtype: (str, str)
+    """
+
+    terms = name.split('.', 1)
+    if len(terms) != 2:
+        raise Exception('Property name must have both a section and '
+                            'key: <section>.<key> - E.g. marathon.url')
+
+    return (terms[0], terms[1])
 
 class Config(object):
 
@@ -383,11 +435,70 @@ class Config(object):
         """
         self._data = data or {}
 
+        # self.latitude = None  # type: Optional[float]
+        # self.longitude = None  # type: Optional[float]
+        # self.elevation = None  # type: Optional[int]
+        # self.location_name = None  # type: Optional[str]
+        # self.time_zone = None  # type: Optional[str]
+        # self.units = METRIC_SYSTEM  # type: UnitSystem
+
+        # # If True, pip install is skipped for requirements on startup
+        # self.skip_pip = False  # type: bool
+
+        # # List of loaded components
+        # self.components = set()
+
+        # # Remote.API object pointing at local API
+        # self.api = None
+
+        # # Directory that holds the configuration
+        # self.config_dir = None
+
+        self._scarlett_name = None
+        self._coordinates = None
+        self._longitude = None
+        self._latitude = None
+        self._pocketsphinx = None
+        self._elevation = None
+        self._unit_system = None
+        self._time_zone = None
+        self._owner_name = None
+        self._keyword_list = None
+        self._features_enabled = None
+        # self._units = METRIC_SYSTEM  # type: UnitSystem
+
+    def as_dict(self):
+        """Create a dictionary representation of this dict.
+        """
+        time_zone = self._time_zone or date_util.UTC
+
+        return {
+            'scarlett_name': self._scarlett_name,
+            'pocketsphinx': self._pocketsphinx,
+            'latitude': self._latitude,
+            'longitude': self._longitude,
+            'elevation': self._elevation,
+            # 'unit_system': self._units.as_dict(),
+            'unit_system': self._unit_system,
+            'owner_name': self._owner_name,
+            'keyword_list': self._keyword_list,
+            'features_enabled': self._features_enabled,
+            # 'location_name': self._location_name,
+            'time_zone': time_zone.zone,
+            'version': __version__
+        }
+
     def _load_default_schema(self):
         """
         If called, this still setup the default in memory dictonary
         object representing a scarlett config
         """
+        # # Create a copy of the configuration with all config for current
+        # # component removed and add validated config back in.
+        # filter_keys = extract_domain_configs(config, domain)
+        # config = {key: value for key, value in config.items()
+        #           if key not in filter_keys}
+        # config[domain] = platforms
         pass
 
     def _empty_config(self):
@@ -447,6 +558,9 @@ class Config(object):
         print('Ran {}| config_file_path={}'.format(sys._getframe().f_code.co_name, config_file_path))
 
         config_path = cls.ensure_config_exists(True)
+        # NOTE: Below is how dcos-cli does it
+        # util.ensure_file_exists(path)
+        # util.enforce_file_permissions(path)
 
         # FIXME: This condition never gets met, fix it
         if config_path is None:
