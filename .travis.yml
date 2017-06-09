@@ -22,7 +22,7 @@ before_install:
   # List available docker versions.
   - apt-cache madison docker.io
   # Update Docker. See: https://graysonkoonce.com/managing-docker-and-docker-compose-versions-on-travis-ci/.
-  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker.io=${DOCKER_VERSION}
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker.io
   # Add docker-compose at the version specified in ENV.
   - sudo rm -f /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
