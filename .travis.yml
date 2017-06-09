@@ -4,7 +4,7 @@ matrix:
   fast_finish: true
   include:
   - python: '3.5'
-    env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=default DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.0-0~trusty DOCKER_COMPOSE_VERSION=1.8.0
+    env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=default DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.6-0~ubuntu-trusty DOCKER_COMPOSE_VERSION=1.8.0
     sudo: required
     dist: trusty
     language: python
