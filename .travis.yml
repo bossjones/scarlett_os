@@ -11,7 +11,7 @@ matrix:
       DOCKER_COMPOSE_VERSION: 1.8.0
       TEST_TARGET: default
       DOCKER_DATA: "$HOME/docker_data"
-      DOCKER_VERSION: 1.12.6-0~ubuntu-trusty
+      DOCKER_VERSION: 17.03.1~ce-0~ubuntu-trusty
       DOCKER_COMPOSE_VERSION: 1.8.0
     sudo: required
     dist: trusty
@@ -31,7 +31,7 @@ before_install:
   - sudo apt-cache search docker
   # List available docker versions.
   - apt-cache madison docker-ce
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce=$DOCKER_VERSION
   # Update Docker. See: https://graysonkoonce.com/managing-docker-and-docker-compose-versions-on-travis-ci/.
   # - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker.io
   # Add docker-compose at the version specified in ENV.
