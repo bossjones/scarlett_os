@@ -18,6 +18,7 @@ services:
 
 before_install:
   - travis_retry pip install coveralls
+  - sudo apt-cache search docker
   # List available docker versions.
   - apt-cache madison docker-engine
   # Update Docker. See: https://graysonkoonce.com/managing-docker-and-docker-compose-versions-on-travis-ci/.
