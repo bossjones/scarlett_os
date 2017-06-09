@@ -4,25 +4,36 @@ matrix:
   fast_finish: true
   include:
   - python: '3.5'
-    env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=default DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.6-0~ubuntu-trusty DOCKER_COMPOSE_VERSION=1.8.0
+    env:
+      TOXENV: py35
+      PYTHON: "python3"
+      PACKAGES: "python3-gi python3-gi-cairo"
+      DOCKER_COMPOSE_VERSION: 1.8.0
+      TEST_TARGET: default
+      DOCKER_DATA: "$HOME/docker_data"
+      DOCKER_VERSION: 1.12.6-0~ubuntu-trusty
+      DOCKER_COMPOSE_VERSION: 1.8.0
     sudo: required
     dist: trusty
     language: python
     group: edge
   allow_failures:
   - python: '3.5'
-    env: TOXENV=typing
+    env:
+      TOXENV: typing
 
 services:
   - docker
 
 before_install:
+  - sudo apt-get update
   - travis_retry pip install coveralls
   - sudo apt-cache search docker
   # List available docker versions.
-  - apt-cache madison docker.io
+  - apt-cache madison docker-engine
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-engine
   # Update Docker. See: https://graysonkoonce.com/managing-docker-and-docker-compose-versions-on-travis-ci/.
-  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker.io
+  # - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker.io
   # Add docker-compose at the version specified in ENV.
   - sudo rm -f /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
