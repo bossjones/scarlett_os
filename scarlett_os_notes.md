@@ -1594,3 +1594,13 @@ For other issues discussed here;
 - When bind-mounting files from your host to the container on a Mac running Docker for Mac, there is some "magic" built-in to ignore ownership; the process inside the container always gets access. Read the troubleshooting section for Docker for Mac or Docker for Windows if you're running into issues.
 
 For other issues; open a new bug report if you suspect there's a bug, but please make sure there's no existing issue, or if your problem falls in one of those mentioned above.
+
+
+
+# Config research
+
+### Check this guy out
+
+https://github.com/bvujicic/yml-to-env/blob/ed0e4b61ac0c9ca356084c1820db30312c3e05f7/yml_config/__init__.py
+
+dot notation on yaml configs: https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
