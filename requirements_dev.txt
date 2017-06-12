@@ -28,7 +28,7 @@ ipython>=5.1.0
 gnureadline>=6.3.0
 
 # dbus
-python-dbusmock==0.16.7
+python-dbusmock==0.16.8
 
 # pytest
 pytest>=2.9.2
