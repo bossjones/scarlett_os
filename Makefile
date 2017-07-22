@@ -378,10 +378,13 @@ docker-compose-run-test:
 	@docker-compose -f docker-compose-devtools.yml run --name scarlett_test --rm test bash python3 --version
 
 docker-compose-up:
-	@docker-compose -f docker-compose-devtools.yml up
+	@docker-compose -f docker-compose-devtools.yml up -d
 
 docker-compose-up-build:
 	@docker-compose -f docker-compose-devtools.yml up --build
+
+docker-compose-up-build-d:
+	@docker-compose -f docker-compose-devtools.yml up -d --build
 
 docker-compose-down:
 	@docker-compose -f docker-compose-devtools.yml down

@@ -76,6 +76,13 @@ after_success:
   - sed -i 's@\"/home/pi/dev/bossjones-github/scarlett_os/@'"\"$(pwd)/"'@g' .coverage
   - coveralls
 
+notifications:
+  email:
+    recipients:
+      - bossjones@theblacktonystark.com
+    on_success: always # default: change
+    on_failure: always # default: always
+
 deploy:
   distributions: sdist bdist_wheel
   provider: pypi

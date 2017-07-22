@@ -6,31 +6,34 @@ from __future__ import absolute_import, unicode_literals
 # source: https://docs.python.org/3/library/codecs.html
 import codecs
 import collections
-from collections import OrderedDict
 import fnmatch
-from gettext import gettext as _
 import logging
 import os
 import shutil
 import sys
 import tempfile
+from collections import OrderedDict
+from gettext import gettext as _
 from time import time
-
 from typing import Any, Dict, Optional
 
-
-from layeredconfig import Defaults, DictSource, LayeredConfig
 import ruamel.yaml
-from ruamel.yaml import YAML  # defaults to round-trip
 import voluptuous as vol
+from layeredconfig import Defaults, DictSource, LayeredConfig
+from ruamel.yaml import YAML  # defaults to round-trip
 from voluptuous.humanize import humanize_error
 
-from scarlett_os.compat import basestring, bytes, integer_types, string_types, text_type
-from scarlett_os.const import (
-    CONF_CUSTOMIZE, CONF_CUSTOMIZE_DOMAIN, CONF_CUSTOMIZE_GLOB, CONF_ELEVATION, CONF_LATITUDE, CONF_LONGITUDE, CONF_NAME, CONF_OWNERS_NAME,
-    CONF_PACKAGES, CONF_TEMPERATURE_UNIT, CONF_TIME_ZONE, CONF_UNIT_SYSTEM, CONF_UNIT_SYSTEM_IMPERIAL, CONF_UNIT_SYSTEM_METRIC,
-    TEMP_CELSIUS, __version__)
 import scarlett_os.helpers.config_validation as cv
+from scarlett_os.compat import (basestring, bytes, integer_types, string_types,
+                                text_type)
+from scarlett_os.const import (CONF_CUSTOMIZE, CONF_CUSTOMIZE_DOMAIN,
+                               CONF_CUSTOMIZE_GLOB, CONF_ELEVATION,
+                               CONF_LATITUDE, CONF_LONGITUDE, CONF_NAME,
+                               CONF_OWNERS_NAME, CONF_PACKAGES,
+                               CONF_TEMPERATURE_UNIT, CONF_TIME_ZONE,
+                               CONF_UNIT_SYSTEM, CONF_UNIT_SYSTEM_IMPERIAL,
+                               CONF_UNIT_SYSTEM_METRIC, TEMP_CELSIUS,
+                               __version__)
 from scarlett_os.internal import path as path_internal
 from scarlett_os.internal.path import mkdir_if_does_not_exist
 from scarlett_os.utility import dt as date_util
@@ -45,9 +48,7 @@ yaml = YAML()
 yaml.explicit_start = True
 yaml.indent = 4
 yaml.block_seq_indent = 2
-# yaml.version = (1, 1)
-
-logger = logging.getLogger(__name__)
+yaml.version = (1, 2)
 
 # NOTE: We are using https://github.com/srstevenson/xdg
 # NOTE: This enforces the [XDG Base Directory Specification] https://specifications.freedesktop.org/basedir-spec/basedir-spec-0.6.html
@@ -132,6 +133,7 @@ CORE_CONFIG_SCHEMA = CUSTOMIZE_CONFIG_SCHEMA.extend({
     vol.Optional(CONF_PACKAGES, default={}): PACKAGES_CONFIG_SCHEMA,
 })
 
+
 def lower(a_string):
     """
     Make string lowercase.
@@ -142,6 +144,7 @@ def lower(a_string):
         return a_string.lower()
     except AttributeError:
         return a_string
+
 
 def mapping_string_access(self, s, delimiter=None, key_delim=None):
     # source: https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
@@ -169,6 +172,7 @@ def mapping_string_access(self, s, delimiter=None, key_delim=None):
         return self[key]
     return self[key].string_access(rest, delimiter, key_delim)
 
+# monkeypatch CommentedMap.string_access function
 ruamel.yaml.comments.CommentedMap.string_access = mapping_string_access
 
 
@@ -185,41 +189,22 @@ def sequence_string_access(self, s, delimiter=None, key_delim=None):
         return self[key]
     return self[key].string_access(rest, delimiter, key_delim)
 
+# monkeypatch CommentedSeq.string_access function
 ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
+
 
 def dump_yaml(layered_config):
     # source: https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
     return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
                                        default_flow_style=False)
 
+
 def yaml_unicode_representer(self, data):
     # source: https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
     return self.represent_str(data.encode('utf-8'))
 
+
 ruamel.yaml.representer.Representer.add_representer(text_type, yaml_unicode_representer)
-
-# def match_value(value, pattern):
-#     if isinstance(value, (list, tuple)):
-#         return any(match_value(v, pattern) for v in value)
-#     if isinstance(value, basestring) and isinstance(pattern, basestring):
-#         return fnmatch.fnmatch(value.lower(), pattern.lower())
-#     return lower(value) == lower(pattern)
-
-
-# def yaml_load(stream):
-#     """Load YAML document, but load all strings as unicode on py2."""
-#     import yaml
-
-#     class UnicodeLoader(yaml.SafeLoader):
-#         """Yaml SafeLoader Class, default encoding is UTF-8."""
-#         pass
-#     # NOTE:
-#     # In [2]: yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
-#     # Out[2]: 'tag:yaml.org,2002:map'
-#     UnicodeLoader.add_constructor(
-#         yaml.resolver.BaseResolver.DEFAULT_SCALAR_TAG,
-#         UnicodeLoader.construct_scalar)
-#     return yaml.load(stream, UnicodeLoader)
 
 
 def match_config(filters, device, kind, default):
@@ -333,6 +318,7 @@ def get_version_file_path():
     print('Ran {}| version_file={}'.format(sys._getframe().f_code.co_name, version_file))
     return version_file
 
+
 def _get_path(yaml_config, path):
     # source: dcos-cli
     """
@@ -348,6 +334,7 @@ def _get_path(yaml_config, path):
         yaml_config = yaml_config[section]
 
     return yaml_config
+
 
 def _iterator(parent, dictionary):
     # source: dcos-cli
@@ -372,6 +359,7 @@ def _iterator(parent, dictionary):
             for x in _iterator(new_key, value):
                 yield x
 
+
 def split_key(name):
     # source: dcos-cli
     """
@@ -388,6 +376,7 @@ def split_key(name):
 
     return (terms[0], terms[1])
 
+
 def flatten(d, parent_key='', sep='/'):
     # source: https://github.com/russellballestrini/yaml_consulate/blob/76d74ec7ffe5fd56ee057a619f12dcc8a862b046/yaml_consulate/yaml_consulate.py
     """http://stackoverflow.com/a/6027615"""
@@ -399,6 +388,7 @@ def flatten(d, parent_key='', sep='/'):
         else:
             items.append((new_key, v))
     return dict(items)
+
 
 class Config(object):
 
@@ -425,26 +415,27 @@ class Config(object):
         self._features_enabled = None
         # self._units = METRIC_SYSTEM  # type: UnitSystem
 
-    def as_dict(self):
-        """Create a dictionary representation of this dict.
-        """
-        time_zone = self._time_zone or date_util.UTC
+    # FIXME: Figure out if we want to use this or not
+    # def as_dict(self):
+    #     """Create a dictionary representation of this dict.
+    #     """
+    #     time_zone = self._time_zone or date_util.UTC
 
-        return {
-            'scarlett_name': self._scarlett_name,
-            'pocketsphinx': self._pocketsphinx,
-            'latitude': self._latitude,
-            'longitude': self._longitude,
-            'elevation': self._elevation,
-            # 'unit_system': self._units.as_dict(),
-            'unit_system': self._unit_system,
-            'owner_name': self._owner_name,
-            'keyword_list': self._keyword_list,
-            'features_enabled': self._features_enabled,
-            # 'location_name': self._location_name,
-            'time_zone': time_zone.zone,
-            'version': __version__
-        }
+    #     return {
+    #         'scarlett_name': self._scarlett_name,
+    #         'pocketsphinx': self._pocketsphinx,
+    #         'latitude': self._latitude,
+    #         'longitude': self._longitude,
+    #         'elevation': self._elevation,
+    #         # 'unit_system': self._units.as_dict(),
+    #         'unit_system': self._unit_system,
+    #         'owner_name': self._owner_name,
+    #         'keyword_list': self._keyword_list,
+    #         'features_enabled': self._features_enabled,
+    #         # 'location_name': self._location_name,
+    #         'time_zone': time_zone.zone,
+    #         'version': __version__
+    #     }
 
     def dump_config(self):
         return dump_yaml(self._data)
@@ -458,6 +449,21 @@ class Config(object):
         # source: home-assistant
         """Get value."""
         return data.get(config_key, {})
+
+    # FIXME: I want to use this guy ... but since self._data is a layeredconfig obj, we can't currently.
+    # def get_value(self, path, **kw):
+    #     # source: https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
+    #     """
+    #     Get configuration variables using dot notation.
+
+    #     :param path: path to value inside yaml config. Eg. 'scarlett.pocketsphinx.hmm'
+    #     :type name: str
+
+    #     :param *kw: Keyword arguments expected by ruamel.yaml CommentMap.string_access(). eg [delimiter=None, key_delim=None]
+    #     :type name: keyword arguments
+
+    #     """
+    #     return self._data.string_access(path, **kw)
 
     def _write_value(self, data, config_key, new_value):
         # source: home-assistant
@@ -591,12 +597,17 @@ class Config(object):
             with open(config_path, 'w') as config_file:
                 # NOTE: This use to have 'homeautomation:'
                 # NOTE: We replaced it with ---
+                # FIXME: Should we try using http://yaml.org/type/omap.html ?
+                # config_file.write("scarlett: !!omap\n")
                 config_file.write("scarlett:\n")
 
                 for attr, _, _, description in DEFAULT_CORE_CONFIG:
+                    print("attr:{}".format(attr))
+                    print("info:{}".format(info))
                     if info[attr] is None:
                         continue
                     elif description:
+                        print("description:{}".format(description))
                         config_file.write("  # {}\n".format(description))  # NOTE: Removed 2 white spaces to make yaml file flat
                     config_file.write("  {}: {}\n".format(attr, info[attr]))  # NOTE: Removed 2 white spaces to make yaml file flat
 
@@ -620,7 +631,6 @@ class Config(object):
         except IOError:
             print('Unable to create default configuration file', config_path)
             return None
-
 
     @classmethod
     def create_default_config_and_load(cls):
@@ -646,7 +656,6 @@ class Config(object):
         config_dict = cls.from_file(config_file_path)
 
         return config_dict
-
 
     @classmethod
     def default_paths(cls):
@@ -821,7 +830,6 @@ class RoundTripYAMLFile(DictSource):
 #     return LayeredConfig(Defaults(DEFAULTS), RoundTripYAMLFile(config_file))
 
 
-
 if __name__ == "__main__":
     import signal
     if os.environ.get('SCARLETT_DEBUG_MODE'):
@@ -845,11 +853,58 @@ if __name__ == "__main__":
     import shutil
 
     import scarlett_os
-    from scarlett_os.common.configure import config_ruamel_yaml
+    from scarlett_os.common.configure import smart_config
 
     from scarlett_os.internal.debugger import dump
     from scarlett_os.internal.debugger import pprint_color
 
-    temp_config = config_ruamel_yaml.Config.create_default_config_and_load()
+    temp_config = smart_config.Config.create_default_config_and_load()
 
     print(temp_config.dump_config())
+
+
+# FIXME: Playing around w/ ruamel output and defaults
+# In [7]: temp_config = ruamel.yaml.round_trip_load(DEFAULT_CONFIG)
+
+# In [8]: temp_config
+# Out[8]:
+# CommentedMap([('owners_name', 'Hair Ron Jones'),
+#               ('pocketsphinx',
+#                CommentedMap([('hmm',
+#                               '/home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us'),
+#                              ('lm',
+#                               '/home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm'),
+#                              ('dict',
+#                               '/home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic'),
+#                              ('silprob', 0.1),
+#                              ('wip', 0.0001),
+#                              ('bestpath', 0)])),
+#               ('keywords_list', ['scarlett', 'SCARLETT']),
+#               ('features', ['time', 'help', 'party'])])
+
+# In [9]:
+
+
+# DEFAULT_CONFIG = """
+# # Omitted values in this section will be auto detected using freegeoip.io
+
+# # Name for Scarlett to call user
+# owners_name: 'Hair Ron Jones'
+
+# pocketsphinx:
+#     hmm: /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+#     lm: /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
+#     dict: /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
+#     silprob: 0.1
+#     wip: 1e-4
+#     bestpath: 0
+
+# keywords_list:
+# - 'scarlett'
+# - 'SCARLETT'
+
+# features:
+# - time
+# - help
+# - party
+# """

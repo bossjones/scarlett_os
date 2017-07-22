@@ -167,19 +167,19 @@ class TestFilterMatcher(object):
 
         shutil.rmtree(base)
 
-    def test_config_from_file_no_values_set(self, fake_config_empty):
-        """Test Config object and properties."""
-        assert fake_config_no_values.scarlett_name == 'scarlett'
-        assert fake_config_no_values.latitude == 0
-        assert fake_config_no_values.longitude == 0
-        assert fake_config_no_values.elevation == 0
-        assert fake_config_no_values.unit_system == 'imperial'
-        assert fake_config_no_values.time_zone == 'UTC'
-        assert fake_config_no_values.owner_name == 'commander keen'
-        assert fake_config_no_values.keyword_list == []
-        assert fake_config_no_values.features_enabled == []
-        assert fake_config_no_values.pocketsphinx == {}
-        assert fake_config_no_values.coordinates == (0, 0)
+    # def test_config_from_file_no_values_set(self, fake_config_empty):
+    #     """Test Config object and properties."""
+    #     # assert fake_config_no_values.scarlett_name == 'scarlett'
+    #     # assert fake_config_no_values.latitude == 0
+    #     assert fake_config_no_values.longitude == 0
+    #     assert fake_config_no_values.elevation == 0
+    #     assert fake_config_no_values.unit_system == 'imperial'
+    #     assert fake_config_no_values.time_zone == 'UTC'
+    #     assert fake_config_no_values.owner_name == 'commander keen'
+    #     assert fake_config_no_values.keyword_list == []
+    #     assert fake_config_no_values.features_enabled == []
+    #     assert fake_config_no_values.pocketsphinx == {}
+    #     assert fake_config_no_values.coordinates == (0, 0)
 
 
         # In [6]: dump(temp_config)
