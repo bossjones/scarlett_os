@@ -1709,3 +1709,118 @@ Directory | Use
 `/etc/services-available/` | same as above, but must be symlinked into `/etc/services.d/` to take effect
 `/run.d/` | shell scripts (ending in .sh) that make runtime modifications ahead of S6 initialization
 `/scripts` | convenience scripts that can be leveraged in derived images
+
+----------------------------
+
+# Broken pip + setuptools
+## AKA ( _NamespacePath object has no attribute sort (31.0.0) )
+
+Links to git issues:
+
+- https://github.com/pypa/setuptools/issues/885
+- https://github.com/pypa/pip/issues/4216
+- https://github.com/yougov/pmxbot/commit/c227caf3794d840f992151d1749302f7097a896f
+- https://github.com/pypa/pip/commit/eaccb88674beff75bb98a1d1e2d53a26a9c63890
+- https://github.com/pypa/setuptools/commit/d9c9284e19ce475c2366b279dd4db82a2751a571
+
+### Error in question
+
+```
+pi@70acac127862:~/dev/bossjones-github/scarlett_os$ pip install cryptography
+Traceback (most recent call last):
+  File "/usr/local/bin/pip", line 7, in <module>
+    from pip import main
+  File "/usr/local/lib/python3.5/site-packages/pip/__init__.py", line 14, in <module>
+    from pip.utils import get_installed_distributions, get_prog
+  File "/usr/local/lib/python3.5/site-packages/pip/utils/__init__.py", line 27, in <module>
+    from pip._vendor import pkg_resources
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 2927, in <module>
+    @_call_aside
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 2913, in _call_aside
+    f(*args, **kwargs)
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 2952, in _initialize_master_working_set
+    add_activation_listener(lambda dist: dist.activate())
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 956, in subscribe
+    callback(dist)
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 2952, in <lambda>
+    add_activation_listener(lambda dist: dist.activate())
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 2515, in activate
+    declare_namespace(pkg)
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 2097, in declare_namespace
+    _handle_ns(packageName, path_item)
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 2047, in _handle_ns
+    _rebuild_mod_path(path, packageName, module)
+  File "/usr/local/lib/python3.5/site-packages/pip/_vendor/pkg_resources/__init__.py", line 2066, in _rebuild_mod_path
+    orig_path.sort(key=position_in_sys_path)
+AttributeError: '_NamespacePath' object has no attribute 'sort'
+```
+
+### Debugging: Determine what's in python path
+
+Based on this [observation](https://github.com/pypa/setuptools/issues/885#issuecomment-266606086):
+
+[@jaraco](https://github.com/jaraco) The bug happens trying to import `setuptools`/`pkg_resources` in an environment where a namespace package is installed, but where there is more than one directory in the path of the namespace package (e.g., one package in a "development install" vs. dependencies installed into `site-packages`).
+
+In [@jkbbwr](https://github.com/jkbbwr)'s case above, what would cause `zope.__path__` to be an instance of `_NamespacePath` rather than the plain list that the code in `pkg_resources._rebuild_mod_path` clearly expects? That class appears only to be instantiated by the stdlib's import machinery under Python 3.5+:
+
+*   `importlib._bootstrap_external._NamespaceLoader.__init__`
+*   `importlib._bootstrap_external.PathFinder.find_spec`.
+
+As a hackaround, one might add monkeypatch a `sort` method onto `importlib._bootstrap_external._NamespacePath`. ;)
+
+
+`....`
+
+So, first up, lets list what's in our python path currently:
+
+`python -c "import sys; print('\n'.join(sys.path))"`
+
+```
+pi@91c2236d8a47:~/dev/bossjones-github/scarlett_os$ python -c "import sys; print('\n'.join(sys.path))"
+
+/home/pi/jhbuild/lib/python3.5/site-packages
+/usr/lib/python3.5/site-packages
+/usr/local/lib/python35.zip
+/usr/local/lib/python3.5
+/usr/local/lib/python3.5/plat-linux
+/usr/local/lib/python3.5/lib-dynload
+/usr/local/lib/python3.5/site-packages
+pi@91c2236d8a47:~/dev/bossjones-github/scarlett_os$
+
+pi@91c2236d8a47:~/dev/bossjones-github/scarlett_os$ jhbuild run -- python -c "import sys; print('\n'.join(sys.path))"
+I: Modulesets were edited locally but JHBuild is configured to get them from the network, perhaps you need to add use_local_modulesets = True to your /home/pi/.jhbuildrc.
+
+/usr/local/share/jhbuild/sitecustomize
+/home/pi/jhbuild/lib/python3.5/site-packages
+/usr/lib/python3.5/site-packages
+/usr/local/lib/python35.zip
+/usr/local/lib/python3.5
+/usr/local/lib/python3.5/plat-linux
+/usr/local/lib/python3.5/lib-dynload
+/usr/local/lib/python3.5/site-packages
+pi@91c2236d8a47:~/dev/bossjones-github/scarlett_os$
+```
+
+`...`
+
+via [jaraco](https://github.com/pypa/setuptools/issues/885#issuecomment-266921037):
+
+`Working with the google-auth library, I find that if I set usedevelop = True in the tox settings, the issue doesn't occur. This behavior indicates to me that the issue lies in part with a package which is duplicately installed. In any case, I was able to use it to create a test case that captures the error.`
+
+
+### Tried downgrading for a second, no luck:
+
+`pip3 install --no-cache-dir --upgrade --force-reinstall "setuptools==31.0.1"`
+
+
+### What does vendoring mean?
+
+https://gist.github.com/datagrok/8577287
+
+```
+Vendoring is the moving of all 3rd party items such as plugins, gems and even rails into the /vendor directory. This is one method for ensuring that all files are deployed to the production server the same as the dev environment.
+```
+
+### This is the soluton that ended up working
+
+Seems like issue https://github.com/pypa/pip/issues/4216 is halted at the moment ... most likely because the devs are busy or they're working on rolling out version 10 of pip instead which will fix this problem w/ 9.0.1. For now, decided to use the patch that `pradyunsg ` put together that involves installing pip like this: `pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip"`. We locked it to our own fork just to prevent any other changes from happening after today 7/22/2017 ... just in case. But will keep an eye on things.
