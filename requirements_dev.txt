@@ -7,7 +7,7 @@ flake8-docstrings>=0.2.8
 tox>=2.3.1
 coverage>=4.1
 Sphinx>=1.4.5
-cryptography==1.8.1
+cryptography==2.0
 PyYAML>=3.11
 requests_mock>=1.0
 mock-open>=1.3.1
@@ -20,7 +20,7 @@ pylint>=1.5.6
 # NOTE: We need to install android as well
 # python -m pip install astroid
 # NOTE: We need isort too
-isort==4.2.5
+isort==4.2.15
 coveralls>=1.1
 
 # data science
@@ -28,7 +28,7 @@ ipython>=5.1.0
 gnureadline>=6.3.0
 
 # dbus
-python-dbusmock==0.16.7
+python-dbusmock==0.16.9
 
 # pytest
 pytest>=2.9.2
@@ -38,11 +38,11 @@ pytest-catchlog>=1.2.2
 pytest-benchmark[histogram]>=3.0.0rc1
 freezegun==0.3.9
 git+git://github.com/mverteuil/pytest-ipdb.git
-pdbpp==0.8.3
+pdbpp==0.9.1
 # pudb
 pytest-sugar==0.8.0
 pytest-rerunfailures>=2.1.0
-pytest-mock==1.6.0
+pytest-mock==1.6.2
 pytest-leaks==0.2.2
 
 # # Test runners
@@ -69,12 +69,12 @@ hunter==1.4.1
 # source: https://github.com/joke2k/faker
 # faker==0.7.7
 
-Cython==0.25.2
+cython==0.26
 
 # trace python process
 pystuck==0.8.5
 objgraph==3.1.0
-xdot==0.7
+xdot==0.8
 
 # googles smarter autoformatter to conform to autopep8
-yapf==0.16.2
+yapf==0.16.3

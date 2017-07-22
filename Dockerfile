@@ -15,7 +15,15 @@ RUN sudo apt-get update -yqq && \
 
 RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     && pwd \
+    # FIXME: Shouldn't be necessary anymore after pip > 9.0.1!
+    # https://github.com/pypa/setuptools/issues/885
+    # https://github.com/pypa/pip/issues/4216
+    # ORIG: https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip
+    # Locking to bossjones fork just in case this changes without use knowing, tested and it works
+    && pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
+    && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 \
     && jhbuild run -- pip install -r requirements.txt \
+    && jhbuild run -- pip freeze \
     && jhbuild run python3 setup.py install \
     && jhbuild run -- pip install -e .[test]
 

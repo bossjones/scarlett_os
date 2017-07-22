@@ -10,11 +10,11 @@ voluptuous==0.10.5
 xdg>=1.0.4
 
 # Yaml 1.2 spec
-ruamel.yaml==0.15.5
+ruamel.yaml==0.15.19
 
 
 # There also is a commandline utility yaml available after installing:
-ruamel.yaml.cmd==0.2.4
+ruamel.yaml.cmd==0.4.1
 
 # config
 layeredconfig==0.3.2

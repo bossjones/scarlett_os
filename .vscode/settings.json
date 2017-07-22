@@ -47,5 +47,9 @@
     "todohighlight.include": "{**/*.js,**/*.jsx,**/*.ts,**/*.tsx,**/*.html,**/*.php,**/*.css,**/*.scss,**/*.mk,**/Makefile}",
     "files.associations": {
         "Vagrantfile": "ruby"
-    }
+    },
+    // Points to the restructuredtext-lint exectuable.
+    "restructuredtext.linter.executablePath": "/usr/local/bin/restructuredtext-lint",
+    // The full path of sphinx-build utility. This is an absolute path.
+    "restructuredtext.sphinxBuildPath": "/usr/local/bin/sphinx-build"
 }

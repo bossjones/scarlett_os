@@ -402,3 +402,9 @@ docker-exec-master:
 format:
 	$(call check_defined, name, Please set name)
 	yapf -i $(product).py || (exit 1)
+
+convert-markdown-to-rst:
+	pandoc --from=markdown_github --to=rst --output=README.rst README.md
+
+install-pandoc-stuff:
+	ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip3 install sphinx sphinx-autobuild restructuredtext-lint

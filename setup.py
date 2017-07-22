@@ -87,9 +87,9 @@ requirements = [
     'Fabric3==1.13.1.post1',
     'PyYAML>=3.0',
     'xdg>=1.0.4',
-    'yapf==0.16.2',
-    'ruamel.yaml==0.15.5',
-    'ruamel.yaml.cmd==0.2.4',
+    'yapf==0.16.3',
+    'ruamel.yaml==0.15.19',
+    'ruamel.yaml.cmd==0.4.1',
     'layeredconfig==0.3.2'
 ]
 
@@ -99,15 +99,15 @@ test_requirements = [
     'pytest-timeout>=1.0.0',
     'pytest-catchlog>=1.2.2',
     'pytest-cov>=2.3.1',
-    'pip>=7.0',
+    # 'pip>=7.0',
     'bumpversion>=0.5.3',
-    'wheel>=0.29.0',
+    # 'wheel>=0.29.0',
     'watchdog>=0.8.3',
     'flake8>=2.6.2',
     'flake8-docstrings>=0.2.8',
     'coverage>=4.1',
     'Sphinx>=1.4.5',
-    'cryptography==1.8.1',
+    'cryptography==2.0',
     'PyYAML>=3.11',
     'pydocstyle>=1.0.0',
     'mypy-lang>=0.4',
@@ -122,21 +122,21 @@ test_requirements = [
     'python-dbusmock',
     'freezegun==0.3.9',
     'hunter==1.4.1',
-    'Cython==0.25.2',
+    'cython==0.26',
     'pystuck==0.8.5',
-    # 'pdbpp==0.8.3',
+    # 'pdbpp==0.9.1',
     'pytest-sugar==0.8.0',
     # 'pytest-ipdb',
     'objgraph==3.1.0',
     'xdot',
     'pytest-rerunfailures>=2.1.0',
-    'pytest-mock==1.6.0',
-    'isort==4.2.5'
+    'pytest-mock==1.6.2',
+    'isort==4.2.15'
 
 ]
 
 experimental_requirements  = [
-    'pytest-xdist==1.16.0',
+    'pytest-xdist==1.18.1',
     'unittest2pytest==0.3',
     'pympler==0.5',
     'pydocstyle==2.0.0',
