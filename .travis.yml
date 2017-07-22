@@ -4,24 +4,36 @@ matrix:
   fast_finish: true
   include:
   - python: '3.5'
-    env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.8.0 TEST_TARGET=default DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=1.12.0-0~trusty DOCKER_COMPOSE_VERSION=1.8.0
+    env:
+      TOXENV: py35
+      PYTHON: "python3"
+      PACKAGES: "python3-gi python3-gi-cairo"
+      DOCKER_COMPOSE_VERSION: 1.8.0
+      TEST_TARGET: default
+      DOCKER_DATA: "$HOME/docker_data"
+      DOCKER_VERSION: 17.03.1~ce-0~ubuntu-trusty
+      DOCKER_COMPOSE_VERSION: 1.8.0
     sudo: required
     dist: trusty
     language: python
     group: edge
   allow_failures:
   - python: '3.5'
-    env: TOXENV=typing
+    env:
+      TOXENV: typing
 
 services:
   - docker
 
 before_install:
+  - sudo apt-get update
   - travis_retry pip install coveralls
+  - sudo apt-cache search docker
   # List available docker versions.
-  - apt-cache madison docker-engine
+  - apt-cache madison docker-ce
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce=$DOCKER_VERSION
   # Update Docker. See: https://graysonkoonce.com/managing-docker-and-docker-compose-versions-on-travis-ci/.
-  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker-engine=${DOCKER_VERSION}
+  # - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker.io
   # Add docker-compose at the version specified in ENV.
   - sudo rm -f /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
@@ -63,6 +75,13 @@ after_success:
   # Coverage report contains Docker paths. We replace them, so that we can run Coveralls.
   - sed -i 's@\"/home/pi/dev/bossjones-github/scarlett_os/@'"\"$(pwd)/"'@g' .coverage
   - coveralls
+
+notifications:
+  email:
+    recipients:
+      - bossjones@theblacktonystark.com
+    on_success: always # default: change
+    on_failure: always # default: always
 
 deploy:
   distributions: sdist bdist_wheel

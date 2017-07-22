@@ -4,9 +4,6 @@ ScarlettOS
 
 
 
-.. image:: https://img.shields.io/pypi/v/scarlett_os.svg
-        :target: https://pypi.python.org/pypi/scarlett_os
-
 .. image:: https://img.shields.io/travis/bossjones/scarlett_os.svg
         :target: https://travis-ci.org/bossjones/scarlett_os
 
@@ -22,6 +19,8 @@ ScarlettOS
      :target: https://coveralls.io/github/bossjones/scarlett_os?branch=master
      :alt: Coverage
 
+.. image:: https://img.shields.io/pypi/v/scarlett_os.svg
+        :target: https://pypi.python.org/pypi/scarlett_os
 
 
 S.C.A.R.L.E.T.T is Tony Darks artificially programmed intelligent computer. She is programmed to speak with a female voice in a British accent.

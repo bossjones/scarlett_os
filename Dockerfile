@@ -1,4 +1,4 @@
-FROM  bossjones/boss-docker-jhbuild-pygobject3:v1.1
+FROM bossjones/boss-docker-jhbuild-pygobject3:v1.1
 MAINTAINER Malcolm Jones <bossjones@theblacktonystark.com>
 
 COPY ./ /home/pi/dev/bossjones-github/scarlett_os

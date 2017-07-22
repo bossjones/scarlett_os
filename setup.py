@@ -85,7 +85,12 @@ requirements = [
     'six',
     'voluptuous==0.10.5',
     'Fabric3==1.13.1.post1',
-    'PyYAML>=3.0'
+    'PyYAML>=3.0',
+    'xdg>=1.0.4',
+    'yapf==0.16.2',
+    'ruamel.yaml==0.15.5',
+    'ruamel.yaml.cmd==0.2.4',
+    'layeredconfig==0.3.2'
 ]
 
 

@@ -5,6 +5,8 @@ import os
 import stat
 import threading
 import bisect
+import stat
+import sys
 
 from scarlett_os import compat
 from scarlett_os import exceptions
@@ -25,6 +27,65 @@ from pathlib import Path
 
 
 logger = logging.getLogger(__name__)
+
+
+def ensure_dir_exists(directory):
+    # source: dcos-cli
+    """If `directory` does not exist, create it.
+
+    :param directory: path to the directory
+    :type directory: string
+    :rtype: None
+    """
+
+    if not os.path.exists(directory):
+        logger.info('Creating directory: %r', directory)
+
+        try:
+            os.makedirs(directory, 0o775)
+        except os.error as e:
+            raise Exception(
+                'Cannot create directory [{}]: {}'.format(directory, e))
+
+
+def ensure_file_exists(path):
+    # source: dcos-cli
+    """ Create file if it doesn't exist
+
+    :param path: path of file to create
+    :type path: str
+    :rtype: None
+    """
+
+    if not os.path.exists(path):
+        try:
+            open(path, 'w').close()
+            os.chmod(path, 0o600)
+        except IOError as e:
+            raise Exception(
+                'Cannot create file [{}]: {}'.format(path, e))
+
+def enforce_file_permissions(path):
+    # source: dcos-cli
+    """Enforce 400 or 600 permissions on file
+
+    :param path: Path to the TOML file
+    :type path: str
+    :rtype: None
+    """
+
+    if not os.path.isfile(path):
+        raise Exception('Path [{}] is not a file'.format(path))
+
+    permissions = oct(stat.S_IMODE(os.stat(path).st_mode))
+    if permissions not in ['0o600', '0600', '0o400', '0400']:
+        if os.path.realpath(path) != path:
+            path = '%s (pointed to by %s)' % (os.path.realpath(path), path)
+        msg = (
+            "Permissions '{}' for configuration file '{}' are too open. "
+            "File must only be accessible by owner. "
+            "Aborting...".format(permissions, path))
+        raise Exception(msg)
 
 
 def get_parent_dir(path):

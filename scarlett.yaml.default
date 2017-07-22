@@ -1,0 +1,25 @@
+irc:
+    server: 'irc.twitch.tv'
+    port: 6667
+    channel: '#channel'
+    user: 'username'
+    password: 'oauth:your_key_here'
+    buffer_size: 4096
+    send_timeout: 5
+    log_folder: 'irc_logs/'
+
+gui:
+    emote_globals_path: './resources/emote_globals/'
+    emote_subscriber_path: './resources/emote_subscriber/'
+    badges_path: './resources/badges/'
+    chat_maxmessages: 200
+    chat_linespacing: 0
+    chat_cache_size: 500
+    display_names_cache_size: 10000
+    display_names_file: './resources/display_names.yaml'
+    display_names_save_interval: 300
+    subscriber_maxmessages: 50
+
+debug:
+    log-level: 'warning' #debug, info, warning, error, critical
+    log-file: 'chat.log'

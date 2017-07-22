@@ -70,14 +70,14 @@ export NC
 export ORNG
 export BLUE
 
-# # verify that certain variables have been defined off the bat
-# check_defined = \
-#     $(foreach 1,$1,$(__check_defined))
-# __check_defined = \
-#     $(if $(value $1),, \
-#       $(error Undefined $1$(if $(value 2), ($(strip $2)))))
+# verify that certain variables have been defined off the bat
+check_defined = \
+    $(foreach 1,$1,$(__check_defined))
+__check_defined = \
+    $(if $(value $1),, \
+      $(error Undefined $1$(if $(value 2), ($(strip $2)))))
 
-# list_allowed_args := product
+list_allowed_args := name
 
 help:
 	@printf "\033[1m$$ASCILOGO $$NC\n"
@@ -378,10 +378,13 @@ docker-compose-run-test:
 	@docker-compose -f docker-compose-devtools.yml run --name scarlett_test --rm test bash python3 --version
 
 docker-compose-up:
-	@docker-compose -f docker-compose-devtools.yml up
+	@docker-compose -f docker-compose-devtools.yml up -d
 
 docker-compose-up-build:
 	@docker-compose -f docker-compose-devtools.yml up --build
+
+docker-compose-up-build-d:
+	@docker-compose -f docker-compose-devtools.yml up -d --build
 
 docker-compose-down:
 	@docker-compose -f docker-compose-devtools.yml down
@@ -395,3 +398,7 @@ docker-exec:
 
 docker-exec-master:
 	@scripts/docker/exec-master
+
+format:
+	$(call check_defined, name, Please set name)
+	yapf -i $(product).py || (exit 1)
