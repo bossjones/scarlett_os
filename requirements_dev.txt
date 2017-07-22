@@ -77,4 +77,4 @@ objgraph==3.1.0
 xdot==0.7
 
 # googles smarter autoformatter to conform to autopep8
-yapf==0.16.2
+yapf==0.16.3
