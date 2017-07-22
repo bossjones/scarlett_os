@@ -402,3 +402,6 @@ docker-exec-master:
 format:
 	$(call check_defined, name, Please set name)
 	yapf -i $(product).py || (exit 1)
+
+convert-markdown-to-rst:
+	pandoc --from=markdown_github --to=rst --output=README.rst README.md
