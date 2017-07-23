@@ -1,0 +1,28 @@
+#!/usr/bin/execlineb -S0
+
+# s6-setuidgid executes a program as another user. ( s6-setuidgid account prog... )
+# s6-envuidgid potentially sets the UID, GID and GIDLIST environment variables according to the options and arguments it is given; then it executes into another program.
+# s6-applyuidgid executes a program with reduced privileges.
+# s6-envdir changes its environment, then executes into another program.
+
+s6-envuidgid pi
+s6-setuidgid pi
+# exec s6-envdir "$XDG_RUNTIME_DIR"/env exec -a "${SHELL##*/}" "$SHELL"
+# s6-envdir "$XDG_RUNTIME_DIR"/env
+# exec -a /bin/bash /bin/bash -l -c exec "$@"
+# exec -a /bin/bash /bin/bash -l -c exec "sudo su - pi $@"
+
+# foreground { pipeline { find \( -name __pycache__ -o -name '*.pyc' \) } xargs rm -rf }
+# foreground { chown pi:pi -R /home/pi/dev }
+
+# foreground { pipeline { redirfd -w 2 /dev/null find \( -name __pycache__ -o -name '*.pyc' \) } xargs }
+# foreground { pipeline { redirfd -w 2 /dev/null find \( -name __pycache__ -o -name '*.pyc' \) } xargs }
+
+# ------------------------------------------------------------------------
+# NOTE: THIS ONE WORKED
+exec -a /bin/bash /bin/bash -lc "$@"
+# ------------------------------------------------------------------------
+# NOTE: If you need to just initiate a bash login, do this
+# exec -a /bin/bash /bin/bash -l
+# result: pi  ⎇  feature-dev-container {5} ?:2  ~/dev/bossjones-github/scarlett_os/container/root
+# ------------------------------------------------------------------------
