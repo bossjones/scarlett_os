@@ -45,13 +45,14 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
     echo "****************[PTPYTHON]****************" && \
     sudo mkdir -p /home/pi/.ptpython && \
     sudo mv -f /dotfiles/.ptpython_config.py /home/pi/.ptpython/config.py && \
-    sudo chown pi:pi /home/pi/.ptpython && \
-    echo "****************[SUBLIME-ANACONDA]****************" && \
-    sudo chown pi:pi -R /opt/ && \
-    cd /opt/ && \
-    git clone https://github.com/DamnWidget/anaconda.git && \
-    cd anaconda && \
-    git checkout 223cc612b0318262535ac488d1f4b4121c2e8f0d
+    sudo chown pi:pi /home/pi/.ptpython
+    # && \
+    # echo "****************[SUBLIME-ANACONDA]****************" && \
+    # sudo chown pi:pi -R /opt/ && \
+    # cd /opt/ && \
+    # git clone https://github.com/DamnWidget/anaconda.git && \
+    # cd anaconda && \
+    # git checkout 223cc612b0318262535ac488d1f4b4121c2e8f0d
 
 ENTRYPOINT ["/docker_entrypoint.sh"]
 CMD true
