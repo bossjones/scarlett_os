@@ -1,4 +1,4 @@
-FROM bossjones/boss-docker-jhbuild-pygobject3:v1.1
+FROM bossjones/boss-docker-jhbuild-pygobject3:2.0.0
 MAINTAINER Malcolm Jones <bossjones@theblacktonystark.com>
 
 COPY ./ /home/pi/dev/bossjones-github/scarlett_os
@@ -13,6 +13,9 @@ RUN sudo apt-get update -yqq && \
     sudo rm -rf /var/lib/{cache,log}/ && \
     sudo rm -rf /var/lib/apt/lists/*.lz4 /tmp/* /var/tmp/*
 
+# NOTE: Temp run install as pi user
+USER $UNAME
+
 RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     && pwd \
     # FIXME: Shouldn't be necessary anymore after pip > 9.0.1!
@@ -26,6 +29,9 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     && jhbuild run -- pip freeze \
     && jhbuild run python3 setup.py install \
     && jhbuild run -- pip install -e .[test]
+
+# NOTE: Temp run install as pi user
+USER root
 
 COPY ./container/root /
 
