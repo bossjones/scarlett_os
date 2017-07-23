@@ -1,23 +1,34 @@
-version: '2'
+version: "2"
 
 services:
   scarlett_master:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SCARLETT_ENABLE_SSHD: 0
+        SCARLETT_ENABLE_DBUS: 'true'
+        SCARLETT_BUILD_GNOME: 'true'
+        TRAVIS_CI: 'true'
     environment:
       SERVER_LOG_MINIMAL: 1
-      SERVER_APP_NAME: jhbuild-scarlett-os
+      SERVER_APP_NAME: scarlett-master
+      COMPOSE_PROJECT_NAME: scarlett-master
       S6_KILL_FINISH_MAXTIME: 1
       S6_KILL_GRACETIME: 1
       SERVER_WORKER_PROCESSES: 1
+      # NOTE: This enables SSHD access inside of the container for dev purposes
+      # 1 = false
+      # 0 = true
+      SCARLETT_ENABLE_SSHD: 0
+      SCARLETT_ENABLE_DBUS: 'true'
+      SCARLETT_BUILD_GNOME: 'true'
+      TRAVIS_CI: 'true'
     volumes:
     - ./:/home/pi/dev/bossjones-github/scarlett_os:rw
+    ports:
+    - "2222:22"
 
-  default:
-    extends:
-      service: scarlett_master
-    volumes_from:
-      - scarlett_master:rw
-    command: "jhbuild run -- py.test --cov scarlett_os --cov-report term-missing"
     # command: "jhbuild run -- python setup.py test"
     # command: "ls -lta"
     # command: jhbuild run -- coverage run -- setup.py test
