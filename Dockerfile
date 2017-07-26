@@ -5,13 +5,16 @@ COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
 
-RUN sudo apt-get update -yqq && \
-    sudo apt-get install dbus dbus-x11 psmisc vim xvfb xclip htop -yqq && \
-    sudo apt-get clean && \
-    sudo apt-get autoclean -y && \
-    sudo apt-get autoremove -y && \
-    sudo rm -rf /var/lib/{cache,log}/ && \
-    sudo rm -rf /var/lib/apt/lists/*.lz4 /tmp/* /var/tmp/*
+RUN apt-fast update -yqq && \
+    apt-fast install -yqq dbus dbus-x11 psmisc vim xvfb xclip htop && \
+    # now that apt-fast is setup, lets clean everything in this layer
+    apt-fast autoremove -y && \
+    # now clean regular apt-get stuff
+    apt-get clean && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/{cache,log}/ && \
+    rm -rf /var/lib/apt/lists/*.lz4 /tmp/* /var/tmp/*
 
 # NOTE: Temp run install as pi user
 USER $UNAME
@@ -54,5 +57,7 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
     # cd anaconda && \
     # git checkout 223cc612b0318262535ac488d1f4b4121c2e8f0d
 
-ENTRYPOINT ["/docker_entrypoint.sh"]
-CMD true
+# ENTRYPOINT ["/docker_entrypoint.sh"]
+# CMD true
+# ENTRYPOINT ["/.pi_setuid_shm"]
+CMD ["/.pi_setuid_shm", "true"]

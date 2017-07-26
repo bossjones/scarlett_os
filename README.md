@@ -35,3 +35,15 @@ INSTALL
 -------
 
 -   Fill this out soon
+
+
+Development
+----------
+
+Interactive bash: `docker exec -it scarlettos_master_1 bash -l`
+
+```
+|2.2.3|  using virtualenv: scarlett-os-venv2  Malcolms-MBP-3 in ~/dev/bossjones/scarlett_os
+± |feature-dev-container {5} U:1 ✗| → docker exec -it scarlettos_master_1 bash -l
+pi  ⎇  feature-dev-container {5} U:1  ~/dev/bossjones-github/scarlett_os
+```
