@@ -55,7 +55,8 @@ install:
   # NOTE: set containers as privileged to bypass Travis environment limitations
   # - 'sed -i "/build: ./a \ \ privileged: true" docker-compose.yml'
   # NOTE: When we move to docker-compose v2+ uncomment this below
-  - 'sed -i "/dockerfile: Dockerfile/a \ \ \ \ privileged: true" docker-compose.test.yml'
+  # - 'sed -i "/dockerfile: Dockerfile/a \ \ \ \ privileged: true" docker-compose.test.yml'
+  - 'sed -i "/scarlett_master:/a \ \ \ \ privileged: true" docker-compose.test.yml'
   - cat docker-compose.test.yml
   - travis_retry docker-compose -f docker-compose.test.yml -f ci/build.yml build
 
