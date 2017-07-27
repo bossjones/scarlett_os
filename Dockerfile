@@ -1,6 +1,28 @@
 FROM bossjones/boss-docker-jhbuild-pygobject3:2.0.0
 MAINTAINER Malcolm Jones <bossjones@theblacktonystark.com>
 
+# build-arg are acceptable
+# eg. docker build --build-arg var=xxx
+ARG SCARLETT_ENABLE_SSHD
+ARG SCARLETT_ENABLE_DBUS
+ARG SCARLETT_BUILD_GNOME
+ARG TRAVIS_CI
+
+# metadata
+ARG CONTAINER_VERSION
+ARG GIT_BRANCH
+ARG GIT_SHA
+
+ENV SCARLETT_ENABLE_SSHD ${SCARLETT_ENABLE_SSHD:-0}
+ENV SCARLETT_ENABLE_DBUS ${SCARLETT_ENABLE_DBUS:-'true'}
+ENV SCARLETT_BUILD_GNOME ${SCARLETT_BUILD_GNOME:-'true'}
+ENV TRAVIS_CI ${TRAVIS_CI:-'true'}
+
+RUN echo "SCARLETT_ENABLE_SSHD: ${SCARLETT_ENABLE_SSHD}"
+RUN echo "SCARLETT_ENABLE_DBUS: ${SCARLETT_ENABLE_DBUS}"
+RUN echo "SCARLETT_BUILD_GNOME: ${SCARLETT_BUILD_GNOME}"
+RUN echo "TRAVIS_CI: ${TRAVIS_CI}"
+
 COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
