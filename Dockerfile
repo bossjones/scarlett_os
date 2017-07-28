@@ -1,4 +1,4 @@
-FROM bossjones/boss-docker-jhbuild-pygobject3:2.0.0
+FROM bossjones/boss-docker-jhbuild-pygobject3:2.1.0
 MAINTAINER Malcolm Jones <bossjones@theblacktonystark.com>
 
 # build-arg are acceptable
