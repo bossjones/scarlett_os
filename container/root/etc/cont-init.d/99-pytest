@@ -1,0 +1,23 @@
+#!/usr/bin/execlineb -S0
+s6-envuidgid pi
+s6-setuidgid pi
+
+with-dynenv
+
+# load environment
+s6-envdir -fn -- /var/run/1000/env
+
+foreground {
+    s6-applyuidgid -u 1000 -g 1000
+    cd /home/vagrant/dev/bossjones-github/scarlett_os
+    make test-travis
+    importas REXIT ?
+    foreground { s6-echo " [run] make test-travis exited ${REXIT}." }
+    foreground { s6-echo " [run] make test-travis ran succesfully fool" }
+}
+
+if -t { s6-test $TRAVIS_CI_PYTEST = true }
+foreground { s6-echo " [run] TRAVIS_CI_PYTEST: '${TRAVIS_CI_PYTEST}' ... sending signal build stop" }
+exit ${SIGNAL_BUILD_STOP}
+
+# docker-compose -f docker-compose.test.yml -f ci/build.yml build

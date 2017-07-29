@@ -5,14 +5,45 @@
     "workbench.colorTheme": "Material Theme Palenight",
     "files.insertFinalNewline": true,
 
+    // https://github.com/rojiani/dev-setup/blob/5c0aa536ff72cedd19edf6e357b9919543f06ae8/VisualStudioCode/home/settings.json
 	"files.exclude": {
 		"out": false, // set this to true to hide the "out" folder with the compiled JS files
-		"**/*.pyc": true,
-		"**/__pycache__": true,
+		"*./DS_Store": true,
+        "**/__pycache__": true,
+        "**/.a": true,
+        "**/.class": true,
+        "**/.db": true,
+        "**/.dds": true,
+        "**/.dll": true,
+        "**/.DS_Store": true,
+        "**/.dyli": true,
+        "**/.eot": true,
+        "**/.exe": true,
         "**/.git": true,
-        "**/.svn": true,
         "**/.hg": true,
-        "**/.DS_Store": true
+        "**/.ico": true,
+        "**/.idb": true,
+        "**/.jar": true,
+        "**/.lib": true,
+        "**/.ncb": true,
+        "**/.o": true,
+        "**/.obj": true,
+        "**/.pdb": true,
+        "**/.psd": true,
+        "**/.pyc": true,
+        "**/.pyo": true,
+        "**/.sdf": true,
+        "**/.so": true,
+        "**/.suo": true,
+        "**/.svn": true,
+        "**/.swf": true,
+        "**/.tar": true,
+        "**/.tga": true,
+        "**/.ttf": true,
+        "**/.zip": true,
+        "**/*.pyc": true,
+        "**/DS_STORE": true,
+        "**/.iml": true
 	},
     "files.trimTrailingWhitespace": true,
     "search.exclude": {
@@ -40,6 +71,8 @@
         // "/Users/malcolm/dev/gnome/pydbus-v0.5.1"
 
     ],
+    // /Applications/iTerm 3 Beta.app
+
     "terminal.integrated.shellArgs.osx": ["-l"],
     "terminal.integrated.shellArgs.linux": ["-l"],
 
