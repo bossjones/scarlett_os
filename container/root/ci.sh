@@ -50,6 +50,8 @@ do
   echo "\
 #!/usr/bin/execlineb -P
 with-dynenv
+cd /home/pi/dev/bossjones-github/scarlett_os
+s6-envuidgid ${NOT_ROOT_USER}
 s6-setuidgid ${NOT_ROOT_USER}
 ${CI_WORKER_COMMAND}" > "${SERVICE_FOLDER}/run"
 done
