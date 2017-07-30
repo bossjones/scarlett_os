@@ -1,0 +1,18 @@
+#!/bin/bash -e
+
+# ================== Cron entry point ===============================================================
+# How to use:
+# /app/bin/cron_runner service.name [additional_args]
+#
+# Note - /init.sh will load environment variables, then the traditional `/app/bin/cron $@` cron runner
+# ====================================================================================================
+
+# Signal to init processes to avoid any webserver startup, really anything but `web` will be fine
+export CONTAINER_ROLE='cron'
+
+# Begin startup/run.d sequence
+/init.sh
+
+/app/bin/cron $@
+
+# /worker.sh 1 /app/bin/cron migration
