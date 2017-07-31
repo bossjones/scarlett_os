@@ -2,10 +2,10 @@
 s6-envuidgid pi
 s6-setuidgid pi
 
-with-dynenv
+/usr/local/bin/with-dynenv
 
 # load environment
-s6-envdir -fn -- /var/run/1000/env
+s6-envdir -fn -- /var/run/user/1000/env/
 
 foreground {
     s6-applyuidgid -u 1000 -g 1000
