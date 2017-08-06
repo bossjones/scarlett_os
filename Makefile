@@ -1,5 +1,28 @@
 project := scarlett_os
 projects := scarlett_os
+username := bossjones
+container_name := scarlett_os
+
+# label-schema spec: http://label-schema.org/rc1/
+
+CONTAINER_VERSION  = $(shell \cat ./VERSION | awk '{print $1}')
+GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
+GIT_SHA     = $(shell git rev-parse HEAD)
+BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# NOTE: DEFAULT_GOAL
+# source: (GNU Make - Other Special Variables) https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
+# Sets the default goal to be used if no
+# targets were specified on the command
+# line (see Arguments to Specify the Goals).
+# The .DEFAULT_GOAL variable allows you to
+# discover the current default goal,
+# restart the default goal selection
+# algorithm by clearing its value,
+# or to explicitly set the default goal.
+# The following example illustrates these cases:
+.DEFAULT_GOAL := help
+
 flake8 := flake8
 COV_DIRS := $(projects:%=--cov %)
 # [-s] per-test capturing method: one of fd|sys|no. shortcut for --capture=no.
