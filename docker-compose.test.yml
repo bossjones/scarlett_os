@@ -8,9 +8,11 @@ services:
       args:
         SCARLETT_ENABLE_SSHD: 0
         SCARLETT_ENABLE_DBUS: 'true'
-        SCARLETT_BUILD_GNOME: 'true'
+        SCARLETT_BUILD_GNOME: 'false'
         TRAVIS_CI: 'true'
         TRAVIS_CI_PYTEST: 'true'
+        STOP_AFTER_GOSS_JHBUILD: 'false'
+        STOP_AFTER_GOSS_GTK_DEPS: 'false'
     environment:
       SERVER_LOG_MINIMAL: 1
       SERVER_APP_NAME: scarlett-master
@@ -26,6 +28,8 @@ services:
       SCARLETT_BUILD_GNOME: 'true'
       TRAVIS_CI: 'true'
       TRAVIS_CI_PYTEST: 'true'
+      STOP_AFTER_GOSS_JHBUILD: 'false'
+      STOP_AFTER_GOSS_GTK_DEPS: 'false'
     volumes:
     - ./:/home/pi/dev/bossjones-github/scarlett_os:rw
     ports:
