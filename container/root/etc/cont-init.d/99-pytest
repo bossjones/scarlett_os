@@ -2,6 +2,7 @@
 s6-envuidgid pi
 s6-setuidgid pi
 
+with-contenv
 /usr/local/bin/with-dynenv
 
 # load environment

@@ -9,7 +9,7 @@ services:
         SCARLETT_ENABLE_SSHD: 0
         SCARLETT_ENABLE_DBUS: 'true'
         SCARLETT_BUILD_GNOME: 'true'
-        TRAVIS_CI: 'false'
+        TRAVIS_CI: 'true'
         TRAVIS_CI_PYTEST: 'true'
     environment:
       SERVER_LOG_MINIMAL: 1
@@ -24,7 +24,7 @@ services:
       SCARLETT_ENABLE_SSHD: 0
       SCARLETT_ENABLE_DBUS: 'true'
       SCARLETT_BUILD_GNOME: 'true'
-      TRAVIS_CI: 'false'
+      TRAVIS_CI: 'true'
       TRAVIS_CI_PYTEST: 'true'
     volumes:
     - ./:/home/pi/dev/bossjones-github/scarlett_os:rw

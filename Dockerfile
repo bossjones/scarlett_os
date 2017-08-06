@@ -85,4 +85,5 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
 # ENTRYPOINT ["/docker_entrypoint.sh"]
 # CMD true
 # ENTRYPOINT ["/.pi_setuid_shm"]
-CMD ["/.pi_setuid_shm", "true"]
+# CMD ["/.pi_setuid_shm", "true"]
+CMD ["/bin/bash", "/run.sh"]
