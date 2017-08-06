@@ -8,38 +8,29 @@ ARG SCARLETT_ENABLE_DBUS
 ARG SCARLETT_BUILD_GNOME
 ARG TRAVIS_CI
 ARG TRAVIS_CI_PYTEST
+ARG STOP_AFTER_GOSS_JHBUILD
+ARG STOP_AFTER_GOSS_GTK_DEPS
+ARG SKIP_GOSS_TESTS_JHBUILD
+ARG SKIP_GOSS_TESTS_GTK_DEPS
 
 # metadata
 ARG CONTAINER_VERSION
 ARG GIT_BRANCH
 ARG GIT_SHA
+ARG BUILD_DATE
 
 ENV SCARLETT_ENABLE_SSHD ${SCARLETT_ENABLE_SSHD:-0}
 ENV SCARLETT_ENABLE_DBUS ${SCARLETT_ENABLE_DBUS:-'true'}
-ENV SCARLETT_BUILD_GNOME ${SCARLETT_BUILD_GNOME:-'true'}
+ENV SCARLETT_BUILD_GNOME ${SCARLETT_BUILD_GNOME:-'false'}
 ENV TRAVIS_CI ${TRAVIS_CI:-'true'}
-ENV TRAVIS_CI_PYTEST ${TRAVIS_CI_PYTEST:-'true'}
-
-RUN echo "SCARLETT_ENABLE_SSHD: ${SCARLETT_ENABLE_SSHD}"
-RUN echo "SCARLETT_ENABLE_DBUS: ${SCARLETT_ENABLE_DBUS}"
-RUN echo "SCARLETT_BUILD_GNOME: ${SCARLETT_BUILD_GNOME}"
-RUN echo "TRAVIS_CI: ${TRAVIS_CI}"
-RUN echo "TRAVIS_CI_PYTEST: ${TRAVIS_CI_PYTEST}"
+ENV STOP_AFTER_GOSS_JHBUILD ${STOP_AFTER_GOSS_JHBUILD:-'false'}
+ENV STOP_AFTER_GOSS_GTK_DEPS ${STOP_AFTER_GOSS_GTK_DEPS:-'false'}
+ENV SKIP_GOSS_TESTS_JHBUILD ${SKIP_GOSS_TESTS_JHBUILD:-'false'}
+ENV SKIP_GOSS_TESTS_GTK_DEPS ${SKIP_GOSS_TESTS_GTK_DEPS:-'false'}
 
 COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
-
-RUN apt-fast update -yqq && \
-    apt-fast install -yqq dbus dbus-x11 psmisc vim xvfb xclip htop && \
-    # now that apt-fast is setup, lets clean everything in this layer
-    apt-fast autoremove -y && \
-    # now clean regular apt-get stuff
-    apt-get clean && \
-    apt-get autoclean -y && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/{cache,log}/ && \
-    rm -rf /var/lib/apt/lists/*.lz4 /tmp/* /var/tmp/*
 
 # NOTE: Temp run install as pi user
 USER $UNAME
@@ -74,13 +65,6 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
     sudo mkdir -p /home/pi/.ptpython && \
     sudo mv -f /dotfiles/.ptpython_config.py /home/pi/.ptpython/config.py && \
     sudo chown pi:pi /home/pi/.ptpython
-    # && \
-    # echo "****************[SUBLIME-ANACONDA]****************" && \
-    # sudo chown pi:pi -R /opt/ && \
-    # cd /opt/ && \
-    # git clone https://github.com/DamnWidget/anaconda.git && \
-    # cd anaconda && \
-    # git checkout 223cc612b0318262535ac488d1f4b4121c2e8f0d
 
 # ENTRYPOINT ["/docker_entrypoint.sh"]
 # CMD true
