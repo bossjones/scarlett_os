@@ -2,16 +2,20 @@
 s6-envuidgid pi
 s6-setuidgid pi
 
-with-contenv
+# with-contenv
 /usr/local/bin/with-dynenv
 
+foreground { s6-env }
+
 # load environment
-s6-envdir -fn -- /var/run/user/1000/env/
+# s6-envdir -fn -- /var/run/user/1000/env/
 
 foreground {
     s6-applyuidgid -u 1000 -g 1000
-    cd /home/vagrant/dev/bossjones-github/scarlett_os
-    make test-travis
+    s6-envuidgid pi
+    s6-setuidgid pi /bin/bash -C 'cd /home/vagrant/dev/bossjones-github/scarlett_os && make test-travis'
+    # cd /home/vagrant/dev/bossjones-github/scarlett_os
+    # make test-travis
     importas REXIT ?
     foreground { s6-echo " [run] make test-travis exited ${REXIT}." }
     foreground { s6-echo " [run] make test-travis ran succesfully fool" }
