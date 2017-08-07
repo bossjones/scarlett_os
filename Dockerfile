@@ -53,7 +53,7 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     # ORIG: https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip
     # Locking to bossjones fork just in case this changes without use knowing, tested and it works
     && pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
-    && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 wheel \
+    && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 \
     && jhbuild run -- pip wheel -r requirements.txt \
     && jhbuild run -- pip freeze \
     && jhbuild run python3 setup.py install \
