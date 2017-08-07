@@ -483,12 +483,33 @@ docker_run_dev:
 		-v $$(pwd)/wheelhouse/:/wheelhouse:rw \
 	    $(username)/$(container_name):dev /bin/bash
 
+.PHONY: docker_build_wheelhouse
+docker_build_wheelhouse:
+	set -x ;\
+	mkdir -p wheelhouse; \
+	docker build \
+	    --build-arg CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    --build-arg GIT_BRANCH=$(GIT_BRANCH) \
+	    --build-arg GIT_SHA=$(GIT_SHA) \
+	    --build-arg BUILD_DATE=$(BUILD_DATE) \
+	    --build-arg SCARLETT_ENABLE_SSHD=0 \
+	    --build-arg SCARLETT_ENABLE_DBUS='true' \
+	    --build-arg SCARLETT_BUILD_GNOME='false' \
+	    --build-arg TRAVIS_CI='true' \
+	    --build-arg STOP_AFTER_GOSS_JHBUILD='false' \
+	    --build-arg STOP_AFTER_GOSS_GTK_DEPS='false' \
+		--build-arg SKIP_TRAVIS_CI_PYTEST='false' \
+		--build-arg STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		--file=Dockerfile.build \
+		--tag $(username)/$(container_name)-build:$(GIT_SHA) . ; \
+	docker tag $(username)/$(container_name)-build:$(GIT_SHA) $(username)/$(container_name)-build:dev
+
 .PHONY: docker_run_wheelhouse
 docker_run_wheelhouse:
 	set -x ;\
 	mkdir -p wheelhouse; \
 	docker run -i -t --rm \
-		--name scarlett-dev \
+		--name scarlett-dev-wheelhouse \
 	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
 	    -e GIT_BRANCH=$(GIT_BRANCH) \
 	    -e GIT_SHA=$(GIT_SHA) \
@@ -506,7 +527,7 @@ docker_run_wheelhouse:
 		-e TRAVIS_CI_PYTEST='false' \
 		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
 		-v $$(pwd)/wheelhouse/:/wheelhouse:rw \
-	    $(username)/$(container_name):dev /bin/bash
+	    $(username)/$(container_name)-build:dev /bin/bash
 
 # ENV TRAVIS_CI_RUN_PYTEST ${TRAVIS_CI_RUN_PYTEST:-'false'}
 # ENV TRAVIS_CI_SKIP_PYTEST ${TRAVIS_CI_SKIP_PYTEST:-'false'}
