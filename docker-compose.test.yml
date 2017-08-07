@@ -11,6 +11,8 @@ services:
         SCARLETT_BUILD_GNOME: 'false'
         TRAVIS_CI: 'true'
         TRAVIS_CI_PYTEST: 'true'
+        TRAVIS_CI_RUN_PYTEST: 'true'
+        TRAVIS_CI_SKIP_PYTEST: 'true'
         STOP_AFTER_GOSS_JHBUILD: 'false'
         STOP_AFTER_GOSS_GTK_DEPS: 'false'
     environment:

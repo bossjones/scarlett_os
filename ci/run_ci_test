@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # ================== Cron entry point ===============================================================
 # How to use:
@@ -8,11 +8,68 @@
 # ====================================================================================================
 
 # Signal to init processes to avoid any webserver startup, really anything but `web` will be fine
-export CONTAINER_ROLE='cron'
+# export CONTAINER_ROLE='cron'
 
 # Begin startup/run.d sequence
 /init.sh
 
-/app/bin/cron $@
+STATUS=$?  # Captures exit code from script that was run
+
+# /app/bin/cron $@
 
 # /worker.sh 1 /app/bin/cron migration
+
+# if [[ $SCARLETT_BUILD_GNOME != true ]]; then
+#   echo " [run] SCARLETT_BUILD_GNOME not set, moving on ..."
+#   exit
+# fi
+
+# TODO this exit code detection is also present in run.sh, needs to be combined
+if [[ $STATUS == $SIGNAL_BUILD_STOP ]]
+then
+  echo "[worker] container exit requested"
+  exit # Exit cleanly
+fi
+
+if [[ $STATUS != 0 ]]
+then
+  echo "[scarlett_os] failed to init"
+  exit $STATUS
+fi
+
+#   echo "\
+# #!/usr/bin/execlineb -P
+# with-contenv
+# s6-setuidgid ${NOT_ROOT_USER}
+# ${WORKER_COMMAND}" > "${SERVICE_FOLDER}/run"
+# done
+
+# # Start process manager
+# echo "[run] starting process manager"
+# exec /init
+
+echo "\
+#!/usr/bin/execlineb -P
+
+with-contenv
+s6-setuidgid pi
+
+foreground {
+  s6-applyuidgid -u 1000 -g 1000
+  cd /home/pi/dev/bossjones-github/scarlett_os
+  make test-travis
+}
+s6-true" > '/tmp/ci.sh'
+
+# FIXME: 7/6/2017
+# TODO: Disabling this for the moment,
+# we want this to happen during build not runtime
+# exec s6-setuidgid pi /bin/bash -C 'source /usr/local/bin/with-dynenv && cd /home/pi/dev/bossjones-github/scarlett_os && make test-travis'
+
+# cd /home/pi/dev/bossjones-github/scarlett_os
+
+# exec s6-setuidgid pi /bin/bash -C 'cd /home/pi/dev/bossjones-github/scarlett_os; make test-travis'
+
+exec s6-setuidgid pi /bin/bash -C '/tmp/ci.sh'
+
+# exec echo "Skipping run.d jhbuild_setup.sh for now"

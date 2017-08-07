@@ -440,6 +440,7 @@ docker-clean:
 .PHONY: docker_build_dev
 docker_build_dev:
 	set -x ;\
+	mkdir -p wheelhouse; \
 	docker build \
 	    --build-arg CONTAINER_VERSION=$(CONTAINER_VERSION) \
 	    --build-arg GIT_BRANCH=$(GIT_BRANCH) \
@@ -460,6 +461,7 @@ docker_build_dev:
 .PHONY: docker_run_dev
 docker_run_dev:
 	set -x ;\
+	mkdir -p wheelhouse; \
 	docker run -i -t --rm \
 		--name scarlett-dev \
 	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
@@ -478,6 +480,32 @@ docker_run_dev:
 		-e STOP_AFTER_TRAVIS_CI_PYTEST='false' \
 		-e TRAVIS_CI_PYTEST='false' \
 		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
+		-v $$(pwd)/wheelhouse/:/wheelhouse:rw \
+	    $(username)/$(container_name):dev /bin/bash
+
+.PHONY: docker_run_wheelhouse
+docker_run_wheelhouse:
+	set -x ;\
+	mkdir -p wheelhouse; \
+	docker run -i -t --rm \
+		--name scarlett-dev \
+	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    -e GIT_BRANCH=$(GIT_BRANCH) \
+	    -e GIT_SHA=$(GIT_SHA) \
+	    -e BUILD_DATE=$(BUILD_DATE) \
+	    -e SCARLETT_ENABLE_SSHD=0 \
+	    -e SCARLETT_ENABLE_DBUS='true' \
+	    -e SCARLETT_BUILD_GNOME='false' \
+	    -e TRAVIS_CI='true' \
+	    -e STOP_AFTER_GOSS_JHBUILD='false' \
+	    -e STOP_AFTER_GOSS_GTK_DEPS='false' \
+	    -e SKIP_GOSS_TESTS_JHBUILD='false' \
+	    -e SKIP_GOSS_TESTS_GTK_DEPS='false' \
+		-e SKIP_TRAVIS_CI_PYTEST='true' \
+		-e STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		-e TRAVIS_CI_PYTEST='false' \
+		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
+		-v $$(pwd)/wheelhouse/:/wheelhouse:rw \
 	    $(username)/$(container_name):dev /bin/bash
 
 # ENV TRAVIS_CI_RUN_PYTEST ${TRAVIS_CI_RUN_PYTEST:-'false'}

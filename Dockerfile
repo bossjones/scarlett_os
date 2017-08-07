@@ -31,6 +31,13 @@ ENV SKIP_GOSS_TESTS_GTK_DEPS ${SKIP_GOSS_TESTS_GTK_DEPS:-'false'}
 ENV STOP_AFTER_TRAVIS_CI_PYTEST ${STOP_AFTER_TRAVIS_CI_PYTEST:-'false'}
 ENV SKIP_TRAVIS_CI_PYTEST ${SKIP_TRAVIS_CI_PYTEST:-'false'}
 
+ENV WHEELHOUSE=/wheelhouse
+ENV PIP_WHEEL_DIR=/wheelhouse
+ENV PIP_FIND_LINKS=/wheelhouse
+
+# VOLUME /wheelhouse
+# VOLUME /application
+
 COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
@@ -46,11 +53,11 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     # ORIG: https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip
     # Locking to bossjones fork just in case this changes without use knowing, tested and it works
     && pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
-    && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 \
-    && jhbuild run -- pip install -r requirements.txt \
+    && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 wheel \
+    && jhbuild run -- pip wheel -r requirements.txt \
     && jhbuild run -- pip freeze \
     && jhbuild run python3 setup.py install \
-    && jhbuild run -- pip install -e .[test]
+    && jhbuild run -- pip wheel -e .[test]
 
 # NOTE: Temp run install as pi user
 USER root

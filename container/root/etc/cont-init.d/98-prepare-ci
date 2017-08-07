@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# # ================== Cron entry point ===============================================================
+# # How to use:
+# # /app/bin/cron_runner service.name [additional_args]
+# #
+# # Note - /init.sh will load environment variables, then the traditional `/app/bin/cron $@` cron runner
+# # ====================================================================================================
+
+# # Signal to init processes to avoid any webserver startup, really anything but `web` will be fine
+# # export CONTAINER_ROLE='cron'
+
+# # Begin startup/run.d sequence
+# /init.sh
+
+# STATUS=$?  # Captures exit code from script that was run
+
+# # /app/bin/cron $@
+
+# # /worker.sh 1 /app/bin/cron migration
+
+# # if [[ $SCARLETT_BUILD_GNOME != true ]]; then
+# #   echo " [run] SCARLETT_BUILD_GNOME not set, moving on ..."
+# #   exit
+# # fi
+
+# # TODO this exit code detection is also present in run.sh, needs to be combined
+# if [[ $STATUS == $SIGNAL_BUILD_STOP ]]
+# then
+#   echo "[worker] container exit requested"
+#   exit # Exit cleanly
+# fi
+
+# if [[ $STATUS != 0 ]]
+# then
+#   echo "[scarlett_os] failed to init"
+#   exit $STATUS
+# fi
+
+
+# # # Start process manager
+# # echo "[run] starting process manager"
+# # exec /init
+
+# echo "\
+# #!/usr/bin/execlineb -P
+
+# with-contenv
+# s6-setuidgid pi
+
+# foreground {
+#   s6-applyuidgid -u 1000 -g 1000
+#   cd /home/pi/dev/bossjones-github/scarlett_os
+#   make test-travis
+# }
+# s6-true" > '/tmp/ci.sh'
+
+# exec s6-setuidgid pi /bin/bash -C '/tmp/ci.sh'
