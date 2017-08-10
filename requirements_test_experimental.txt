@@ -1,4 +1,4 @@
-pytest-xdist==1.18.1
+pytest-xdist==1.19.1
 unittest2pytest==0.3
 pympler==0.5
 pydocstyle==2.0.0
