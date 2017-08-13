@@ -31,38 +31,59 @@ ENV SKIP_GOSS_TESTS_GTK_DEPS ${SKIP_GOSS_TESTS_GTK_DEPS:-'false'}
 ENV STOP_AFTER_TRAVIS_CI_PYTEST ${STOP_AFTER_TRAVIS_CI_PYTEST:-'false'}
 ENV SKIP_TRAVIS_CI_PYTEST ${SKIP_TRAVIS_CI_PYTEST:-'false'}
 
-ENV WHEELHOUSE=/wheelhouse
-ENV PIP_WHEEL_DIR=/wheelhouse
-ENV PIP_FIND_LINKS=/wheelhouse
+# ENV WHEELHOUSE=/wheelhouse
+# ENV PIP_WHEEL_DIR=/wheelhouse
+# ENV PIP_FIND_LINKS=/wheelhouse
 
 # VOLUME /wheelhouse
 # VOLUME /application
 
-COPY ./ /home/pi/dev/bossjones-github/scarlett_os
+COPY requirements.txt /home/pi/dev/bossjones-github/scarlett_os/
+COPY requirements_dev.txt /home/pi/dev/bossjones-github/scarlett_os/
+COPY requirements_test_all.txt /home/pi/dev/bossjones-github/scarlett_os/
+RUN chown -R pi:pi /home/pi/dev/bossjones-github/scarlett_os/requirements.txt \
+                   /home/pi/dev/bossjones-github/scarlett_os/requirements_dev.txt \
+                   /home/pi/dev/bossjones-github/scarlett_os/requirements_test_all.txt
 
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
 
 # NOTE: Temp run install as pi user
 USER $UNAME
 
-RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
-    && pwd \
-    && sudo chown pi:pi -R /wheelhouse \
-    # FIXME: Shouldn't be necessary anymore after pip > 9.0.1!
-    # https://github.com/pypa/setuptools/issues/885
-    # https://github.com/pypa/pip/issues/4216
-    # ORIG: https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip
-    # Locking to bossjones fork just in case this changes without use knowing, tested and it works
-    && pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
-    && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 \
-    && jhbuild run -- pip wheel -r requirements.txt \
-    && jhbuild run -- pip freeze \
-    && jhbuild run python3 setup.py install \
-    && jhbuild run -- pip wheel -e .[test]
+RUN pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip"
+RUN pip install --upgrade setuptools==36.0.1 wheel==0.29.0
+RUN jhbuild run -- pip install -r requirements.txt
+RUN jhbuild run -- pip install -r requirements_test_all.txt
+RUN sudo bash /prep-pi.sh
+
+# RUN set -x \
+#     && pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
+#     && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 \
+#     && jhbuild run -- pip freeze \
+#     && jhbuild run -- pip install -r requirements.txt \
+#     && jhbuild run -- pip install -r requirements_test_all.txt \
+#     && sudo bash /prep-pi.sh
+
+# RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
+#     && pwd \
+#     && sudo chown pi:pi -R /wheelhouse \
+#     # FIXME: Shouldn't be necessary anymore after pip > 9.0.1!
+#     # https://github.com/pypa/setuptools/issues/885
+#     # https://github.com/pypa/pip/issues/4216
+#     # ORIG: https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip
+#     # Locking to bossjones fork just in case this changes without use knowing, tested and it works
+#     && pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
+#     && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 \
+#     && jhbuild run -- pip wheel -r requirements.txt \
+#     && jhbuild run -- pip freeze \
+#     && jhbuild run python3 setup.py install \
+#     && jhbuild run -- pip wheel -e .[test]
 
 # NOTE: Temp run install as pi user
 USER root
 
 COPY ./container/root /
+
+COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 
 CMD ["/bin/bash", "/run.sh"]
