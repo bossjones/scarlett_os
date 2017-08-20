@@ -191,8 +191,8 @@ foreground { s6-echo " [run] SKIP_TRAVIS_CI_PYTEST: '${SKIP_TRAVIS_CI_PYTEST}' .
 
 foreground {
     cd /home/pi/dev/bossjones-github/scarlett_os
-    bash -c "find \( -name __pycache__ -o -name '*.pyc' \) | xargs rm -rf"
-    bash -c "chown pi:pi -R /home/pi/dev"
+    find \( -name __pycache__ -o -name '*.pyc' \) | xargs rm -rf
+    chown pi:pi -R /home/pi/dev
 }
 
 foreground {
