@@ -49,7 +49,6 @@ multisubstitute
     importas PKG_CONFIG_PATH PKG_CONFIG_PATH
     importas PREFIX PREFIX
     importas PROJECT_HOME PROJECT_HOME
-    importas PWD PWD
     importas PYTHON PYTHON
     importas PYTHON_PIP_VERSION PYTHON_PIP_VERSION
     importas PYTHON_VERSION PYTHON_VERSION
@@ -131,7 +130,6 @@ foreground { s6-echo " [verify] PI_HOME: ${PI_HOME}" }
 foreground { s6-echo " [verify] PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}" }
 foreground { s6-echo " [verify] PREFIX: ${PREFIX}" }
 foreground { s6-echo " [verify] PROJECT_HOME: ${PROJECT_HOME}" }
-foreground { s6-echo " [verify] PWD: ${PWD}" }
 foreground { s6-echo " [verify] PYTHON: ${PYTHON}" }
 foreground { s6-echo " [verify] PYTHONPATH: ${PYTHONPATH}" }
 foreground { s6-echo " [verify] PYTHONSTARTUP: ${PYTHONSTARTUP}" }
