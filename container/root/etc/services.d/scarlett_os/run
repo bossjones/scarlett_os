@@ -1,7 +1,0 @@
-#!/usr/bin/execlineb -P
-
-# NOTE: This works! But commenting out, cause we'll want this when we have a container run listener/etc
-# NOTE: 8/20/2017
-# with-contenv
-# cd /home/pi/dev/bossjones-github/scarlett_os
-# s6-applyuidgid -u 1000 -g 1000 umask 002 jhbuild run python --version

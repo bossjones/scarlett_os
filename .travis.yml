@@ -63,7 +63,7 @@ install:
 
 script:
   # - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
-  - travis_retry docker_run_test
+  - travis_retry make docker_run_test
 
 # source: https://github.com/inspirehep/inspire-next/blob/9700274c36074a3e43168bf48b8ba3e3bfa7bcdf/.travis.yml
 after_script:
