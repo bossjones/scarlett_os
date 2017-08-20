@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+
+cd /home/pi/dev/bossjones-github/scarlett_os
+find \( -name __pycache__ -o -name '*.pyc' \) | xargs rm -rf
+chown pi:pi -R /home/pi/dev
