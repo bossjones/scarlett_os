@@ -201,7 +201,7 @@ foreground {
         {
             foreground {
                 cd /home/pi/dev/bossjones-github/scarlett_os
-                s6-applyuidgid -u 1000 -g 1000 umask 002 bash -c "make -d test-travis"
+                s6-applyuidgid -u 1000 -g 1000 umask 002 bash -c "make test-travis"
             }
         } s6-true
 
