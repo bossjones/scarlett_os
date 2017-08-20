@@ -56,19 +56,21 @@ install:
   # - 'sed -i "/build: ./a \ \ privileged: true" docker-compose.yml'
   # NOTE: When we move to docker-compose v2+ uncomment this below
   # - 'sed -i "/dockerfile: Dockerfile/a \ \ \ \ privileged: true" docker-compose.test.yml'
-  - 'sed -i "/scarlett_master:/a \ \ \ \ privileged: true" docker-compose.test.yml'
-  - cat docker-compose.test.yml
-  - travis_retry docker-compose -f docker-compose.test.yml -f ci/build.yml build
+  # - 'sed -i "/scarlett_master:/a \ \ \ \ privileged: true" docker-compose.test.yml'
+  # - cat docker-compose.test.yml
+  # - travis_retry
+  - travis_retry make docker_build_test
 
 script:
-  #- "docker-compose -f docker-compose.test.yml run --rm ${TEST_TARGET}"
-  - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
+  # - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
+  - travis_retry docker_run_test
 
 # source: https://github.com/inspirehep/inspire-next/blob/9700274c36074a3e43168bf48b8ba3e3bfa7bcdf/.travis.yml
 after_script:
   # Killing via SIGTERM in order to trigger atexit and dump coverage information in WSGI
-  - "docker-compose -f docker-compose.test.yml kill -s SIGTERM"
-  - "docker-compose -f docker-compose.test.yml rm -f"
+  # - "docker-compose -f docker-compose.test.yml kill -s SIGTERM"
+  # - "docker-compose -f docker-compose.test.yml rm -f"
+  - docker kill scarlett-test
 
 after_success:
   - _USER=$(ls -lta | awk '{print $3}')

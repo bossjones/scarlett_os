@@ -31,9 +31,9 @@ ENV SKIP_GOSS_TESTS_GTK_DEPS ${SKIP_GOSS_TESTS_GTK_DEPS:-'false'}
 ENV STOP_AFTER_TRAVIS_CI_PYTEST ${STOP_AFTER_TRAVIS_CI_PYTEST:-'false'}
 ENV SKIP_TRAVIS_CI_PYTEST ${SKIP_TRAVIS_CI_PYTEST:-'false'}
 
-ENV WHEELHOUSE=/wheelhouse
-ENV PIP_WHEEL_DIR=/wheelhouse
-ENV PIP_FIND_LINKS=/wheelhouse
+# ENV WHEELHOUSE=/wheelhouse
+# ENV PIP_WHEEL_DIR=/wheelhouse
+# ENV PIP_FIND_LINKS=/wheelhouse
 
 # VOLUME /wheelhouse
 # VOLUME /application
@@ -54,10 +54,10 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     # Locking to bossjones fork just in case this changes without use knowing, tested and it works
     && pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
     && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 \
-    && jhbuild run -- pip wheel -r requirements.txt \
+    && jhbuild run -- pip install -r requirements.txt \
     && jhbuild run -- pip freeze \
     && jhbuild run python3 setup.py install \
-    && jhbuild run -- pip wheel -e .[test]
+    && jhbuild run -- pip install -r requirements_test_all.txt
 
 # NOTE: Temp run install as pi user
 USER root
@@ -75,6 +75,10 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
     sudo mkdir -p /home/pi/.ptpython && \
     sudo mv -f /dotfiles/.ptpython_config.py /home/pi/.ptpython/config.py && \
     sudo chown pi:pi /home/pi/.ptpython
+
+RUN sudo cp -a /scripts/with-dynenv /usr/bin/with-dynenv \
+    && sudo chmod +x /usr/bin/with-dynenv \
+    && sudo chown pi:pi /usr/bin/with-dynenv
 
 # ENTRYPOINT ["/docker_entrypoint.sh"]
 # CMD true

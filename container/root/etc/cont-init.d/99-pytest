@@ -4,18 +4,20 @@ with-contenv
 
 multisubstitute
 {
-    importas ADDRESS_FILE ADDRESS_FILE
+    # importas GID GID
+    # importas UID UID
+    # importas ADDRESS_FILE ADDRESS_FILE
+    # importas CONTAINER_VERSION CONTAINER_VERSION
+    # importas CURRENT_DIR CURRENT_DIR
+    importas TRAVIS_CI TRAVIS_CI
     importas BUILD_DATE BUILD_DATE
     importas CC CC
     importas CCACHE_DIR CCACHE_DIR
     importas CFLAGS CFLAGS
-    importas CONTAINER_VERSION CONTAINER_VERSION
-    importas CURRENT_DIR CURRENT_DIR
     importas DBUS_SESSION_BUS_ADDRESS DBUS_SESSION_BUS_ADDRESS
     importas DEBIAN_FRONTEND DEBIAN_FRONTEND
     importas ENABLE_GTK ENABLE_GTK
     importas ENABLE_PYTHON3 ENABLE_PYTHON3
-    importas GID GID
     importas GIT_BRANCH GIT_BRANCH
     importas GIT_SHA GIT_SHA
     importas GITHUB_BRANCH GITHUB_BRANCH
@@ -75,9 +77,6 @@ multisubstitute
     importas STOP_AFTER_GOSS_JHBUILD STOP_AFTER_GOSS_JHBUILD
     importas STOP_AFTER_TRAVIS_CI_PYTEST STOP_AFTER_TRAVIS_CI_PYTEST
     importas TERM TERM
-    importas TRAVIS_CI TRAVIS_CI
-    importas TRAVIS_CI_PYTEST TRAVIS_CI_PYTEST
-    importas UID UID
     importas UNAME UNAME
     importas USER USER
     importas USER_HOME USER_HOME
@@ -93,6 +92,87 @@ multisubstitute
     importas XDG_RUNTIME_DIR XDG_RUNTIME_DIR
 }
 
+foreground { s6-echo " [verify] BUILD_DATE: ${BUILD_DATE}" }
+foreground { s6-echo " [verify] CC: ${CC}" }
+foreground { s6-echo " [verify] CCACHE_DIR: ${CCACHE_DIR}" }
+foreground { s6-echo " [verify] CFLAGS: ${CFLAGS}" }
+foreground { s6-echo " [verify] DBUS_SESSION_BUS_ADDRESS: ${DBUS_SESSION_BUS_ADDRESS}" }
+foreground { s6-echo " [verify] DEBIAN_FRONTEND: ${DEBIAN_FRONTEND}" }
+foreground { s6-echo " [verify] ENABLE_GTK: ${ENABLE_GTK}" }
+foreground { s6-echo " [verify] ENABLE_PYTHON3: ${ENABLE_PYTHON3}" }
+foreground { s6-echo " [verify] GITHUB_BRANCH: ${GITHUB_BRANCH}" }
+foreground { s6-echo " [verify] GITHUB_REPO_NAME: ${GITHUB_REPO_NAME}" }
+foreground { s6-echo " [verify] GITHUB_REPO_ORG: ${GITHUB_REPO_ORG}" }
+foreground { s6-echo " [verify] GIT_BRANCH: ${GIT_BRANCH}" }
+foreground { s6-echo " [verify] GIT_SHA: ${GIT_SHA}" }
+foreground { s6-echo " [verify] GOSS_VERSION: ${GOSS_VERSION}" }
+foreground { s6-echo " [verify] GSTREAMER: ${GSTREAMER}" }
+foreground { s6-echo " [verify] GST_PLUGIN_PATH: ${GST_PLUGIN_PATH}" }
+foreground { s6-echo " [verify] HOME: ${HOME}" }
+foreground { s6-echo " [verify] JHBUILD: ${JHBUILD}" }
+foreground { s6-echo " [verify] LANG: ${LANG}" }
+foreground { s6-echo " [verify] LANGUAGE_ID: ${LANGUAGE_ID}" }
+foreground { s6-echo " [verify] LC_ALL: ${LC_ALL}" }
+foreground { s6-echo " [verify] LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}" }
+foreground { s6-echo " [verify] LESSCLOSE: ${LESSCLOSE}" }
+foreground { s6-echo " [verify] LESSOPEN: ${LESSOPEN}" }
+foreground { s6-echo " [verify] LS_COLORS: ${LS_COLORS}" }
+foreground { s6-echo " [verify] MAIN_DIR: ${MAIN_DIR}" }
+foreground { s6-echo " [verify] MAKEFLAGS: ${MAKEFLAGS}" }
+foreground { s6-echo " [verify] NOTVISIBLE: ${NOTVISIBLE}" }
+foreground { s6-echo " [verify] NOT_ROOT_USER: ${NOT_ROOT_USER}" }
+foreground { s6-echo " [verify] PACKAGES: ${PACKAGES}" }
+foreground { s6-echo " [verify] PATH: ${PATH}" }
+foreground { s6-echo " [verify] PATH_TO_DOT_VIRTUALENV: ${PATH_TO_DOT_VIRTUALENV}" }
+foreground { s6-echo " [verify] PID: ${PID}" }
+foreground { s6-echo " [verify] PID_FILE: ${PID_FILE}" }
+foreground { s6-echo " [verify] PIP_DOWNLOAD_CACHE: ${PIP_DOWNLOAD_CACHE}" }
+foreground { s6-echo " [verify] PI_HOME: ${PI_HOME}" }
+foreground { s6-echo " [verify] PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}" }
+foreground { s6-echo " [verify] PREFIX: ${PREFIX}" }
+foreground { s6-echo " [verify] PROJECT_HOME: ${PROJECT_HOME}" }
+foreground { s6-echo " [verify] PWD: ${PWD}" }
+foreground { s6-echo " [verify] PYTHON: ${PYTHON}" }
+foreground { s6-echo " [verify] PYTHONPATH: ${PYTHONPATH}" }
+foreground { s6-echo " [verify] PYTHONSTARTUP: ${PYTHONSTARTUP}" }
+foreground { s6-echo " [verify] PYTHONUNBUFFERED: ${PYTHONUNBUFFERED}" }
+foreground { s6-echo " [verify] PYTHON_PIP_VERSION: ${PYTHON_PIP_VERSION}" }
+foreground { s6-echo " [verify] PYTHON_VERSION: ${PYTHON_VERSION}" }
+foreground { s6-echo " [verify] PYTHON_VERSION_MAJOR: ${PYTHON_VERSION_MAJOR}" }
+foreground { s6-echo " [verify] S6_BEHAVIOUR_IF_STAGE2_FAILS: ${S6_BEHAVIOUR_IF_STAGE2_FAILS}" }
+foreground { s6-echo " [verify] S6_KILL_FINISH_MAXTIME: ${S6_KILL_FINISH_MAXTIME}" }
+foreground { s6-echo " [verify] S6_KILL_GRACETIME: ${S6_KILL_GRACETIME}" }
+foreground { s6-echo " [verify] S6_VERSION: ${S6_VERSION}" }
+foreground { s6-echo " [verify] SCARLETT_BUILD_GNOME: ${SCARLETT_BUILD_GNOME}" }
+foreground { s6-echo " [verify] SCARLETT_CONFIG: ${SCARLETT_CONFIG}" }
+foreground { s6-echo " [verify] SCARLETT_DICT: ${SCARLETT_DICT}" }
+foreground { s6-echo " [verify] SCARLETT_ENABLE_DBUS: ${SCARLETT_ENABLE_DBUS}" }
+foreground { s6-echo " [verify] SCARLETT_ENABLE_SSHD: ${SCARLETT_ENABLE_SSHD}" }
+foreground { s6-echo " [verify] SCARLETT_HMM: ${SCARLETT_HMM}" }
+foreground { s6-echo " [verify] SCARLETT_LM: ${SCARLETT_LM}" }
+foreground { s6-echo " [verify] SIGNAL_BUILD_STOP: ${SIGNAL_BUILD_STOP}" }
+foreground { s6-echo " [verify] SKIP_GOSS_TESTS_GTK_DEPS: ${SKIP_GOSS_TESTS_GTK_DEPS}" }
+foreground { s6-echo " [verify] SKIP_GOSS_TESTS_JHBUILD: ${SKIP_GOSS_TESTS_JHBUILD}" }
+foreground { s6-echo " [verify] SKIP_ON_TRAVIS: ${SKIP_ON_TRAVIS}" }
+foreground { s6-echo " [verify] SKIP_TRAVIS_CI_PYTEST: ${SKIP_TRAVIS_CI_PYTEST}" }
+foreground { s6-echo " [verify] STOP_AFTER_GOSS_GTK_DEPS: ${STOP_AFTER_GOSS_GTK_DEPS}" }
+foreground { s6-echo " [verify] STOP_AFTER_GOSS_JHBUILD: ${STOP_AFTER_GOSS_JHBUILD}" }
+foreground { s6-echo " [verify] STOP_AFTER_TRAVIS_CI_PYTEST: ${STOP_AFTER_TRAVIS_CI_PYTEST}" }
+foreground { s6-echo " [verify] TERM: ${TERM}" }
+foreground { s6-echo " [verify] UNAME: ${UNAME}" }
+foreground { s6-echo " [verify] USER: ${USER}" }
+foreground { s6-echo " [verify] USER_HOME: ${USER_HOME}" }
+foreground { s6-echo " [verify] USER_SSH_PUBKEY: ${USER_SSH_PUBKEY}" }
+foreground { s6-echo " [verify] VIRTUALENVWRAPPER_PYTHON: ${VIRTUALENVWRAPPER_PYTHON}" }
+foreground { s6-echo " [verify] VIRTUALENVWRAPPER_SCRIPT: ${VIRTUALENVWRAPPER_SCRIPT}" }
+foreground { s6-echo " [verify] VIRTUALENVWRAPPER_VIRTUALENV: ${VIRTUALENVWRAPPER_VIRTUALENV}" }
+foreground { s6-echo " [verify] VIRTUALENV_WRAPPER_SH: ${VIRTUALENV_WRAPPER_SH}" }
+foreground { s6-echo " [verify] VIRT_ROOT: ${VIRT_ROOT}" }
+foreground { s6-echo " [verify] WORKON_HOME: ${WORKON_HOME}" }
+foreground { s6-echo " [verify] XDG_CONFIG_DIRS: ${XDG_CONFIG_DIRS}" }
+foreground { s6-echo " [verify] XDG_DATA_DIRS: ${XDG_DATA_DIRS}" }
+foreground { s6-echo " [verify] XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR}" }
+
 foreground { s6-echo " [run] SKIP_TRAVIS_CI_PYTEST: '${SKIP_TRAVIS_CI_PYTEST}' ... " }
 foreground { s6-echo " [run] SIGNAL_BUILD_STOP: '${SIGNAL_BUILD_STOP}' ..." }
 
@@ -106,12 +186,30 @@ ifelse { s6-test $SKIP_TRAVIS_CI_PYTEST = true }
 
 foreground { s6-echo " [run] SKIP_TRAVIS_CI_PYTEST: '${SKIP_TRAVIS_CI_PYTEST}' ... running tests now ..." }
 
-cd /home/pi/dev/bossjones-github/scarlett_os
-s6-applyuidgid -u 1000 -g 1000 umask 002 make test-travis
+# foreground {
+#     cd /home/pi/dev/bossjones-github/scarlett_os
+#     s6-applyuidgid -u 1000 -g 1000 umask 002 bash -c "make -d test-travis"
+# }
+
+foreground {
+    if {
+        if { s6-echo " [run] lets start these goss tests..." }
+        # NOTE: verify that we're the correct user, pi
+        ifelse { s6-test $SKIP_TRAVIS_CI_PYTEST = false }
+        {
+            foreground {
+                cd /home/pi/dev/bossjones-github/scarlett_os
+                s6-applyuidgid -u 1000 -g 1000 umask 002 bash -c "make -d test-travis"
+            }
+        } s6-true
+
+        importas REXIT ?
+        foreground { s6-echo " [run] goss exited ${REXIT}." }
+        foreground { s6-echo " [run] goss tests ran succesfully fool" }
+    }
+}
+
 
 if -t { s6-test $STOP_AFTER_TRAVIS_CI_PYTEST = true }
 foreground { s6-echo " [run] TRAVIS_CI_PYTEST: '${STOP_AFTER_TRAVIS_CI_PYTEST}' ... sending signal build stop" }
 exit ${SIGNAL_BUILD_STOP}
-
-
-# docker-compose -f docker-compose.test.yml -f ci/build.yml build

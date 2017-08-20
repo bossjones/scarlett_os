@@ -5,7 +5,7 @@ container_name := scarlett_os
 
 # label-schema spec: http://label-schema.org/rc1/
 
-CONTAINER_VERSION  = $(shell \cat ./VERSION | awk '{print $1}')
+#CONTAINER_VERSION  = $(shell \cat ./VERSION | awk '{print $1}')
 GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
 GIT_SHA     = $(shell git rev-parse HEAD)
 BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -505,7 +505,6 @@ docker_build_dev:
 .PHONY: docker_run_dev
 docker_run_dev:
 	set -x ;\
-	mkdir -p wheelhouse; \
 	docker run -i -t --rm \
 		--name scarlett-dev \
 	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
@@ -518,14 +517,56 @@ docker_run_dev:
 	    -e TRAVIS_CI='true' \
 	    -e STOP_AFTER_GOSS_JHBUILD='false' \
 	    -e STOP_AFTER_GOSS_GTK_DEPS='false' \
-	    -e SKIP_GOSS_TESTS_JHBUILD='false' \
-	    -e SKIP_GOSS_TESTS_GTK_DEPS='false' \
-		-e SKIP_TRAVIS_CI_PYTEST='true' \
+	    -e SKIP_GOSS_TESTS_JHBUILD='true' \
+	    -e SKIP_GOSS_TESTS_GTK_DEPS='true' \
+		-e SKIP_TRAVIS_CI_PYTEST='false' \
 		-e STOP_AFTER_TRAVIS_CI_PYTEST='false' \
-		-e TRAVIS_CI_PYTEST='false' \
 		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
-		-v $$(pwd)/wheelhouse/:/wheelhouse:rw \
 	    $(username)/$(container_name):dev /bin/bash
+
+# Start here
+.PHONY: docker_build_test
+docker_build_test:
+	set -x ;\
+	docker build \
+	    --build-arg CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    --build-arg GIT_BRANCH=$(GIT_BRANCH) \
+	    --build-arg GIT_SHA=$(GIT_SHA) \
+	    --build-arg BUILD_DATE=$(BUILD_DATE) \
+	    --build-arg SCARLETT_ENABLE_SSHD=0 \
+	    --build-arg SCARLETT_ENABLE_DBUS='true' \
+	    --build-arg SCARLETT_BUILD_GNOME='false' \
+	    --build-arg TRAVIS_CI='true' \
+	    --build-arg STOP_AFTER_GOSS_JHBUILD='false' \
+	    --build-arg STOP_AFTER_GOSS_GTK_DEPS='false' \
+		--build-arg SKIP_TRAVIS_CI_PYTEST='false' \
+		--build-arg STOP_AFTER_TRAVIS_CI_PYTEST='true' \
+		--file=Dockerfile \
+		--tag $(username)/$(container_name):$(GIT_SHA) . ; \
+	docker tag $(username)/$(container_name):$(GIT_SHA) $(username)/$(container_name):test
+
+.PHONY: docker_run_test
+docker_run_test:
+	set -x ;\
+	docker run -i -t --rm \
+		--privileged \
+		--name scarlett-test \
+	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    -e GIT_BRANCH=$(GIT_BRANCH) \
+	    -e GIT_SHA=$(GIT_SHA) \
+	    -e BUILD_DATE=$(BUILD_DATE) \
+	    -e SCARLETT_ENABLE_SSHD=0 \
+	    -e SCARLETT_ENABLE_DBUS='true' \
+	    -e SCARLETT_BUILD_GNOME='false' \
+	    -e TRAVIS_CI='true' \
+	    -e STOP_AFTER_GOSS_JHBUILD='false' \
+	    -e STOP_AFTER_GOSS_GTK_DEPS='false' \
+	    -e SKIP_GOSS_TESTS_JHBUILD='true' \
+	    -e SKIP_GOSS_TESTS_GTK_DEPS='true' \
+		-e SKIP_TRAVIS_CI_PYTEST='false' \
+		-e STOP_AFTER_TRAVIS_CI_PYTEST='true' \
+		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
+	    $(username)/$(container_name):test /init
 
 .PHONY: docker_build_wheelhouse
 docker_build_wheelhouse:

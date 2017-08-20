@@ -16,10 +16,14 @@ import pytest
 
 from scarlett_os.internal.gi import Gio, GLib, GObject
 
-DBUS_SESSION_BUS_ADDRESS = os.getenv("DBUS_SESSION_BUS_ADDRESS")
+# DBUS_SESSION_BUS_ADDRESS = os.getenv("DBUS_SESSION_BUS_ADDRESS")
+DBUS_SESSION_BUS_ADDRESS = os.getenv("SOFTWARE_CENTER_APTD_FAKE")
+
+print("DBUS_SESSION_BUS_ADDRESS: {}".format(DBUS_SESSION_BUS_ADDRESS))
 
 RUN_TIMEOUT = 5
 
+xfail = pytest.mark.xfail
 
 # from pydbus import SessionBus
 # bus = SessionBus()
@@ -109,9 +113,10 @@ def sl(bus):
 @pytest.mark.wonky
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyunittest
+@pytest.mark.skip(reason="Broken till we get 99-pytest working, this will be broken unfortunately")
 class TestScarlettListener(object):
 
-    def test_scarlett_listener_interfaces(self, sl, main_loop):
+    def test_scarlett_listener_interfaces(self, create_dummy_session_dbus, sl, main_loop):
         assert sl.__repr__() == '<ScarlettListener(org.scarlett, /org/scarlett/Listener)>'
         assert sl.LISTENER_IFACE == 'org.scarlett.Listener'
         assert sl.LISTENER_PLAYER_IFACE == 'org.scarlett.Listener.Player'
@@ -121,7 +126,7 @@ class TestScarlettListener(object):
         assert isinstance(sl.bus_conn, Gio.DBusConnection)
         assert sl.path == '/org/scarlett/Listener'
 
-    def test_scarlett_listener_emit_methods(self, sl, main_loop):
+    def test_scarlett_listener_emit_methods(self, create_dummy_session_dbus, sl, main_loop):
         assert hasattr(sl, 'emitKeywordRecognizedSignal')
         assert hasattr(sl, 'emitCommandRecognizedSignal')
         assert hasattr(sl, 'emitSttFailedSignal')
