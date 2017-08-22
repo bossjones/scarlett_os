@@ -71,11 +71,11 @@ after_script:
   # - "docker-compose -f docker-compose.test.yml kill -s SIGTERM"
   # - "docker-compose -f docker-compose.test.yml rm -f"
   - docker kill scarlett-test
-  - docker ps -a
 
 after_success:
   - _USER=$(ls -lta | awk '{print $3}')
   - _GROUP=$(ls -lta | awk '{print $4}')
+  - docker ps -a
   - 'ls -lta'
   - sudo chown $_USER:$_GROUP -R .
   - mv .coverage .coverage.tests
