@@ -77,8 +77,8 @@ after_success:
   - _GROUP=$(ls -lta | awk '{print $4}')
   - docker ps -a
   - 'ls -lta'
-  - sudo chown $_USER:$_GROUP -R .
-  - mv .coverage .coverage.tests
+  - 'sudo chown $_USER:$_GROUP -R *'
+  - sudo mv .coverage .coverage.tests
   - coverage combine
   # Coverage report contains Docker paths. We replace them, so that we can run Coveralls.
   - sed -i 's@\"/home/pi/dev/bossjones-github/scarlett_os/@'"\"$(pwd)/"'@g' .coverage
