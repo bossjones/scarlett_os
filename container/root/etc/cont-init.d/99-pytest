@@ -203,7 +203,7 @@ foreground {
             # Need to finish refactoring Docker Parent Containers so it's easier to refactor things
             foreground {
                 cd /home/pi/dev/bossjones-github/scarlett_os
-                s6-applyuidgid -u 1000 -g 1000 umask 002 bash -c "make test-travis; chmod 777 -R .coverage.*"
+                s6-applyuidgid -u 1000 -g 1000 umask 000 bash -c "make test-travis"
             }
         } s6-true
 
