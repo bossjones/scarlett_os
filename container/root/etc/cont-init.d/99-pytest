@@ -89,6 +89,8 @@ multisubstitute
     importas XDG_CONFIG_DIRS XDG_CONFIG_DIRS
     importas XDG_DATA_DIRS XDG_DATA_DIRS
     importas XDG_RUNTIME_DIR XDG_RUNTIME_DIR
+    importas FIXUID
+    importas FIXGID
 }
 
 foreground { s6-echo " [verify] BUILD_DATE: ${BUILD_DATE}" }
@@ -170,6 +172,8 @@ foreground { s6-echo " [verify] WORKON_HOME: ${WORKON_HOME}" }
 foreground { s6-echo " [verify] XDG_CONFIG_DIRS: ${XDG_CONFIG_DIRS}" }
 foreground { s6-echo " [verify] XDG_DATA_DIRS: ${XDG_DATA_DIRS}" }
 foreground { s6-echo " [verify] XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR}" }
+foreground { s6-echo " [verify] FIXUID: ${FIXUID}" }
+foreground { s6-echo " [verify] FIXGID: ${FIXGID}" }
 
 foreground { s6-echo " [run] SKIP_TRAVIS_CI_PYTEST: '${SKIP_TRAVIS_CI_PYTEST}' ... " }
 foreground { s6-echo " [run] SIGNAL_BUILD_STOP: '${SIGNAL_BUILD_STOP}' ..." }

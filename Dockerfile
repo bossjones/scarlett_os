@@ -13,6 +13,8 @@ ARG STOP_AFTER_TRAVIS_CI_PYTEST
 ARG SKIP_GOSS_TESTS_JHBUILD
 ARG SKIP_GOSS_TESTS_GTK_DEPS
 ARG SKIP_TRAVIS_CI_PYTEST
+ARG FIXUID
+ARG FIXGID
 
 # metadata
 ARG CONTAINER_VERSION
@@ -30,6 +32,8 @@ ENV SKIP_GOSS_TESTS_JHBUILD ${SKIP_GOSS_TESTS_JHBUILD:-'false'}
 ENV SKIP_GOSS_TESTS_GTK_DEPS ${SKIP_GOSS_TESTS_GTK_DEPS:-'false'}
 ENV STOP_AFTER_TRAVIS_CI_PYTEST ${STOP_AFTER_TRAVIS_CI_PYTEST:-'false'}
 ENV SKIP_TRAVIS_CI_PYTEST ${SKIP_TRAVIS_CI_PYTEST:-'false'}
+ENV FIXUID ${FIXUID:-'1000'}
+ENV FIXGID ${FIXGID:-'1000'}
 
 # ENV WHEELHOUSE=/wheelhouse
 # ENV PIP_WHEEL_DIR=/wheelhouse
@@ -74,11 +78,21 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
     echo "****************[PTPYTHON]****************" && \
     sudo mkdir -p /home/pi/.ptpython && \
     sudo mv -f /dotfiles/.ptpython_config.py /home/pi/.ptpython/config.py && \
-    sudo chown pi:pi /home/pi/.ptpython
+    sudo chown pi:pi /home/pi/.ptpython && \
 
-RUN sudo cp -a /scripts/with-dynenv /usr/bin/with-dynenv \
+    sudo cp -a /scripts/with-dynenv /usr/bin/with-dynenv \
     && sudo chmod +x /usr/bin/with-dynenv \
     && sudo chown pi:pi /usr/bin/with-dynenv
+    && \
+
+    #
+    USER=pi && \
+    GROUP=pi && \
+    curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.1/fixuid-0.1-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
+    chown root:root /usr/local/bin/fixuid && \
+    chmod 4755 /usr/local/bin/fixuid && \
+    mkdir -p /etc/fixuid && \
+    printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
 
 # ENTRYPOINT ["/docker_entrypoint.sh"]
 # CMD true
