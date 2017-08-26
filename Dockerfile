@@ -82,7 +82,7 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
 
     sudo cp -a /scripts/with-dynenv /usr/bin/with-dynenv \
     && sudo chmod +x /usr/bin/with-dynenv \
-    && sudo chown pi:pi /usr/bin/with-dynenv
+    && sudo chown pi:pi /usr/bin/with-dynenv \
     && \
 
     #
