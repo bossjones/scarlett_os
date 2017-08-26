@@ -9,6 +9,8 @@ container_name := scarlett_os
 GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
 GIT_SHA     = $(shell git rev-parse HEAD)
 BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+FIXUID  = $(shell id -u)
+FIXGID  = $(shell id -g)
 
 # NOTE: DEFAULT_GOAL
 # source: (GNU Make - Other Special Variables) https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
@@ -565,6 +567,8 @@ docker_run_test:
 	    -e SKIP_GOSS_TESTS_GTK_DEPS='true' \
 		-e SKIP_TRAVIS_CI_PYTEST='false' \
 		-e STOP_AFTER_TRAVIS_CI_PYTEST='true' \
+		-e FIXUID=$(FIXUID) \
+		-e FIXGID=$(FIXGID) \
 		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
 	    $(username)/$(container_name):test /init
 
