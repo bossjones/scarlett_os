@@ -217,6 +217,10 @@ foreground {
     }
 }
 
+# fix permissions before continuing
+foreground {
+  s6-applyuidgid -u 0 -g 0 bash /home/pi/dev/bossjones-github/scarlett_os/scripts/bash-fixuid
+}
 
 if -t { s6-test $STOP_AFTER_TRAVIS_CI_PYTEST = true }
 foreground { s6-echo " [run] TRAVIS_CI_PYTEST: '${STOP_AFTER_TRAVIS_CI_PYTEST}' ... sending signal build stop" }
