@@ -89,8 +89,8 @@ multisubstitute
     importas XDG_CONFIG_DIRS XDG_CONFIG_DIRS
     importas XDG_DATA_DIRS XDG_DATA_DIRS
     importas XDG_RUNTIME_DIR XDG_RUNTIME_DIR
-    importas FIXUID
-    importas FIXGID
+    importas FIXUID FIXUID
+    importas FIXGID FIXGID
 }
 
 foreground { s6-echo " [verify] BUILD_DATE: ${BUILD_DATE}" }
