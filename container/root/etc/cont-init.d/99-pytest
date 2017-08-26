@@ -199,9 +199,11 @@ foreground {
         # NOTE: verify that we're the correct user, pi
         ifelse { s6-test $SKIP_TRAVIS_CI_PYTEST = false }
         {
+            # FIXME: (8/26/2017) Horrible HORRIBLE temporary fix to deal with travisci permissions issues.
+            # Need to finish refactoring Docker Parent Containers so it's easier to refactor things
             foreground {
                 cd /home/pi/dev/bossjones-github/scarlett_os
-                s6-applyuidgid -u 1000 -g 1000 umask 002 bash -c "make test-travis"
+                s6-applyuidgid -u 1000 -g 1000 umask 002 bash -c "make test-travis; chmod 777 -R .coverage.*"
             }
         } s6-true
 
