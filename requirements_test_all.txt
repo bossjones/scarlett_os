@@ -31,4 +31,4 @@ PyYAML>=3.11
 requests_mock>=1.0
 Sphinx>=1.4.5
 watchdog>=0.8.3
-xdot
+xdot==0.8
