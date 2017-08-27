@@ -1,5 +1,30 @@
 project := scarlett_os
 projects := scarlett_os
+username := bossjones
+container_name := scarlett_os
+
+# label-schema spec: http://label-schema.org/rc1/
+
+#CONTAINER_VERSION  = $(shell \cat ./VERSION | awk '{print $1}')
+GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
+GIT_SHA     = $(shell git rev-parse HEAD)
+BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+FIXUID  = $(shell id -u)
+FIXGID  = $(shell id -g)
+
+# NOTE: DEFAULT_GOAL
+# source: (GNU Make - Other Special Variables) https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
+# Sets the default goal to be used if no
+# targets were specified on the command
+# line (see Arguments to Specify the Goals).
+# The .DEFAULT_GOAL variable allows you to
+# discover the current default goal,
+# restart the default goal selection
+# algorithm by clearing its value,
+# or to explicitly set the default goal.
+# The following example illustrates these cases:
+.DEFAULT_GOAL := help
+
 flake8 := flake8
 COV_DIRS := $(projects:%=--cov %)
 # [-s] per-test capturing method: one of fd|sys|no. shortcut for --capture=no.
@@ -408,3 +433,190 @@ convert-markdown-to-rst:
 
 install-pandoc-stuff:
 	ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip3 install sphinx sphinx-autobuild restructuredtext-lint
+
+.PHONY: docker-clean
+docker-clean:
+	docker rm $(docker ps -a -q); docker rmi $(docker images | grep "^<none>" | awk '{print $3}');
+
+# Start here
+.PHONY: docker_asset_build
+docker_asset_build:
+	set -x ;\
+	docker build \
+	    --build-arg CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    --build-arg GIT_BRANCH=$(GIT_BRANCH) \
+	    --build-arg GIT_SHA=$(GIT_SHA) \
+	    --build-arg BUILD_DATE=$(BUILD_DATE) \
+	    --build-arg SCARLETT_ENABLE_SSHD=0 \
+	    --build-arg SCARLETT_ENABLE_DBUS='true' \
+	    --build-arg SCARLETT_BUILD_GNOME='false' \
+	    --build-arg TRAVIS_CI='true' \
+	    --build-arg STOP_AFTER_GOSS_JHBUILD='false' \
+	    --build-arg STOP_AFTER_GOSS_GTK_DEPS='false' \
+		--build-arg SKIP_TRAVIS_CI_PYTEST='false' \
+		--build-arg STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		--file=Dockerfile.build \
+		--tag $(username)/$(container_name):$(GIT_SHA) . ; \
+	docker tag $(username)/$(container_name):$(GIT_SHA) $(username)/$(container_name):asset
+
+.PHONY: docker_asset_run
+docker_asset_run:
+	set -x ;\
+	docker run -i -t --rm \
+		--name scarlett-asset \
+	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    -e GIT_BRANCH=$(GIT_BRANCH) \
+	    -e GIT_SHA=$(GIT_SHA) \
+	    -e BUILD_DATE=$(BUILD_DATE) \
+	    -e SCARLETT_ENABLE_SSHD=0 \
+	    -e SCARLETT_ENABLE_DBUS='true' \
+	    -e SCARLETT_BUILD_GNOME='false' \
+	    -e TRAVIS_CI='true' \
+	    -e STOP_AFTER_GOSS_JHBUILD='false' \
+	    -e STOP_AFTER_GOSS_GTK_DEPS='false' \
+	    -e SKIP_GOSS_TESTS_JHBUILD='false' \
+	    -e SKIP_GOSS_TESTS_GTK_DEPS='false' \
+		-e SKIP_TRAVIS_CI_PYTEST='true' \
+		-e STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		-e TRAVIS_CI_PYTEST='false' \
+		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
+	    $(username)/$(container_name):asset /bin/bash
+
+# Start here
+.PHONY: docker_build_dev
+docker_build_dev:
+	set -x ;\
+	mkdir -p wheelhouse; \
+	docker build \
+	    --build-arg CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    --build-arg GIT_BRANCH=$(GIT_BRANCH) \
+	    --build-arg GIT_SHA=$(GIT_SHA) \
+	    --build-arg BUILD_DATE=$(BUILD_DATE) \
+	    --build-arg SCARLETT_ENABLE_SSHD=0 \
+	    --build-arg SCARLETT_ENABLE_DBUS='true' \
+	    --build-arg SCARLETT_BUILD_GNOME='false' \
+	    --build-arg TRAVIS_CI='true' \
+	    --build-arg STOP_AFTER_GOSS_JHBUILD='false' \
+	    --build-arg STOP_AFTER_GOSS_GTK_DEPS='false' \
+		--build-arg SKIP_TRAVIS_CI_PYTEST='false' \
+		--build-arg STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		--file=Dockerfile \
+		--tag $(username)/$(container_name):$(GIT_SHA) . ; \
+	docker tag $(username)/$(container_name):$(GIT_SHA) $(username)/$(container_name):dev
+
+.PHONY: docker_run_dev
+docker_run_dev:
+	set -x ;\
+	docker run -i -t --rm \
+		--name scarlett-dev \
+	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    -e GIT_BRANCH=$(GIT_BRANCH) \
+	    -e GIT_SHA=$(GIT_SHA) \
+	    -e BUILD_DATE=$(BUILD_DATE) \
+	    -e SCARLETT_ENABLE_SSHD=0 \
+	    -e SCARLETT_ENABLE_DBUS='true' \
+	    -e SCARLETT_BUILD_GNOME='false' \
+	    -e TRAVIS_CI='true' \
+	    -e STOP_AFTER_GOSS_JHBUILD='false' \
+	    -e STOP_AFTER_GOSS_GTK_DEPS='false' \
+	    -e SKIP_GOSS_TESTS_JHBUILD='true' \
+	    -e SKIP_GOSS_TESTS_GTK_DEPS='true' \
+		-e SKIP_TRAVIS_CI_PYTEST='false' \
+		-e STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
+	    $(username)/$(container_name):dev /bin/bash
+
+# Start here
+.PHONY: docker_build_test
+docker_build_test:
+	set -x ;\
+	docker build \
+	    --build-arg CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    --build-arg GIT_BRANCH=$(GIT_BRANCH) \
+	    --build-arg GIT_SHA=$(GIT_SHA) \
+	    --build-arg BUILD_DATE=$(BUILD_DATE) \
+	    --build-arg SCARLETT_ENABLE_SSHD=0 \
+	    --build-arg SCARLETT_ENABLE_DBUS='true' \
+	    --build-arg SCARLETT_BUILD_GNOME='false' \
+	    --build-arg TRAVIS_CI='true' \
+	    --build-arg STOP_AFTER_GOSS_JHBUILD='false' \
+	    --build-arg STOP_AFTER_GOSS_GTK_DEPS='false' \
+		--build-arg SKIP_TRAVIS_CI_PYTEST='false' \
+		--build-arg STOP_AFTER_TRAVIS_CI_PYTEST='true' \
+		--file=Dockerfile \
+		--tag $(username)/$(container_name):$(GIT_SHA) . ; \
+	docker tag $(username)/$(container_name):$(GIT_SHA) $(username)/$(container_name):test
+
+.PHONY: docker_run_test
+docker_run_test:
+	set -x ;\
+	docker run -i -t --rm \
+		--privileged \
+		--name scarlett-test \
+	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    -e GIT_BRANCH=$(GIT_BRANCH) \
+	    -e GIT_SHA=$(GIT_SHA) \
+	    -e BUILD_DATE=$(BUILD_DATE) \
+	    -e SCARLETT_ENABLE_SSHD=0 \
+	    -e SCARLETT_ENABLE_DBUS='true' \
+	    -e SCARLETT_BUILD_GNOME='false' \
+	    -e TRAVIS_CI='true' \
+	    -e STOP_AFTER_GOSS_JHBUILD='false' \
+	    -e STOP_AFTER_GOSS_GTK_DEPS='false' \
+	    -e SKIP_GOSS_TESTS_JHBUILD='true' \
+	    -e SKIP_GOSS_TESTS_GTK_DEPS='true' \
+		-e SKIP_TRAVIS_CI_PYTEST='false' \
+		-e STOP_AFTER_TRAVIS_CI_PYTEST='true' \
+		-e FIXUID=$(FIXUID) \
+		-e FIXGID=$(FIXGID) \
+		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
+	    $(username)/$(container_name):test /init
+
+.PHONY: docker_build_wheelhouse
+docker_build_wheelhouse:
+	set -x ;\
+	mkdir -p wheelhouse; \
+	docker build \
+	    --build-arg CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    --build-arg GIT_BRANCH=$(GIT_BRANCH) \
+	    --build-arg GIT_SHA=$(GIT_SHA) \
+	    --build-arg BUILD_DATE=$(BUILD_DATE) \
+	    --build-arg SCARLETT_ENABLE_SSHD=0 \
+	    --build-arg SCARLETT_ENABLE_DBUS='true' \
+	    --build-arg SCARLETT_BUILD_GNOME='false' \
+	    --build-arg TRAVIS_CI='true' \
+	    --build-arg STOP_AFTER_GOSS_JHBUILD='false' \
+	    --build-arg STOP_AFTER_GOSS_GTK_DEPS='false' \
+		--build-arg SKIP_TRAVIS_CI_PYTEST='false' \
+		--build-arg STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		--file=Dockerfile.build \
+		--tag $(username)/$(container_name)-build:$(GIT_SHA) . ; \
+	docker tag $(username)/$(container_name)-build:$(GIT_SHA) $(username)/$(container_name)-build:dev
+
+.PHONY: docker_run_wheelhouse
+docker_run_wheelhouse:
+	set -x ;\
+	mkdir -p wheelhouse; \
+	docker run -i -t --rm \
+		--name scarlett-dev-wheelhouse \
+	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    -e GIT_BRANCH=$(GIT_BRANCH) \
+	    -e GIT_SHA=$(GIT_SHA) \
+	    -e BUILD_DATE=$(BUILD_DATE) \
+	    -e SCARLETT_ENABLE_SSHD=0 \
+	    -e SCARLETT_ENABLE_DBUS='true' \
+	    -e SCARLETT_BUILD_GNOME='false' \
+	    -e TRAVIS_CI='true' \
+	    -e STOP_AFTER_GOSS_JHBUILD='false' \
+	    -e STOP_AFTER_GOSS_GTK_DEPS='false' \
+	    -e SKIP_GOSS_TESTS_JHBUILD='false' \
+	    -e SKIP_GOSS_TESTS_GTK_DEPS='false' \
+		-e SKIP_TRAVIS_CI_PYTEST='true' \
+		-e STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		-e TRAVIS_CI_PYTEST='false' \
+		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
+		-v $$(pwd)/wheelhouse/:/wheelhouse:rw \
+	    $(username)/$(container_name)-build:dev /bin/bash
+
+# ENV TRAVIS_CI_RUN_PYTEST ${TRAVIS_CI_RUN_PYTEST:-'false'}
+# ENV TRAVIS_CI_SKIP_PYTEST ${TRAVIS_CI_SKIP_PYTEST:-'false'}

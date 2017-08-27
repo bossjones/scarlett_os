@@ -1,3 +1,0 @@
-#!/usr/bin/execlineb -P
-
-with-contenv jhbuild run python --version

@@ -164,6 +164,70 @@ def get_environment():
 # file descriptor 0,1,2 meaning - END
 ########################################################################
 
+# source: https://github.com/Alberto-Beralix/Beralix/blob/dd890d68e71d84618648a2e5f33196c8d064e18b/i386-squashfs-root/usr/share/software-center/softwarecenter/testutils.py
+@pytest.fixture(scope="module")
+def create_dummy_session_dbus(request):
+    # source: dbus-proxy
+    """
+    Create a dummy session bus.
+
+    The dbus-deamon will be torn down at the end of the test.
+    """
+    # TODO: Parametrize the socket path.
+
+    if 'TRAVIS_CI' in os.environ:
+        if 'DISPLAY' not in os.environ:
+            # TODO: Should this be on :99 ?
+            os.environ['DISPLAY'] = ':0'
+
+    m_dbus = None
+    # The 'exec' part is a workaround to make the whole process group be killed
+    # later when kill() is called and not just the shell. This is only needed when
+    # 'shell' is set to True like in the later Popen() call below.
+    start_dbus_daemon_command = [
+        # "exec",
+        "dbus-daemon",
+        "--session",
+        "--nofork",
+        "--print-address"
+    ]
+    try:
+        # For some reason shell needs to be set to True,
+        # which is the reason the command is passed as
+        # a string instead as an argument list,
+        # as recommended in the docs.
+        m_dbus = Popen(start_dbus_daemon_command, stdout=subprocess.PIPE)
+        # import pdb;pdb.set_trace()
+        # get and store address
+        bus_address = m_dbus.stdout.readline().strip()
+        print('[m_dbus.stdout.readline().strip()]')
+        print(bus_address)
+        print(bus_address.decode('utf-8'))
+        print(type(bus_address))
+        print(type(bus_address.decode('utf-8')))
+        os.environ["SOFTWARE_CENTER_APTD_FAKE"] = bus_address.decode('utf-8')
+        print('\n[setup] create_session_bus, dbus-daemon running ...')
+        # Allow time for the bus daemon to start
+        sleep(0.5)
+    except OSError as e:
+        print("Error starting dbus-daemon: {}".format(str(e)))
+        sys.exit(1)
+
+    def teardown():
+        print('\n[teardown] create_session_bus, killing dbus-daemon ...')
+        m_dbus.terminate()
+        m_dbus.wait()
+        m_dbus.kill()
+        del os.environ["SOFTWARE_CENTER_APTD_FAKE"]
+        # dbus_daemon.kill()
+        # os.remove(OUTSIDE_SOCKET)
+
+    # The finalizer is called after all of the tests that use the fixture.
+    # If you’ve used parameterized fixtures,
+    # the finalizer is called between instances of the parameterized fixture changes.
+    request.addfinalizer(teardown)
+
+
 
 @pytest.fixture(scope="module")
 def create_session_bus(request, get_environment):

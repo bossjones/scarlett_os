@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+
+echo " [fix-perm] UNAME: ${UNAME}"
+echo " [fix-perm] FIXUID: ${FIXUID}"
+echo " [fix-perm] FIXGID: ${FIXGID}"
+
+usermod -u ${FIXUID} ${UNAME}
+groupmod -g ${FIXGID} ${UNAME}
+usermod -g ${FIXGID} ${UNAME}
+
+chown ${UNAME}:${UNAME} -R /home/pi/dev/bossjones-github/scarlett_os/

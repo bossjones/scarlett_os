@@ -1,0 +1,56 @@
+#!/bin/bash -e
+
+# Dynamic environment loading script ( needed for desktop applications )
+
+#-------------------------------------------------------------------
+# Loads environment variables use in interactive bash shells
+#-------------------------------------------------------------------
+
+BLACKLIST_ENV_VARS="
+HOSTNAME
+GPG_KEY
+LS_COLORS
+CURRENT_DIR
+SHLVL
+no_proxy
+LESSOPEN
+LESSCLOSE
+_
+OLDPWD
+"
+
+DYNENV_USER=$(id -un)
+DYNENV_UID=$(cat /etc/passwd | grep "^${DYNENV_USER}" | cut -d ":" -f3)
+DYNENV_GID=$(cat /etc/passwd | grep "^${DYNENV_USER}" | cut -d ":" -f4)
+DYNENV_HOME=$(homeof "${DYNENV_USER}")
+
+test -d /var/run/user/${DYNENV_UID}/env/ && echo "Folder exists: /var/run/user/${DYNENV_UID}/env/" || mkdir -p /var/run/user/${DYNENV_UID}/env/ && sudo chown -R pi:pi /var/run/user/${DYNENV_UID}
+
+DYNENV_LOC=/var/run/user/${DYNENV_UID}/env/*
+
+for f in $DYNENV_LOC; do
+  env_variable_name="${f##*/}"
+  # FIXME: Remove UID check?
+  if [ "${env_variable_name}" != "UID" ] && \
+     [ "${env_variable_name}" != "0" ] && \
+     [ "${env_variable_name}" != "#" ] && \
+     [ "${env_variable_name}" != "!" ] && \
+     [ "${env_variable_name}" != "HOSTNAME" ] && \
+     [ "${env_variable_name}" != "GPG_KEY" ] && \
+     [ "${env_variable_name}" != "CURRENT_DIR" ] && \
+     [ "${env_variable_name}" != "SHLVL" ] && \
+     [ "${env_variable_name}" != "no_proxy" ] && \
+     [ "${env_variable_name}" != "_" ] && \
+     [ "${env_variable_name}" != "OLDPWD" ] && \
+     [ "${env_variable_name}" != "?" ]; then
+    export "${env_variable_name}"="`cat $f`"
+  fi
+done
+
+unset DYNENV_USER DYNENV_UID DYNENV_GID DYNENV_HOME BLACKLIST_ENV_VARS
+
+# NOTE: Example usage
+
+# source /scripts/with-dynenv
+
+# echo ${TEST_LONG_VAR}

@@ -1,0 +1,16 @@
+
+#!/bin/bash -e
+
+# Signal to init processes to avoid any webserver startup
+export CONTAINER_ROLE='worker'
+
+# Begin startup/run.d sequence
+/init.sh
+
+# Passing control to PHP worker-packer script, with shifted arguments attached
+# Logic would be too difficult/annoying to do in bash
+php /app/workers/worker_packer.php "$@"
+
+# Now that service commands are installed, start process manager to run the packed workers
+echo "[group] starting packed workers"
+exec /init
