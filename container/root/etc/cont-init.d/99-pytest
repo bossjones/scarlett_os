@@ -209,14 +209,15 @@ foreground {
             foreground { s6-echo " [run] goss exited ${REXIT}." }
             foreground { s6-echo " [run] goss tests ran succesfully fool" }
 
+            # fix coverage permissions before continuing
+            foreground {
+                s6-applyuidgid -u 0 -g 0 bash /home/pi/dev/bossjones-github/scarlett_os/scripts/fix-perm-coverage
+            }
+
         } s6-true
 
-        # fix coverage permissions before continuing
-        foreground {
-            s6-applyuidgid -u 0 -g 0 bash /home/pi/dev/bossjones-github/scarlett_os/scripts/fix-perm-coverage
-        }
-
     }
+
 }
 
 
