@@ -35,13 +35,6 @@ ENV SKIP_TRAVIS_CI_PYTEST ${SKIP_TRAVIS_CI_PYTEST:-'false'}
 ENV FIXUID ${FIXUID:-'1000'}
 ENV FIXGID ${FIXGID:-'1000'}
 
-# ENV WHEELHOUSE=/wheelhouse
-# ENV PIP_WHEEL_DIR=/wheelhouse
-# ENV PIP_FIND_LINKS=/wheelhouse
-
-# VOLUME /wheelhouse
-# VOLUME /application
-
 COPY ./ /home/pi/dev/bossjones-github/scarlett_os
 
 WORKDIR /home/pi/dev/bossjones-github/scarlett_os
@@ -63,7 +56,6 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     && jhbuild run python3 setup.py install \
     && jhbuild run -- pip install -r requirements_test_all.txt
 
-# NOTE: Temp run install as pi user
 USER root
 
 COPY ./container/root /
@@ -82,17 +74,16 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
 
     sudo cp -a /scripts/with-dynenv /usr/bin/with-dynenv \
     && sudo chmod +x /usr/bin/with-dynenv \
-    && sudo chown pi:pi /usr/bin/with-dynenv \
-    && \
+    && sudo chown pi:pi /usr/bin/with-dynenv
 
-    #
-    USER=pi && \
-    GROUP=pi && \
-    curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.1/fixuid-0.1-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
-    chown root:root /usr/local/bin/fixuid && \
-    chmod 4755 /usr/local/bin/fixuid && \
-    mkdir -p /etc/fixuid && \
-    printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
+
+# USER=pi && \
+# GROUP=pi && \
+# curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.1/fixuid-0.1-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
+# chown root:root /usr/local/bin/fixuid && \
+# chmod 4755 /usr/local/bin/fixuid && \
+# mkdir -p /etc/fixuid && \
+# printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
 
 # ENTRYPOINT ["/docker_entrypoint.sh"]
 # CMD true
