@@ -217,9 +217,9 @@ foreground {
     }
 }
 
-# fix permissions before continuing
+# fix coverage permissions before continuing
 foreground {
-  s6-applyuidgid -u 0 -g 0 bash /home/pi/dev/bossjones-github/scarlett_os/scripts/bash-fixuid
+  s6-applyuidgid -u 0 -g 0 bash /home/pi/dev/bossjones-github/scarlett_os/scripts/fix-perm-coverage
 }
 
 if -t { s6-test $STOP_AFTER_TRAVIS_CI_PYTEST = true }

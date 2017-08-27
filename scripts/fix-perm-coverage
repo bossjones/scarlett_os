@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv bash
+
+echo " [fix-perm] UNAME: ${UNAME}"
+echo " [fix-perm] FIXUID: ${FIXUID}"
+echo " [fix-perm] FIXGID: ${FIXGID}"
+
+usermod -u ${FIXUID} ${UNAME}
+groupmod -g ${FIXGID} ${UNAME}
+usermod -g ${FIXGID} ${UNAME}
+find /home/pi -name "*.coverage*" -uid 1000 -exec chown ${UNAME} {} \;
+find /home/pi -name "*.coverage*" -gid 1000 -exec chgrp ${UNAME} {} \;
+
+sed -i "s,${UNAME}:x:1000:1000::/home/${UNAME}:/bin/bash,${UNAME}:x:${FIXUID}:${FIXGID}::/home/${UNAME}:/bin/bash," /etc/passwd
