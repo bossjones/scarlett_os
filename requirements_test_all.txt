@@ -26,7 +26,7 @@ pytest-rerunfailures>=2.1.0
 pytest-sugar==0.8.0
 pytest-timeout>=1.0.0
 pytest>=3.0
-python-dbusmock
+python-dbusmock==0.16.9
 PyYAML>=3.11
 requests_mock>=1.0
 Sphinx>=1.4.5
