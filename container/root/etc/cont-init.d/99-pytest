@@ -188,11 +188,6 @@ ifelse { s6-test $SKIP_TRAVIS_CI_PYTEST = true }
 
 foreground { s6-echo " [run] SKIP_TRAVIS_CI_PYTEST: '${SKIP_TRAVIS_CI_PYTEST}' ... running tests now ..." }
 
-# foreground {
-#     cd /home/pi/dev/bossjones-github/scarlett_os
-#     s6-applyuidgid -u 1000 -g 1000 umask 002 bash -c "make -d test-travis"
-# }
-
 foreground {
     exec /home/pi/dev/bossjones-github/scarlett_os/container/root/cleanpy
 }
@@ -209,18 +204,21 @@ foreground {
                 cd /home/pi/dev/bossjones-github/scarlett_os
                 s6-applyuidgid -u 1000 -g 1000 umask 000 bash -c "make test-travis"
             }
+
+            importas REXIT ?
+            foreground { s6-echo " [run] goss exited ${REXIT}." }
+            foreground { s6-echo " [run] goss tests ran succesfully fool" }
+
         } s6-true
 
-        importas REXIT ?
-        foreground { s6-echo " [run] goss exited ${REXIT}." }
-        foreground { s6-echo " [run] goss tests ran succesfully fool" }
+        # fix coverage permissions before continuing
+        foreground {
+            s6-applyuidgid -u 0 -g 0 bash /home/pi/dev/bossjones-github/scarlett_os/scripts/fix-perm-coverage
+        }
+
     }
 }
 
-# fix coverage permissions before continuing
-foreground {
-  s6-applyuidgid -u 0 -g 0 bash /home/pi/dev/bossjones-github/scarlett_os/scripts/fix-perm-coverage
-}
 
 if -t { s6-test $STOP_AFTER_TRAVIS_CI_PYTEST = true }
 foreground { s6-echo " [run] TRAVIS_CI_PYTEST: '${STOP_AFTER_TRAVIS_CI_PYTEST}' ... sending signal build stop" }
