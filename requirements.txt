@@ -3,7 +3,7 @@ colorlog>=2.7
 click>=6.0
 psutil>=4.3.0
 Fabric3==1.13.1.post1
-PyYAML>=3.0
+PyYAML>=3
 jinja2>=2.8
 typing>=3,<4
 voluptuous==0.10.5
