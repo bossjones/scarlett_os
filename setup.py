@@ -88,8 +88,8 @@ requirements = [
     'PyYAML>=3.0',
     'xdg>=1.0.4',
     'yapf==0.16.3',
-    'ruamel.yaml==0.15.19',
-    'ruamel.yaml.cmd==0.4.1',
+    'ruamel.yaml<=0.15',
+    'ruamel.yaml.cmd<=0.4',
     'layeredconfig==0.3.2'
 ]
 
@@ -99,9 +99,7 @@ test_requirements = [
     'pytest-timeout>=1.0.0',
     'pytest-catchlog>=1.2.2',
     'pytest-cov>=2.3.1',
-    # 'pip>=7.0',
     'bumpversion>=0.5.3',
-    # 'wheel>=0.29.0',
     'watchdog>=0.8.3',
     'flake8>=2.6.2',
     'flake8-docstrings>=0.2.8',
@@ -119,14 +117,11 @@ test_requirements = [
     'mock-open>=1.3.1',
     'mock',
     'pytest-benchmark[histogram]>=3.0.0rc1',
-    'python-dbusmock',
     'freezegun==0.3.9',
-    'hunter==1.4.1',
-    'cython==0.26',
+    'hunter==2.0.0',
+    'cython==0.26.1',
     'pystuck==0.8.5',
-    # 'pdbpp==0.9.1',
     'pytest-sugar==0.8.0',
-    # 'pytest-ipdb',
     'objgraph==3.1.0',
     'xdot',
     'pytest-rerunfailures>=2.1.0',
@@ -136,14 +131,14 @@ test_requirements = [
 ]
 
 experimental_requirements  = [
-    'pytest-xdist==1.18.1',
+    'pytest-xdist==1.20.0',
     'unittest2pytest==0.3',
     'pympler==0.5',
     'pydocstyle==2.0.0',
     'pytest-ordering==0.5',
     'pytest-interactive==0.1.1',
     'ptpdb==0.17',
-    'ptpython==0.39'
+    'ptpython==0.41'
 ]
 
 # 0.1.dev2
