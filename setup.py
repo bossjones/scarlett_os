@@ -81,13 +81,7 @@ try:
 except:
     pass
 
-
-# def read_requirements(filename):
-#     content = open(os.path.join(here, filename)).read()
-#     requirements = map(lambda r: r.strip(), content.splitlines())
-#     return requirements
-
-
+# FIXME: This does not handle git+ssh packages
 # source: https://github.com/dave-shawley/python-cookiecutter/blob/844e6bfcf8639eab4feef0c2a83ac61f3aea412c/%7B%7Bcookiecutter.package_name%7D%7D/setup.py
 def read_requirements(name):
     requirements = []
@@ -109,97 +103,12 @@ def read_requirements(name):
 
     return requirements
 
-# requirements = [
-#     'Click>=6.0',
-#     'click-plugins>=1.0',
-#     'pydbus>=0.5.0',
-#     'colorlog>=2.7',
-#     'jinja2>=2.8',
-#     'typing>=3,<4',
-#     'psutil>=4.3.0',
-#     'six',
-#     'voluptuous==0.10.5',
-#     'Fabric3==1.13.1.post1',
-#     'PyYAML>=3',
-#     'xdg>=1.0.4',
-#     'yapf==0.16.3',
-#     'ruamel.yaml<=0.15',
-#     'ruamel.yaml.cmd<=0.4',
-#     'layeredconfig==0.3.2'
-# ]
-
-
-# test_requirements = [
-#     'pytest>=3.0',
-#     'pytest-timeout>=1.0.0',
-#     'pytest-catchlog>=1.2.2',
-#     'pytest-cov>=2.3.1',
-#     'bumpversion>=0.5.3',
-#     'watchdog>=0.8.3',
-#     'flake8>=2.6.2',
-#     'flake8-docstrings>=0.2.8',
-#     'coverage>=4.1',
-#     'Sphinx>=1.4.5',
-#     'cryptography==2.0',
-#     'pydocstyle>=1.0.0',
-#     'mypy-lang>=0.4',
-#     'pylint>=1.5.6',
-#     'coveralls>=1.1',
-#     'ipython>=5.1.0',
-#     'gnureadline>=6.3.0',
-#     'requests_mock>=1.0',
-#     'mock-open>=1.3.1',
-#     'mock',
-#     'pytest-benchmark[histogram]>=3.0.0rc1',
-#     'freezegun==0.3.9',
-#     'hunter==2.0.0',
-#     'cython==0.26.1',
-#     'pystuck==0.8.5',
-#     'pytest-sugar==0.8.0',
-#     'objgraph==3.1.0',
-#     'xdot',
-#     'pytest-rerunfailures>=2.1.0',
-#     'pytest-mock==1.6.2',
-#     'isort==4.2.15'
-
-# ]
-
-# experimental_requirements  = [
-#     'pytest-xdist==1.20.0',
-#     'unittest2pytest==0.3',
-#     'pympler==0.5',
-#     'pydocstyle==2.0.0',
-#     'pytest-ordering==0.5',
-#     'pytest-interactive==0.1.1',
-#     'ptpdb==0.17',
-#     'ptpython==0.41'
-# ]
-
 requirements = read_requirements('requirements.txt')
 requirements_dev = read_requirements('requirements_dev.txt')
 requirements_test = read_requirements('requirements_test.txt')
 requirements_test_experimental = read_requirements('requirements_test_experimental.txt')
 
-# 0.1.dev2
-# https://github.com/mverteuil/pytest-ipdb/search?utf8=%E2%9C%93&q=version
-# setup(
-#    ...
-#    dependency_links = ['http://github.com/mtai/python-gearman/tarball/master#egg=gearman-2.0.0beta']
-# )
-#
-# dependency_links = ['https://github.com/mverteuil/pytest-ipdb/tarball/master#egg=gearman-0.1.dev2']
-
-
 # source: http://stackoverflow.com/questions/14399534/how-can-i-reference-requirements-txt-for-the-install-requires-kwarg-in-setuptool
-# In [1]: from pip.req import parse_requirements
-
-# In [2]: install_reqs = parse_requirements('/home/pi/dev/bossjones-github/scarlett_os/requirements_dev.txt')
-
-# In [3]: install_reqs
-# Out[3]: <generator object parse_requirements at 0x7fd0c55eb6b8>
-
-# In [4]:
-
 
 # Pytest
 class PyTest(TestCommand):
@@ -276,7 +185,3 @@ setup(
     # dependency_links = ['https://github.com/mverteuil/pytest-ipdb/tarball/master#egg=pytest-ipdb-0.1.dev2'],
     cmdclass={'test': PyTest}
 )
-
-
-# install_requires=read_requirements('installation.txt'),
-# tests_require=read_requirements('testing.txt'),
