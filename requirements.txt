@@ -17,7 +17,7 @@ ruamel.yaml<=0.15
 
 
 # There also is a commandline utility yaml available after installing:
-ruamel.yaml.cmd<=0.4
+ruamel.yaml.cmd==0.4.2
 
 # config
 layeredconfig==0.3.2
