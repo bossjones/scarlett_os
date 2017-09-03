@@ -10,7 +10,7 @@ REQUIRED_PYTHON_VER = (3, 5, 2)
 #
 PROJECT_NAME = 'ScarlettOS'
 PROJECT_PACKAGE_NAME = 'scarlett_os'
-PROJECT_LICENSE = 'MIT License'
+PROJECT_LICENSE = 'Apache License 2.0'
 PROJECT_AUTHOR = 'Malcolm Jones'
 PROJECT_COPYRIGHT = ' 2016, {}'.format(PROJECT_AUTHOR)
 PROJECT_URL = 'https://github.com/bossjones/scarlett_os'
@@ -24,7 +24,7 @@ PROJECT_CLASSIFIERS = [
     'Development Status :: 2 - Pre-Alpha',
     'Intended Audience :: End Users/Desktop',
     'Intended Audience :: Developers',
-    'License :: OSI Approved :: MIT License',
+    'License :: OSI Approved :: Apache Software License',
     'Natural Language :: English',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.4',

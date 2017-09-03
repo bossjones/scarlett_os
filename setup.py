@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright bossjones
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import sys
 import platform
@@ -73,6 +87,24 @@ def read_requirements(filename):
     requirements = map(lambda r: r.strip(), content.splitlines())
     return requirements
 
+
+# source: https://github.com/dave-shawley/python-cookiecutter/blob/844e6bfcf8639eab4feef0c2a83ac61f3aea412c/%7B%7Bcookiecutter.package_name%7D%7D/setup.py
+# def read_requirements(name):
+#     requirements = []
+#     try:
+#         with open(name) as req_file:
+#             for line in req_file:
+#                 if '#' in line:
+#                     line = line[:line.index('#')]
+#                 line = line.strip()
+#                 if line.startswith('-r'):
+#                     requirements.extend(read_requirements(line[2:].strip()))
+#                 elif not line.startswith('-'):
+#                     requirements.append(line)
+#     except IOError:
+#         pass
+
+#     return requirements
 
 requirements = [
     'Click>=6.0',
@@ -235,3 +267,7 @@ setup(
     # dependency_links = ['https://github.com/mverteuil/pytest-ipdb/tarball/master#egg=pytest-ipdb-0.1.dev2'],
     cmdclass={'test': PyTest}
 )
+
+
+# install_requires=read_requirements('installation.txt'),
+# tests_require=read_requirements('testing.txt'),
