@@ -34,7 +34,8 @@ pytest-timeout>=1.0.0
 pytest-catchlog>=1.2.2
 pytest-benchmark[histogram]>=3.0.0rc1
 freezegun==0.3.9
-git+git://github.com/mverteuil/pytest-ipdb.git
+# git+git://github.com/mverteuil/pytest-ipdb.git
+-e git+https://github.com/mverteuil/pytest-ipdb#egg=pytest-ipdb
 pdbpp==0.9.1
 # pudb
 pytest-sugar==0.8.0
