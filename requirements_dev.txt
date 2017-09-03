@@ -27,9 +27,6 @@ coveralls>=1.1
 ipython>=5.1.0
 gnureadline>=6.3.0
 
-# dbus
-python-dbusmock==0.16.9
-
 # pytest
 pytest>=2.9.2
 pytest-cov>=2.3.1
@@ -37,7 +34,8 @@ pytest-timeout>=1.0.0
 pytest-catchlog>=1.2.2
 pytest-benchmark[histogram]>=3.0.0rc1
 freezegun==0.3.9
-git+git://github.com/mverteuil/pytest-ipdb.git
+# git+git://github.com/mverteuil/pytest-ipdb.git
+-e git+https://github.com/mverteuil/pytest-ipdb#egg=pytest-ipdb
 pdbpp==0.9.1
 # pudb
 pytest-sugar==0.8.0
@@ -57,7 +55,7 @@ pytest-leaks==0.2.2
 # twine
 
 # tracing and debugging
-hunter==1.4.1
+hunter==2.0.0
 
 # testing helpers for future
 # description: A testing library for python with powerful and flexible assertions. Sure is heavily inspired by should.js
@@ -69,7 +67,7 @@ hunter==1.4.1
 # source: https://github.com/joke2k/faker
 # faker==0.7.7
 
-cython==0.26
+cython==0.26.1
 
 # trace python process
 pystuck==0.8.5
