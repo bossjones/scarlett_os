@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-test_config
+test_simple_config
 ----------------------------------
 """
 
@@ -23,16 +23,16 @@ from scarlett_os.common.configure import simple_config
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
 @pytest.fixture(scope='function')
-def config_unit_mocker_stopall(mocker):
+def simple_config_unit_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
     print('Called [setup]: mocker.stopall()')
     mocker.stopall()
-    print('Called [setup]: imp.reload(player)')
+    print('Called [setup]: imp.reload(simple_config)')
     imp.reload(simple_config)
     yield mocker
     print('Called [teardown]: mocker.stopall()')
     mocker.stopall()
-    print('Called [setup]: imp.reload(player)')
+    print('Called [setup]: imp.reload(simple_config)')
     imp.reload(simple_config)
 
 @pytest.fixture(scope='function')
@@ -128,12 +128,21 @@ def fake_config_empty():
 @pytest.mark.unittest
 @pytest.mark.smartconfigtest
 @pytest.mark.scarlettonlyunittest
-class TestFilterMatcher(object):
+class TestSimpleFilterMatcher(object):
     # Borrowed from udiskie
 
     """
     Tests for the scarlett_os.common.configure.FilterMatcher class.
     """
+
+    def test_lower(self):
+        assert simple_config.lower('HELLO') == 'hello'
+
+    def test_to_lowercase_empty_string(self):
+        assert simple_config.lower("") == ""
+
+    def test_lower_AttributeError(self):
+        assert simple_config.lower([1,2,3]) == [1,2,3]
 
     # def test_config_from_file(self, fake_config):
     #     """Test Config object and properties."""

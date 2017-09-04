@@ -1824,3 +1824,7 @@ Vendoring is the moving of all 3rd party items such as plugins, gems and even ra
 ### This is the soluton that ended up working
 
 Seems like issue https://github.com/pypa/pip/issues/4216 is halted at the moment ... most likely because the devs are busy or they're working on rolling out version 10 of pip instead which will fix this problem w/ 9.0.1. For now, decided to use the patch that `pradyunsg ` put together that involves installing pip like this: `pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip"`. We locked it to our own fork just to prevent any other changes from happening after today 7/22/2017 ... just in case. But will keep an eye on things.
+
+# ssh to container
+
+example repo: https://github.com/jeroenpeeters/docker-ssh
