@@ -6,6 +6,7 @@ test_simple_config
 ----------------------------------
 """
 
+import builtins
 import imp
 import os.path
 import sys
@@ -116,6 +117,38 @@ def fake_config_empty():
 
     shutil.rmtree(base)
 
+# pylint: disable=R0201
+# pylint: disable=C0111
+# pylint: disable=C0123
+# pylint: disable=C0103
+# pylint: disable=W0212
+# pylint: disable=W0621
+# pylint: disable=W0612
+@pytest.mark.scarlettonly
+@pytest.mark.unittest
+@pytest.mark.simpleconfigtest
+@pytest.mark.scarlettonlyunittest
+class TestSimpleConfigLower(object):
+    # Borrowed from udiskie
+
+    """
+    Tests for the scarlett_os.common.configure.FilterMatcher class.
+    """
+
+    def test_lower(self, simple_config_unit_mocker_stopall):
+        temp_mocker = simple_config_unit_mocker_stopall
+
+        mock_a_string = temp_mocker.MagicMock(name='mock_a_string')
+        mock_a_string.return_value = 'HELLO'
+
+        assert simple_config.lower(mock_a_string.return_value) == 'hello'
+
+    def test_to_lowercase_empty_string(self):
+        assert simple_config.lower("") == ""
+
+    def test_lower_AttributeError(self):
+        assert simple_config.lower([1,2,3]) == [1,2,3]
+
 
 # pylint: disable=R0201
 # pylint: disable=C0111
@@ -126,7 +159,37 @@ def fake_config_empty():
 # pylint: disable=W0612
 @pytest.mark.scarlettonly
 @pytest.mark.unittest
-@pytest.mark.smartconfigtest
+@pytest.mark.simpleconfigtest
+@pytest.mark.scarlettonlyunittest
+class TestGetXdgConfigDirPath(object):
+
+    """
+    Validate get_xdg_config_dir_path
+    """
+
+    # def test_yaml_unicode_representer(self, simple_config_unit_mocker_stopall):
+    #     # '<b class="boldest">Б - Бага</b>'
+    #     pass
+
+    def test_get_xdg_config_dir_path(self, simple_config_unit_mocker_stopall):
+        assert simple_config.get_xdg_config_dir_path() == '/home/pi/.config'
+
+    def test_get_xdg_data_dir_path(self, simple_config_unit_mocker_stopall):
+        assert simple_config.get_xdg_data_dir_path() == '/home/pi/.local/share'
+
+    def test_get_xdg_cache_dir_path(self, simple_config_unit_mocker_stopall):
+        assert simple_config.get_xdg_cache_dir_path() == '/home/pi/.cache'
+
+# pylint: disable=R0201
+# pylint: disable=C0111
+# pylint: disable=C0123
+# pylint: disable=C0103
+# pylint: disable=W0212
+# pylint: disable=W0621
+# pylint: disable=W0612
+@pytest.mark.scarlettonly
+@pytest.mark.unittest
+@pytest.mark.simpleconfigtest
 @pytest.mark.scarlettonlyunittest
 class TestSimpleFilterMatcher(object):
     # Borrowed from udiskie
@@ -134,15 +197,6 @@ class TestSimpleFilterMatcher(object):
     """
     Tests for the scarlett_os.common.configure.FilterMatcher class.
     """
-
-    def test_lower(self):
-        assert simple_config.lower('HELLO') == 'hello'
-
-    def test_to_lowercase_empty_string(self):
-        assert simple_config.lower("") == ""
-
-    def test_lower_AttributeError(self):
-        assert simple_config.lower([1,2,3]) == [1,2,3]
 
     # def test_config_from_file(self, fake_config):
     #     """Test Config object and properties."""
