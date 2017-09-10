@@ -11,6 +11,35 @@ GIT_SHA     = $(shell git rev-parse HEAD)
 BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 FIXUID  = $(shell id -u)
 FIXGID  = $(shell id -g)
+DOCKER_IP = $(shell echo $${DOCKER_HOST:-tcp://127.0.0.1:2376} | cut -d/ -f3 | cut -d: -f1)
+
+#################################################################################
+# DOCKER_RUN_ARGS   = \
+# 	-e FLIGHT_DIRECTOR_URL \
+# 	-e FD_BEHAVE_DEFAULT_IMAGE \
+# 	-e PYTHONUNBUFFERED=1 \
+# 	-e DCOS_USER \
+# 	-e DCOS_PASSWORD \
+# 	-v ~/.dcos:/root/.dcos \
+# 	-v ~/.docker:/root/.docker \
+# 	-v $$PWD/junit-results:/junit-results \
+# 	-v $$PWD:/usr/src/app \
+# 	-i
+# # if this session isn't interactive, then we don't want to allocate a
+# # TTY, which would fail, but if it is interactive, we do want to attach
+# # so that the user can send e.g. ^C through.
+# INTERACTIVE := $(shell [ -t 0 ] && echo 1 || echo 0)
+# ifeq ($(INTERACTIVE), 1)
+# 	DOCKER_RUN_ARGS += -t
+# endif
+# ifneq ($(JENKINS_URL), )
+# 	DOCKER_RUN_ARGS += -e BEHAVE_FORMATTER=plain.color
+# endif
+
+# MKDIR = mkdir
+# PARALLEL = parallel
+# PARALLEL_ARGS = -j 3 -v --results=outdir
+#################################################################################
 
 # NOTE: DEFAULT_GOAL
 # source: (GNU Make - Other Special Variables) https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
@@ -438,6 +467,20 @@ install-pandoc-stuff:
 docker-clean:
 	docker rm $(docker ps -a -q); docker rmi $(docker images | grep "^<none>" | awk '{print $3}');
 
+# NOTE: Use this to ssh to running docker container
+.PHONY: ssh
+ssh:
+	@ssh \
+	-o Compression=yes \
+	-o DSAAuthentication=yes \
+	-o LogLevel=FATAL \
+	-o IdentitiesOnly=yes \
+	-o StrictHostKeyChecking=no \
+	-o UserKnownHostsFile=/dev/null \
+	-i $$(pwd)/keys/vagrant_id_rsa \
+	-p 2222 \
+	pi@localhost
+
 # Start here
 .PHONY: docker_asset_build
 docker_asset_build:
@@ -525,6 +568,30 @@ docker_run_dev:
 		-e STOP_AFTER_TRAVIS_CI_PYTEST='false' \
 		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
 	    $(username)/$(container_name):dev /bin/bash
+
+
+.PHONY: docker_run_ssh
+docker_run_ssh:
+	set -x ;\
+	docker run -i -t --rm \
+        -p 2222:22 \
+		--name scarlett-ssh \
+	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
+	    -e GIT_BRANCH=$(GIT_BRANCH) \
+	    -e GIT_SHA=$(GIT_SHA) \
+	    -e BUILD_DATE=$(BUILD_DATE) \
+	    -e SCARLETT_ENABLE_SSHD='true' \
+	    -e SCARLETT_ENABLE_DBUS='true' \
+	    -e SCARLETT_BUILD_GNOME='false' \
+	    -e TRAVIS_CI='true' \
+	    -e STOP_AFTER_GOSS_JHBUILD='false' \
+	    -e STOP_AFTER_GOSS_GTK_DEPS='false' \
+	    -e SKIP_GOSS_TESTS_JHBUILD='true' \
+	    -e SKIP_GOSS_TESTS_GTK_DEPS='true' \
+		-e SKIP_TRAVIS_CI_PYTEST='true' \
+		-e STOP_AFTER_TRAVIS_CI_PYTEST='false' \
+		-v $$(pwd)/:/home/pi/dev/bossjones-github/scarlett_os:rw \
+	    $(username)/$(container_name):dev /home/pi/dev/bossjones-github/scarlett_os/container/root/remote_debugging
 
 # Start here
 .PHONY: docker_build_test

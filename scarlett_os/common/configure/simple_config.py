@@ -16,11 +16,20 @@ from collections import OrderedDict
 from gettext import gettext as _
 from time import time
 from typing import Any, Dict, Optional
+import uuid
 
-import ruamel.yaml
+# ruamel.yaml supports round-trip preserving dict ordering,
+# comments, etc., which is why we use it instead of the usual yaml
+# module. Remember the project file is intended to go into source
+# control.
+import ruamel.yaml  # pragma: no cover
+from ruamel.yaml import YAML  # pragma: no cover
+from ruamel.yaml.error import YAMLError  # pragma: no cover
+from ruamel.yaml.comments import CommentedMap  # pragma: no cover
+from ruamel.yaml.comments import CommentedSeq  # pragma: no cover
+
 import voluptuous as vol
 from layeredconfig import Defaults, DictSource, LayeredConfig
-from ruamel.yaml import YAML  # defaults to round-trip
 from voluptuous.humanize import humanize_error
 
 import scarlett_os.helpers.config_validation as cv
@@ -35,9 +44,15 @@ from scarlett_os.const import (CONF_CUSTOMIZE, CONF_CUSTOMIZE_DOMAIN,
                                CONF_UNIT_SYSTEM_METRIC, TEMP_CELSIUS,
                                __version__)
 from scarlett_os.internal import path as path_internal
-from scarlett_os.internal.path import mkdir_if_does_not_exist
+from scarlett_os.internal.path import mkdir_if_does_not_exist, ensure_dir_exists
+from scarlett_os.internal.rename import rename_over_existing
 from scarlett_os.utility import dt as date_util
 from scarlett_os.utility import location as loc_util
+
+import xdg
+# from xdg import XDG_CACHE_HOME
+# from xdg import XDG_DATA_HOME
+# from xdg import XDG_CACHE_HOME
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +154,21 @@ CORE_CONFIG_SCHEMA = CUSTOMIZE_CONFIG_SCHEMA.extend({
     vol.Optional(CONF_PACKAGES, default={}): PACKAGES_CONFIG_SCHEMA,
 })
 
+def _atomic_replace(path, contents, encoding='utf-8'):
+    # source: https://github.com/Anaconda-Platform/anaconda-project/blob/master/anaconda_project/yaml_file.py
+    tmp = path + ".tmp-" + str(uuid.uuid4())
+    try:
+        with codecs.open(tmp, 'w', encoding) as file:
+            file.write(contents)
+            file.flush()
+            file.close()
+        rename_over_existing(tmp, path)
+    finally:
+        try:
+            os.remove(tmp)
+        except (IOError, OSError):
+            pass
+
 
 def lower(a_string):
     """
@@ -152,7 +182,7 @@ def lower(a_string):
         return a_string
 
 
-def mapping_string_access(self, s, delimiter=None, key_delim=None):
+def mapping_string_access(self, s, delimiter=None, key_delim=None):  # pragma: no cover
     # source: https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
     def p(v):
         try:
@@ -179,10 +209,10 @@ def mapping_string_access(self, s, delimiter=None, key_delim=None):
     return self[key].string_access(rest, delimiter, key_delim)
 
 # monkeypatch CommentedMap.string_access function
-ruamel.yaml.comments.CommentedMap.string_access = mapping_string_access
+ruamel.yaml.comments.CommentedMap.string_access = mapping_string_access  # pragma: no cover
 
 
-def sequence_string_access(self, s, delimiter=None, key_delim=None):
+def sequence_string_access(self, s, delimiter=None, key_delim=None):  # pragma: no cover
     # source: https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
     if delimiter is None:
         delimiter = '.'
@@ -196,39 +226,72 @@ def sequence_string_access(self, s, delimiter=None, key_delim=None):
     return self[key].string_access(rest, delimiter, key_delim)
 
 # monkeypatch CommentedSeq.string_access function
-ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
+ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access  # pragma: no cover
 
 
-def dump_yaml(layered_config):
+def dump_yaml(yaml_blob):  # pragma: no cover
     # source: https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
-    return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
+    """
+    :param yaml_blob: yaml config in string format
+    :type yaml_blob: str
+    :returns: expected output (equals input yaml_blob if not specified)
+    :rtype: str
+    """
+    return ruamel.yaml.round_trip_dump(yaml_blob.dump(yaml_blob),
                                        default_flow_style=False)
 
 
-def yaml_unicode_representer(self, data):
+def yaml_unicode_representer(self, data):  # pragma: no cover
     # source: https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
+    """
+    :param data: input str to encode, should look like a yaml document
+    :type data: str
+    :returns: ryaml str representation of data input
+    :rtype: str, unicode
+    """
+    # NOTE: according to ryaml we can have the following: [type: (Any) -> Any]
     return self.represent_str(data.encode('utf-8'))
 
 
 ruamel.yaml.representer.Representer.add_representer(text_type, yaml_unicode_representer)
 
 
-def match_config(filters, device, kind, default):
-    """
-    Matches devices against multiple :class:`DeviceFilter`s.
+# DISABLED # def match_config(filters, device, kind, default):
+# DISABLED #     """
+# DISABLED #     Matches devices against multiple :class:`DeviceFilter`s.
+# DISABLED #
+# DISABLED #     :param default: default value
+# DISABLED #     :param list filters: device filters
+# DISABLED #     :param Device device: device to be mounted
+# DISABLED #     :returns: value of the first matching filter
+# DISABLED #     """
+# DISABLED #     if device is None:
+# DISABLED #         return default
+# DISABLED #     matches = (f.value(kind, device)
+# DISABLED #                for f in filters
+# DISABLED #                if f.has_value(kind) and f.match(device))
+# DISABLED #     return next(matches, default)
 
-    :param default: default value
-    :param list filters: device filters
-    :param Device device: device to be mounted
-    :returns: value of the first matching filter
-    """
-    if device is None:
-        return default
-    matches = (f.value(kind, device)
-               for f in filters
-               if f.has_value(kind) and f.match(device))
-    return next(matches, default)
+def _save_file(yaml_str, filename, contents=None):
+    # source: https://github.com/Anaconda-Platform/anaconda-project/blob/master/anaconda_project/yaml_file.py
+    if contents is None:
+        contents = dump_yaml(yaml_str)
 
+    try:
+        # This is to ensure we don't corrupt the file, even if ruamel.yaml is broken
+        ruamel.yaml.load(contents, Loader=ruamel.yaml.RoundTripLoader)
+    except YAMLError as e:  # pragma: no cover (should not happen)
+        print("ruamel.yaml bug; it failed to parse a file that it generated.", file=sys.stderr)
+        print("  the parse error was: " + str(e), file=sys.stderr)
+        print("Generated file was:", file=sys.stderr)
+        print(contents, file=sys.stderr)
+        raise RuntimeError("Bug in ruamel.yaml library; failed to parse a file that it generated: " + str(e))
+
+    if not os.path.isfile(filename):
+        # might have to make the directory
+        dirname = os.path.dirname(filename)
+        ensure_dir_exists(dirname)
+    _atomic_replace(filename, contents)
 
 def get_xdg_config_dir_path():
     # source: home-assistant
@@ -239,11 +302,7 @@ def get_xdg_config_dir_path():
 
     :rtype: str
     """
-    try:
-        # from xdg.BaseDirectory import xdg_config_home as config_home
-        from xdg import XDG_CONFIG_HOME as config_home
-    except ImportError:
-        config_home = os.path.expanduser('~/.config')
+    from xdg import XDG_CONFIG_HOME as config_home
     # NOTE: Automatically get function name
     print('Ran {}| config_home={}'.format(sys._getframe().f_code.co_name, config_home))
     return config_home
@@ -254,15 +313,11 @@ def get_xdg_data_dir_path():
     """
     Single directory where user-specific data files should be written.
 
-    EXAMPLE: $HOME/.config/.local/share
+    EXAMPLE: $HOME/.local/share
 
     :rtype: str
     """
-    try:
-        from xdg import XDG_DATA_HOME as data_home
-    except ImportError:
-        config_home = os.path.expanduser('~/.config')
-        data_home = os.path.join(config_home, ".local", "share")
+    from xdg import XDG_DATA_HOME as data_home
     print('Ran {}| data_home={}'.format(sys._getframe().f_code.co_name, data_home))
     return data_home
 
@@ -275,10 +330,7 @@ def get_xdg_cache_dir_path():
 
     :rtype: str
     """
-    try:
-        from xdg import XDG_CACHE_HOME as cache_home
-    except ImportError:
-        cache_home = os.path.expanduser('~/.cache')
+    from xdg import XDG_CACHE_HOME as cache_home
     print('Ran {}| cache_home={}'.format(sys._getframe().f_code.co_name, cache_home))
     return cache_home
 
@@ -396,9 +448,12 @@ def flatten(d, parent_key='', sep='/'):
     return dict(items)
 
 
+# NOTE: some of the ideas here are borrowed from Udiskie
+# source: https://github.com/coldfix/udiskie/blob/b647e3dd1bc4f42bb2399f7feba1a488f857a6be/udiskie/config.py
 class SimpleConfig(object):
 
     """ScarlettOS config in memory representation."""
+
 
     def __init__(self, data):
         """

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Begin startup/run.d sequence
+/init.sh
+
+# Passing control to PHP worker-packer script, with shifted arguments attached
+# Logic would be too difficult/annoying to do in bash
+# php /app/workers/worker_packer.php "$@"
+rm /etc/cont-init.d/99-pytest
+
+# Now that service commands are installed, start process manager to run the packed workers
+echo "[skip_pytest] starting packed workers"
+exec /init

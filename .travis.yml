@@ -31,7 +31,7 @@ before_install:
   - sudo apt-cache search docker
   # List available docker versions.
   - apt-cache madison docker-ce
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce=$DOCKER_VERSION
+  - sudo apt-get --allow-downgrades -y -o Dpkg::Options::="--force-confnew" install docker-ce=$DOCKER_VERSION
   # Update Docker. See: https://graysonkoonce.com/managing-docker-and-docker-compose-versions-on-travis-ci/.
   # - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker.io
   # Add docker-compose at the version specified in ENV.
