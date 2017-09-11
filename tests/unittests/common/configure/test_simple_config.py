@@ -186,6 +186,9 @@ class TestGetXdgConfigDirPath(object):
     def test_get_config_file_path(self, simple_config_unit_mocker_stopall):
         assert simple_config.get_config_file_path() == '/home/pi/.config/scarlett/config.yaml'
 
+    def test_get_version_file_path(self, simple_config_unit_mocker_stopall):
+        assert simple_config.get_version_file_path() == '/home/pi/.config/scarlett/.SCARLETT_VERSION'
+
 # pylint: disable=R0201
 # pylint: disable=C0111
 # pylint: disable=C0123
