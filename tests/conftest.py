@@ -559,6 +559,7 @@ def get_dbus_proxy_obj_helper(request, get_environment, get_bus):
     return get_bus.get("org.scarlett", object_path='/org/scarlett/Listener')
 
 
+# pylint: disable=C0103
 def dict_compare(d1, d2):
 
     """
