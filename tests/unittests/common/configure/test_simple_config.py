@@ -21,6 +21,8 @@ import shutil
 import scarlett_os
 from scarlett_os.common.configure import simple_config
 
+from tests.conftest import dict_compare
+
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
 @pytest.fixture(scope='function')
@@ -149,7 +151,6 @@ class TestSimpleConfigLower(object):
     def test_lower_AttributeError(self):
         assert simple_config.lower([1,2,3]) == [1,2,3]
 
-
 # pylint: disable=R0201
 # pylint: disable=C0111
 # pylint: disable=C0123
@@ -188,6 +189,39 @@ class TestGetXdgConfigDirPath(object):
 
     def test_get_version_file_path(self, simple_config_unit_mocker_stopall):
         assert simple_config.get_version_file_path() == '/home/pi/.config/scarlett/.SCARLETT_VERSION'
+
+# pylint: disable=R0201
+# pylint: disable=C0111
+# pylint: disable=C0123
+# pylint: disable=C0103
+# pylint: disable=W0212
+# pylint: disable=W0621
+# pylint: disable=W0612
+@pytest.mark.scarlettonly
+@pytest.mark.unittest
+@pytest.mark.simpleconfigtest
+@pytest.mark.scarlettonlyunittest
+class TestFlatten(object):
+
+    """
+    Test Flatten Function
+    """
+
+    def test_flatten(self, simple_config_unit_mocker_stopall):
+        to_flatten = {'a': 1,
+                      'c': {'a': 2,
+                          'b': {'x': 5,
+                                  'y' : 10}},
+                      'd': [1, 2, 3]}
+
+        expected_flattened = {'a': 1, 'c_a': 2, 'c_b_x': 5, 'd': [1, 2, 3], 'c_b_y': 10}
+
+        flattened_result = simple_config.flatten(to_flatten)
+        added, removed, modified, same = dict_compare(flattened_result, expected_flattened)
+
+        # assert dicts are exactly the same, meaning modified is equal to empty dict {}
+        assert modified == {}
+
 
 # pylint: disable=R0201
 # pylint: disable=C0111
