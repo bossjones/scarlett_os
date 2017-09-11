@@ -180,6 +180,12 @@ class TestGetXdgConfigDirPath(object):
     def test_get_xdg_cache_dir_path(self, simple_config_unit_mocker_stopall):
         assert simple_config.get_xdg_cache_dir_path() == '/home/pi/.cache'
 
+    def test_get_config_sub_dir_path(self, simple_config_unit_mocker_stopall):
+        assert simple_config.get_config_sub_dir_path() == '/home/pi/.config/scarlett'
+
+    def test_get_config_file_path(self, simple_config_unit_mocker_stopall):
+        assert simple_config.get_config_file_path() == '/home/pi/.config/scarlett/config.yaml'
+
 # pylint: disable=R0201
 # pylint: disable=C0111
 # pylint: disable=C0123
