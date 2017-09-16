@@ -21,7 +21,7 @@ pystuck==0.8.5
 pytest-benchmark[histogram]>=3.0.0rc1
 pytest-catchlog>=1.2.2
 pytest-cov>=2.3.1
-pytest-mock==1.6.2
+pytest-mock==1.6.3
 pytest-rerunfailures>=2.1.0
 pytest-sugar==0.9.0
 pytest-timeout>=1.0.0
