@@ -9,7 +9,7 @@ jinja2>=2.8
 typing>=3,<4
 voluptuous==0.10.5
 xdg>=1.0.4
-six==1.10.0
+six==1.11.0
 yapf==0.17.0
 
 # Yaml 1.2 spec
