@@ -2,7 +2,7 @@
 bumpversion>=0.5.3
 coverage>=4.1
 coveralls>=1.1
-cryptography==2.0.3
+cryptography==2.1
 cython==0.26.1
 flake8-docstrings>=0.2.8
 flake8>=2.6.2
