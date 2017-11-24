@@ -55,7 +55,7 @@ pytest-leaks==0.2.2
 # twine
 
 # tracing and debugging
-hunter==2.0.1
+hunter==2.0.2
 
 # testing helpers for future
 # description: A testing library for python with powerful and flexible assertions. Sure is heavily inspired by should.js

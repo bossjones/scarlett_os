@@ -8,7 +8,7 @@ flake8-docstrings>=0.2.8
 flake8>=2.6.2
 freezegun==0.3.9
 gnureadline>=6.3.0
-hunter==2.0.1
+hunter==2.0.2
 ipython>=5.1.0
 isort==4.2.15
 mock==2.0.0
