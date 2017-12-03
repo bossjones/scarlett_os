@@ -13,7 +13,7 @@ six==1.10.0
 yapf==0.17.0
 
 # Yaml 1.2 spec
-ruamel.yaml==0.15.33
+ruamel.yaml==0.15.35
 
 
 # There also is a commandline utility yaml available after installing:
