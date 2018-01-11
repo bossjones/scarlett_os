@@ -72,7 +72,7 @@ cython==0.26.1
 # trace python process
 pystuck==0.8.5
 objgraph==3.1.0
-xdot==0.8
+xdot==0.9
 
 # googles smarter autoformatter to conform to autopep8
 yapf==0.17.0
