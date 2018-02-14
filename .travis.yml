@@ -11,7 +11,7 @@ matrix:
       DOCKER_COMPOSE_VERSION: 1.17.1
       TEST_TARGET: default
       DOCKER_DATA: "$HOME/docker_data"
-      DOCKER_VERSION: 17.09.1~ce-0~ubuntu-trusty
+      DOCKER_VERSION: 17.09.1~ce-0~ubuntu
     sudo: required
     dist: trusty
     language: python
