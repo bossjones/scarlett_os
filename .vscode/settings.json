@@ -6,7 +6,7 @@
     "workbench.iconTheme": "material-icon-theme",
     "window.zoomLevel": 0,
     // Specifies the color theme used in the workbench.
-    "workbench.colorTheme": "Default Dark+",
+    // "workbench.colorTheme": "Default Dark+",
     "files.insertFinalNewline": true,
 
     // https://github.com/rojiani/dev-setup/blob/5c0aa536ff72cedd19edf6e357b9919543f06ae8/VisualStudioCode/home/settings.json
@@ -81,7 +81,18 @@
     "terminal.integrated.shellArgs.linux": ["-l"],
 
     // A glob pattern that defines the files to search for. Only include files you need, DO NOT USE `**/*.*` for both permormance and avoiding binary files reason
-    "todohighlight.include": "{**/*.js,**/*.jsx,**/*.ts,**/*.tsx,**/*.html,**/*.php,**/*.css,**/*.scss,**/*.mk,**/Makefile}",
+    "todohighlight.include": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.html",
+        "**/*.php",
+        "**/*.css",
+        "**/*.scss",
+        "**/*.mk",
+        "**/Makefile"
+    ],
     "files.associations": {
         "Vagrantfile": "ruby",
         "bashrc": "shellscript",
@@ -117,8 +128,10 @@
     // The full path of sphinx-build utility. This is an absolute path.
     "restructuredtext.sphinxBuildPath": "/usr/local/bin/sphinx-build",
     "vsicons.dontShowNewVersionMessage": true,
-    "materialTheme.cache.workbench.settings": {
-        "themeColours": "Palenight"
-    },
-    "material-icon-theme.showUpdateMessage": false
+    "workbench.colorTheme": "Atom One Dark",
+    // "materialTheme.cache.workbench.settings": {
+    //     "themeColours": "Palenight"
+    // },
+    "material-icon-theme.showUpdateMessage": false,
+    "restructuredtext.workspaceRoot": "/Users/malcolm/dev/bossjones/scarlett_os"
 }
