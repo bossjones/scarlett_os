@@ -688,3 +688,11 @@ docker_run_wheelhouse:
 
 # ENV TRAVIS_CI_RUN_PYTEST ${TRAVIS_CI_RUN_PYTEST:-'false'}
 # ENV TRAVIS_CI_SKIP_PYTEST ${TRAVIS_CI_SKIP_PYTEST:-'false'}
+
+.PHONY: update_requirements
+update_requirements:
+	pur -r requirements.txt
+	pur -r requirements_dev.txt
+	pur -r requirements_test_all.txt
+	pur -r requirements_test.txt
+	pur -r requirements_test_experimental.txt

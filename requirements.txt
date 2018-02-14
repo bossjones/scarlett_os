@@ -1,19 +1,19 @@
-pydbus>=0.5.0
-colorlog>=2.7
-Click>=6.0
-click-plugins>=1.0
-psutil>=4.3.0
-Fabric3==1.13.1.post1
-PyYAML>=3
-jinja2>=2.8
-typing>=3,<4
+pydbus>=0.6.0
+colorlog>=3.1.2
+Click>=6.7
+click-plugins>=1.0.3
+psutil>=5.4.3
+Fabric3==1.14.post1
+PyYAML>=3.12
+jinja2>=2.10
+typing>=3.6.4,<4
 voluptuous==0.10.5
-xdg>=1.0.4
-six==1.10.0
-yapf==0.17.0
+xdg>=3.0.0
+six==1.11.0
+yapf==0.20.2
 
 # Yaml 1.2 spec
-ruamel.yaml==0.15.33
+ruamel.yaml==0.15.35
 
 
 # There also is a commandline utility yaml available after installing:
