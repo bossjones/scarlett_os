@@ -8,11 +8,10 @@ matrix:
       TOXENV: py35
       PYTHON: "python3"
       PACKAGES: "python3-gi python3-gi-cairo"
-      DOCKER_COMPOSE_VERSION: 1.8.0
+      DOCKER_COMPOSE_VERSION: 1.17.1
       TEST_TARGET: default
       DOCKER_DATA: "$HOME/docker_data"
-      DOCKER_VERSION: 17.03.1~ce-0~ubuntu-trusty
-      DOCKER_COMPOSE_VERSION: 1.8.0
+      DOCKER_VERSION: 17.09.1~ce-0~ubuntu-trusty
     sudo: required
     dist: trusty
     language: python

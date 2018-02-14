@@ -71,7 +71,6 @@ RUN sudo mv -f /dotfiles/.pythonrc /home/pi/.pythonrc && \
     sudo mkdir -p /home/pi/.ptpython && \
     sudo mv -f /dotfiles/.ptpython_config.py /home/pi/.ptpython/config.py && \
     sudo chown pi:pi /home/pi/.ptpython && \
-
     sudo cp -a /scripts/with-dynenv /usr/bin/with-dynenv \
     && sudo chmod +x /usr/bin/with-dynenv \
     && sudo chown pi:pi /usr/bin/with-dynenv
