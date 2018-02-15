@@ -1,9 +1,9 @@
-pytest-xdist==1.20.0
+pytest-xdist==1.22.0
 unittest2pytest==0.3
 pympler==0.5
-pydocstyle==2.0.0
+pydocstyle==2.1.1
 pytest-ordering==0.5
-pytest-interactive==0.1.1
+pytest-interactive==0.1.4
 
 ptpdb==0.17
 ptpython==0.41

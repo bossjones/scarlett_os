@@ -559,6 +559,26 @@ def get_dbus_proxy_obj_helper(request, get_environment, get_bus):
     return get_bus.get("org.scarlett", object_path='/org/scarlett/Listener')
 
 
+# pylint: disable=C0103
+def dict_compare(d1, d2):
+
+    """
+    Compare two dictonaries and differences, if any are present.
+    Returns multiple variables in tuple containing (dict, dict, dict, dict).
+    This function handles mutable values in the dict.
+
+    :rtype: (dict, dict, dict, dict)
+    """
+    # source: https://stackoverflow.com/a/18860653/814221
+    d1_keys = set(d1.keys())
+    d2_keys = set(d2.keys())
+    intersect_keys = d1_keys.intersection(d2_keys)
+    added = d1_keys - d2_keys
+    removed = d2_keys - d1_keys
+    modified = {o : (d1[o], d2[o]) for o in intersect_keys if d1[o] != d2[o]}
+    same = set(o for o in intersect_keys if d1[o] == d2[o])
+    return added, removed, modified, same
+
 # TODO: Think about implementing this, it allows you to create one DBusRunner per test session
 # source: https://github.com/peuter/gosa/blob/master/client/conftest.py
 # @pytest.fixture(scope="session", autouse=True)

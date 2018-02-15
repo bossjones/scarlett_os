@@ -367,7 +367,7 @@ def get_version_file_path():
     # source: home-assistant
     """Look in given directory for scarlett version
 
-    EXAMPLE: $HOME/.config/.SCARLETT_VERSION
+    EXAMPLE: $HOME/.config/scarlett/.SCARLETT_VERSION
 
     Async friendly.
     """
@@ -377,62 +377,62 @@ def get_version_file_path():
     return version_file
 
 
-def _get_path(yaml_config, path):
-    # source: dcos-cli
-    """
-    :param config: Dict with the configuration values
-    :type config: dict
-    :param path: Path to the value. E.g. 'path.to.value'
-    :type path: str
-    :returns: Value stored at the given path
-    :rtype: double, int, str, list or dict
-    """
-
-    for section in path.split('.'):
-        yaml_config = yaml_config[section]
-
-    return yaml_config
-
-
-def _iterator(parent, dictionary):
-    # source: dcos-cli
-    """
-    :param parent: Path to the value parameter
-    :type parent: str
-    :param dictionary: Value of the key
-    :type dictionary: collection.Mapping
-    :returns: An iterator of tuples for each property and value
-    :rtype: iterator of (str, any) where any can be str, int, double, list
-    """
-
-    for key, value in dictionary.items():
-
-        new_key = key
-        if parent is not None:
-            new_key = "{}.{}".format(parent, key)
-
-        if not isinstance(value, dict):
-            yield (new_key, value)
-        else:
-            for x in _iterator(new_key, value):
-                yield x
+# DISABLED # def _get_path(yaml_config, path):
+# DISABLED #     # source: dcos-cli
+# DISABLED #     """
+# DISABLED #     :param config: Dict with the configuration values
+# DISABLED #     :type config: dict
+# DISABLED #     :param path: Path to the value. E.g. 'path.to.value'
+# DISABLED #     :type path: str
+# DISABLED #     :returns: Value stored at the given path
+# DISABLED #     :rtype: double, int, str, list or dict
+# DISABLED #     """
+# DISABLED #
+# DISABLED #     for section in path.split('.'):
+# DISABLED #         yaml_config = yaml_config[section]
+# DISABLED #
+# DISABLED #     return yaml_config
 
 
-def split_key(name):
-    # source: dcos-cli
-    """
-    :param name: the full property path - e.g. marathon.url
-    :type name: str
-    :returns: the section and property name
-    :rtype: (str, str)
-    """
+# DISABLED # def _iterator(parent, dictionary):
+# DISABLED #     # source: dcos-cli
+# DISABLED #     """
+# DISABLED #     :param parent: Path to the value parameter
+# DISABLED #     :type parent: str
+# DISABLED #     :param dictionary: Value of the key
+# DISABLED #     :type dictionary: collection.Mapping
+# DISABLED #     :returns: An iterator of tuples for each property and value
+# DISABLED #     :rtype: iterator of (str, any) where any can be str, int, double, list
+# DISABLED #     """
+# DISABLED
+# DISABLED #     for key, value in dictionary.items():
+# DISABLED
+# DISABLED #         new_key = key
+# DISABLED #         if parent is not None:
+# DISABLED #             new_key = "{}.{}".format(parent, key)
+# DISABLED
+# DISABLED #         if not isinstance(value, dict):
+# DISABLED #             yield (new_key, value)
+# DISABLED #         else:
+# DISABLED #             for x in _iterator(new_key, value):
+# DISABLED #                 yield x
 
-    terms = name.split('.', 1)
-    if len(terms) != 2:
-        raise Exception('Property name must have both a section and '
-                            'key: <section>.<key> - E.g. marathon.url')
 
-    return (terms[0], terms[1])
+# DISABLED # def split_key(name):
+# DISABLED #     # source: dcos-cli
+# DISABLED #     """
+# DISABLED #     :param name: the full property path - e.g. marathon.url
+# DISABLED #     :type name: str
+# DISABLED #     :returns: the section and property name
+# DISABLED #     :rtype: (str, str)
+# DISABLED #     """
+# DISABLED #
+# DISABLED #     terms = name.split('.', 1)
+# DISABLED #     if len(terms) != 2:
+# DISABLED #         raise Exception('Property name must have both a section and '
+# DISABLED #                             'key: <section>.<key> - E.g. marathon.url')
+# DISABLED #
+# DISABLED #     return (terms[0], terms[1])
 
 
 def flatten(d, parent_key='', sep='/'):

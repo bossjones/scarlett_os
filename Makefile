@@ -215,7 +215,7 @@ test-docker:
 	sudo chown -R vagrant:vagrant *
 	grep -q -F 'privileged: true' docker-compose.yml || sed -i "/build: ./a \ \ privileged: true" docker-compose.yml
 	docker-compose -f docker-compose.yml -f ci/build.yml build
-	docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
+	docker run --cap-add=ALL --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
 	sudo chown -R vagrant:vagrant *
 
 .PHONY: test-perf
@@ -619,6 +619,7 @@ docker_run_test:
 	set -x ;\
 	docker run -i -t --rm \
 		--privileged \
+		--cap-add=ALL \
 		--name scarlett-test \
 	    -e CONTAINER_VERSION=$(CONTAINER_VERSION) \
 	    -e GIT_BRANCH=$(GIT_BRANCH) \
@@ -687,3 +688,11 @@ docker_run_wheelhouse:
 
 # ENV TRAVIS_CI_RUN_PYTEST ${TRAVIS_CI_RUN_PYTEST:-'false'}
 # ENV TRAVIS_CI_SKIP_PYTEST ${TRAVIS_CI_SKIP_PYTEST:-'false'}
+
+.PHONY: update_requirements
+update_requirements:
+	pur -r requirements.txt
+	pur -r requirements_dev.txt
+	pur -r requirements_test_all.txt
+	pur -r requirements_test.txt
+	pur -r requirements_test_experimental.txt

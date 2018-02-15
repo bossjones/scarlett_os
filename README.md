@@ -48,3 +48,34 @@ Interactive bash: `docker exec -it scarlettos_master_1 bash -l`
 ± |feature-dev-container {5} U:1 ✗| → docker exec -it scarlettos_master_1 bash -l
 pi  ⎇  feature-dev-container {5} U:1  ~/dev/bossjones-github/scarlett_os
 ```
+
+
+## Debugging in VSCode
+
+**Source: https://github.com/mikemcgowan/django-cms-plus/blob/57e3fa8ec35d73cdd937baac25f5201ec78bbdb9/README.md**
+
+VSCode debug launch configuration:
+
+```json
+{
+    "name": "Attach (Remote Debug)",
+    "type": "python",
+    "request": "attach",
+    "localRoot": "${workspaceRoot}",
+    "remoteRoot": "",
+    "port": 2222,
+    "secret": "my_secret",
+    "host": "localhost"
+}
+```
+
+Ensure the following exists in `web/manage.py` immediately before `execute_from_command_line()`:
+
+```python
+# https://stackoverflow.com/questions/41201438/debug-python-application-running-in-docker
+try:
+    import ptvsd
+    ptvsd.enable_attach(secret='my_secret', address=('0.0.0.0', 2222))
+except (OSError, ImportError):
+    pass
+```
