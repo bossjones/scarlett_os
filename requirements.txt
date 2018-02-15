@@ -7,7 +7,7 @@ Fabric3==1.13.1.post1
 PyYAML>=3
 jinja2>=2.8
 typing>=3,<4
-voluptuous==0.10.5
+voluptuous==0.11.1
 xdg>=1.0.4
 six==1.10.0
 yapf==0.17.0
