@@ -487,7 +487,7 @@ def _dump_in_memory_config_to_stdout(data, stream=None):
 
 def _insert_key_to_commented_map(data, position, key_name, key_value, comment=None):
     # type: (Any, Any, Any, Optional[Any]) -> ruamel.yaml.comments.CommentedMap
-    """[summary]
+    """[Insert a key into a CommentedMap at a particular position, while optionally adding a comment]
 
     Arguments:
         data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
@@ -541,6 +541,81 @@ def _insert_key_to_commented_map(data, position, key_name, key_value, comment=No
 # assert data.mlget(['a', 1, 'd', 'f'], list_ok=True) == 196
 ##########################################################################
 
+def get_config_key_position(data, key_name):
+    """Return position value of a key in a ruamel CommentedMap
+
+    Arguments:
+        data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
+        key_name {[str]} -- [string value for key value, eg 'Full Name']
+
+    Returns:
+        [ANY, tuple] -- [Return a tuple of where node object is located in yaml document or return None]
+    """
+
+    # EXAMPLE: Output
+    # pdb> in_memory_config.lc.key('pocketsphinx')
+    # (9, 0)
+    # pdb> in_memory_config.lc.key('pocketsphinxa')
+    # *** KeyError: 'pocketsphinxa'
+    # pdb>
+    try:
+        pos = data.lc.key(key_name)
+    except KeyError:
+        logger.error('Tried to find {} but failed! Setting position return value to None'.format(key_name))
+        pos = None
+
+    return pos
+
+def get_config_value_position(data, key_name):
+    """Return position value of a key in a ruamel CommentedMap
+
+    Arguments:
+        data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
+        key_name {[str]} -- [string value for key value, eg 'Full Name']
+
+    Returns:
+        [ANY, tuple] -- [Return a tuple of where node object is located in yaml document or return None]
+    """
+
+    # EXAMPLE: Output
+    # pdb> in_memory_config.lc.value('pocketsphinx')
+    # (10, 4)
+    # pdb> in_memory_config.lc.value('pocketsphinxa')
+    # *** KeyError: 'pocketsphinxa'
+    # pdb>
+    try:
+        pos = data.lc.value(key_name)
+    except KeyError:
+        logger.error('Tried to find {} but failed! Setting position return value to None'.format(key_name))
+        pos = None
+
+    return pos
+
+# FIXME: YANGNI
+# def get_config_item_position(data, item_pos):
+#     """Return position value of a key in a ruamel CommentedMap
+
+#     Arguments:
+#         data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
+#         item_pos {[int]} -- [int value position within scalar]
+
+#     Returns:
+#         [ANY, tuple] -- [Return a tuple of where node object is located in yaml document or return None]
+#     """
+
+#     # EXAMPLE: Output
+#     # pdb> in_memory_config.lc.item(1)
+#     # FIXME: GET A REAL RETURN VALUE
+#     # pdb> in_memory_config.lc.item(1)
+#     # *** KeyError: 1
+#     # pdb>
+#     try:
+#         pos = data.lc.item(item_pos)
+#     except KeyError:
+#         logger.error('Tried to find {} but failed! Setting position return item to None'.format(item_pos))
+#         pos = None
+
+#     return pos
 
 # check if config exists
 def ensure_config_dir_path(config_dir: str) -> None:
