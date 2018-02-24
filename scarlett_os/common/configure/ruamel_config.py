@@ -542,6 +542,100 @@ def _insert_key_to_commented_map(data, position, key_name, key_value, comment=No
 ##########################################################################
 
 
+# check if config exists
+def ensure_config_dir_path(config_dir: str) -> None:
+    # NOTE: borrowed from home-assistant
+    """Validate the configuration directory."""
+
+    # Test if configuration directory exists
+    if not os.path.isdir(config_dir):
+        try:
+            print('Ran {}| os.mkdir(config_dir)={}'.format(sys._getframe().f_code.co_name, config_dir))
+            mkdir_if_does_not_exist(config_dir)
+        except OSError:
+            print(('Fatal Error: Unable to create default configuration '
+                    'directory {} ').format(config_dir))
+            # FIXME: Do we want this to exit?
+            sys.exit(1)
+
+
+# source: chamberlain
+def prep_default_config(homedir=None):
+    """[setup config.yaml defaults]
+
+    Keyword Arguments:
+        homedir {[str]} -- [path to sub directory containing config.yaml file, eg $HOME/.config/scarlett/config.yaml] (default: {None})
+
+
+    Returns:
+        [str] -- [home, eg $HOME/.config/scarlett]
+        [str] -- [default_cfg, eg $HOME/.config/scarlett/config.yaml]
+    """
+
+    # Step 1. Get sub directory path for config
+    if homedir is None:
+        home = get_config_sub_dir_path()
+    else:
+        # override for things like tests
+        home = homedir
+
+    # Step 2. ensure sub directory actually exists
+    ensure_config_dir_path(home)
+
+    # if not os.path.exists(home):
+    #     os.makedirs(home)
+    # default_cfg = os.path.join(home, "config.json")
+
+    # FIXME: ? Do we want to make this a function that returns the default_cfg value?
+    # Step 3. Set location of config.yaml file
+    default_cfg = os.path.join(home, 'config.yaml')
+
+    # Step 4. check if config file exists, if it doesnt, create a default config
+    if not os.path.exists(default_cfg):
+        # FIXME: Make this default config more dynamically configured, or start using ruamel primitives to override defaults if they aren't set
+        with open(default_cfg, 'wt') as f:
+            f.write('''
+# Omitted values in this section will be auto detected using freegeoip.io
+
+# Location required to calculate the time the sun rises and sets.
+# Coordinates are also used for location for weather related automations.
+# Google Maps can be used to determine more precise GPS coordinates.
+latitude: 40.7056308
+longitude: -73.9780034
+
+pocketsphinx:
+    hmm: /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+    lm: /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
+    dict: /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
+    silprob: 0.1
+    wip: 1e-4
+    bestpath: 0
+
+# Impacts weather/sunrise data
+elevation: 665
+
+# 'metric' for Metric System, 'imperial' for imperial system
+unit_system: metric
+
+# Pick yours from here:
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+time_zone: America/New_York
+
+# Name of the location where ScarlettOS Assistant is running
+name: ScarlettOS
+
+owner: "Hair Ron Jones"
+
+keywords_list:
+- 'scarlett'
+- 'SCARLETT'
+
+features:
+- time
+''')
+
+    return home, default_cfg
+
 if __name__ == "__main__":
     import signal
     if os.environ.get('SCARLETT_DEBUG_MODE'):
@@ -570,20 +664,16 @@ if __name__ == "__main__":
     from scarlett_os.internal.debugger import dump
     from scarlett_os.internal.debugger import pprint_color
 
-    # temp_config = ruamel_config.Config.create_default_config_and_load()
-
     fake_config_file_path_base, fake_config_file_path = _fake_config()
 
     in_memory_config = _load_fake_config(fake_config_file_path)
 
-    # import pdb
-    # pdb.set_trace()  # pylint: disable=no-member
+    import pdb
+    pdb.set_trace()  # pylint: disable=no-member
 
     # TODO: Figure out best way to use ruamel to load this in, and use it correctly
 
     _dump_in_memory_config_to_stdout_and_transform(in_memory_config)
-
-    # logger.debug(temp_config.dump_config())
 
     # cleanup temporary folder when finished
     shutil.rmtree(fake_config_file_path_base)
