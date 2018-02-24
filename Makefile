@@ -6,12 +6,20 @@ container_name := scarlett_os
 # label-schema spec: http://label-schema.org/rc1/
 
 #CONTAINER_VERSION  = $(shell \cat ./VERSION | awk '{print $1}')
-GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
-GIT_SHA     = $(shell git rev-parse HEAD)
-BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-FIXUID  = $(shell id -u)
-FIXGID  = $(shell id -g)
-DOCKER_IP = $(shell echo $${DOCKER_HOST:-tcp://127.0.0.1:2376} | cut -d/ -f3 | cut -d: -f1)
+GIT_BRANCH              := $(shell git rev-parse --abbrev-ref HEAD)
+GIT_SHA                 := $(shell git rev-parse HEAD)
+BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+FIXUID                  := $(shell id -u)
+FIXGID                  := $(shell id -g)
+DOCKER_IP               := $(shell echo $${DOCKER_HOST:-tcp://127.0.0.1:2376} | cut -d/ -f3 | cut -d: -f1)
+CURRENT_DIR             := $(shell pwd)
+MKDIR                   := mkdir
+APP_WORK_DIR            := /app
+ORG_NAME                := bossjones
+PROJECT_NAME            := scarlett_os
+REPO_NAME               := $(ORG_NAME)/$(PROJECT_NAME)
+IMAGE_TAG               := $(REPO_NAME):$(GIT_SHA)
+CONTAINER_NAME          := $(shell echo -n $(IMAGE_TAG) | openssl dgst -sha1 | sed 's/^.* //'  )
 
 #################################################################################
 # DOCKER_RUN_ARGS   = \
@@ -198,6 +206,7 @@ jhbuild-run-test:
 	jhbuild run -- pip install -e .[test]
 	jhbuild run -- coverage run -- setup.py test
 	jhbuild run -- coverage report -m
+	jhbuild run -- coverage xml -o cov.xml
 
 test: ## run tests quickly with the default Python
 	python setup.py test
@@ -406,6 +415,9 @@ run-tasker:
 
 run-listener:
 	python -m scarlett_os.listener
+
+run-ruamel-config:
+	python -m scarlett_os.common.configure.ruamel_config
 
 # source: https://github.com/docker/machine/blob/master/docs/drivers/generic.md#interaction-with-ssh-agents
 # source: http://blog.scottlowe.org/2015/08/04/using-vagrant-docker-machine-together/
@@ -696,3 +708,16 @@ update_requirements:
 	pur -r requirements_test_all.txt
 	pur -r requirements_test.txt
 	pur -r requirements_test_experimental.txt
+
+# Fix all py files with autopep8
+.PHONY: apply-autopep8
+apply-autopep8:
+	find . -name "*.py" -exec autopep8 --max-line-length 200 --in-place --aggressive --aggressive {} \;
+
+.PHONY: apply-isort
+apply-isort:
+	isort --recursive --diff --verbose scarlett_os/
+
+.PHONY: setup-pre-commit
+setup-pre-commit:
+	pre-commit install -f --install-hooks
