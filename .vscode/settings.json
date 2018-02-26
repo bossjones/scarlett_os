@@ -104,7 +104,9 @@
     "espeak_tmp.wav": true,
     ".vscode/tags": true,
     "src/": true,
-    "wheelhouse": true
+    "wheelhouse": true,
+    "cov_annotate": true,
+    "htmlcov": true
   },
   "files.trimTrailingWhitespace": true,
   "search.exclude": {
@@ -114,12 +116,8 @@
     "**/.vendor": true,
     "**/build": true
   },
-  // https://github.com/DonJayamanne/pythonVSCode/issues/992
   "python.pythonPath": "${env.WORKON_HOME}/scarlett-os-venv2/bin/python3",
-  // "python.pythonPath": "/Users/malcolm/.virtualenvs/scarlett-os-venv2/bin/python3",
   "python.formatting.provider": "autopep8",
-  // Arguments passed in. Each argument is a separate item in the array.
-  // https://github.com/Microsoft/vscode-python/issues/506
   "python.linting.pylintArgs": [
     "--rcfile",
     "${workspaceFolder}/pylintrc"
@@ -130,7 +128,6 @@
   ],
   "python.venvPath": "~/.virtualenvs",
   "python.sortImports.path": "${env.WORKON_HOME}/scarlett-os-venv2/bin/isort",
-  // "python.sortImports.path": "~/.virtualenvs/scarlett-os-venv2/bin/isort",
   "python.autoComplete.extraPaths": [
     ""
   ],
@@ -185,19 +182,12 @@
   "vsicons.dontShowNewVersionMessage": true,
   "workbench.colorTheme": "Atom One Dark",
   "material-icon-theme.showUpdateMessage": false,
-  // "restructuredtext.workspaceRoot": "/Users/malcolm/dev/bossjones/scarlett_os"
-  // The directory where CMake build files will go
   "cmake.buildDirectory": "${workspaceFolder}/build",
-  // The directory of the root CMakeLists.txt file
   "cmake.sourceDirectory": "${workspaceFolder}",
-  // HTML page output folder relative to workspace root. This is an absolute path, and you can use ${workspaceFolder} to represent workspace root folder.
   "restructuredtext.builtDocumentationPath": "${workspaceFolder}/_build/html",
-  // The folder that contains conf.py relative to workspace root. This is an absolute path, and you can use ${workspaceFolder} to represent workspace root folder.
   "restructuredtext.confPath": "${workspaceFolder}",
-  // The full path of sphinx-build utility. This is an absolute path, and you can use ${workspaceFolder} to represent workspace root folder.
   "restructuredtext.linter.executablePath": "/usr/local/bin/restructuredtext-lint",
   "restructuredtext.sphinxBuildPath": "/usr/local/bin/sphinx-build",
-  // The workspace root. This is a setting for IntelliSense.
   "restructuredtext.workspaceRoot": "${workspaceFolder}",
   "python.linting.enabled": true
 }
