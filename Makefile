@@ -187,7 +187,6 @@ clean-build-test-artifacts:
 	find . -name '*~' -print -exec rm -fv {} +
 	find . -name '__pycache__' -exec rm -frv {} +
 
-
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
@@ -228,8 +227,21 @@ jhbuild-run-test:
 	jhbuild run python setup.py install
 	jhbuild run -- pip install -e .[test]
 	jhbuild run -- coverage run -- setup.py test
-	jhbuild run -- coverage report -m
+	jhbuild run -- coverage report --show-missing
 	jhbuild run -- coverage xml -o cov.xml
+
+
+# jhbuild run -- py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report term-missing --cov-report xml:cov.xml --cov-report html:htmlcov --cov-report annotate:cov_annotate --benchmark-skip
+# NOTE: Run this test suite on vagrant boxes
+.PHONY: jhbuild-run-clean-test-all
+jhbuild-run-clean-test-all: export TRAVIS_CI=1
+jhbuild-run-clean-test-all:
+	$(MAKE) clean-build-test-artifacts
+	# jhbuild run python setup.py install
+	# jhbuild run -- pip install -e .[test]
+	# jhbuild run -- coverage run -- setup.py test
+	jhbuild run -- $(pytest) $(test_args_with_xml)
+	# jhbuild run -- coverage report --show-missing
 
 # NOTE: Nuke all artifacts before even testing
 .PHONY: test-travis-clean-ruamelconfigonly
@@ -240,7 +252,7 @@ test-travis-clean-ruamelconfigonly:
 	jhbuild run -- pip install -e .[test]
 	jhbuild run -- coverage run -- setup.py test
 	jhbuild run -- $(pytest) $(test_args_with_xml) -m ruamelconfigonly
-	jhbuild run -- coverage report -m
+	jhbuild run -- coverage report --show-missing
 	jhbuild run -- coverage xml -o cov.xml
 
 # NOTE: Run this test suite on vagrant boxes
@@ -277,53 +289,53 @@ jenkins: bootstrap
 test-travis: export TRAVIS_CI=1
 test-travis:
 	$(pytest) $(test_args_no_xml) --benchmark-skip
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-scarlettonly
 test-travis-scarlettonly: export TRAVIS_CI=1
 test-travis-scarlettonly:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonly
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-scarlettonlyintgr
 test-travis-scarlettonlyintgr: export TRAVIS_CI=1
 test-travis-scarlettonlyintgr:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-scarlettonlyintgr-no-timeout
 test-travis-scarlettonlyintgr-no-timeout: export TRAVIS_CI=1
 test-travis-scarlettonlyintgr-no-timeout:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr -p no:timeout
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-scarlettonlyunittest
 test-travis-scarlettonlyunittest: export TRAVIS_CI=1
 test-travis-scarlettonlyunittest:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyunittest
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-unittest
 test-travis-unittest: export TRAVIS_CI=1
 test-travis-unittest:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m unittest
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-debug
 test-travis-debug:
 	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb --showlocals
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-leaks
 test-travis-leaks: export TRAVIS_CI=1
 test-travis-leaks:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -R :
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: cover
 cover:
 	$(pytest) $(cover_args) --benchmark-skip
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
@@ -332,7 +344,7 @@ cover-travisci: export TRAVIS_CI=1
 cover-travisci: display-env
 	# $(pytest) $(cover_args) --benchmark-skip -p no:ipdb
 	pytest -p no:ipdb -p no:pytestipdb -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --showlocals --trace-config
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
@@ -340,14 +352,14 @@ cover-travisci: display-env
 cover-debug:
 	# --showlocals # show local variables in tracebacks
 	$(pytest) $(cover_args) --benchmark-skip --pdb --showlocals
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 .PHONY: cover-debug-no-timeout
 cover-debug-no-timeout:
 	pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
@@ -362,7 +374,7 @@ display-env:
 cover-debug-no-timeout-travisci: export TRAVIS_CI=1
 cover-debug-no-timeout-travisci: display-env
 	pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
@@ -376,7 +388,7 @@ coverage: ## check code coverage quickly with the default Python
 		# defined inside of setup.cfg:
 		# --cov=scarlett_os --cov-report term-missing tests/
 		# coverage run --source=scarlett_os/ --include=scarlett_os setup.py test
-		coverage report -m
+		coverage report --show-missing
 		coverage html
 		$(BROWSER) htmlcov/index.html
 
@@ -384,7 +396,7 @@ coverage-no-html: ## check code coverage quickly with the default Python
 
 	coverage run --source scarlett_os setup.py test
 
-	coverage report -m
+	coverage report --show-missing
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/scarlett_os.rst
@@ -412,6 +424,13 @@ dc-ci-build:
 docker-run-bash:
 	docker run -i -t --rm scarlettos_scarlett_master bash
 
+.PHONY: scp-local-coverage
+scp-local-coverage:
+	rm .coverage; \
+	rm -rfv .coverage.*; \
+	./scripts/contrib/scp_local.sh .coverage; \
+
+.PHONY: scp-local-cov-xml
 scp-local-cov-xml:
 	rm cov.xml; \
 	./scripts/contrib/scp_local.sh cov.xml; \
@@ -431,9 +450,31 @@ scp-local-htmlcov:
 .PHONY: scp-local-coverage-reports
 scp-local-coverage-reports:
 	$(MAKE) clean-coverge-files
+	$(MAKE) scp-local-coverage
 	$(MAKE) scp-local-cov-xml
 	$(MAKE) scp-local-cov_annotate
 	$(MAKE) scp-local-htmlcov
+
+.PHONY: open-coverage-report-html
+open-coverage-report-html:
+	$(BROWSER) htmlcov/index.html
+
+.PHONY: open-coverage-cov_annotate
+open-coverage-cov_annotate:
+	vim cov_annotate
+
+# rm -f .coverage .coverage.* coverage.xml .metacov*
+# --cov-append
+coverage-erase:
+	coverage erase
+# run – Run a Python program and collect execution data.
+# report – Report coverage results.
+# html – Produce annotated HTML listings with coverage results.
+# xml – Produce an XML report with coverage results.
+# annotate – Annotate source files with coverage results.
+# erase – Erase previously collected coverage data.
+# combine – Combine together a number of data files.
+# debug – Get diagnostic information.
 
 # Coverage annotated source written to dir cov_annotate
 # Coverage HTML written to dir htmlcov

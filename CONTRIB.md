@@ -96,3 +96,36 @@ Refer to the comments in the Settings editor (`kb(workbench.action.openGlobalSet
 **Q: Why isn't ${workspaceRoot} documented?**
 
 **A:** The variable `${workspaceRoot}` was deprecated in favor of `${workspaceFolder}` to better align with [Multi-root Workspace](/docs/editor/multi-root-workspaces.md) support.
+
+
+# pytest-cov annotate
+
+```
+Generate annotated source files showing line coverage.
+This reporter creates annotated copies of the measured source files. Each
+.py file is copied as a .py,cover file, with a left-hand margin annotating
+each line::
+    > def h(x):
+    -     if 0:   #pragma: no cover
+    -         pass
+    >     if x == 1:
+    !         a = 1
+    >     else:
+    >         a = 2
+    > h(2)
+Executed lines use '>', lines not executed use '!', lines excluded from
+consideration use '-'.
+```
+
+
+# plugin coverage in pytest-cov:
+
+```
+Getting coverage on pytest plugins is a very particular situation. Because how pytest implements plugins (using
+setuptools entrypoints) it doesn’t allow controling the order in which the plugins load. See pytest/issues/935 for
+technical details.
+The current way of dealing with this problem is using the append feature and manually starting pytest-cov‘s
+engine, eg:
+COV_CORE_SOURCE=src COV_CORE_CONFIG=.coveragerc COV_CORE_DATAFILE=.coverage.eager
+py.test –cov=src –cov-append
+```

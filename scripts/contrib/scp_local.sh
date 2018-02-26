@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x
+# set -x
 
 if [[ "${SCARLETT_SCP_RECURSIVE}" == "1" ]]; then
     _SCP_RECURSIVE="-r"
