@@ -14,6 +14,7 @@ reports=no
 # too-many-* - are not enforced for the sake of readability
 # too-few-* - same as too-many-*
 # abstract-method - with intro of async there are always methods missing
+# logging-format-interpolation - (W1202): *Use % formatting in logging functions and pass the % parameters as arguments*
 
 disable=
   locally-disabled,
@@ -34,7 +35,8 @@ disable=
   too-few-public-methods,
   abstract-method,
   locally-disabled,
-  abstract-method
+  abstract-method,
+  logging-format-interpolation
 
 [EXCEPTIONS]
 overgeneral-exceptions=Exception,ScarlettError

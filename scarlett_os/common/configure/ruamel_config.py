@@ -26,6 +26,7 @@ import logging
 import os
 import shutil
 import sys
+import re
 import tempfile
 import shutil
 from collections import OrderedDict
@@ -98,17 +99,13 @@ yaml.block_seq_indent = 2
 yaml.version = (1, 2)  # set yaml version to 1.2
 # yaml.allow_unicode = False
 
+RE_ASCII = re.compile(r"\033\[[^m]*m")  # source: home-assistant
+
 # FIXME: YANGNI
 if ruamel.yaml.version_info < (0, 15):
     logger.error("ruamel version less than 0.15.x!")
 else:
     logger.error("ruamel version greater than 0.15.x!")
-
-# source: ruamel.yaml test_collections.py
-# class TestOrderedDict:
-#     def test_ordereddict(self):
-#         assert ruamel.yaml.dump(OrderedDict()) == '!!omap []\n'
-
 
 # NOTE: We are using https://github.com/srstevenson/xdg
 # NOTE: This enforces the [XDG Base Directory Specification]
@@ -144,234 +141,32 @@ DEFAULT_CORE_CONFIG = (
 # source: https://stackoverflow.com/questions/251464/how-to-get-a-function-name-as-a-string-in-python
 # sys._getframe().f_code.co_name
 
+# FIXME: Old defaults 2/25/2018
+# DEFAULT_CONFIG = """
+# # Omitted values in this section will be auto detected using freegeoip.io
+
+# # Name for Scarlett to call user
+# owners_name: 'Hair Ron Jones'
+
+# pocketsphinx:
+#     hmm: /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+#     lm: /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
+#     dict: /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
+#     silprob: 0.1
+#     wip: 1e-4
+#     bestpath: 0
+
+# keywords_list:
+# - 'scarlett'
+# - 'SCARLETT'
+
+# features:
+# - time
+# - help
+# - party
+# """
+
 DEFAULT_CONFIG = """
-# Omitted values in this section will be auto detected using freegeoip.io
-
-# Name for Scarlett to call user
-owners_name: 'Hair Ron Jones'
-
-pocketsphinx:
-    hmm: /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
-    lm: /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
-    dict: /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
-    silprob: 0.1
-    wip: 1e-4
-    bestpath: 0
-
-keywords_list:
-- 'scarlett'
-- 'SCARLETT'
-
-features:
-- time
-- help
-- party
-"""
-
-
-def lower(a_string):
-    """
-    Make string lowercase.
-
-    :rtype: str
-    """
-    try:
-        return a_string.lower()
-    except AttributeError:
-        return a_string
-
-
-def mapping_string_access(self, s, delimiter=None, key_delim=None):
-    # source:
-    # https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
-    def p(v):
-        try:
-            v = int(v)
-        except:
-            pass
-        return v
-       # possible extend for primitives like float, datetime, booleans, etc.
-
-    if delimiter is None:
-        delimiter = '.'
-    if key_delim is None:
-        key_delim = ','
-    try:
-        key, rest = s.split(delimiter, 1)
-    except ValueError:
-        key, rest = s, None
-    if key_delim in key:
-        key = tuple((p(key) for key in key.split(key_delim)))
-    else:
-        key = p(key)
-    if rest is None:
-        return self[key]
-    return self[key].string_access(rest, delimiter, key_delim)
-
-
-# monkeypatch CommentedMap.string_access function
-ruamel.yaml.comments.CommentedMap.string_access = mapping_string_access
-
-
-def sequence_string_access(self, s, delimiter=None, key_delim=None):
-    # source:
-    # https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
-    if delimiter is None:
-        delimiter = '.'
-    try:
-        key, rest = s.split(delimiter, 1)
-    except ValueError:
-        key, rest = s, None
-    key = int(key)
-    if rest is None:
-        return self[key]
-    return self[key].string_access(rest, delimiter, key_delim)
-
-
-# monkeypatch CommentedSeq.string_access function
-ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
-
-
-def dump_yaml(layered_config):
-    # source:
-    # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
-    return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
-                                       default_flow_style=False)
-
-
-def yaml_unicode_representer(self, data):
-    # source:
-    # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
-    return self.represent_str(data.encode('utf-8'))
-
-
-ruamel.yaml.representer.Representer.add_representer(
-    text_type, yaml_unicode_representer)
-
-
-#########################################################
-
-
-def get_xdg_config_dir_path():
-    # source: home-assistant
-    """
-    Single directory where user-specific configuration files should be written
-
-    EXAMPLE: $HOME/.config
-
-    :rtype: str
-    """
-    try:
-        # from xdg.BaseDirectory import xdg_config_home as config_home
-        from xdg import XDG_CONFIG_HOME as config_home
-    except ImportError:
-        config_home = os.path.expanduser('~/.config')
-    # NOTE: Automatically get function name
-    logger.debug('Ran {}| config_home={}'.format(
-        sys._getframe().f_code.co_name, config_home))
-    return config_home
-
-
-def get_xdg_data_dir_path():
-    # source: home-assistant
-    """
-    Single directory where user-specific data files should be written.
-
-    EXAMPLE: $HOME/.config/.local/share
-
-    :rtype: str
-    """
-    try:
-        from xdg import XDG_DATA_HOME as data_home
-    except ImportError:
-        config_home = os.path.expanduser('~/.config')
-        data_home = os.path.join(config_home, ".local", "share")
-    logger.debug('Ran {}| data_home={}'.format(
-        sys._getframe().f_code.co_name, data_home))
-    return data_home
-
-
-def get_xdg_cache_dir_path():
-    """
-    Single directory where user-specific non-essential (cached) data should be written.
-
-    EXAMPLE: $HOME/.cache
-
-    :rtype: str
-    """
-    try:
-        from xdg import XDG_CACHE_HOME as cache_home
-    except ImportError:
-        cache_home = os.path.expanduser('~/.cache')
-    logger.debug('Ran {}| cache_home={}'.format(
-        sys._getframe().f_code.co_name, cache_home))
-    return cache_home
-
-
-def get_config_sub_dir_path():
-    """
-    Return sub directory for scarlett config files.
-
-    Example: $HOME/.config/scarlett
-
-    :rtype: str
-    """
-    config_dir = get_xdg_config_dir_path()
-    config_sub_dir = os.path.join(config_dir, CONFIG_DIR_NAME)
-    logger.debug('Ran {}| config_sub_dir={}'.format(
-        sys._getframe().f_code.co_name, config_sub_dir))
-    return config_sub_dir
-
-
-def get_config_file_path():
-    # source: home-assistant
-    """Look in given directory for supported configuration files.
-
-    EXAMPLE: $HOME/.config/scarlett/config.yaml
-
-    Async friendly.
-    """
-    config_sub_dir = get_config_sub_dir_path()
-    config_file = os.path.join(config_sub_dir, YAML_CONFIG_FILE)
-    logger.debug('Ran {}| config_file={}'.format(
-        sys._getframe().f_code.co_name, config_file))
-    return config_file
-
-
-def get_version_file_path():
-    # source: home-assistant
-    """Look in given directory for scarlett version
-
-    EXAMPLE: $HOME/.config/.SCARLETT_VERSION
-
-    Async friendly.
-    """
-    config_sub_dir = get_config_sub_dir_path()
-    version_file = os.path.join(config_sub_dir, VERSION_FILE)
-    logger.debug('Ran {}| version_file={}'.format(
-        sys._getframe().f_code.co_name, version_file))
-    return version_file
-#########################################################
-
-def _fake_config():
-    """Create a temporary config file."""
-    base = tempfile.mkdtemp()
-    logger.debug("base tempfile: {}".format(base))
-    config_file = os.path.join(base, 'config.yaml')
-
-    #############################################################
-    # Example of config_file:
-    #############################################################
-    #  ⌁ pi@scarlett-ansible-manual1604-2  ~  ll /tmp/tmpnxz2wsa2
-    # total 12
-    # drwx------  2 pi   pi   4096 Feb 24 15:58 ./
-    # drwxrwxrwt 15 root root 4096 Feb 24 15:58 ../
-    # -rw-rw-r--  1 pi   pi   1034 Feb 24 15:58 config.yaml
-    # ⌁ pi@scarlett-ansible-manual1604-2  ~
-    #############################################################
-
-    with open(config_file, 'wt') as f:
-        f.write('''
 # Omitted values in this section will be auto detected using freegeoip.io
 
 # Location required to calculate the time the sun rises and sets.
@@ -409,16 +204,292 @@ keywords_list:
 
 features:
 - time
-''')
-    # temp_config = simple_config.SimpleConfig.from_file(config_file)
+"""
 
-    # yield temp_config
 
-    # shutil.rmtree(base)
+def lower(a_string):
+    """[Make string lowercase.]
+
+    Arguments:
+        a_string {[str]} -- [takes string and converts all characters to lowercase]
+
+    Returns:
+        [str] -- [returns transformed string, in all lowercase]
+    """
+    try:
+        return a_string.lower()
+    except AttributeError:
+        return a_string
+
+
+def flatten(d, parent_key='', sep='/'):
+    # source: http://stackoverflow.com/a/6027615
+    # source:
+    # https://github.com/russellballestrini/yaml_consulate/blob/76d74ec7ffe5fd56ee057a619f12dcc8a862b046/yaml_consulate/yaml_consulate.py
+    """[summary]
+
+    Arguments:
+        d {[type]} -- [description]
+
+    Returns:
+        [type] -- [description]
+    """
+
+    items = []
+    for k, v in d.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if isinstance(v, collections.MutableMapping):
+            items.extend(flatten(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
+
+def mapping_string_access(self, s, delimiter=None, key_delim=None):
+    # source:
+    # https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
+    def p(v):
+        try:
+            v = int(v)
+        except:
+            pass
+        return v
+       # possible extend for primitives like float, datetime, booleans, etc.
+
+    if delimiter is None:
+        delimiter = '.'
+    if key_delim is None:
+        key_delim = ','
+    try:
+        key, rest = s.split(delimiter, 1)
+    except ValueError:
+        key, rest = s, None
+    if key_delim in key:
+        key = tuple((p(key) for key in key.split(key_delim)))
+    else:
+        key = p(key)
+    if rest is None:
+        return self[key]
+    return self[key].string_access(rest, delimiter, key_delim)
+
+# monkeypatch CommentedMap.string_access function
+ruamel.yaml.comments.CommentedMap.string_access = mapping_string_access
+
+def sequence_string_access(self, s, delimiter=None, key_delim=None):
+    # source:
+    # https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
+    if delimiter is None:
+        delimiter = '.'
+    try:
+        key, rest = s.split(delimiter, 1)
+    except ValueError:
+        key, rest = s, None
+    key = int(key)
+    if rest is None:
+        return self[key]
+    return self[key].string_access(rest, delimiter, key_delim)
+
+# monkeypatch CommentedSeq.string_access function
+ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
+
+def dump_yaml(layered_config):
+    # source:
+    # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
+    return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
+                                       default_flow_style=False)
+
+def yaml_unicode_representer(self, data):
+    # source:
+    # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
+    return self.represent_str(data.encode('utf-8'))
+
+ruamel.yaml.representer.Representer.add_representer(
+    text_type, yaml_unicode_representer)
+
+
+#########################################################
+
+# TODO: Allow us to override this value purely for testing purposes 2/25/2018
+def get_xdg_config_dir_path(override=None):
+    # source: home-assistant
+    """
+    Single directory where user-specific configuration files should be written
+
+    EXAMPLE: $HOME/.config
+
+    :rtype: str
+    """
+    # Force location to value provided by kwarg override
+    if override is not None:
+        config_home = override
+        logger.debug('Ran {}| config_home={}'.format(
+        sys._getframe().f_code.co_name, config_home))
+        return config_home
+
+    try:
+        # from xdg.BaseDirectory import xdg_config_home as config_home
+        from xdg import XDG_CONFIG_HOME as config_home
+    except ImportError:
+        config_home = os.path.expanduser('~/.config')
+    # NOTE: Automatically get function name
+    logger.debug('Ran {}| config_home={}'.format(
+        sys._getframe().f_code.co_name, config_home))
+    return config_home
+
+# TODO: Allow us to override this value purely for testing purposes 2/25/2018
+
+
+def get_xdg_data_dir_path(override=None):
+    # source: home-assistant
+    """
+    Single directory where user-specific data files should be written.
+
+    EXAMPLE: $HOME/.config/.local/share
+
+    :rtype: str
+    """
+
+    # Force location to value provided by kwarg override
+    if override is not None:
+        data_home = override
+        logger.debug('Ran {}| data_home={}'.format(
+        sys._getframe().f_code.co_name, data_home))
+        return data_home
+
+    try:
+        from xdg import XDG_DATA_HOME as data_home
+    except ImportError:
+        config_home = os.path.expanduser('~/.config')
+        data_home = os.path.join(config_home, ".local", "share")
+    logger.debug('Ran {}| data_home={}'.format(
+        sys._getframe().f_code.co_name, data_home))
+    return data_home
+
+# TODO: Allow us to override this value purely for testing purposes 2/25/2018
+
+
+def get_xdg_cache_dir_path(override=None):
+    """
+    Single directory where user-specific non-essential (cached) data should be written.
+
+    EXAMPLE: $HOME/.cache
+
+    :rtype: str
+    """
+
+    # Force location to value provided by kwarg override
+    if override is not None:
+        cache_home = override
+        logger.debug('Ran {}| cache_home={}'.format(
+            sys._getframe().f_code.co_name, cache_home))
+        return cache_home
+
+    try:
+        from xdg import XDG_CACHE_HOME as cache_home
+    except ImportError:
+        cache_home = os.path.expanduser('~/.cache')
+    logger.debug('Ran {}| cache_home={}'.format(
+        sys._getframe().f_code.co_name, cache_home))
+    return cache_home
+
+# TODO: Allow us to override this value purely for testing purposes 2/25/2018
+
+
+def get_config_sub_dir_path(override=None):
+    """
+    Return sub directory for scarlett config files.
+
+    Example: $HOME/.config/scarlett
+
+    :rtype: str
+    """
+    # Force location to value provided by kwarg override
+    if override is not None:
+        config_sub_dir = override
+        logger.debug('Ran {}| config_sub_dir={}'.format(sys._getframe().f_code.co_name, config_sub_dir))
+        return config_sub_dir
+
+    config_dir = get_xdg_config_dir_path()
+    config_sub_dir = os.path.join(config_dir, CONFIG_DIR_NAME)
+    logger.debug('Ran {}| config_sub_dir={}'.format(sys._getframe().f_code.co_name, config_sub_dir))
+    return config_sub_dir
+
+# TODO: Allow us to override this value purely for testing purposes 2/25/2018
+
+
+def get_config_file_path(override=None):
+    # source: home-assistant
+    """Look in given directory for supported configuration files.
+
+    EXAMPLE: $HOME/.config/scarlett/config.yaml
+
+    Async friendly.
+    """
+    # Force location to value provided by kwarg override
+    if override is not None:
+        config_file = override
+        logger.debug('Ran {}| config_file={}'.format(
+            sys._getframe().f_code.co_name, config_file))
+        return config_file
+
+    config_sub_dir = get_config_sub_dir_path()
+    config_file = os.path.join(config_sub_dir, YAML_CONFIG_FILE)
+    logger.debug('Ran {}| config_file={}'.format(
+        sys._getframe().f_code.co_name, config_file))
+    return config_file
+
+# TODO: Allow us to override this value purely for testing purposes 2/25/2018
+
+
+def get_version_file_path(override=None):
+    # source: home-assistant
+    """Look in given directory for scarlett version
+
+    EXAMPLE: $HOME/.config/.SCARLETT_VERSION
+
+    Async friendly.
+    """
+    # Force location to value provided by kwarg override
+    if override is not None:
+        version_file = override
+        logger.debug('Ran {}| version_file={}'.format(
+            sys._getframe().f_code.co_name, version_file))
+        return version_file
+
+    config_sub_dir = get_config_sub_dir_path()
+    version_file = os.path.join(config_sub_dir, VERSION_FILE)
+    logger.debug('Ran {}| version_file={}'.format(
+        sys._getframe().f_code.co_name, version_file))
+    return version_file
+#########################################################
+
+def _fake_config(override=None):
+    """Create a temporary config file."""
+    base = tempfile.mkdtemp()
+    logger.debug("base tempfile: {}".format(base))
+    config_file = os.path.join(base, 'config.yaml')
+
+    #############################################################
+    # Example of config_file:
+    #############################################################
+    #  ⌁ pi@scarlett-ansible-manual1604-2  ~  ll /tmp/tmpnxz2wsa2
+    # total 12
+    # drwx------  2 pi   pi   4096 Feb 24 15:58 ./
+    # drwxrwxrwt 15 root root 4096 Feb 24 15:58 ../
+    # -rw-rw-r--  1 pi   pi   1034 Feb 24 15:58 config.yaml
+    # ⌁ pi@scarlett-ansible-manual1604-2  ~
+    #############################################################
+
+    if override is not None:
+        with open(config_file, 'wt') as f:
+            f.write(override)
+        return base, config_file
+
+    with open(config_file, 'wt') as f:
+        f.write(DEFAULT_CONFIG)
 
     return base, config_file
 
-def _load_fake_config(yaml_filename):
+def load_fake_config(yaml_filename):
     """Load a yaml file into memory using ruamel.yaml.round_trip_load
 
     Arguments:
@@ -669,45 +740,7 @@ def prep_default_config(homedir=None):
     if not os.path.exists(default_cfg):
         # FIXME: Make this default config more dynamically configured, or start using ruamel primitives to override defaults if they aren't set
         with open(default_cfg, 'wt') as f:
-            f.write('''
-# Omitted values in this section will be auto detected using freegeoip.io
-
-# Location required to calculate the time the sun rises and sets.
-# Coordinates are also used for location for weather related automations.
-# Google Maps can be used to determine more precise GPS coordinates.
-latitude: 40.7056308
-longitude: -73.9780034
-
-pocketsphinx:
-    hmm: /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
-    lm: /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
-    dict: /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
-    silprob: 0.1
-    wip: 1e-4
-    bestpath: 0
-
-# Impacts weather/sunrise data
-elevation: 665
-
-# 'metric' for Metric System, 'imperial' for imperial system
-unit_system: metric
-
-# Pick yours from here:
-# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-time_zone: America/New_York
-
-# Name of the location where ScarlettOS Assistant is running
-name: ScarlettOS
-
-owner: "Hair Ron Jones"
-
-keywords_list:
-- 'scarlett'
-- 'SCARLETT'
-
-features:
-- time
-''')
+            f.write(DEFAULT_CONFIG)
 
     return home, default_cfg
 
@@ -741,7 +774,7 @@ if __name__ == "__main__":
 
     fake_config_file_path_base, fake_config_file_path = _fake_config()
 
-    in_memory_config = _load_fake_config(fake_config_file_path)
+    in_memory_config = load_fake_config(fake_config_file_path)
 
     import pdb
     pdb.set_trace()  # pylint: disable=no-member
