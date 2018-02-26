@@ -60,21 +60,24 @@ CONTAINER_NAME          := $(shell echo -n $(IMAGE_TAG) | openssl dgst -sha1 | s
 # algorithm by clearing its value,
 # or to explicitly set the default goal.
 # The following example illustrates these cases:
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL       := help
 
-flake8 := flake8
-COV_DIRS := $(projects:%=--cov %)
+flake8              := flake8
+COV_DIRS            := $(projects:%=--cov %)
 # [-s] per-test capturing method: one of fd|sys|no. shortcut for --capture=no.
 # [--tb short] traceback print mode (auto/long/short/line/native/no).
 # [--cov-config=path]     config file for coverage, default: .coveragerc
 # [--cov=[path]] coverage reporting with distributed testing support. measure coverage for filesystem path (multi-allowed)
-pytest_args := -s --tb short --cov-config .coveragerc $(COV_DIRS) tests
-pytest := py.test $(pytest_args)
-sources := $(shell find $(projects) tests -name '*.py' | grep -v version.py | grep -v thrift_gen)
+pytest_args         := -s --tb short --cov-config .coveragerc $(COV_DIRS) tests
+pytest              := py.test $(pytest_args)
+sources             := $(shell find $(projects) tests -name '*.py' | grep -v version.py | grep -v thrift_gen)
 
-test_args_no_xml := --cov-report=
-test_args := --cov-report term-missing --cov-report xml --junitxml junit.xml
-cover_args := --cov-report html
+# coverage flags, these all come from here
+# SOURCE: https://media.readthedocs.org/pdf/pytest-cov/latest/pytest-cov.pdf
+test_args_no_xml    := --cov-report=
+test_args_with_xml  := --cov-report term-missing --cov-report xml:cov.xml --cov-report html:htmlcov --cov-report annotate:cov_annotate --benchmark-skip
+test_args           := --cov-report term-missing --cov-report xml --junitxml junit.xml
+cover_args          := --cov-report html
 
 .PHONY: clean clean-test clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
@@ -166,6 +169,25 @@ bootstrap:
 bootstrap-experimental:
 	pip install -r requirements_test_experimental.txt
 
+clean-coverge-files:
+	rm -rf htmlcov/
+	rm -rf cov_annotate/
+	rm -rf cov.xml
+
+# NUKE THE WORLD
+clean-build-test-artifacts:
+	rm -rf build/
+	rm -rf dist/
+	rm -fr .eggs/
+	find . -name '*.egg-info' -exec rm -frv {} +
+	find . -name '*.egg' -exec rm -fv {} +
+	$(MAKE) clean-coverge-files
+	find . -name '*.pyc' -exec rm -fv {} +
+	find . -name '*.pyo' -exec rm -fv {} +
+	find . -name '*~' -print -exec rm -fv {} +
+	find . -name '__pycache__' -exec rm -frv {} +
+
+
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
@@ -209,14 +231,15 @@ jhbuild-run-test:
 	jhbuild run -- coverage report -m
 	jhbuild run -- coverage xml -o cov.xml
 
-
-.PHONY: test-travis-ruamelconfigonly
-test-travis-ruamelconfigonly: export TRAVIS_CI=1
-test-travis-ruamelconfigonly:
+# NOTE: Nuke all artifacts before even testing
+.PHONY: test-travis-clean-ruamelconfigonly
+test-travis-clean-ruamelconfigonly: export TRAVIS_CI=1
+test-travis-clean-ruamelconfigonly:
+	$(MAKE) clean-build-test-artifacts
 	jhbuild run python setup.py install
 	jhbuild run -- pip install -e .[test]
 	jhbuild run -- coverage run -- setup.py test
-	jhbuild run -- $(pytest) $(test_args_no_xml) --benchmark-skip -m ruamelconfigonly
+	jhbuild run -- $(pytest) $(test_args_with_xml) -m ruamelconfigonly
 	jhbuild run -- coverage report -m
 	jhbuild run -- coverage xml -o cov.xml
 
@@ -388,6 +411,33 @@ dc-ci-build:
 
 docker-run-bash:
 	docker run -i -t --rm scarlettos_scarlett_master bash
+
+scp-local-cov-xml:
+	rm cov.xml; \
+	./scripts/contrib/scp_local.sh cov.xml; \
+
+.PHONY: scp-local-cov_annotate
+scp-local-cov_annotate: export SCARLETT_SCP_RECURSIVE=1
+scp-local-cov_annotate:
+	rm -rfv cov_annotate; \
+	./scripts/contrib/scp_local.sh cov_annotate; \
+
+.PHONY: scp-local-htmlcov
+scp-local-htmlcov: export SCARLETT_SCP_RECURSIVE=1
+scp-local-htmlcov:
+	rm -rfv scp-local-htmlcov; \
+	./scripts/contrib/scp_local.sh htmlcov; \
+
+.PHONY: scp-local-coverage-reports
+scp-local-coverage-reports:
+	$(MAKE) clean-coverge-files
+	$(MAKE) scp-local-cov-xml
+	$(MAKE) scp-local-cov_annotate
+	$(MAKE) scp-local-htmlcov
+
+# Coverage annotated source written to dir cov_annotate
+# Coverage HTML written to dir htmlcov
+# Coverage XML written to file cov.xml
 
 # docker-exec-bash:
 # 	container_id := $(shell docker ps |grep scarlettos_scarlett_master| awk '{print $1}')
