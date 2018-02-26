@@ -94,6 +94,7 @@ def fake_config_empty():
 # pylint: disable=W0612
 
 
+@pytest.mark.ruamelconfigonly
 @pytest.mark.scarlettonly
 @pytest.mark.unittest
 @pytest.mark.simpleconfigtest
@@ -128,6 +129,7 @@ class TestSimpleConfigLower(object):
 # pylint: disable=W0612
 
 
+@pytest.mark.ruamelconfigonly
 @pytest.mark.scarlettonly
 @pytest.mark.unittest
 @pytest.mark.simpleconfigtest
@@ -171,6 +173,7 @@ class TestGetXdgConfigDirPath(object):
 # pylint: disable=W0612
 
 
+@pytest.mark.ruamelconfigonly
 @pytest.mark.scarlettonly
 @pytest.mark.unittest
 @pytest.mark.simpleconfigtest
@@ -207,6 +210,7 @@ class TestFlatten(object):
 # pylint: disable=W0212
 # pylint: disable=W0621
 # pylint: disable=W0612
+@pytest.mark.ruamelconfigonly
 @pytest.mark.scarlettonly
 @pytest.mark.unittest
 @pytest.mark.simpleconfigtest

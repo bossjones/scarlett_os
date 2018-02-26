@@ -209,6 +209,17 @@ jhbuild-run-test:
 	jhbuild run -- coverage report -m
 	jhbuild run -- coverage xml -o cov.xml
 
+
+.PHONY: test-travis-ruamelconfigonly
+test-travis-ruamelconfigonly: export TRAVIS_CI=1
+test-travis-ruamelconfigonly:
+	jhbuild run python setup.py install
+	jhbuild run -- pip install -e .[test]
+	jhbuild run -- coverage run -- setup.py test
+	jhbuild run -- $(pytest) $(test_args_no_xml) --benchmark-skip -m ruamelconfigonly
+	jhbuild run -- coverage report -m
+	jhbuild run -- coverage xml -o cov.xml
+
 # NOTE: Run this test suite on vagrant boxes
 vagrant-travis-test: jhbuild-run-test
 
