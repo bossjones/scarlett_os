@@ -1,7 +1,10 @@
 #!/usr/bin/env python3  # NOQA
 # -*- coding: utf-8 -*-
 
+"""ruamel_config, yaml based config object using the ruamel python module"""
+
 # pylint: disable=line-too-long
+# pylint: disable=W1202
 
 # TODO: 2/24/2018 - Try to get the most simplified ruamel config working
 
@@ -125,7 +128,7 @@ CoordinatesTuple = collections.namedtuple(
 
 DEFAULT_CORE_CONFIG = (
     # Tuples (attribute, default, auto detect property, description)
-    (CONF_NAME, 'Scarlett Home', None, 'Name of the location where Home Assistant is '
+    (CONF_NAME, 'Scarlett Home', None, 'Name of the location where Scarlett System is '
      'running'),
     (CONF_LATITUDE, 0, 'latitude', 'Location required to calculate the time'
      ' the sun rises and sets'),
@@ -246,13 +249,37 @@ def flatten(d, parent_key='', sep='/'):
             items.append((new_key, v))
     return dict(items)
 
+# FIXME: add valid docblock
 def mapping_string_access(self, s, delimiter=None, key_delim=None):
+    """[summary]
+
+    Arguments:
+        s {[type]} -- [description]
+
+    Keyword Arguments:
+        delimiter {[type]} -- [description] (default: {None})
+        key_delim {[type]} -- [description] (default: {None})
+
+    Returns:
+        [type] -- [description]
+    """
+
+    # FIXME: Make this into a real docstring
     # source:
     # https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
     def p(v):
+        """[summary]
+
+        Arguments:
+            v {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
+        """
+
         try:
             v = int(v)
-        except:
+        except Exception:
             pass
         return v
        # possible extend for primitives like float, datetime, booleans, etc.
@@ -276,7 +303,21 @@ def mapping_string_access(self, s, delimiter=None, key_delim=None):
 # monkeypatch CommentedMap.string_access function
 ruamel.yaml.comments.CommentedMap.string_access = mapping_string_access
 
+# FIXME: add valid docblock
 def sequence_string_access(self, s, delimiter=None, key_delim=None):
+    """[summary]
+
+    Arguments:
+        s {[type]} -- [description]
+
+    Keyword Arguments:
+        delimiter {[type]} -- [description] (default: {None})
+        key_delim {[type]} -- [description] (default: {None})
+
+    Returns:
+        [type] -- [description]
+    """
+
     # source:
     # https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
     if delimiter is None:
@@ -293,13 +334,31 @@ def sequence_string_access(self, s, delimiter=None, key_delim=None):
 # monkeypatch CommentedSeq.string_access function
 ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
 
-def dump_yaml(layered_config):
-    # source:
-    # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
-    return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
-                                       default_flow_style=False)
+# def dump_yaml(layered_config):
+#     """[summary]
+
+#     Arguments:
+#         layered_config {[type]} -- [description]
+
+#     Returns:
+#         [type] -- [description]
+#     """
+
+#     # source:
+#     # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
+#     return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
+#                                        default_flow_style=False)
 
 def yaml_unicode_representer(self, data):
+    """[Override ruamel.yaml.representer.Representer ]
+
+    Arguments:
+        data {[str]} -- [In memory yaml representation of yaml file]
+
+    Returns:
+        [str] -- [str data in utf-8 format]
+    """
+
     # source:
     # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
     return self.represent_str(data.encode('utf-8'))
@@ -323,8 +382,7 @@ def get_xdg_config_dir_path(override=None):
     # Force location to value provided by kwarg override
     if override is not None:
         config_home = override
-        logger.debug('Ran {}| config_home={}'.format(
-        sys._getframe().f_code.co_name, config_home))
+        logger.debug('Ran {}| config_home={}'.format(sys._getframe().f_code.co_name, config_home))
         return config_home
 
     try:
@@ -338,8 +396,6 @@ def get_xdg_config_dir_path(override=None):
     return config_home
 
 # TODO: Allow us to override this value purely for testing purposes 2/25/2018
-
-
 def get_xdg_data_dir_path(override=None):
     # source: home-assistant
     """
@@ -761,7 +817,7 @@ if __name__ == "__main__":
     from scarlett_os.logger import setup_logger
     setup_logger()
 
-    import imp
+    import imp  # pylint: disable=W0611
     import os.path
     import sys
 
@@ -771,15 +827,15 @@ if __name__ == "__main__":
     import scarlett_os
     # from scarlett_os.common.configure import ruamel_config
 
-    from scarlett_os.internal.debugger import dump
-    from scarlett_os.internal.debugger import pprint_color
+    from scarlett_os.internal.debugger import dump  # pylint: disable=W0611
+    from scarlett_os.internal.debugger import pprint_color  # pylint: disable=W0611
 
     fake_config_file_path_base, fake_config_file_path = _fake_config()
 
     in_memory_config = load_fake_config(fake_config_file_path)
 
-    import pdb
-    pdb.set_trace()  # pylint: disable=no-member
+    # import pdb
+    # pdb.set_trace()  # pylint: disable=no-member
 
     # TODO: Figure out best way to use ruamel to load this in, and use it correctly
 

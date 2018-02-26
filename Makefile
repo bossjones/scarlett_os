@@ -201,12 +201,16 @@ pytest-run:
 	py.test
 	# py.test -v --timeout=30 --duration=10 --cov --cov-report=
 
+# NOTE: Run this test suite on vagrant boxes
 jhbuild-run-test:
 	jhbuild run python setup.py install
 	jhbuild run -- pip install -e .[test]
 	jhbuild run -- coverage run -- setup.py test
 	jhbuild run -- coverage report -m
 	jhbuild run -- coverage xml -o cov.xml
+
+# NOTE: Run this test suite on vagrant boxes
+vagrant-travis-test: jhbuild-run-test
 
 test: ## run tests quickly with the default Python
 	python setup.py test

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# FIXME: This is so broken, it's not even funny, idk how it even works currently. Fix this. Use "travis lint" via the travis cli tool 2/25/2018
+
 matrix:
   fast_finish: true
   include:
@@ -78,6 +80,13 @@ after_success:
   - 'ls -lta'
   - 'sudo chown $_USER:$_GROUP -Rv *'
   - sudo mv .coverage .coverage.tests
+  ################################################################################################
+  # NOTE: https://coverage.readthedocs.io/en/coverage-4.5.1/changes.html?highlight=clean
+  # Version 4.2b1 — 2016-07-04
+  # BACKWARD INCOMPATIBILITY: the coverage combine command now ignores an existing .coverage data file. It used to include that file in its combining. This caused confusing results, and extra tox “clean” steps. If you want the old behavior, use the new coverage combine --append option.
+  # ################################################################################################
+  # NOTE: Version 4.5 — 2018-02-03
+  # The coverage combine command used to always overwrite the data file, even when no data had been read from apparently combinable files. Now, an error is raised if we thought there were files to combine, but in fact none of them could be used. Fixes issue 629.
   - coverage combine
   # Coverage report contains Docker paths. We replace them, so that we can run Coveralls.
   - sed -i 's@\"/home/pi/dev/bossjones-github/scarlett_os/@'"\"$(pwd)/"'@g' .coverage

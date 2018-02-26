@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # scarlett_os documentation build configuration file, created by
@@ -12,6 +12,12 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+
+# pylint: disable=W0622
+# pylint: disable=C
+
+# TODO: Look at this guy, and try to fix this up:
+# https://github.com/home-assistant/home-assistant/blob/d7452f9d5d100d126d52dca3e46ae709fab8b339/docs/source/conf.py
 
 import sys
 import os
