@@ -119,8 +119,10 @@
   // "python.pythonPath": "/Users/malcolm/.virtualenvs/scarlett-os-venv2/bin/python3",
   "python.formatting.provider": "autopep8",
   // Arguments passed in. Each argument is a separate item in the array.
+  // https://github.com/Microsoft/vscode-python/issues/506
   "python.linting.pylintArgs": [
-    "--rcfile=${workspaceFolder}/pylintrc"
+    "--rcfile",
+    "${workspaceFolder}/pylintrc"
   ],
   "python.linting.ignorePatterns": [
     ".vscode/*.py",

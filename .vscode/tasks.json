@@ -28,6 +28,7 @@
             "presentation": {
                 "reveal": "always"
             },
+            // We want to produce a problem matcher that can capture the message in the output and show a corresponding problem in VS Code. Problem matchers heavily rely on regular expressions. The section below assumes you are familiar with regular expressions.
             "problemMatcher": []
         },
         {
@@ -53,6 +54,7 @@
             "presentation": {
                 "reveal": "always"
             },
+            // We want to produce a problem matcher that can capture the message in the output and show a corresponding problem in VS Code. Problem matchers heavily rely on regular expressions. The section below assumes you are familiar with regular expressions.
             "problemMatcher": []
         }
     ]

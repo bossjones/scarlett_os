@@ -1,6 +1,8 @@
 #!/usr/bin/env python3  # NOQA
 # -*- coding: utf-8 -*-
 
+# pylint: disable=line-too-long
+
 # TODO: 2/24/2018 - Try to get the most simplified ruamel config working
 
 #################################
