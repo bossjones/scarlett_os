@@ -211,6 +211,14 @@ features:
 - time
 """
 
+RUSSIAN_CONFIG = """
+# Name of the location where ScarlettOS Assistant is running
+name: Бага
+
+owner: "Б - Бага"
+"""
+
+
 
 def lower(a_string):
     """[Make string lowercase.]
@@ -349,8 +357,11 @@ ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
 #     return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
 #                                        default_flow_style=False)
 
+# source:
+# https://stackoverflow.com/questions/39612778/suppress-python-unicode-in-yaml-output
+# NOTE: Without this, We won't be able to suppress !!python/unicode in YAML output
 def yaml_unicode_representer(self, data):
-    """[Override ruamel.yaml.representer.Representer ]
+    """[Override ruamel.yaml.representer.Representer. This representer handles the unicode to str conversion]
 
     Arguments:
         data {[str]} -- [In memory yaml representation of yaml file]
@@ -547,7 +558,8 @@ def _fake_config(override=None):
 
     return base, config_file
 
-def load_fake_config(yaml_filename):
+
+def load_config(yaml_filename):
     """Load a yaml file into memory using ruamel.yaml.round_trip_load
 
     Arguments:
@@ -556,7 +568,8 @@ def load_fake_config(yaml_filename):
 
     # INFO: Important ruamel details
     # INFO: How to set yaml version. Add to top of yaml file: %YAML 1.2 before ---
-    # INFO: 1.2 does NOT support - Unquoted Yes and On as alternatives for True and No and Off for False.
+    # INFO: 1.2 does NOT support - Unquoted Yes and On as alternatives for
+    # True and No and Off for False.
 
     with codecs.open(yaml_filename, encoding='utf-8') as yaml_file:
         source = ruamel.yaml.round_trip_load(yaml_file.read())
@@ -592,6 +605,31 @@ def _dump_in_memory_config_to_stdout_and_transform(data, stream=None):
 
     logger.debug('Ran {} | stream={} | inefficient={}'.format(sys._getframe().f_code.co_name, stream, inefficient))
 
+
+def dump_in_memory_config_to_var(data, stream=None):
+    """[dump in memory config]
+
+    Arguments:
+        data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap object]
+    """
+
+    # NOTE: on ruamel.yaml.comments.CommentedMap
+    # The CommentedMap, which is the dict like construct one gets when
+    # round-trip loading, supports insertion of a key into a particular
+    # position, while optionally adding a comment:
+
+    if stream is None:
+        inefficient = True
+        output = yaml.dump(data, sys.stdout)
+        logger.debug('Ran {} | stream={} | inefficient={}'.format(
+            sys._getframe().f_code.co_name, stream, inefficient))
+        return output
+    else:
+        inefficient = False
+        output = yaml.dump(data)
+        logger.debug('Ran {} | stream={} | inefficient={}'.format(
+            sys._getframe().f_code.co_name, stream, inefficient))
+        return yaml.dump(data)
 
 def _dump_in_memory_config_to_stdout(data, stream=None):
     """[dump in memory config]
@@ -830,16 +868,18 @@ if __name__ == "__main__":
     from scarlett_os.internal.debugger import dump  # pylint: disable=W0611
     from scarlett_os.internal.debugger import pprint_color  # pylint: disable=W0611
 
-    fake_config_file_path_base, fake_config_file_path = _fake_config()
+    fake_config_file_path_base, fake_config_file_path = _fake_config(override=RUSSIAN_CONFIG)
 
-    in_memory_config = load_fake_config(fake_config_file_path)
-
-    # import pdb
-    # pdb.set_trace()  # pylint: disable=no-member
+    in_memory_config = load_config(fake_config_file_path)
 
     # TODO: Figure out best way to use ruamel to load this in, and use it correctly
 
-    _dump_in_memory_config_to_stdout_and_transform(in_memory_config)
+    _out = dump_in_memory_config_to_var(in_memory_config, stream=False)
+
+    import pdb
+    pdb.set_trace()  # pylint: disable=no-member
+
+    # _dump_in_memory_config_to_stdout_and_transform(in_memory_config)
 
     # cleanup temporary folder when finished
     shutil.rmtree(fake_config_file_path_base)

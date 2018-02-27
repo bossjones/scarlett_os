@@ -49,7 +49,7 @@ def fake_config():
     with open(config_file, 'wt') as f:
         f.write(ruamel_config.DEFAULT_CONFIG)
 
-    temp_config = ruamel_config.load_fake_config(config_file)
+    temp_config = ruamel_config.load_config(config_file)
 
     yield temp_config
 
@@ -62,7 +62,7 @@ def fake_config_no_values():
     base = tempfile.mkdtemp()
     config_file = os.path.join(base, 'config.yaml')
 
-    temp_config = ruamel_config.load_fake_config(config_file)
+    temp_config = ruamel_config.load_config(config_file)
 
     yield temp_config
 
@@ -79,9 +79,30 @@ def fake_config_empty():
         f.write('''
 ---
 ''')
-    temp_config = ruamel_config.load_fake_config(config_file)
+    temp_config = ruamel_config.load_config(config_file)
 
     yield temp_config
+
+    shutil.rmtree(base)
+
+
+@pytest.fixture(scope='function')
+def fake_config_russian_encoding():
+    """Create a temporary config file."""
+    base = tempfile.mkdtemp()
+    config_file = os.path.join(base, 'config.yaml')
+
+    with open(config_file, 'wt') as f:
+        f.write('''
+---
+# Name of the location where ScarlettOS Assistant is running
+name: Бага
+
+owner: "Б - Бага"
+''')
+    temp_russian_config = ruamel_config.load_config(config_file)
+
+    yield temp_russian_config
 
     shutil.rmtree(base)
 
@@ -140,9 +161,13 @@ class TestGetXdgConfigDirPath(object):
     Validate get_xdg_config_dir_path
     """
 
-    # def test_yaml_unicode_representer(self, ruamel_config_unit_mocker_stopall):
-    #     # '<b class="boldest">Б - Бага</b>'
-    #     pass
+    def test_yaml_unicode_representer(self, ruamel_config_unit_mocker_stopall, fake_config_russian_encoding):
+        # yield fixture to var
+        temp_russian_config = fake_config_russian_encoding
+        # perform a yaml dump and store in variable
+        output = ruamel_config.dump_in_memory_config_to_var(temp_russian_config, stream=False)
+        # determine if we got the exact output we expected
+        assert output == '%YAML 1.2\n---\n# Name of the location where ScarlettOS Assistant is running\nname: Бага\n\nowner: Б - Бага\n'
 
     def test_get_xdg_config_dir_path(self, ruamel_config_unit_mocker_stopall):
         assert ruamel_config.get_xdg_config_dir_path() == '/home/pi/.config'
@@ -161,8 +186,7 @@ class TestGetXdgConfigDirPath(object):
         ) == '/home/pi/.config/scarlett/config.yaml'
 
     def test_get_version_file_path(self, ruamel_config_unit_mocker_stopall):
-        assert ruamel_config.get_version_file_path(
-        ) == '/home/pi/.config/scarlett/.SCARLETT_VERSION'
+        assert ruamel_config.get_version_file_path() == '/home/pi/.config/scarlett/.SCARLETT_VERSION'
 
 # pylint: disable=R0201
 # pylint: disable=C0111
