@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
 
 # FIXME: This is so broken, it's not even funny, idk how it even works currently. Fix this. Use "travis lint" via the travis cli tool 2/25/2018
-
+sudo: required
+cache:
+  directories:
+    - $HOME/.ccache
+    - $HOME/jhbuild
+    - $HOME/gnome
+    - $HOME/.pip
+    - $HOME/.pre-commit
+    - $HOME/.cache
 matrix:
   fast_finish: true
+
   include:
   - python: '3.5'
     env:
@@ -41,13 +50,6 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - docker-compose --version
-
-cache:
-  apt: true
-  directories:
-  - "$HOME/.ccache"
-  - "$HOME/jhbuild"
-  - "$HOME/gnome"
 
 install:
   - travis_retry pip install coveralls

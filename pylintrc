@@ -1,5 +1,8 @@
 [MASTER]
 reports=no
+output-format=colorized
+
+# INSPIRATION FROM: https://github.com/Yelp/pgctl/blob/050012b80dd612df21ec0a76df928fe9ecdd4736/pylintrc
 
 # source: https://github.com/home-assistant/home-assistant/blob/dev/pylintrc
 # Reasons disabled:
@@ -58,9 +61,55 @@ reports=no
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
 
+# SOURCE: https://github.com/Yelp/pgctl/blob/050012b80dd612df21ec0a76df928fe9ecdd4736/pylintrc
+# bad-continuation (C0330): *Wrong %s indentation%s%s.*
+#   TODO
+# fixme (W0511):
+#   Used when a warning note as FIXME or XXX is detected.
+# :locally-disabled (I0011): *Locally disabling %s (%s)*
+#   Used when an inline option disables a message or a messages category.
+# :missing-docstring (C0111): *Missing %s docstring*
+#   Used when a module, function, class or method has no docstring.Some special
+#   methods like __init__ doesnt necessary require a docstring.
+# :no-init (W0232): *Class has no __init__ method*
+#   Used when a class has no __init__ method, neither its parent classes.
+# :redefined-builtin (W0622): *Redefining built-in %r*
+#   Used when a variable or function override a built-in.
+# :redefined-outer-name (W0621): *Redefining name %r from outer scope (line %s)*
+#   Used when a variables name hides a name defined in the outer scope.
+# :function-redefined (E0102): *%s already defined line %s*
+#   Used when a function / class / method is redefined.
+# :misplaced-comparison-constant (C0122): *Comparison should be %s*
+#   Used when the constant is placed on the left side of a comparison. It is
+#   usually clearer in intent to place it in the right hand side of the
+#   comparison.
+# :useless-else-on-loop (W0120): *Else clause on loop without a break statement*
+#   Loops should only have an else clause if they can exit early with a break
+#   statement, otherwise the statements under else should be on the same scope as
+#   the loop itself.
+# :unbalanced-tuple-unpacking (E0632): *Possible unbalanced tuple unpacking with sequence%s: left side # has %d label(s), rightside has %d value(s)*
+# :no-else-return (R1705): *Unnecessary "else" after "return"*
+#   Used in order to highlight an unnecessary block of code following an if
+#   containing a return statement. As such, it will warn when it encounters an
+#   else following a chain of ifs, all of them containing a return statement.
 
-disable=C0103,C0330,E0211,E0213,W0221,E0239,E0603,E0604,E0611,E1002,E1101,E1103,F0220,F0401,I0011,R0201,R0801,R0924,W0142,W0201,W0212,W0232,W0613,W0633,W0703,W1001,W1202
+disable=C0103,C0330,E0211,E0213,W0221,E0239,E0603,E0604,E0611,E1002,E1101,E1103,F0220,F0401,I0011,R0201,R0801,R0924,W0142,W0201,W0212,W0232,W0613,W0633,W0703,W1001,W1202,C0330,I0011,C0111,W0232,W0622,W0621,C0122,W0120,E0632,R1705
 
+# disable=
+#     bad-continuation,
+#     fixme,
+#     locally-disabled,
+#     missing-docstring,
+#     no-init,
+#     redefined-builtin,
+#     redefined-outer-name,
+#     redefined-variable-type,
+#     star-args,
+#     misplaced-comparison-constant,
+#     wrong-import-order,
+#     useless-else-on-loop,
+#     unbalanced-tuple-unpacking,
+#     no-else-return
 
 #:C0103 (invalid-name): *Invalid %s name "%s"*
 #Used when the name doesn't match the regular expression associated to its type
@@ -147,6 +196,64 @@ disable=C0103,C0330,E0211,E0213,W0221,E0239,E0603,E0604,E0611,E1002,E1101,E1103,
 #Used when PyLint detect the use of the builtin "property" on an old style
 #class while this is relying on new style classes features This message belongs to the newstyle checker.
 
+[BASIC]
+# Good variable names which should always be accepted, separated by a comma
+good-names=i,j,k,ex,Run,_,fd
+
+# Regular expression matching correct constant names
+#const-rgx=(([A-Za-z_][A-Za-z0-9_]*)|(__.*__))$
+const-rgx=(([A-Za-z_][A-Za-z0-9_]*)|(__.*__))$
+
+# Regular expression matching correct function names
+#function-rgx=[a-z_][a-z0-9_]{2,30}$
+function-rgx=[a-z_][a-z0-9_]{2,60}$
+
+# Regular expression matching correct method names
+#method-rgx=[a-z_][a-z0-9_]{2,30}$
+method-rgx=(%(function-rgx)s|%(const-rgx)s)
+
+# Regular expression matching correct variable names
+#variable-rgx=[a-z_][a-z0-9_]{2,30}$
+variable-rgx=[a-z_][a-z0-9_]{0,30}$
+
+# Regular expression matching correct class names
+#class-rgx=[A-Z_][a-zA-Z0-9]+$
+class-rgx=%(const-rgx)s
+
+[TYPECHECK]
+# List of classes names for which member attributes should not be checked
+# (useful for classes with attributes dynamically set).
+ignored-classes=pytest,LocalPath,_MovedItems
+
+[VARIABLES]
+# A regular expression matching the name of dummy variables (i.e. expectedly
+# not used).
+dummy-variables-rgx=_$|dummy|^unused|fake
+
+# List of strings which can identify a callback function by name. A callback
+# name must start or end with one of those strings.
+callbacks=cb_,_cb
+
+[SIMILARITIES]
+# Minimum lines number of a similarity.
+min-similarity-lines=5
+
+# Ignore comments when computing similarities.
+ignore-comments=yes
+
+# Ignore docstrings when computing similarities.
+ignore-docstrings=yes
+
+# Ignore imports when computing similarities.
+ignore-imports=no
+
+[DESIGN]
+# Minimum number of public methods for a class (see R0903).
+min-public-methods=0
+
+# Maximum number of arguments for function / method
+max-args=12
+
 [EXCEPTIONS]
 overgeneral-exceptions=Exception,ScarlettError
 
@@ -177,3 +284,5 @@ indent-after-paren=4
 
 # Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
 expected-line-ending-format=
+
+# vim:ft=dosini:
