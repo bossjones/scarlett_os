@@ -40,4 +40,9 @@ Procfile*
 
 _debug/
 espeak_tmp.wav
+
+
 .coverage.*
+cov_annotate
+htmlcov
+cov.xml

@@ -44,6 +44,9 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
+cov.xml
+cov_annotate
+htmlcov
 
 # Translations
 *.mo

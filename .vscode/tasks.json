@@ -1,0 +1,61 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            //  The tasks's label used in the user interface.
+            "label": "Pylint - list messages",
+
+            // type: The task's type. For a custom task, this can either be shell or process. If shell is specified, the command is interpreted as a shell command (for example: bash, cmd, or PowerShell). If process is specified, the command is interpreted as a process to execute. If shell is used, any arguments to the command should be
+            // "type": "shell",
+            "type": "process",
+
+            // command: The actual command to execute.
+            "command": "pylint",
+
+            // Defines to which group the task belongs. In the example, it belongs to the test group. Tasks that belong to the test group can be executed by running Run Test Task from the Command Palette.
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+
+            "args": [
+                "--list-msgs"
+            ],
+            // presentation: Defines how the task output is handled in the user interface. In this example, the Integrated Terminal showing the output is always revealed and a new terminal is created on every task run.
+            // "presentation": "",
+            "presentation": {
+                "reveal": "always"
+            },
+            // We want to produce a problem matcher that can capture the message in the output and show a corresponding problem in VS Code. Problem matchers heavily rely on regular expressions. The section below assumes you are familiar with regular expressions.
+            "problemMatcher": []
+        },
+        {
+            //  The tasks's label used in the user interface.
+            "label": "Autopep8 - current file",
+            // type: The task's type. For a custom task, this can either be shell or process. If shell is specified, the command is interpreted as a shell command (for example: bash, cmd, or PowerShell). If process is specified, the command is interpreted as a process to execute. If shell is used, any arguments to the command should be
+            "type": "process",
+            // command: The actual command to execute.
+            "command": "${config:python.pythonPath}",
+            // Defines to which group the task belongs. In the example, it belongs to the test group. Tasks that belong to the test group can be executed by running Run Test Task from the Command Palette.
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "args": [
+                "-m",
+                "autopep8",
+                "-i",
+                "${file}"
+            ],
+            // presentation: Defines how the task output is handled in the user interface. In this example, the Integrated Terminal showing the output is always revealed and a new terminal is created on every task run.
+            // "presentation": "",
+            "presentation": {
+                "reveal": "always"
+            },
+            // We want to produce a problem matcher that can capture the message in the output and show a corresponding problem in VS Code. Problem matchers heavily rely on regular expressions. The section below assumes you are familiar with regular expressions.
+            "problemMatcher": []
+        }
+    ]
+}

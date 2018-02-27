@@ -21,13 +21,25 @@ exclude_lines =
 
     # Don't complain about missing debug-only code:
     def __repr__
+    if self\.debug
 
+    # # Don't complain if tests don't hit defensive assertion code:
+    # raise AssertionError
+    # raise NotImplementedError
     # Don't complain if tests don't hit defensive assertion code:
-    raise AssertionError
-    raise NotImplementedError
+    ^\s*raise AssertionError\b
+    ^\s*raise NotImplementedError\b
+    ^\s*return NotImplemented\b
+    ^\s*raise$
+
+    # Don't complain if non-runnable code isn't run:
+    if 0:
+    ^if __name__ == ['"]__main__['"]:$
 
     # From old Scarlett repo
     assert False
-    raise NotImplementedError
-    raise AssertionError
-    if __name__ == .__main__.:
+    # raise NotImplementedError
+    # raise AssertionError
+    # if __name__ == .__main__.:
+
+ignore_errors = True

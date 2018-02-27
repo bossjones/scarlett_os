@@ -154,7 +154,7 @@ class Config(object):
         Async friendly.
         """
         if self.config_dir is None:
-            raise HomeAssistantError("config_dir is not set")
+            raise ScarlettError("config_dir is not set")
         return os.path.join(self.config_dir, *path)
 
     def as_dict(self):

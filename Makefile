@@ -6,12 +6,20 @@ container_name := scarlett_os
 # label-schema spec: http://label-schema.org/rc1/
 
 #CONTAINER_VERSION  = $(shell \cat ./VERSION | awk '{print $1}')
-GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
-GIT_SHA     = $(shell git rev-parse HEAD)
-BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-FIXUID  = $(shell id -u)
-FIXGID  = $(shell id -g)
-DOCKER_IP = $(shell echo $${DOCKER_HOST:-tcp://127.0.0.1:2376} | cut -d/ -f3 | cut -d: -f1)
+GIT_BRANCH              := $(shell git rev-parse --abbrev-ref HEAD)
+GIT_SHA                 := $(shell git rev-parse HEAD)
+BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+FIXUID                  := $(shell id -u)
+FIXGID                  := $(shell id -g)
+DOCKER_IP               := $(shell echo $${DOCKER_HOST:-tcp://127.0.0.1:2376} | cut -d/ -f3 | cut -d: -f1)
+CURRENT_DIR             := $(shell pwd)
+MKDIR                   := mkdir
+APP_WORK_DIR            := /app
+ORG_NAME                := bossjones
+PROJECT_NAME            := scarlett_os
+REPO_NAME               := $(ORG_NAME)/$(PROJECT_NAME)
+IMAGE_TAG               := $(REPO_NAME):$(GIT_SHA)
+CONTAINER_NAME          := $(shell echo -n $(IMAGE_TAG) | openssl dgst -sha1 | sed 's/^.* //'  )
 
 #################################################################################
 # DOCKER_RUN_ARGS   = \
@@ -52,21 +60,24 @@ DOCKER_IP = $(shell echo $${DOCKER_HOST:-tcp://127.0.0.1:2376} | cut -d/ -f3 | c
 # algorithm by clearing its value,
 # or to explicitly set the default goal.
 # The following example illustrates these cases:
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL       := help
 
-flake8 := flake8
-COV_DIRS := $(projects:%=--cov %)
+flake8              := flake8
+COV_DIRS            := $(projects:%=--cov %)
 # [-s] per-test capturing method: one of fd|sys|no. shortcut for --capture=no.
 # [--tb short] traceback print mode (auto/long/short/line/native/no).
 # [--cov-config=path]     config file for coverage, default: .coveragerc
 # [--cov=[path]] coverage reporting with distributed testing support. measure coverage for filesystem path (multi-allowed)
-pytest_args := -s --tb short --cov-config .coveragerc $(COV_DIRS) tests
-pytest := py.test $(pytest_args)
-sources := $(shell find $(projects) tests -name '*.py' | grep -v version.py | grep -v thrift_gen)
+pytest_args         := -s --tb short --cov-config .coveragerc $(COV_DIRS) tests
+pytest              := py.test $(pytest_args)
+sources             := $(shell find $(projects) tests -name '*.py' | grep -v version.py | grep -v thrift_gen)
 
-test_args_no_xml := --cov-report=
-test_args := --cov-report term-missing --cov-report xml --junitxml junit.xml
-cover_args := --cov-report html
+# coverage flags, these all come from here
+# SOURCE: https://media.readthedocs.org/pdf/pytest-cov/latest/pytest-cov.pdf
+test_args_no_xml    := --cov-report=
+test_args_with_xml  := --cov-report term-missing --cov-report xml:cov.xml --cov-report html:htmlcov --cov-report annotate:cov_annotate --benchmark-skip
+test_args           := --cov-report term-missing --cov-report xml --junitxml junit.xml
+cover_args          := --cov-report html
 
 .PHONY: clean clean-test clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
@@ -158,6 +169,24 @@ bootstrap:
 bootstrap-experimental:
 	pip install -r requirements_test_experimental.txt
 
+clean-coverge-files:
+	rm -rf htmlcov/
+	rm -rf cov_annotate/
+	rm -rf cov.xml
+
+# NUKE THE WORLD
+clean-build-test-artifacts:
+	rm -rf build/
+	rm -rf dist/
+	rm -fr .eggs/
+	find . -name '*.egg-info' -exec rm -frv {} +
+	find . -name '*.egg' -exec rm -fv {} +
+	$(MAKE) clean-coverge-files
+	find . -name '*.pyc' -exec rm -fv {} +
+	find . -name '*.pyo' -exec rm -fv {} +
+	find . -name '*~' -print -exec rm -fv {} +
+	find . -name '__pycache__' -exec rm -frv {} +
+
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
@@ -193,11 +222,41 @@ pytest-run:
 	py.test
 	# py.test -v --timeout=30 --duration=10 --cov --cov-report=
 
+# NOTE: Run this test suite on vagrant boxes
 jhbuild-run-test:
 	jhbuild run python setup.py install
 	jhbuild run -- pip install -e .[test]
 	jhbuild run -- coverage run -- setup.py test
-	jhbuild run -- coverage report -m
+	jhbuild run -- coverage report --show-missing
+	jhbuild run -- coverage xml -o cov.xml
+
+
+# jhbuild run -- py.test -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report term-missing --cov-report xml:cov.xml --cov-report html:htmlcov --cov-report annotate:cov_annotate --benchmark-skip
+# NOTE: Run this test suite on vagrant boxes
+.PHONY: jhbuild-run-clean-test-all
+jhbuild-run-clean-test-all: export TRAVIS_CI=1
+jhbuild-run-clean-test-all:
+	$(MAKE) clean-build-test-artifacts
+	jhbuild run python setup.py install
+	jhbuild run -- pip install -e .[test]
+	jhbuild run -- coverage run -- setup.py test
+	jhbuild run -- $(pytest) $(test_args_with_xml)
+	# jhbuild run -- coverage report --show-missing
+
+# NOTE: Nuke all artifacts before even testing
+.PHONY: test-travis-clean-ruamelconfigonly
+test-travis-clean-ruamelconfigonly: export TRAVIS_CI=1
+test-travis-clean-ruamelconfigonly:
+	$(MAKE) clean-build-test-artifacts
+	jhbuild run python setup.py install
+	jhbuild run -- pip install -e .[test]
+	jhbuild run -- coverage run -- setup.py test
+	jhbuild run -- $(pytest) $(test_args_with_xml) -m ruamelconfigonly
+	jhbuild run -- coverage report --show-missing
+	jhbuild run -- coverage xml -o cov.xml
+
+# NOTE: Run this test suite on vagrant boxes
+vagrant-travis-test: jhbuild-run-test
 
 test: ## run tests quickly with the default Python
 	python setup.py test
@@ -230,53 +289,53 @@ jenkins: bootstrap
 test-travis: export TRAVIS_CI=1
 test-travis:
 	$(pytest) $(test_args_no_xml) --benchmark-skip
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-scarlettonly
 test-travis-scarlettonly: export TRAVIS_CI=1
 test-travis-scarlettonly:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonly
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-scarlettonlyintgr
 test-travis-scarlettonlyintgr: export TRAVIS_CI=1
 test-travis-scarlettonlyintgr:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-scarlettonlyintgr-no-timeout
 test-travis-scarlettonlyintgr-no-timeout: export TRAVIS_CI=1
 test-travis-scarlettonlyintgr-no-timeout:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyintgr -p no:timeout
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-scarlettonlyunittest
 test-travis-scarlettonlyunittest: export TRAVIS_CI=1
 test-travis-scarlettonlyunittest:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m scarlettonlyunittest
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-unittest
 test-travis-unittest: export TRAVIS_CI=1
 test-travis-unittest:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -m unittest
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-debug
 test-travis-debug:
 	$(pytest) $(test_args_no_xml) --benchmark-skip --pdb --showlocals
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: test-travis-leaks
 test-travis-leaks: export TRAVIS_CI=1
 test-travis-leaks:
 	$(pytest) $(test_args_no_xml) --benchmark-skip -R :
-	coverage report -m
+	coverage report --show-missing
 
 .PHONY: cover
 cover:
 	$(pytest) $(cover_args) --benchmark-skip
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
@@ -285,7 +344,7 @@ cover-travisci: export TRAVIS_CI=1
 cover-travisci: display-env
 	# $(pytest) $(cover_args) --benchmark-skip -p no:ipdb
 	pytest -p no:ipdb -p no:pytestipdb -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --showlocals --trace-config
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
@@ -293,14 +352,14 @@ cover-travisci: display-env
 cover-debug:
 	# --showlocals # show local variables in tracebacks
 	$(pytest) $(cover_args) --benchmark-skip --pdb --showlocals
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 .PHONY: cover-debug-no-timeout
 cover-debug-no-timeout:
 	pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
@@ -315,7 +374,7 @@ display-env:
 cover-debug-no-timeout-travisci: export TRAVIS_CI=1
 cover-debug-no-timeout-travisci: display-env
 	pytest -p no:timeout -s --tb short --cov-config .coveragerc --cov scarlett_os tests --cov-report html --benchmark-skip --pdb --showlocals
-	coverage report -m
+	coverage report --show-missing
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
@@ -329,7 +388,7 @@ coverage: ## check code coverage quickly with the default Python
 		# defined inside of setup.cfg:
 		# --cov=scarlett_os --cov-report term-missing tests/
 		# coverage run --source=scarlett_os/ --include=scarlett_os setup.py test
-		coverage report -m
+		coverage report --show-missing
 		coverage html
 		$(BROWSER) htmlcov/index.html
 
@@ -337,7 +396,7 @@ coverage-no-html: ## check code coverage quickly with the default Python
 
 	coverage run --source scarlett_os setup.py test
 
-	coverage report -m
+	coverage report --show-missing
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/scarlett_os.rst
@@ -364,6 +423,62 @@ dc-ci-build:
 
 docker-run-bash:
 	docker run -i -t --rm scarlettos_scarlett_master bash
+
+.PHONY: scp-local-coverage
+scp-local-coverage:
+	rm .coverage; \
+	rm -rfv .coverage.*; \
+	./scripts/contrib/scp_local.sh .coverage; \
+
+.PHONY: scp-local-cov-xml
+scp-local-cov-xml:
+	rm cov.xml; \
+	./scripts/contrib/scp_local.sh cov.xml; \
+
+.PHONY: scp-local-cov_annotate
+scp-local-cov_annotate: export SCARLETT_SCP_RECURSIVE=1
+scp-local-cov_annotate:
+	rm -rfv cov_annotate; \
+	./scripts/contrib/scp_local.sh cov_annotate; \
+
+.PHONY: scp-local-htmlcov
+scp-local-htmlcov: export SCARLETT_SCP_RECURSIVE=1
+scp-local-htmlcov:
+	rm -rfv scp-local-htmlcov; \
+	./scripts/contrib/scp_local.sh htmlcov; \
+
+.PHONY: scp-local-coverage-reports
+scp-local-coverage-reports:
+	$(MAKE) clean-coverge-files
+	$(MAKE) scp-local-coverage
+	$(MAKE) scp-local-cov-xml
+	$(MAKE) scp-local-cov_annotate
+	$(MAKE) scp-local-htmlcov
+
+.PHONY: open-coverage-report-html
+open-coverage-report-html:
+	$(BROWSER) htmlcov/index.html
+
+.PHONY: open-coverage-cov_annotate
+open-coverage-cov_annotate:
+	vim cov_annotate
+
+# rm -f .coverage .coverage.* coverage.xml .metacov*
+# --cov-append
+coverage-erase:
+	coverage erase
+# run – Run a Python program and collect execution data.
+# report – Report coverage results.
+# html – Produce annotated HTML listings with coverage results.
+# xml – Produce an XML report with coverage results.
+# annotate – Annotate source files with coverage results.
+# erase – Erase previously collected coverage data.
+# combine – Combine together a number of data files.
+# debug – Get diagnostic information.
+
+# Coverage annotated source written to dir cov_annotate
+# Coverage HTML written to dir htmlcov
+# Coverage XML written to file cov.xml
 
 # docker-exec-bash:
 # 	container_id := $(shell docker ps |grep scarlettos_scarlett_master| awk '{print $1}')
@@ -406,6 +521,9 @@ run-tasker:
 
 run-listener:
 	python -m scarlett_os.listener
+
+run-ruamel-config:
+	python -m scarlett_os.common.configure.ruamel_config
 
 # source: https://github.com/docker/machine/blob/master/docs/drivers/generic.md#interaction-with-ssh-agents
 # source: http://blog.scottlowe.org/2015/08/04/using-vagrant-docker-machine-together/
@@ -696,3 +814,16 @@ update_requirements:
 	pur -r requirements_test_all.txt
 	pur -r requirements_test.txt
 	pur -r requirements_test_experimental.txt
+
+# Fix all py files with autopep8
+.PHONY: apply-autopep8
+apply-autopep8:
+	find . -name "*.py" -exec autopep8 --max-line-length 200 --in-place --aggressive --aggressive {} \;
+
+.PHONY: apply-isort
+apply-isort:
+	isort --recursive --diff --verbose scarlett_os/
+
+.PHONY: setup-pre-commit
+setup-pre-commit:
+	pre-commit install -f --install-hooks

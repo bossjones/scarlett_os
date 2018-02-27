@@ -54,9 +54,15 @@ class TestScarlett_os(object):
         # ['Linux', '4.4.17', 'boot2docker', 'x86_64', 'with', 'debian', 'stretch', 'sid']
 
         if 'trusty' in ubuntu_version or 'jessie' in ubuntu_version or 'stretch' in ubuntu_version:
-            assert GObject.pygobject_version == (3, 22, 0)
+            # assert GObject.pygobject_version == (3, 22, 0)
+            assert GObject.pygobject_version[0] == 3
+            assert GObject.pygobject_version[1] >= 22
+            assert GObject.pygobject_version[2] >= 0
         else:
-            assert GObject.pygobject_version == (3, 20, 0)
+            # assert GObject.pygobject_version == (3, 20, 0)
+            assert GObject.pygobject_version[0] == 3
+            assert GObject.pygobject_version[1] >= 20
+            assert GObject.pygobject_version[2] >= 0
 
         # Verify Gstremaer 1.8.2 or 1.8.3
         gst_version_string = Gst.version_string()
