@@ -237,9 +237,9 @@ jhbuild-run-test:
 jhbuild-run-clean-test-all: export TRAVIS_CI=1
 jhbuild-run-clean-test-all:
 	$(MAKE) clean-build-test-artifacts
-	# jhbuild run python setup.py install
-	# jhbuild run -- pip install -e .[test]
-	# jhbuild run -- coverage run -- setup.py test
+	jhbuild run python setup.py install
+	jhbuild run -- pip install -e .[test]
+	jhbuild run -- coverage run -- setup.py test
 	jhbuild run -- $(pytest) $(test_args_with_xml)
 	# jhbuild run -- coverage report --show-missing
 
