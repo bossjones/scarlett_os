@@ -1,37 +1,28 @@
 # -*- coding: utf-8 -*-
+matrix:
+  fast_finish: true
+  include:
+  - python: '3.5'
+    env:
+      TOXENV: py35
+      PYTHON: "python3"
+      PACKAGES: "python3-gi python3-gi-cairo"
+      DOCKER_COMPOSE_VERSION: 1.17.1
+      TEST_TARGET: default
+      DOCKER_DATA: "$HOME/docker_data"
+      DOCKER_VERSION: 17.09.1~ce-0~ubuntu
+    sudo: required
+    dist: trusty
+    language: python
+    group: edge
+  allow_failures:
+  - python: '3.5'
+    env:
+      TOXENV: typing
 
-# FIXME: This is so broken, it's not even funny, idk how it even works currently. Fix this. Use "travis lint" via the travis cli tool 2/25/2018
-
-# INFO: https://docs.travis-ci.com/user/languages/python/
-cache:
-  pip: true
-  directories:
-    - $HOME/.ccache
-    - $HOME/jhbuild
-    - $HOME/gnome
-    - $HOME/.pip
-    - $HOME/.pre-commit
-    - $HOME/.cache
-    - $HOME/.cache/pip-faster/
-    - $HOME/.cache/pre-commit/
-    - $HOME/.cache/pip/wheels
-# SOURCE: https://github.com/Yelp/paasta/blob/master/.travis.yml
-# before_cache:
-#   # We don't currently use any secure environment variables, but just in case, and also to avoid caches that grow forever, remove log dirs.
-#   - rm -rf .tox/*/log .tox/log .tox/*/local/log
-#   # For some reason (because we build the manpages toxenv inside docker, maybe?), caching .tox/manpages leads to failing itest_% builds.
-#   - rm -rf .tox/manpages
-env:
-- TOXENV=py35
-- PYTHON="python3"
-- PACKAGES="python3-gi python3-gi-cairo"
-- DOCKER_COMPOSE_VERSION=1.17.1
-- TEST_TARGET=default
-- DOCKER_DATA="$HOME/docker_data"
-- DOCKER_VERSION=17.09.1~ce-0~ubuntu
-sudo: required
 services:
   - docker
+
 before_install:
   - sudo apt-get update
   - travis_retry pip install coveralls
@@ -47,7 +38,14 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - docker-compose --version
-# NOTE: [travis] re: pip - Please note that the --user option is mandatory if you are not using language: python, since no virtualenv will be created in that case.
+
+cache:
+  apt: true
+  directories:
+  - "$HOME/.ccache"
+  - "$HOME/jhbuild"
+  - "$HOME/gnome"
+
 install:
   - travis_retry pip install coveralls
   - travis_retry pip install coverage
@@ -61,16 +59,17 @@ install:
   # - travis_retry
   - travis_retry make docker_build_test
 
-# NOTE: [travis] Python projects need to provide the script key in their .travis.yml to specify what command to run tests with.
 script:
   # - docker run --privileged -v `pwd`:/home/pi/dev/bossjones-github/scarlett_os -i -t --rm scarlettos_scarlett_master make test-travis
   - travis_retry make docker_run_test
+
 # source: https://github.com/inspirehep/inspire-next/blob/9700274c36074a3e43168bf48b8ba3e3bfa7bcdf/.travis.yml
 after_script:
   # Killing via SIGTERM in order to trigger atexit and dump coverage information in WSGI
   # - "docker-compose -f docker-compose.test.yml kill -s SIGTERM"
   # - "docker-compose -f docker-compose.test.yml rm -f"
   - docker kill scarlett-test
+
 after_success:
   - _USER=$(ls -lta | awk '{print $3}')
   - _GROUP=$(ls -lta | awk '{print $4}')
@@ -89,19 +88,6 @@ after_success:
   # Coverage report contains Docker paths. We replace them, so that we can run Coveralls.
   - sed -i 's@\"/home/pi/dev/bossjones-github/scarlett_os/@'"\"$(pwd)/"'@g' .coverage
   - coveralls
-language: python
-matrix:
-  fast_finish: true
-  allow_failures:
-    - env: TOXENV=typing
-  include:
-    - os: linux
-      dist: trusty
-      sudo: required
-      python: "3.5"
-      language: python
-      group: edge
-      env: TOXENV=py35 PYTHON="python3" PACKAGES="python3-gi python3-gi-cairo" DOCKER_COMPOSE_VERSION=1.17.1 TEST_TARGET=default DOCKER_DATA="$HOME/docker_data" DOCKER_VERSION=17.09.1~ce-0~ubuntu
 
 notifications:
   email:
@@ -109,20 +95,22 @@ notifications:
       - bossjones@theblacktonystark.com
     on_success: always # default: change
     on_failure: always # default: always
+
+deploy:
+  distributions: sdist bdist_wheel
+  provider: pypi
+  user: bossjones
+  password:
+    secure: RTwOAJzBeEXy1as+a3sutcSjNTfoSg15ep8tHIjOqK0etkThWXNFs0FvWNuChV3zsFhA40sMpAamHvcGXJ717GAYIPstIrgAusLKM7OIUXpUF6kqvZsRQw9RPS4vBmueBoBo+pLY6q9gIP+Bav+fFwWocSyjwHLGcaOVdOF/m2VbWEg3p+SGwVolguSpWBNobLDmwj8yd/qiZ6b2LvTrOVkUENfa8Zk8BSXerZiTe98I2c/KuGqkVird+3LulK0kDU1FENO9v5eh+wZzElgbVSGfy87gkdc5whYIz4oA794Gc0jt+YiP2k0pNPRGAcrAn5MRjCdvWQtmkbxdns/JZOeK59SrhcQ6BRfDNQC97MPEZAz/E3qhiDPxwbhuK+LsdIiRHnazwv4MuUU27TcqwtTWcYijzT0aifiQUW6hLwpmVMx6GJy8dvhh+Ursr52jaAaFVx31NUB96+Wa204LCZV1CFo8vKgqDxTjZBfEK0zepQUh06dRdMJaeAN/dhsupMjnEfVY5GSv+ySKkJJ2r77mngyVO3snMs6x2sdH+PjfMnOEmQUcpnaNCQF01RxxfUz+7TY0JonM4yb7dnc+T402G+PhEDKGi5/O1YCIHwWQcMxhv2rMiYSlUt3ikcxkW8YGhhRvEUX1rGyAtPWBanyJ+KMb3QWv7huKE7Ezc/E=
+  on:
+    condition: "$TOXENV == py27"
+    repo: bossjones/scarlett_os
+    tags: true
+
+notifications:
   slack:
     # on_success: change
     on_success: always
     on_failure: always
     rooms:
       secure: arS7e7IDG80ukrrjy4fVfNDh5Yqrz4mxmduWqJU2zHzwxL0QkJWnhncWBpTgXr06MVgWYwq/YnoCGZ+wcWHkYzsqDHWtFI0JguZuJcFAWV5l7PWOxcUUh731hipRcgkZIH03pqnfZTbN3kkNTvFcTL9NG92ZOYd/ZSQeCnNPF9T2PUjn5LnPNwOxJSVAdmvz7CoLJWIR6vF9ojoxZdMj1RhV4b1C9orP3pBh3V3sVc5ExX6cUePXJtkvb51fXwdCsGNA22xZrDfbxCoOXfMmgDuN/7W/DVPPyaZCInYQl2B/oLF+3TOqUZ8STM3BPDIBjxgPRBdULIqeaQJNNJ9rfQ6h+YhvCWDmZD5ugdTQkGCSX2hR4TGMnS9v/nu5KKSalQEkNOfcqZUSTRVHKL800arEwja2avRGu9KBlijg79r/k2EILb7sPfleeS0+eLKIYTBVyQvuiqo31NcZ4Yun9ykQlTJW0n1NiVrLRVHbCIScrHwyH8pI4ts6PbwtUO8HWWDXEUSZRipc14ckZBzqB6ozAAwtF4fStnHC5rkd1sRreZalLKsZxaVpsX0mspZfSLfz6eV34vnDs9Xv0+tPuW0X0P1/FZIykvjDrmoM8s5TD1xzES9zRslhWxK2yv0a5OaryWvicQKcCwg8zwdiCTAwq1wBNkYzrtTnTN9QnRA=
-
-deploy:
-  - provider: pypi
-    # distributions: sdist bdist_wheel
-    user: bossjones
-    password:
-      secure: RTwOAJzBeEXy1as+a3sutcSjNTfoSg15ep8tHIjOqK0etkThWXNFs0FvWNuChV3zsFhA40sMpAamHvcGXJ717GAYIPstIrgAusLKM7OIUXpUF6kqvZsRQw9RPS4vBmueBoBo+pLY6q9gIP+Bav+fFwWocSyjwHLGcaOVdOF/m2VbWEg3p+SGwVolguSpWBNobLDmwj8yd/qiZ6b2LvTrOVkUENfa8Zk8BSXerZiTe98I2c/KuGqkVird+3LulK0kDU1FENO9v5eh+wZzElgbVSGfy87gkdc5whYIz4oA794Gc0jt+YiP2k0pNPRGAcrAn5MRjCdvWQtmkbxdns/JZOeK59SrhcQ6BRfDNQC97MPEZAz/E3qhiDPxwbhuK+LsdIiRHnazwv4MuUU27TcqwtTWcYijzT0aifiQUW6hLwpmVMx6GJy8dvhh+Ursr52jaAaFVx31NUB96+Wa204LCZV1CFo8vKgqDxTjZBfEK0zepQUh06dRdMJaeAN/dhsupMjnEfVY5GSv+ySKkJJ2r77mngyVO3snMs6x2sdH+PjfMnOEmQUcpnaNCQF01RxxfUz+7TY0JonM4yb7dnc+T402G+PhEDKGi5/O1YCIHwWQcMxhv2rMiYSlUt3ikcxkW8YGhhRvEUX1rGyAtPWBanyJ+KMb3QWv7huKE7Ezc/E=
-    on:
-      condition: $TOXENV == "py27"
-      repo: bossjones/scarlett_os
-      tags: true
