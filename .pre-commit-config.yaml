@@ -1,25 +1,134 @@
 ---
 # INFO: https://pre-commit.com/hooks.html
 # NOTE: Borrowed a bunch from https://github.com/Yelp/swagger_zipkin/blob/master/.pre-commit-config.yaml
+# All hooks here: https://github.com/pre-commit/pre-commit-hooks
 repos:
 -   repo: git://github.com/pre-commit/pre-commit-hooks
     sha: v0.9.1
     hooks:
+
+        # INFO: Trims trailing whitespace.
+    # Markdown linebreak trailing spaces preserved for .md and.markdown; use args: ['--markdown-linebreak-ext=txt,text'] to add other extensions, args: ['--markdown-linebreak-ext=*'] to preserve them for all files, or args: ['--no-markdown-linebreak-ext'] to disable and always trim.
     -   id: trailing-whitespace
+
+    # INFO: Makes sure files end in a newline and only a newline.
     -   id: end-of-file-fixer
+
+    # INFO: Runs autopep8 over python source.
+    # Ignore PEP 8 violation types with args: ['-i', '--ignore=E000,...'] or through configuration of the [pycodestyle] section in setup.cfg / tox.ini.
     -   id: autopep8-wrapper
-    -   id: check-yaml
-    -   id: debug-statements
-    # -   id: name-tests-test
-    -   id: flake8
-        args: ['--max-line-length=200']
-    -   id: requirements-txt-fixer
-    -   id: check-executables-have-shebangs
-    -   id: fix-encoding-pragma
-    -   id: check-yaml
+
+    #  INFO: Checks for a common error of placing code before the docstring.
+    -   id: check-docstring-first
+
+    # INFO: Attempts to load all json files to verify syntax.
     -   id: check-json
         files: \.(bowerrc|jshintrc|json)$
+
+    # INFO: Attempts to load all yaml files to verify syntax.
+    -   id: check-yaml
+
+    # INFO: Check for pdb / ipdb / pudb statements in code.
+    -   id: debug-statements
+
+    # -   id: name-tests-test
+    # -   id: flake8
+    #     args: ['--max-line-length=200']
+
+    # INFO: Sorts entries in requirements.txt
+    -   id: requirements-txt-fixer
+
+    # INFO: Checks that non-binary executables have a proper shebang.
+    -   id: check-executables-have-shebangs
+
+    # INFO: Add # -*- coding: utf-8 -*- to the top of python files.
+    # To remove the coding pragma pass --remove (useful in a python3-only codebase)
+    -   id: fix-encoding-pragma
+
+    # sort-simple-yaml - Sorts simple YAML files which consist only of top-level keys, preserving comments and blocks.
+
+    # double-quote-string-fixer - This hook replaces double quoted strings with single quoted strings.
+
+    # SOURCE: https://github.com/Yelp/task_processing/blob/master/.pre-commit-config.yaml
+    # -   id: fix-encoding-pragma
+    #     language_version: python3.6
+    #     args: [--remove]
 -   repo: git://github.com/pre-commit/mirrors-isort
     sha: '4b74ac14df891a0958e5355c5e60d110f0bc45e0'
     hooks:
     -   id: isort
+
+# ################################################################################################
+# # NOTE: Borrowed this from https://github.com/pre-commit/pre-commit-hooks/blob/master/.pre-commit-config.yaml#L7
+# ################################################################################################
+# -   repo: https://github.com/pre-commit/pre-commit
+#     sha: v0.16.3
+#     hooks:
+#     -   id: validate_manifest
+# -   repo: https://github.com/asottile/reorder_python_imports
+#     sha: v0.3.5
+#     hooks:
+#     -   id: reorder-python-imports
+#         language_version: python3.6
+# -   repo: https://github.com/asottile/pyupgrade
+#     sha: v1.1.4
+#     hooks:
+#     -   id: pyupgrade
+# -   repo: https://github.com/asottile/add-trailing-comma
+#     sha: v0.6.4
+#     hooks:
+#     -   id: add-trailing-comma
+# ################################################################################################
+# ################################################################################################
+
+# ################################################################################################
+# # SOURCE: https://github.com/Yelp/task_processing/blob/master/.pre-commit-config.yaml
+# -   repo: https://github.com/asottile/reorder_python_imports.git
+#     sha: v0.3.1
+#     hooks:
+#     -   id: reorder-python-imports
+#         language_version: python3.6
+#         args: [
+#             --remove-import, 'from __future__ import absolute_import',
+#             --remove-import, 'from __future__ import print_function',
+#             --remove-import, 'from __future__ import unicode_literals',
+#         ]
+# ################################################################################################
+
+# SOURCE: https://github.com/Yelp/pgctl/blob/050012b80dd612df21ec0a76df928fe9ecdd4736/.pre-commit-config.yaml
+# -   id: autopep8-wrapper
+# -   id: check-added-large-files
+# -   id: check-case-conflict
+# -   id: check-docstring-first
+# -   id: check-merge-conflict
+# -   id: check-yaml
+# -   id: debug-statements
+# -   id: detect-private-key
+#     exclude: ^\.activate\.sh$
+# -   id: double-quote-string-fixer
+# -   id: end-of-file-fixer
+#     exclude: ^\.activate\.sh$
+# -   id: flake8
+# -   id: requirements-txt-fixer
+# -   id: trailing-whitespace
+# -   repo: git://github.com/asottile/reorder_python_imports
+#     sha: v0.3.5
+#     hooks:
+#     -   id: reorder-python-imports
+#         args:
+#         - --add-import
+#         - from __future__ import absolute_import
+#         - --add-import
+#         - from __future__ import unicode_literals
+# -   repo: local
+#     hooks:
+#     -   id: system
+#         name: PyLint
+#         entry: python -m pylint.__main__
+#         language: system
+#         files: \.py$
+# -   repo: https://github.com/asottile/pyupgrade
+#     sha: v1.0.4
+#     hooks:
+#     -   id: pyupgrade
+#         language_version: python3

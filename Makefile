@@ -826,4 +826,14 @@ apply-isort:
 
 .PHONY: setup-pre-commit
 setup-pre-commit:
+	pip install pre-commit
 	pre-commit install -f --install-hooks
+
+.PHONY: pre-commit-run
+pre-commit-run:
+	pre-commit run
+
+.PHONY: pre-commit-try
+pre-commit-try:
+	pre-commit try-repo .
+
