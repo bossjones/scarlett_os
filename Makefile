@@ -1,3 +1,22 @@
+# Copyright 2015-2016 Tony Dark Industries LLC.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Edit this release and run "make release"
+RELEASE=0.1.0
+
+SHELL=/bin/bash
+
 project := scarlett_os
 projects := scarlett_os
 username := bossjones
@@ -826,4 +845,39 @@ apply-isort:
 
 .PHONY: setup-pre-commit
 setup-pre-commit:
+	pip install pre-commit
 	pre-commit install -f --install-hooks
+
+.PHONY: pre-commit-run
+pre-commit-run:
+	pre-commit run
+
+.PHONY: pre-commit-try
+pre-commit-try:
+	pre-commit try-repo .
+
+.PHONY: makelint-install
+makelint-install:
+	go get github.com/mrtazz/checkmake
+	cd $$GOPATH/src/github.com/mrtazz/checkmake
+	make
+
+# github_changelog_generator comes from
+# https://github.com/skywinder/github-changelog-generator
+# Follow the instructions to generate a github api token
+# VERSION = $(firstword $(subst -, ,$(RELEASE) ))
+# LAST_COMMIT_MSG = $(shell git log -1 --pretty=%B | sed -e 's/\x27/"/g')
+# github_changelog_generator comes from
+# https://github.com/skywinder/github-changelog-generator
+# Follow the instructions to generate a github api token
+# release:
+# 	dch -v $(RELEASE) --distribution xenial --changelog ../debian/changelog $$'$(VERSION) tagged with \'make release\'\rCommit: $(LAST_COMMIT_MSG)'
+# 	sed -i -e "s/__version__ = .*/__version__ = '$(VERSION)'/" ../paasta_tools/__init__.py
+# 	@echo "$(RELEASE) has the changelog set."
+# 	github_changelog_generator -u Yelp -p paasta --since-tag v0.68.0 --max-issues=200 --future-release $(RELEASE) --output ../CHANGELOG.md || echo github_changelog_generator not installed, not generating changelog!! || true
+# 	cd .. && make docs || true
+# 	@git diff
+# 	@echo "Now Run:"
+# 	@echo 'git commit -a -m "Released $(RELEASE) via make release"'
+# 	@echo 'git tag --force v$(VERSION)'
+# 	@echo 'git push --tags origin master'

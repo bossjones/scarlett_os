@@ -20,6 +20,7 @@ import pytest
 
 import scarlett_os  # pylint: disable=W0611
 from scarlett_os.common.configure import ruamel_config
+# from ruamel_config import logging
 
 from tests.conftest import dict_compare
 
@@ -182,6 +183,16 @@ class TestGetXdgConfigDirPath(object):
 
     def test_get_version_file_path(self, ruamel_config_unit_mocker_stopall):
         assert ruamel_config.get_version_file_path() == '/home/pi/.config/scarlett/.SCARLETT_VERSION'
+
+    def test_get_xdg_config_dir_path_override_not_none(self, ruamel_config_unit_mocker_stopall):
+        temp_mocker = ruamel_config_unit_mocker_stopall
+
+        mock_logger_debug = temp_mocker.patch(
+            'scarlett_os.common.configure.ruamel_config.logging.Logger.debug', name='mock_logger_debug')
+
+        ruamel_config.get_xdg_config_dir_path(override='SOME_FAKE_OVERRIDE')
+
+        mock_logger_debug.assert_called_with(mock.ANY)
 
 # pylint: disable=R0201
 # pylint: disable=C0111
