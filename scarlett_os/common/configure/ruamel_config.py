@@ -267,7 +267,7 @@ def flatten(d, parent_key='', sep='/'):
     return dict(items)
 
 # FIXME: add valid docblock
-def mapping_string_access(self, s, delimiter=None, key_delim=None):
+def mapping_string_access(self, s, delimiter=None, key_delim=None):  # pragma: no cover
     """[summary]
 
     Arguments:
