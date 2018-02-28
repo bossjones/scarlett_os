@@ -355,10 +355,11 @@ def sequence_string_access(self, s, delimiter=None, key_delim=None):  # pragma: 
 # monkeypatch CommentedSeq.string_access function
 ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
 
+# FIXME: Look at ruamel and figure out how to use it to run these tests
 # source:
 # https://stackoverflow.com/questions/39612778/suppress-python-unicode-in-yaml-output
 # NOTE: Without this, We won't be able to suppress !!python/unicode in YAML output
-def yaml_unicode_representer(self, data):
+def yaml_unicode_representer(self, data):  # pragma: no cover
     """[Override ruamel.yaml.representer.Representer. This representer handles the unicode to str conversion]
 
     Arguments:
