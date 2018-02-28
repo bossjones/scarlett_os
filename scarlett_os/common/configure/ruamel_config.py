@@ -165,6 +165,21 @@ DEFAULT_CORE_CONFIG = (
 # - party
 # """
 
+# def dump_yaml(layered_config):
+#     """[summary]
+
+#     Arguments:
+#         layered_config {[type]} -- [description]
+
+#     Returns:
+#         [type] -- [description]
+#     """
+
+#     # source:
+#     # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
+#     return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
+#                                        default_flow_style=False)
+
 DEFAULT_CONFIG = """
 # Omitted values in this section will be auto detected using freegeoip.io
 
@@ -269,7 +284,10 @@ def mapping_string_access(self, s, delimiter=None, key_delim=None):
     # FIXME: Make this into a real docstring
     # source:
     # https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
-    def p(v):
+    # INFO:
+    # Inner Functions – What Are They Good
+    # For? - https://realpython.com/blog/python/inner-functions-what-are-they-good-for/
+    def p(v):  # pragma: no cover
         """[summary]
 
         Arguments:
@@ -306,7 +324,8 @@ def mapping_string_access(self, s, delimiter=None, key_delim=None):
 ruamel.yaml.comments.CommentedMap.string_access = mapping_string_access
 
 # FIXME: add valid docblock
-def sequence_string_access(self, s, delimiter=None, key_delim=None):
+# FIXME: Try to borrow test from ruamel and add it to our test suite
+def sequence_string_access(self, s, delimiter=None, key_delim=None):  # pragma: no cover
     """[summary]
 
     Arguments:
@@ -335,21 +354,6 @@ def sequence_string_access(self, s, delimiter=None, key_delim=None):
 
 # monkeypatch CommentedSeq.string_access function
 ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
-
-# def dump_yaml(layered_config):
-#     """[summary]
-
-#     Arguments:
-#         layered_config {[type]} -- [description]
-
-#     Returns:
-#         [type] -- [description]
-#     """
-
-#     # source:
-#     # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
-#     return ruamel.yaml.round_trip_dump(layered_config.dump(layered_config),
-#                                        default_flow_style=False)
 
 # source:
 # https://stackoverflow.com/questions/39612778/suppress-python-unicode-in-yaml-output
