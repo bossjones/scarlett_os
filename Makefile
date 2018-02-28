@@ -837,3 +837,8 @@ pre-commit-run:
 pre-commit-try:
 	pre-commit try-repo .
 
+.PHONY: makelint-install
+makelint-install:
+	go get github.com/mrtazz/checkmake
+	cd $$GOPATH/src/github.com/mrtazz/checkmake
+	make

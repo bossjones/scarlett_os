@@ -17,8 +17,8 @@ fswatch -o . -e .git | xargs -n1 -I{} rsync -avz -e \
    --exclude *.vendor \
    --exclude *__pycache__/ \
    --exclude .Python \
-   --exclude .coverage/ \
-   --exclude *.coverage/ \
+   --exclude .coverage \
+   --exclude *.coverage \
    --exclude .eggs/ \
    --exclude .installed.cfg \
    --exclude .vscode/ \

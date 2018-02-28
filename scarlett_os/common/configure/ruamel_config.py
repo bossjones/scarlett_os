@@ -106,12 +106,6 @@ yaml.version = (1, 2)  # set yaml version to 1.2
 
 RE_ASCII = re.compile(r"\033\[[^m]*m")  # source: home-assistant
 
-# FIXME: YANGNI
-if ruamel.yaml.version_info < (0, 15):
-    logger.error("ruamel version less than 0.15.x!")
-else:
-    logger.error("ruamel version greater than 0.15.x!")
-
 # NOTE: We are using https://github.com/srstevenson/xdg
 # NOTE: This enforces the [XDG Base Directory Specification]
 # https://specifications.freedesktop.org/basedir-spec/basedir-spec-0.6.html
