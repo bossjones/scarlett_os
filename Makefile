@@ -881,3 +881,11 @@ makelint-install:
 # 	@echo 'git commit -a -m "Released $(RELEASE) via make release"'
 # 	@echo 'git tag --force v$(VERSION)'
 # 	@echo 'git push --tags origin master'
+
+.PHONY: run-pylint-error
+run-pylint-error:
+	pylint -E scarlett_os
+
+.PHONY: jhbuild-run-pylint-error
+jhbuild-run-pylint-error:
+	jhbuild run -- pylint -E scarlett_os

@@ -266,3 +266,36 @@ foreground { s6-echo " [run] TRAVIS_CI_PYTEST: '${TRAVIS_CI_PYTEST}' ... sending
 exit ${SIGNAL_BUILD_STOP}
 
 ```
+
+
+# pep8 Error code meaning and option
+
+Below is the rough classification (extracted from source codes)
+
+**SOURCE: https://blog.sideci.com/about-style-guide-of-python-and-linter-tool-pep8-pyflakes-flake8-haking-pyling-7fdbe163079d**
+
+```
+Error and warning
+Starting with E … errors
+Starting with W … warnings
+100 type … indentation
+200 type … whitespace
+300 type … blank lines
+400 type … imports
+500 type … line length
+600 type … deprecation
+700 type … statements
+900 type … syntax errors
+```
+
+
+# Flake8 Error code meaning
+
+```
+The error code of flake8 are E***, W*** used in pep8 and F*** and C9**.
+
+E***/W***: Error and warning of pep8
+F***: Detection of PyFlakes
+C9**: Detection of circulate complexity by McCabe
+You can see the description of error code in this document.
+```
