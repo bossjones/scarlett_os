@@ -30,6 +30,7 @@ elif PY3:
     import queue  # noqa
 
     import subprocess  # noqa
+    import itertools
 
     map = itertools.imap if sys.version_info < (3,) else map
 

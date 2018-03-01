@@ -292,7 +292,7 @@ class ScarlettPlayer(_IdleObject):
         if self.read_exc:
             # An error occurred before the stream became ready.
             self.close(True)
-            raise self.read_exc
+            raise self.read_exc  # pylint: disable=raising-bad-type
 
     # def abort(self):
     #     self.stopme.set()

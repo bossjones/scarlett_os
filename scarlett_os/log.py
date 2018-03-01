@@ -187,7 +187,8 @@ class ColorizingStreamHandler(logging.StreamHandler):  # noqa
     @property
     def is_tty(self):
         isatty = getattr(self.stream, 'isatty', None)
-        return isatty and isatty()
+        # NOTE: error = not-callable
+        return isatty and isatty()  # pylint: disable=E1102
 
     def emit(self, record):
         try:
