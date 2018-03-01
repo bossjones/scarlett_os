@@ -162,7 +162,7 @@ class Config(object):
 
         Async friendly.
         """
-        time_zone = self.time_zone or dt_util.UTC
+        time_zone = self.time_zone or dt_utility.UTC
 
         return {
             'latitude': self.latitude,

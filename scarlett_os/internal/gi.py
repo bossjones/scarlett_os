@@ -6,10 +6,17 @@ import textwrap
 
 try:
     import gi
+    # gi.require_version('GLib', '2.0')
     gi.require_version('Gst', '1.0')
-    from gi.repository import GLib, GObject, Gst, Gio
+    from gi.repository import GLib
+    from gi.repository import GObject
+    from gi.repository import Gst
+    from gi.repository import Gio
     # Initalize for threads
     # NOTE: We might not want to put this here
+
+    # SOURCE: https://stackoverflow.com/questions/43777428/capture-gstreamer-network-video-with-python
+    # Gst.init(sys.argv)
     Gst.init(None)
     Gst.debug_set_active(True)
     Gst.debug_set_default_threshold(1)
@@ -35,7 +42,7 @@ REQUIRED_GST_VERSION = (1, 2, 3)
 
 if Gst.version() < REQUIRED_GST_VERSION:
     sys.exit(
-        'ERROR: Mopidy requires GStreamer >= %s, but found %s.' % (
+        'ERROR: ScarlettOS requires GStreamer >= %s, but found %s.' % (
             '.'.join(map(str, REQUIRED_GST_VERSION)), Gst.version_string()))
 
 
