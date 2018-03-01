@@ -32,6 +32,7 @@ elif PY3:
     import subprocess  # noqa
     import itertools
 
+    # python2 uses from itertools import imap, else just imap=map
     map = itertools.imap if sys.version_info < (3,) else map
 
     import errno
