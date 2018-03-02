@@ -408,7 +408,8 @@ def uri_to_path(uri):
 #     path = os.path.abspath(path)
 #     return path
 
-
+# SOURCE:
+# https://github.com/araczkowski/mopidy-rstation/blob/master/mopidy_rstation/file/mpath.py
 def _find_worker(relative, follow, done, work, results, errors):  # pragma: no cover
     """Worker thread for collecting stat() results.
 

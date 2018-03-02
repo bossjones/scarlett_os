@@ -18,6 +18,7 @@ from scarlett_os.exceptions import MainRunnerError
 from scarlett_os.exceptions import MainRunnerAbortedError
 from scarlett_os.exceptions import DecodeError
 from scarlett_os.exceptions import NoBackendError
+from scarlett_os.exceptions import MainRunnerTimeoutError
 
 import sys
 import os
@@ -281,7 +282,11 @@ def gi_require_versions(name, versions):
         else:
             return version
     else:
-        raise error
+        # Didn't find anything..
+        # loop fell through without finding a factor
+        # INFO: http://book.pythontips.com/en/latest/for_-_else.html
+        logger.error("Breaking out of for loop, we did not find a gi version that satisfies the conditional")
+        raise error  # pylint: disable=raising-bad-type
 
 
 def is_main_thread():
@@ -366,7 +371,10 @@ class MainRunner(object):  # noqa
 
         with self._lock:
             if self._aborted:
-                raise self._error
+                # Make sure we have a debug statment if we catch this error accidently
+                logger.debug('Ran {}| self.aborted={}'.format(
+                    sys._getframe().f_code.co_name, self._aborted))
+                raise self._error  # pylint: disable=raising-bad-type
             self._error = None
             # XXX: ideally this should be GLib.MainContext.default().is_owner()
             # but that's not available in older pygobject
@@ -391,7 +399,7 @@ class MainRunner(object):  # noqa
                     self._source_id = None
                     raise MainRunnerTimeoutError("timeout: %r" % timeout)
             if self._error is not None:
-                raise self._error
+                raise self._error  # pylint: disable=raising-bad-type
             return self._return
 
 
@@ -439,7 +447,10 @@ def abort_on_exception(func):  # noqa
             exc_type, exc_value, exc_tb = exc_info = sys.exc_info()
             filename, line_num, func_name, text = traceback.extract_tb(exc_tb)[-1]
             logger.error('Exception Thrown from [%s] on line [%s] via function [%s]' % (filename, line_num, func_name))
-            logger.error('Exception type %s: %s' % (e.__class__.__name__, e.message))
+            # DISABLED: because e.message might not be available always.
+            # SOURCE: https://stackoverflow.com/questions/4690600/python-exception-message-capturing
+            # logger.error('Exception type %s: %s' % (e.__class__.__name__, str(e.message))
+            logger.error('Exception type %s: %s' % (e.__class__.__name__, str(e)))
             thread_object.emit('aborted', exc_info)
     return wrapper
 
@@ -481,19 +492,19 @@ fsnative2bytes = fsnative2glib
 
 bytes2fsnative = glib2fsnative
 
+# FIXME: generator_player.ScarlettPlayer(path) is not defined ... so lets comment this out for now
+# def audio_open(path):
+#     """Open an audio file using a library that is available on this
+#     system.
+#     """
+#     # GStreamer.
+#     if _gst_available():
+#         from . import generator_player
+#         try:
+#             return generator_player.ScarlettPlayer(path)
+#             # return gstdec.ScarlettPlayer(path)
+#         except DecodeError:
+#             pass
 
-def audio_open(path):
-    """Open an audio file using a library that is available on this
-    system.
-    """
-    # GStreamer.
-    if _gst_available():
-        from . import generator_player
-        try:
-            return generator_player.ScarlettPlayer(path)
-            # return gstdec.ScarlettPlayer(path)
-        except DecodeError:
-            pass
-
-    # All backends failed!
-    raise NoBackendError()
+#     # All backends failed!
+#     raise NoBackendError()

@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import re
 import unicodedata
+from scarlett_os.compat import text_type
 
 
 def indent(string, places=4, linebreak='\n', singles=False):

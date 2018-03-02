@@ -7,6 +7,8 @@ from typing import Any, Union, Optional, Tuple  # noqa
 
 import pytz
 
+from functools import reduce
+
 DATE_STR_FORMAT = "%Y-%m-%d"
 UTC = DEFAULT_TIME_ZONE = pytz.utc  # type: dt.tzinfo
 
@@ -286,21 +288,21 @@ def date_key(datestr):  # noqa
             value += d * m
     return value
 
+# NOTE: Duplicate function
+# def parse_date(datestr):  # noqa
+#     """Parses yyyy-mm-dd date format and returns unix time.
 
-def parse_date(datestr):  # noqa
-    """Parses yyyy-mm-dd date format and returns unix time.
+#     Raises ValueError in case the input couldn't be parsed.
+#     """
 
-    Raises ValueError in case the input couldn't be parsed.
-    """
+#     import time
 
-    import time
+#     try:
+#         frmt = ["%Y", "%Y-%m", "%Y-%m-%d"][datestr.count("-")]
+#     except IndexError:
+#         raise ValueError
 
-    try:
-        frmt = ["%Y", "%Y-%m", "%Y-%m-%d"][datestr.count("-")]
-    except IndexError:
-        raise ValueError
-
-    return time.mktime(time.strptime(datestr, frmt))
+#     return time.mktime(time.strptime(datestr, frmt))
 
 
 def format_time(time):

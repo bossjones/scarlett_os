@@ -3,14 +3,7 @@
 """ScarlettOS compatibility."""
 
 from __future__ import absolute_import, unicode_literals
-
-
 import sys
-
-# from six.moves import configparser
-
-# PY2 = sys.version_info[0] == 2
-# PY3 = not PY2
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -33,14 +26,12 @@ elif PY3:
     import itertools
 
     # python2 uses from itertools import imap, else just imap=map
-    map = itertools.imap if sys.version_info < (3,) else map
+    map = itertools.imap if sys.version_info < (3,) else map  # pylint: disable=no-member
 
     import errno
     from os import environ as environ
     import pprint
     pp = pprint.PrettyPrinter(indent=4)
-
-    # from scarlett_os.internal import debugger
 
     import builtins
     builtins
