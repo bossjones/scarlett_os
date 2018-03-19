@@ -10,7 +10,7 @@ typing>=3.6.4,<4
 voluptuous==0.11.1
 xdg>=3.0.0
 six==1.11.0
-yapf==0.20.2
+yapf==0.21.0
 
 # Yaml 1.2 spec
 ruamel.yaml==0.15.35
