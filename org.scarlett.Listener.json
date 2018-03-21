@@ -1,0 +1,56 @@
+
+{
+    "app-id": "org.scarlett.Listener",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "3.22",
+    "sdk": "org.gnome.Sdk",
+    "command": "python -c 'import gi'",
+    "tags": ["nightly"],
+    "desktop-file-name-prefix": "(Nightly) ",
+    "finish-args": [
+        "--share=ipc", "--socket=x11",
+        "--share=network",
+        "--socket=wayland",
+        "--filesystem=xdg-run/dconf", "--filesystem=~/.config/dconf:ro",
+        "--talk-name=ca.desrt.dconf", "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
+        "--socket=pulseaudio"
+    ],
+    "build-options" : {
+        "cflags": "-O2 -g",
+        "cxxflags": "-O2 -g",
+        "env": {
+            "V": "1"
+        }
+    },
+    "cleanup": [
+        "/include",
+        "/lib/pkgconfig",
+        "/share/pkgconfig",
+        "/share/aclocal",
+        "/man",
+        "/share/man",
+        "/share/gtk-doc",
+        "/share/vala",
+        "*.la",
+        "*.a"
+    ],
+    "modules": [
+        {
+            "name": "scarlett_os",
+            "buildsystem": "simple",
+            "build-commands": [
+                "pip3 install --prefix=/app --root=/ -r requirements.txt",
+                "pip3 install --prefix=/app --root=/-r requirements_dev.txt",
+                "python3 setup.py install --prefix=/app --root=/",
+                "pip3 install --prefix=/app --root=/ -e .[test]"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/bossjones/scarlett_os.git",
+                    "branch": "feature-config-schema"
+                }
+            ]
+        }
+    ]
+}
