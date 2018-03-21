@@ -40,7 +40,7 @@
             "buildsystem": "simple",
             "build-commands": [
                 "pip3 install --prefix=/app --root=/ -r requirements.txt",
-                "pip3 install --prefix=/app --root=/-r requirements_dev.txt",
+                "pip3 install --prefix=/app --root=/ -r requirements_dev.txt",
                 "python3 setup.py install --prefix=/app --root=/",
                 "pip3 install --prefix=/app --root=/ -e .[test]"
             ],
