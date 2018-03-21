@@ -36,6 +36,10 @@ from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import Gst
 from scarlett_os.internal.gi import Gio
 
+# FIXME: Don't forget to comment this out
+# import hunter
+# hunter.trace(module='gi', action=hunter.CallPrinter)
+
 from scarlett_os.exceptions import NoStreamError
 from scarlett_os.exceptions import FileReadError
 
@@ -485,6 +489,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.dbus_proxy.emitConnectedToListener('ScarlettListener')
         time.sleep(2)
         logger.info('_connect_to_dbus')
+        # TODO: Add a ss_cancel_signal.disconnect() function later
         ss_cancel_signal = self.bus.subscribe(sender=None,
                                               iface="org.scarlett.Listener",
                                               signal="ListenerCancelSignal",

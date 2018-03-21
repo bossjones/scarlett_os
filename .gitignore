@@ -94,3 +94,8 @@ espeak_tmp.wav
 src/
 
 wheelhouse
+
+gir-1.0
+gir-1.0/*
+
+fakegir/

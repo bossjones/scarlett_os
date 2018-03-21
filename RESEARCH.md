@@ -299,3 +299,256 @@ F***: Detection of PyFlakes
 C9**: Detection of circulate complexity by McCabe
 You can see the description of error code in this document.
 ```
+
+
+# Debug GST Warning
+
+Source: https://lists.freedesktop.org/archives/gstreamer-devel/2016-June/058941.html
+
+### Example warning message
+
+```
+(process:77249): GLib-GObject-CRITICAL **: g_param_spec_boxed: assertion 'G_TYPE_IS_BOXED (boxed_type)' failed
+
+(process:77249): GLib-GObject-CRITICAL **: g_object_class_install_property: assertion 'G_IS_PARAM_SPEC (pspec)' failed
+
+(process:77249): GLib-GObject-WARNING **: gsignal.c:1681: return value of type '<invalid>' for signal "GstPlayBin::get_video_tags" is not a value type
+
+(process:77249): GLib-GObject-WARNING **: gsignal.c:1681: return value of type '<invalid>' for signal "GstPlayBin::get_audio_tags" is not a value type
+
+(process:77249): GLib-GObject-WARNING **: gsignal.c:1681: return value of type '<invalid>' for signal "GstPlayBin::get_text_tags" is not a value type
+
+(process:77249): GLib-GObject-WARNING **: gsignal.c:1673: parameter 1 of type '<invalid>' for signal "GstPlayBin::convert_sample" is not a value type
+```
+
+
+Set the following:
+
+`G_DEBUG=fatal_warnings`
+
+
+EG.
+
+```
+ ⌁ pi@scarlett-ansible-manual1604-2  ⓔ scarlett_os  ⎇  master S:2 U:23 ?:120  ~/dev/bossjones-github/sc
+arlett_os  G_DEBUG=fatal_warnings jhbuild run -- pylint -E scarlett_os/listener.py
+Using config file /home/pi/dev/bossjones-github/scarlett_os/pylintrc
+************* Module scarlett_os.listener
+E:477, 8: Instance of 'ScarlettListenerI' has no 'play' member (no-member)
+E:494,59: Instance of 'ScarlettListenerI' has no 'on_cancel_listening' member (no-member)
+
+(process:29111): GLib-GObject-WARNING **: /home/pi/gnome/glib/gobject/gsignal.c:1675: parameter 1 of type '<invalid>' for signal "GstBus::sync_message" is not a value type
+Trace/breakpoint trap (core dumped)
+```
+
+Based on this via https://lists.freedesktop.org/archives/gstreamer-devel/2016-June/058983.html:
+
+```
+The problem looks like it is using multiple versions of GStreamer
+and/or other libraries in the same process, and they are conflicting
+with each other then. So maybe also make sure that you did the
+relocation correctly for all dynamic libraries that are used in the
+process, and not some of them still try to load another version of some
+library from the old place.
+```
+
+
+# Fakegir
+
+fakegir: Bring autocompletion to your PyGObject code
+
+https://github.com/strycore/fakegir
+
+# Example output from Fakegir testing
+
+```
+Checking Atk.py
+Checking Atspi.py
+Checking Cally.py
+Checking Clutter.py
+Checking ClutterGdk.py
+Checking ClutterGst.py
+Checking ClutterX11.py
+Checking Cogl.py
+Checking CoglPango.py
+Checking DBus.py
+Checking DBusGLib.py
+Checking GIRepository.py
+Checking GL.py
+Checking GLib.py
+Checking GModule.py
+Checking GObject.py
+Checking GSSDP.py
+Checking GUPnP.py
+Checking GUPnPIgd.py
+Checking GUdev.py
+Checking Gdk.py
+Checking GdkPixbuf.py
+Checking GdkX11.py
+Checking Gee.py
+Traceback (most recent call last):
+  File "Gee.py", line 2, in <module>
+    import Gee
+  File "/Users/malcolm/.cache/fakegir/gi/repository/Gee.py", line 93, in <module>
+    class AbstractBidirList(Gee.AbstractList, Gee.BidirList):
+AttributeError: module 'Gee' has no attribute 'AbstractList'
+Checking Gio.py
+Checking Gitg.py
+Traceback (most recent call last):
+  File "Gitg.py", line 3, in <module>
+    import Gitg
+  File "/Users/malcolm/.cache/fakegir/gi/repository/Gitg.py", line 4, in <module>
+    import Ggit
+ImportError: No module named 'Ggit'
+Checking GitgExt.py
+Checking Gst.py
+Checking GstAllocators.py
+Checking GstApp.py
+Checking GstAudio.py
+Checking GstBase.py
+Checking GstCheck.py
+Checking GstController.py
+Checking GstFft.py
+Checking GstGL.py
+Checking GstInsertBin.py
+Checking GstInterfaces.py
+Checking GstMpegts.py
+Checking GstNet.py
+Checking GstNetbuffer.py
+Traceback (most recent call last):
+  File "GstNetbuffer.py", line 57, in <module>
+    class NetBuffer(Gst.Buffer):
+AttributeError: module 'Gst' has no attribute 'Buffer'
+Checking GstPbutils.py
+Checking GstPlayer.py
+Checking GstRiff.py
+Checking GstRtp.py
+Checking GstRtsp.py
+Checking GstSdp.py
+Checking GstTag.py
+Checking GstVideo.py
+Checking Gtk.py
+Checking GtkClutter.py
+Checking GtkSource.py
+Checking HarfBuzz.py
+Checking JSCore.py
+Checking JavaScriptCore.py
+Checking Json.py
+Checking Pango.py
+Checking PangoCairo.py
+Checking PangoFT2.py
+Checking PangoXft.py
+Checking Soup.py
+Checking WebKit.py
+Checking __init__.py
+Checking cairo.py
+Checking fontconfig.py
+Checking freetype2.py
+Checking libxml2.py
+Checking win32.py
+Checking xfixes.py
+Checking xft.py
+Checking xlib.py
+Checking xrandr.py
+
+ |2.4.2|  using virtualenv: scarlett-os-venv2   hyenatop in ~/dev/bossjones/scarlett_os/fakegir
+± |master U:1 ?:1 ✗| →
+
+```
+
+
+# saving errors
+
+```
+ ⌁ pi@scarlett-ansible-manual1604-2  ⓔ scarlett_os  ⎇  master S:2 U:23 ?:119  ~/dev/bossjones-github/scarlett_os  make jhbuild-run-pylint-error
+jhbuild run -- pylint -E scarlett_os
+Using config file /home/pi/dev/bossjones-github/scarlett_os/pylintrc
+************* Module scarlett_os.core
+E:165,38: Undefined variable 'dt_util' (undefined-variable)
+************* Module scarlett_os.loader
+W: 13, 0: Unused import importlib (unused-import)
+W: 15, 0: Unused import os (unused-import)
+W: 16, 0: Unused import pkgutil (unused-import)
+W: 17, 0: Unused import sys (unused-import)
+W: 19, 0: Unused ModuleType imported from types (unused-import)
+************* Module scarlett_os.listener
+E:352,12: Raising NoneType while only classes or instances are allowed (raising-bad-type)
+/usr/lib/python3.5/inspect.py:78: Warning: /home/pi/gnome/glib/gobject/gsignal.c:1675: parameter 1 of type '<invalid>' for signal "GstBus::sync_message" is not a value type
+  return isinstance(object, type)
+/usr/lib/python3.5/inspect.py:78: Warning: /home/pi/gnome/glib/gobject/gsignal.c:1675: parameter 1 of type '<invalid>' for signal "GstBus::message" is not a value type
+  return isinstance(object, type)
+/usr/lib/python3.5/inspect.py:78: Warning: g_param_spec_boxed: assertion 'G_TYPE_IS_BOXED (boxed_type)' failed
+  return isinstance(object, type)
+/usr/lib/python3.5/inspect.py:78: Warning: g_object_class_install_property: assertion 'G_IS_PARAM_SPEC (pspec)' failed
+  return isinstance(object, type)
+E:665,11: Access to member 'signed' before its definition line 671 (access-member-before-definition)
+************* Module scarlett_os.log
+E:190,26: isatty is not callable (not-callable)
+************* Module scarlett_os.player
+E:295,12: Raising NoneType while only classes or instances are allowed (raising-bad-type)
+************* Module scarlett_os.compat
+E: 34,10: Undefined variable 'itertools' (undefined-variable)
+************* Module scarlett_os.internal.formatting
+E: 57,25: Undefined variable 'text_type' (undefined-variable)
+************* Module scarlett_os.internal.debugger
+E: 98, 4: No name 'PythonLexer' in module 'pygments.lexers' (no-name-in-module)
+E: 99, 4: No name 'Terminal256Formatter' in module 'pygments.formatters' (no-name-in-module)
+************* Module scarlett_os.internal.path
+E:440,31: Module 'scarlett_os.exceptions' has no 'FindError' member (no-member)
+E:450,31: Module 'scarlett_os.exceptions' has no 'FindError' member (no-member)
+E:452,31: Module 'scarlett_os.exceptions' has no 'FindError' member (no-member)
+E:455,27: Module 'scarlett_os.exceptions' has no 'FindError' member (no-member)
+************* Module scarlett_os.utility.dt
+E:225,19: Undefined variable 'reduce' (undefined-variable)
+E:290, 0: function already defined line 144 (function-redefined)
+************* Module scarlett_os.utility.yaml
+E:199, 4: Using variable 'logger' before assignment (used-before-assignment)
+E:205,16: Instance of 'str' has no 'setLevel' member (no-member)
+E:207,16: Instance of 'str' has no 'error' member (no-member)
+************* Module scarlett_os.utility.gnome
+E:284, 8: Raising NoneType while only classes or instances are allowed (raising-bad-type)
+E:369,16: Raising NoneType while only classes or instances are allowed (raising-bad-type)
+E:392,26: Undefined variable 'MainRunnerTimeoutError' (undefined-variable)
+E:394,16: Raising NoneType while only classes or instances are allowed (raising-bad-type)
+E:442,74: Instance of 'Exception' has no 'message' member (no-member)
+E:491, 8: No name 'generator_player' in module 'scarlett_os.utility' (no-name-in-module)
+************* Module scarlett_os.utility.file
+E: 63,23: Undefined variable '_FSCODING' (undefined-variable)
+************* Module scarlett_os.tools.package
+E: 10, 4: Unable to import 'distutils.sysconfig' (import-error)
+E: 56, 4: Unable to import 'distutils.sysconfig' (import-error)
+Makefile:891: recipe for target 'jhbuild-run-pylint-er
+```
+
+
+# python typing-stubs
+
+https://github.com/pygobject/pycairo/pull/101
+https://github.com/pygobject/pycairo/issues/99
+https://github.com/pygobject/pgi-docgen/issues/79
+
+
+# pytpython debugging 3/8/2018
+
+```
+ |2.4.2|  using virtualenv: scarlett-os-venv2   hyenatop in ~/dev/bossjones/scarlett_os
+± |feature-config-schema {7} U:10 ?:3 ✗| → ptpython
+>>> from scarlett_os.internal.gi import gi
+
+(gst-plugin-scanner:13321): GStreamer-WARNING **: Failed to load plugin '/usr/local/lib/gstreamer-1.0/libgstjpeg.so': dlopen(/usr/local/lib/gstreamer-1.0/libgstjpeg.so, 2): Library not loaded: /usr/local/opt/jpeg/lib/libjpeg.8.dylib
+  Referenced from: /usr/local/lib/gstreamer-1.0/libgstjpeg.so
+  Reason: image not found
+
+(gst-plugin-scanner:13321): GStreamer-WARNING **: Failed to load plugin '/usr/local/lib/gstreamer-1.0/libgstopengl.so': dlopen(/usr/local/lib/gstreamer-1.0/libgstopengl.so, 2): Library not loaded: /usr/local/opt/jpeg/lib/libjpeg.8.dylib
+  Referenced from: /usr/local/lib/gstreamer-1.0/libgstopengl.so
+  Reason: image not found
+
+** (gst-plugin-scanner:13321): CRITICAL **: pygobject initialization failed
+
+>>>
+```
+
+
+# Environment variabls to use when debugging gnome
+
+https://wiki.ubuntu.com/DebuggingGNOME

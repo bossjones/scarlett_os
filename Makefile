@@ -40,6 +40,7 @@ REPO_NAME               := $(ORG_NAME)/$(PROJECT_NAME)
 IMAGE_TAG               := $(REPO_NAME):$(GIT_SHA)
 CONTAINER_NAME          := $(shell echo -n $(IMAGE_TAG) | openssl dgst -sha1 | sed 's/^.* //'  )
 
+
 #################################################################################
 # DOCKER_RUN_ARGS   = \
 # 	-e FLIGHT_DIRECTOR_URL \
@@ -466,6 +467,20 @@ scp-local-htmlcov:
 	rm -rfv scp-local-htmlcov; \
 	./scripts/contrib/scp_local.sh htmlcov; \
 
+.PHONY: scp-local-gir
+scp-local-gir: export SCARLETT_SCP_RECURSIVE=1
+scp-local-gir:
+	rm -rfv gir-1.0; \
+	./scripts/contrib/scp_local.sh gir-1.0; \
+
+# fakegir: Bring autocompletion to your PyGObject code
+fakegir:
+	git clone git@github.com:bossjones/fakegir.git
+
+.PHONY: fakegir-bootstrap
+fakegir-bootstrap:
+	pip install -r requirements_autocomplete.txt
+
 .PHONY: scp-local-coverage-reports
 scp-local-coverage-reports:
 	$(MAKE) clean-coverge-files
@@ -889,3 +904,81 @@ run-pylint-error:
 .PHONY: jhbuild-run-pylint-error
 jhbuild-run-pylint-error:
 	jhbuild run -- pylint -E scarlett_os
+
+# sshfs testing
+
+.PHONY: sshfs-mount-fake-venv
+sshfs-mount-fake-venv:
+	sshfs -p 2222 \
+	pi@127.0.0.1:/home/pi/fake-venv \
+	~/fake-venv \
+	-o reconnect -o delay_connect \
+	-o sshfs_debug \
+	-o allow_other \
+	-o defer_permissions \
+	-o IdentityFile=~/dev/bossjones/scarlett-ansible/keys/vagrant_id_rsa \
+	-o UserKnownHostsFile=/dev/null \
+	-o StrictHostKeyChecking=no \
+	-o PasswordAuthentication=no\
+	-o IdentitiesOnly=yes \
+	-o LogLevel=VERBOSE \
+	-o volname=fake-venv
+
+.PHONY: sshfs-unmount-fake-venv
+sshfs-unmount-fake-venv:
+	umount ~/fake-venv
+
+# Mount virtualenv
+.PHONY: sshfs-mount-scarlett_os-sshfs-virtualenv
+sshfs-mount-scarlett_os-sshfs-virtualenv:
+	mkdir -p ~/.virtualenvs/scarlett_os-sshfs ; \
+	sshfs -p 2222 \
+	pi@127.0.0.1:/home/pi/.virtualenvs/scarlett_os-sshfs \
+	~/.virtualenvs/scarlett_os-sshfs \
+	-o reconnect \
+	-o delay_connect \
+	-o sshfs_debug \
+	-o allow_other \
+	-o defer_permissions \
+	-o IdentityFile=~/dev/bossjones/scarlett-ansible/keys/vagrant_id_rsa \
+	-o UserKnownHostsFile=/dev/null \
+	-o StrictHostKeyChecking=no \
+	-o PasswordAuthentication=no \
+	-o IdentitiesOnly=yes \
+	-o LogLevel=VERBOSE \
+	-o volname=scarlett_os-sshfs-virtualenv \
+	-o ServerAliveInterval=30 ; \
+
+.PHONY: sshfs-unmount-scarlett_os-sshfs-virtualenv
+sshfs-unmount-scarlett_os-sshfs-virtualenv:
+	umount ~/.virtualenvs/scarlett_os-sshfs
+
+# mount source code
+.PHONY: sshfs-mount-scarlett_os-sshfs-code
+sshfs-mount-scarlett_os-sshfs-code:
+	mkdir -p ~/scarlett_os-sshfs ; \
+	sshfs -p 2222 \
+	pi@127.0.0.1:/home/pi/dev/bossjones-github/scarlett_os-sshfs \
+	~/scarlett_os-sshfs \
+	-o reconnect \
+	-o delay_connect \
+	-o sshfs_debug \
+	-o allow_other \
+	-o defer_permissions \
+	-o IdentityFile=~/dev/bossjones/scarlett-ansible/keys/vagrant_id_rsa \
+	-o UserKnownHostsFile=/dev/null \
+	-o StrictHostKeyChecking=no \
+	-o PasswordAuthentication=no \
+	-o IdentitiesOnly=yes \
+	-o LogLevel=VERBOSE \
+	-o volname=scarlett_os-sshfs-code \
+	-o ServerAliveInterval=30 ; \
+
+.PHONY: sshfs-unmount-scarlett_os-sshfs-code
+sshfs-unmount-scarlett_os-sshfs-code:
+	umount ~/scarlett_os-sshfs
+
+.PHONY: sshfs-unmount-all
+sshfs-unmount-all:
+	$(MAKE) sshfs-unmount-scarlett_os-sshfs-code
+	$(MAKE) sshfs-unmount-scarlett_os-sshfs-virtualenv

@@ -12,8 +12,8 @@
             "env": {},
             "envFile": "${workspaceRoot}/.env",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
                 "RedirectOutput"
             ]
         },
@@ -36,8 +36,8 @@
             "env": {},
             "envFile": "${workspaceRoot}/.env",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
                 "RedirectOutput"
             ]
         },
@@ -52,8 +52,8 @@
             "env": {},
             "envFile": "${workspaceRoot}/.env",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
                 "RedirectOutput"
             ]
         },
@@ -69,8 +69,11 @@
             "env": {},
             "envFile": "${workspaceRoot}/.env",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit"
+                // "WaitOnAbnormalExit",
+                // "WaitOnNormalExit"
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
+                "RedirectOutput"
             ]
         },
         {
@@ -105,8 +108,8 @@
             "env": {},
             "envFile": "${workspaceRoot}/.env",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
                 "RedirectOutput",
                 "DjangoDebugging"
             ]
@@ -129,8 +132,8 @@
             ],
             "envFile": "${workspaceRoot}/.env",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
                 "RedirectOutput"
             ]
         },
@@ -146,8 +149,8 @@
             "env": {},
             "envFile": "${workspaceRoot}/.env",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
                 "RedirectOutput"
             ]
         },
@@ -164,8 +167,8 @@
                 "${workspaceRoot}/development.ini"
             ],
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
                 "RedirectOutput",
                 "Pyramid"
             ]
@@ -186,8 +189,8 @@
             "env": {},
             "envFile": "${workspaceRoot}/.env",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
+                "BreakOnSystemExitZero",
+                // "WaitOnNormalExit",
                 "RedirectOutput"
             ]
         },

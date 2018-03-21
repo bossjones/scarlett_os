@@ -1,5 +1,13 @@
 {
+  // INFO: Good default settings config - https://github.com/DonJayamanne/vscode-setup/blob/master/settings.json
+  // Render all the whitespaces
   "editor.renderWhitespace": "all",
+  // Controls how lines should wrap. Can be:
+  //  - 'off' (disable wrapping),
+  //  - 'on' (viewport wrapping),
+  //  - 'wordWrapColumn' (wrap at `editor.wordWrapColumn`) or
+  //  - 'bounded' (wrap at minimum of viewport and `editor.wordWrapColumn`).
+  "editor.wordWrap": "on",
   "workbench.iconTheme": "material-icon-theme",
   "window.zoomLevel": 0,
   "files.insertFinalNewline": true,
@@ -106,7 +114,10 @@
     "src/": true,
     "wheelhouse": true,
     "cov_annotate": true,
-    "htmlcov": true
+    "htmlcov": true,
+    "gir-1.0": true,
+    "gir-1.0/*": true,
+    "fakegir/": true
   },
   "files.trimTrailingWhitespace": true,
   "search.exclude": {
@@ -116,8 +127,16 @@
     "**/.vendor": true,
     "**/build": true
   },
-  "python.pythonPath": "${env.WORKON_HOME}/scarlett-os-venv2/bin/python3",
+  // Exclude types of warnings, for example ["SC1090"].
+  "shellcheck.exclude": [
+    "2086"
+  ],
+  "python.pythonPath": "~/.virtualenvs/scarlett-os-venv2/bin/python3",
   "python.formatting.provider": "autopep8",
+
+  // Turn off formatting on type
+  "editor.formatOnType": false,
+
   "python.linting.pylintArgs": [
     "--rcfile",
     "${workspaceFolder}/pylintrc"
@@ -127,9 +146,10 @@
     "**/site-packages/**/*.py"
   ],
   "python.venvPath": "~/.virtualenvs",
-  "python.sortImports.path": "${env.WORKON_HOME}/scarlett-os-venv2/bin/isort",
+  "python.sortImports.path": "~/.virtualenvs/scarlett-os-venv2/bin/isort",
   "python.autoComplete.extraPaths": [
-    ""
+    // "~/.cache/fakegir/",
+    "~/.virtualenvs/scarlett-os-venv2/lib/python3.5/site-packages"
   ],
   "terminal.integrated.shellArgs.osx": [
     "-l"
@@ -137,6 +157,91 @@
   "terminal.integrated.shellArgs.linux": [
     "-l"
   ],
+  // The path of the shell that the terminal uses on Linux.
+  "terminal.integrated.shell.linux": "/usr/local/bin/bash",
+  // Path to the shellcheck executable.
+  "shellcheck.executablePath": "/usr/local/bin/shellcheck",
+  // Controls whether locale variables are set at startup of the terminal, this defaults to true on OS X, false on other platforms.
+  "terminal.integrated.setLocaleVariables": true,
+  // The path of the shell that the terminal uses on OS X.
+  "terminal.integrated.shell.osx": "/usr/local/bin/bash",
+  // Glob patterns that defines the files to search for. Only include files you need, DO NOT USE `{**/*.*}` for both permormance and avoiding binary files reason.
+  "todohighlight.keywords": [
+    {
+      "text": "TODO:",
+      "color": "#fff",
+      "backgroundColor": "#ffbd2a",
+      "overviewRulerColor": "rgba(255,189,42,0.8)"
+    },
+    {
+      "text": "FIXME:",
+      "color": "#fff",
+      "backgroundColor": "#f06292",
+      "overviewRulerColor": "rgba(240,98,146,0.8)"
+    },
+    {
+      "text": "BOSSJONES:",
+      "color": "#fff",
+      "backgroundColor": "green"
+    },
+    {
+      "text": "DEBUG:",
+      "color": "#fff",
+      "backgroundColor": "blue"
+    },
+    {
+      "text": "REVIEW:",
+      "color": "#fff",
+      "backgroundColor": "yellow"
+    },
+    {
+      "text": "INFO:",
+      "color": "#fff",
+      "backgroundColor": "violet"
+    },
+    {
+      "text": "NOTE:",
+      "color": "#fff",
+      "backgroundColor": "grey"
+    },
+    {
+      "text": "EXAMPLE:",
+      "color": "#fff",
+      "backgroundColor": "teal"
+    },
+    {
+      "text": "SOURCE:",
+      "color": "#fff",
+      "backgroundColor": "maroon"
+    }
+  ],
+
+  // The number of spaces a tab is equal to. This setting is overridden based on the file contents when `editor.detectIndentation` is on.
+  "editor.tabSize": 4,
+
+  // Insert spaces when pressing Tab. This setting is overridden based on the file contents when `editor.detectIndentation` is on.
+  "editor.insertSpaces": true,
+
+  // When opening a file, `editor.tabSize` and `editor.insertSpaces` will be detected based on the file contents.
+  "editor.detectIndentation": true,
+
+  "todohighlight.toggleURI": false,
+  "todohighlight.exclude": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.vscode/**",
+    "**/.github/**",
+    "**/_output/**",
+    "**/*.min.*",
+    "**/*.map",
+    "**/.vscode/settings.json",
+    "**/.next/**"
+  ],
+  "todohighlight.maxFilesForSearch": 5120,
+  // Specifies whether or not to enable GitLens telemetry (even if enabled still abides   by the overall `telemetry.enableTelemetry` setting
+  "gitlens.advanced.telemetry.enabled": false,
   "todohighlight.include": [
     "**/*.js",
     "**/*.jsx",
@@ -147,7 +252,8 @@
     "**/*.css",
     "**/*.scss",
     "**/*.mk",
-    "**/Makefile"
+    "**/Makefile",
+    "**/*.go"
   ],
   "files.associations": {
     "Vagrantfile": "ruby",
@@ -179,6 +285,8 @@
     "logutil-newfifo": "shellscript",
     "with-dynenv": "shellscript"
   },
+  "telemetry.enableTelemetry": false,
+  "telemetry.enableCrashReporter": false,
   "vsicons.dontShowNewVersionMessage": true,
   "workbench.colorTheme": "Atom One Dark",
   "material-icon-theme.showUpdateMessage": false,

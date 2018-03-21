@@ -46,3 +46,6 @@ espeak_tmp.wav
 cov_annotate
 htmlcov
 cov.xml
+
+gir-1.0
+gir-1.0/*
