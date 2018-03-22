@@ -65,3 +65,32 @@ https://github.com/flatpak/flatpak/wiki/Tips-&-Tricks
 https://github.com/flatpak/flatpak/issues/178
 
 http://docs.flatpak.org/en/latest/flatpak-builder.html
+
+
+# On fedora
+
+```
+[developer@dev-experimental scarlett_os]$ python -c "import sys; print('\n'.join(sys.path))"
+
+/usr/lib/python27.zip
+/usr/lib64/python2.7
+/usr/lib64/python2.7/plat-linux2
+/usr/lib64/python2.7/lib-tk
+/usr/lib64/python2.7/lib-old
+/usr/lib64/python2.7/lib-dynload
+/usr/lib64/python2.7/site-packages
+/usr/lib64/python2.7/site-packages/gtk-2.0
+/usr/lib/python2.7/site-packages
+/usr/lib/python2.7/site-packages/setuptools-33.1.1-py2.7.egg
+
+[developer@dev-experimental scarlett_os]$ python3 -c "import sys; print('\n'.join(sys.path))"
+
+/usr/lib64/python36.zip
+/usr/lib64/python3.6
+/usr/lib64/python3.6/lib-dynload
+/usr/local/lib64/python3.6/site-packages
+/usr/local/lib/python3.6/site-packages
+/usr/lib64/python3.6/site-packages
+/usr/lib/python3.6/site-packages
+[developer@dev-experimental scarlett_os]$
+```

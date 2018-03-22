@@ -552,3 +552,41 @@ https://github.com/pygobject/pgi-docgen/issues/79
 # Environment variabls to use when debugging gnome
 
 https://wiki.ubuntu.com/DebuggingGNOME
+
+
+# Example jhbuildrc file
+
+```
+aab42dbfecb3:~# cat .jhbuildrc
+import os
+prefix='/home/pi/jhbuild'
+checkoutroot='/home/pi/gnome'
+moduleset = 'gnome-world'
+interact = False
+makeargs = '-j4 V=1'
+module_autogenargs['gtk-doc'] = 'PYTHON=/usr/bin/python3'
+os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
+os.environ['PYTHON'] = 'python3'
+os.environ['GSTREAMER'] = '1.0'
+os.environ['ENABLE_PYTHON3'] = 'yes'
+os.environ['ENABLE_GTK'] = 'yes'
+os.environ['PYTHON_VERSION'] = '3.5'
+os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
+os.environ['MAKEFLAGS'] = '-j4 V=1'
+os.environ['PREFIX'] = '/home/pi/jhbuild'
+os.environ['JHBUILD'] = '/home/pi/gnome'
+os.environ['PATH'] = '/usr/lib/ccache:/home/pi/bin:/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/usr/local/bin:/usr/local/sbin:/usr/lib/ccache:/home/pi/bin:/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+os.environ['LD_LIBRARY_PATH'] = '/home/pi/jhbuild/lib:/home/pi/.virtualenvs/scarlett_os/lib'
+os.environ['PYTHONPATH'] = '/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages'
+os.environ['PKG_CONFIG_PATH'] = '/home/pi/jhbuild/lib/pkgconfig:/home/pi/jhbuild/share/pkgconfig:/usr/lib/pkgconfig'
+os.environ['XDG_DATA_DIRS'] = '/home/pi/jhbuild/share:/usr/share'
+os.environ['XDG_CONFIG_DIRS'] = '/home/pi/jhbuild/etc/xdg'
+os.environ['CC'] = 'gcc'
+os.environ['WORKON_HOME'] = '/home/pi/.virtualenvs'
+os.environ['PROJECT_HOME'] = '/home/pi/dev'
+os.environ['VIRTUALENVWRAPPER_PYTHON'] = '/usr/local/bin/python3'
+os.environ['VIRTUALENVWRAPPER_VIRTUALENV'] = '/usr/local/bin/virtualenv'
+os.environ['PYTHONSTARTUP'] = '/home/pi/.pythonrc'
+os.environ['PIP_DOWNLOAD_CACHE'] = '/home/pi/.pip/cache'
+os.environ['CCACHE_DIR'] = '/ccache'
+```

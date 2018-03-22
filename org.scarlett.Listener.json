@@ -39,10 +39,10 @@
             "name": "scarlett_os",
             "buildsystem": "simple",
             "build-commands": [
-                "pip3 install --prefix=/app --root=/ -r requirements.txt",
-                "pip3 install --prefix=/app --root=/ -r requirements_dev.txt",
+                "pip install --prefix=/app --root=/ -r requirements.txt",
+                "pip install --prefix=/app --root=/ -r requirements_dev.txt",
                 "python3 setup.py install --prefix=/app --root=/",
-                "pip3 install --prefix=/app --root=/ -e .[test]"
+                "pip install --prefix=/app --root=/ -e .[test]"
             ],
             "sources": [
                 {
