@@ -9,6 +9,7 @@
     "desktop-file-name-prefix": "(Nightly) ",
     "finish-args": [
         "--share=ipc", "--socket=x11",
+        "--socket=system-bus", "--socket=session-bus",
         "--share=network",
         "--socket=wayland",
         "--filesystem=xdg-run/dconf", "--filesystem=~/.config/dconf:ro",

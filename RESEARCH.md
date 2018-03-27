@@ -590,3 +590,443 @@ os.environ['PYTHONSTARTUP'] = '/home/pi/.pythonrc'
 os.environ['PIP_DOWNLOAD_CACHE'] = '/home/pi/.pip/cache'
 os.environ['CCACHE_DIR'] = '/ccache'
 ```
+
+# d-feet example of flatpak manifest
+
+**SOURCE: https://github.com/GNOME/d-feet/blob/2b4726ca8b67e24e3a7b3b2e62f4f9dcaab40b5a/org.gnome.dfeet.json**
+
+```
+
+{
+    "id": "org.gnome.dfeet",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "master",
+    "branch": "master",
+    "sdk": "org.gnome.Sdk",
+    "command": "d-feet",
+    "tags": ["nightly"],
+    "desktop-file-name-prefix": "(Nightly) ",
+    "finish-args": [
+        "--share=ipc", "--socket=x11",
+        "--socket=wayland",
+        "--socket=system-bus", "--socket=session-bus",
+        "--filesystem=xdg-run/dconf", "--filesystem=~/.config/dconf:ro",
+        "--talk-name=ca.desrt.dconf", "--env=DCONF_USER_CONFIG_DIR=.config/dconf"
+    ],
+    "modules": [
+        {
+            "name": "pycairo",
+            "buildsystem": "simple",
+            "build-commands": [
+                "python2 setup.py install --prefix=/app"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/pygobject/pycairo.git"
+                }
+            ],
+            "cleanup": [
+                "/include",
+                "/share/pkgconfig"
+            ]
+        },
+        {
+            "name": "pygobject",
+            "build-options" : {
+                "env": {
+                    "PYTHON": "/usr/bin/python2"
+                }
+            },
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/pygobject.git"
+                }
+            ],
+            "cleanup": [
+                "/include",
+                "/lib/pkgconfig",
+                "/lib/python2.7/site-packages/gi/*.la"
+            ]
+        },
+        {
+            "name": "d-feet",
+            "config-opts": [
+                "--disable-tests"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/d-feet.git"
+                }
+            ]
+        }
+    ]
+}
+
+```
+
+
+# meld flatpak manifest
+
+```
+
+{
+  "app-id": "org.gnome.meld",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "master",
+  "sdk": "org.gnome.Sdk",
+  "command": "meld",
+  "cleanup": [
+    "/include",
+    "/lib/pkgconfig",
+    "/share/pkgconfig",
+    "/share/aclocal",
+    "/man",
+    "/share/man",
+    "/share/gtk-doc",
+    "/share/vala",
+    "*.la",
+    "*.a",
+    "*.pyc",
+    "*.pyo"
+  ],
+  "build-options": {
+    "cflags": "-O2 -g",
+    "cxxflags": "-O2 -g",
+    "env": {
+      "V": "1"
+    }
+  },
+  "rename-appdata-file": "meld.appdata.xml",
+  "rename-desktop-file": "meld.desktop",
+  "rename-icon": "meld",
+  "finish-args": [
+    /* X11 + XShm */
+    "--share=ipc", "--socket=x11",
+    /* Wayland */
+    "--socket=wayland",
+    /* Filesystem */
+    "--filesystem=host",
+    /* dconf */
+    "--talk-name=ca.desrt.dconf", "--env=DCONF_USER_CONFIG_DIR=.config/dconf"
+  ],
+  "modules": [
+    {
+      "name": "gtksourceview",
+      "sources": [
+        {
+          "type": "archive",
+          "url": "http://ftp.gnome.org/pub/GNOME/sources/gtksourceview/3.18/gtksourceview-3.18.2.tar.xz",
+          "sha256": "60f75a9f0039e13a2281fc595b5ef7344afa06732cc53b57d13234bfb0a5b7b2"
+        }
+      ]
+    },
+    {
+      "name": "py2cairo",
+      "rm-configure": true,
+      "sources": [
+        {
+          "type": "archive",
+          "url": "http://cairographics.org/releases/py2cairo-1.10.0.tar.bz2",
+          "sha256": "d30439f06c2ec1a39e27464c6c828b6eface3b22ee17b2de05dc409e429a7431"
+        },
+        {
+          "type": "script",
+          "commands": [
+            "libtoolize --force",
+            "aclocal",
+            "autoheader",
+            "automake --force-missing --add-missing --foreign",
+            "autoconf"
+          ],
+          "dest-filename": "autogen.sh"
+        }
+      ]
+    },
+    {
+      "name": "pygobject",
+      "build-options" : {
+        "env": {
+          "PYTHON": "python2"
+        }
+      },
+      "sources": [
+        {
+          "type": "archive",
+          "url": "http://ftp.gnome.org/pub/GNOME/sources/pygobject/3.18/pygobject-3.18.2.tar.xz",
+          "sha256": "2a3cad1517916b74e131e6002c3824361aee0671ffb0d55ded119477fc1c2c5f"
+        }
+      ]
+    },
+    {
+      "name": "meld",
+      "no-autogen": true,
+      "sources": [
+        {
+          "type": "git",
+          "url": "git://git.gnome.org/meld"
+        },
+        {
+          "type": "file",
+          "path": "data/meld-Makefile",
+          "dest-filename": "Makefile"
+        }
+      ]
+    }
+  ]
+}
+```
+
+
+# gimp flatpak manifest
+
+```
+
+{
+    "id": "org.gimp.GIMP",
+    "branch": "dev",
+    "base": "org.gimp.BaseApp",
+    "base-version": "stable",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "3.28",
+    "sdk": "org.gnome.Sdk",
+    "command": "gimp-2.9",
+    "rename-desktop-file": "gimp.desktop",
+    "rename-icon": "gimp",
+    "finish-args": ["--share=ipc", "--socket=x11", "--share=network",
+                    "--filesystem=host", "--filesystem=xdg-config/GIMP",
+                    "--filesystem=xdg-config/gtk-3.0",
+                    "--talk-name=org.gtk.vfs", "--talk-name=org.gtk.vfs.*" ],
+    "tags": ["dev"],
+    "desktop-file-name-prefix": "(Dev) ",
+    "build-options" : {
+        "cflags": "-O2 -g",
+        "cxxflags": "-O2 -g",
+        "env": {
+            "V": "1"
+        }
+    },
+    "cleanup": ["/include", "/lib/pkgconfig", "/share/pkgconfig",
+                "/share/aclocal", "/man", "/share/man", "/share/gtk-doc",
+                "/share/vala", "*.la", "*.a", "/bin/wmf*", "/bin/libwmf-*",
+                "/bin/pygtk*", "/bin/pygobject*"],
+    "modules": [
+        {
+            "name": "lcms2",
+            "config-opts": [ "--disable-static" ],
+            "cleanup": [ "/bin", "/share" ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "http://download.sourceforge.net/lcms/lcms2-2.8.tar.gz",
+                    "sha256": "66d02b229d2ea9474e62c2b6cd6720fde946155cd1d0d2bffdab829790a0fb22"
+                }
+            ]
+	},
+        {
+            "name": "babl",
+            "config-opts": [ "--disable-docs" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "git://git.gnome.org/babl",
+                    "branch": "BABL_0_1_38",
+                    "commit": "04cea9206deb0a6fb52b0a86012d70551b020205"
+                }
+            ]
+        },
+        {
+            "name": "gegl",
+            "config-opts": [ "--disable-docs", "--disable-introspection" ],
+            "cleanup": [ "/bin" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "git://git.gnome.org/gegl",
+                    "branch": "GEGL_0_3_24",
+                    "commit": "e647c79dc6c6f1c9a3c12e79a1fd8e77847d61d9"
+                }
+            ]
+        },
+        {
+            "name": "gimp",
+            "config-opts": [ "--disable-docs", "--disable-gtk-doc", "--disable-gtk-doc-html", "--enable-vector-icons" ],
+            "cleanup": [ "/bin/gimptool-2.0", "/bin/gimp-console-2.9" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "git://git.gnome.org/gimp",
+                    "branch": "GIMP_2_9_8",
+                    "commit": "18794a6ba2915ed58b82337edaba794d69f767b7"
+                }
+            ],
+	    "post-install": [
+                "rm -fr /app/include /app/lib/pkgconfig /app/share/pkgconfig",
+                "rm -fr /app/share/gtk-doc/ /app/share/man/",
+                "rm -fr /app/lib/*.la /app/lib/*.a",
+                "rm -fr /app/share/ghostscript/9.20/doc/",
+                "rm -fr /app/bin/wmf* /app/bin/libwmf-*",
+                "rm -fr /app/bin/pygtk* /app/bin/pygobject* /app/bin/pygobject-codegen-2.0"
+            ]
+        }
+    ]
+}
+
+```
+
+
+# Gimp nightly flatpak build
+
+```
+
+{
+    "id": "org.gimp.GIMP",
+    "branch": "master",
+    "base": "org.gimp.BaseApp",
+    "base-version": "stable",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "3.28",
+    "sdk": "org.gnome.Sdk",
+    "command": "gimp-2.9",
+    "rename-desktop-file": "gimp.desktop",
+    "rename-icon": "gimp",
+    "finish-args": ["--share=ipc", "--socket=x11", "--share=network",
+                    "--filesystem=host", "--filesystem=xdg-config/GIMP",
+                    "--filesystem=xdg-config/gtk-3.0",
+                    "--talk-name=org.gtk.vfs", "--talk-name=org.gtk.vfs.*" ],
+    "tags": ["nightly"],
+    "desktop-file-name-prefix": "(Nightly) ",
+    "build-options" : {
+        "cflags": "-O2 -g",
+        "cxxflags": "-O2 -g",
+        "env": {
+            "V": "1"
+        }
+    },
+    "cleanup": ["/include", "/lib/pkgconfig", "/share/pkgconfig",
+                "/share/aclocal", "/man", "/share/man", "/share/gtk-doc",
+                "/share/vala", "*.la", "*.a", "/bin/wmf*", "/bin/libwmf-*",
+                "/bin/pygtk*", "/bin/pygobject*", "/bin/pygobject-codegen-2.0",
+
+                "/share/glib-2.0/codegen", "/bin/gdbus-codegen", "/bin/glib-*",
+                "/bin/gobject-query", "/bin/gresource", "/bin/gtester*"],
+    "modules": [
+        {
+            "name" : "glib2",
+            "config-opts" : [
+                "--with-pcre=system"
+            ],
+            "ensure-writable" : [
+                "/share/glib-2.0/codegen/*.pyc"
+            ],
+            "sources" : [
+                {
+                    "url": "https://download.gnome.org/sources/glib/2.54/glib-2.54.2.tar.xz",
+                    "sha256": "bb89e5c5aad33169a8c7f28b45671c7899c12f74caf707737f784d7102758e6c",
+                    "type": "archive"
+                }
+            ]
+        },
+        {
+            "name" : "glib-networking",
+            "config-opts" : [
+                "--disable-static"
+            ],
+            "sources" : [
+                {
+                    "url": "http://ftp.gnome.org/pub/gnome/sources/glib-networking/2.54/glib-networking-2.54.1.tar.xz",
+                    "sha256": "eaa787b653015a0de31c928e9a17eb57b4ce23c8cf6f277afaec0d685335012f",
+                    "type": "archive"
+                }
+            ]
+        },
+        {
+            "name": "mypaint-brushes",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/Jehan/mypaint-brushes.git",
+                    "branch": "v1.3.0",
+                    "commit": "fce9b5f23f658f15f8168ef5cb2fee69cf90addb"
+                }
+            ]
+        },
+        {
+            "name": "lcms2",
+            "config-opts": [ "--disable-static" ],
+            "cleanup": [ "/bin", "/share" ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "http://download.sourceforge.net/lcms/lcms2-2.8.tar.gz",
+                    "sha256": "66d02b229d2ea9474e62c2b6cd6720fde946155cd1d0d2bffdab829790a0fb22"
+                }
+            ]
+        },
+        {
+            "name": "openjpeg",
+            "cmake": true,
+            "buildsystem": "cmake-ninja",
+            "builddir": true,
+            "cleanup": [ "/bin", "/lib/openjpeg-2.3" ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/uclouvain/openjpeg/archive/v2.3.0.tar.gz",
+                    "sha256": "3dc787c1bb6023ba846c2a0d9b1f6e179f1cd255172bde9eb75b01f1e6c7d71a"
+                }
+            ]
+        },
+        {
+            "name": "babl",
+            "config-opts": [ "--disable-docs" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "git://git.gnome.org/babl",
+                    "branch": "master"
+                }
+            ]
+        },
+        {
+            "name": "gegl",
+            "config-opts": [ "--disable-docs", "--disable-introspection" ],
+            "cleanup": [ "/bin" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "git://git.gnome.org/gegl",
+                    "branch": "master"
+                }
+            ]
+        },
+        {
+            "name": "gimp",
+            "config-opts": [ "--disable-docs", "--disable-gtk-doc", "--disable-gtk-doc-html", "--enable-vector-icons" ],
+            "cleanup": [ "/bin/gimptool-2.0", "/bin/gimp-console-2.9" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "git://git.gnome.org/gimp",
+                    "branch": "master"
+                }
+            ],
+	    "post-install": [
+                "rm -fr /app/include /app/lib/pkgconfig /app/share/pkgconfig",
+                "rm -fr /app/share/gtk-doc/ /app/share/man/",
+                "rm -fr /app/lib/*.la /app/lib/*.a",
+                "rm -fr /app/share/ghostscript/9.20/doc/",
+                "rm -fr /app/bin/wmf* /app/bin/libwmf-*",
+                "rm -fr /app/bin/pygtk* /app/bin/pygobject* /app/bin/pygobject-codegen-2.0"
+            ]
+        }
+    ]
+}
+
+```
+
+# gnome-ostree/manifest.json
+
+https://github.com/GNOME/gnome-ostree/blob/edd9828d72753f14aa6ad69ae0093ea00ad4205b/manifest.json
