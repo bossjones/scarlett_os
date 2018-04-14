@@ -8,12 +8,17 @@
     "tags": ["nightly"],
     "desktop-file-name-prefix": "(Nightly) ",
     "finish-args": [
-        "--share=ipc", "--socket=x11",
-        "--socket=system-bus", "--socket=session-bus",
+        "--share=ipc",
+        "--socket=x11",
+        "--socket=system-bus",
+        "--socket=session-bus",
         "--share=network",
         "--socket=wayland",
-        "--filesystem=xdg-run/dconf", "--filesystem=~/.config/dconf:ro",
-        "--talk-name=ca.desrt.dconf", "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
+        "--filesystem=xdg-run/dconf",
+        "--filesystem=~/.config/dconf:ro",
+        "--talk-name=ca.desrt.dconf",
+        "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
+        "--filesystem=host",
         "--socket=pulseaudio"
     ],
     "build-options" : {
@@ -33,24 +38,38 @@
         "/share/gtk-doc",
         "/share/vala",
         "*.la",
-        "*.a"
+        "*.a",
+        "/include",
+        "/lib/girepository-1.0",
+        "/share/doc",
+        "/share/gir-1.0"
     ],
     "modules": [
         {
             "name": "scarlett_os",
             "buildsystem": "simple",
             "build-commands": [
-                "pip install --prefix=/app --root=/ -r requirements.txt",
+                "pip3 install --prefix=/app --root=/ -r requirements.txt",
                 "pip install --prefix=/app --root=/ -r requirements_dev.txt",
                 "python3 setup.py install --prefix=/app --root=/",
-                "pip install --prefix=/app --root=/ -e .[test]"
+                "pip3 install --prefix=/app --root=/ -e .[test]"
             ],
+            "build-options": {
+                "env": {
+                    "PYTHON": "/usr/bin/python3"
+                }
+            },
             "sources": [
                 {
                     "type": "git",
                     "url": "https://github.com/bossjones/scarlett_os.git",
                     "branch": "feature-config-schema"
                 }
+            ],
+            "cleanup": [
+                "/include",
+                "/lib/pkgconfig",
+                "/lib/python3.5/site-packages/gi/*.la"
             ]
         }
     ]

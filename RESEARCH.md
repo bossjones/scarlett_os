@@ -1030,3 +1030,968 @@ os.environ['CCACHE_DIR'] = '/ccache'
 # gnome-ostree/manifest.json
 
 https://github.com/GNOME/gnome-ostree/blob/edd9828d72753f14aa6ad69ae0093ea00ad4205b/manifest.json
+
+# org.gnome.SDK.json from gnome-sdk-images
+
+source: https://github.com/GNOME/gnome-sdk-images/blob/master/org.gnome.Sdk.json.in
+
+```
+
+{
+    "build-runtime": true,
+    "id": "org.gnome.Sdk",
+    "id-platform": "org.gnome.Platform",
+    "branch": "@@SDK_BRANCH@@",
+    "runtime": "org.freedesktop.Platform",
+    "sdk": "org.freedesktop.Sdk",
+    "runtime-version": "@@SDK_RUNTIME_VERSION@@",
+    "sdk-extensions": ["org.freedesktop.Sdk.Debug", "org.freedesktop.Sdk.Locale", "org.freedesktop.Sdk.Docs"],
+    "platform-extensions": [ "org.freedesktop.Platform.Locale"],
+    "inherit-extensions": [
+        "org.freedesktop.Platform.GL",
+        "org.freedesktop.Platform.Timezones",
+        "org.freedesktop.Platform.GStreamer",
+        "org.freedesktop.Platform.Icontheme",
+        "org.freedesktop.Platform.VAAPI.Intel",
+        "org.freedesktop.Platform.ffmpeg",
+        "org.freedesktop.Sdk.Extension",
+        "org.gtk.Gtk3theme"
+    ],
+    "add-extensions": {
+        "org.gnome.Sdk.Docs" : {
+            "directory": "share/runtime/docs",
+            "bundle": true,
+            "autodelete": true,
+            "no-autodownload": true
+        }
+    },
+    "finish-args": [
+        "--env=GI_TYPELIB_PATH=/app/lib/girepository-1.0",
+        "--env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/extensions/gstreamer-1.0:/usr/lib/gstreamer-1.0",
+        "--env=XDG_DATA_DIRS=/app/share:/usr/share:/usr/share/runtime/share:/run/host/share",
+        "--sdk=org.gnome.Sdk//@@SDK_BRANCH@@",
+        "--runtime=org.gnome.Platform//@@SDK_BRANCH@@"
+    ],
+    "cleanup": [ "/man",
+                 "/share/man",
+                 "/share/gtk-doc/html",
+                 "/lib/systemd",
+                 "*.la", "*.a"],
+    "cleanup-commands": [ "update-desktop-database",
+                          "/usr/libexec/freedesktop-post.sh"
+                        ],
+    "cleanup-platform": [ "/share/runtime/docs",
+                          "/include",
+                          "/share/aclocal",
+                          "/share/pkgconfig",
+                          "/lib/pkgconfig",
+                          "/share/gir-1.0",
+                          "/share/vala"
+                        ],
+    "cleanup-platform-commands": [  "/usr/libexec/freedesktop-post.sh" ],
+    "build-options" : {
+        "cflags": "-O2 -g -fstack-protector-strong -D_FORTIFY_SOURCE=2",
+        "cxxflags": "-O2 -g -fstack-protector-strong -D_FORTIFY_SOURCE=2",
+        "ldflags": "-fstack-protector-strong -Wl,-z,relro,-z,now",
+        "env": {
+            "V": "1"
+        }
+    },
+    "modules": [
+        {
+            "name": "gnome-common",
+            "cleanup-platform": [ "*" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/gnome-common"
+                }
+            ]
+        },
+        {
+            "name": "yelp-xsl",
+            "config-opts": ["--disable-doc"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/yelp-xsl"
+                }
+            ]
+        },
+        {
+            "name": "yelp-tools",
+            "cleanup-platform": [ "*" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/yelp-tools"
+                }
+            ]
+        },
+        {
+            "name": "cantarell-fonts",
+            "config-opts": [ "--disable-source-rebuild"],
+            "post-install": [
+                "ln -s /usr/share/fontconfig/conf.avail/31-cantarell.conf /etc/fonts/conf.d/31-cantarell.conf"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/cantarell-fonts/0.0/cantarell-fonts-0.0.25.tar.xz",
+                    "sha256": "14a228aa0b516dfc367b434a850f955a00c57fc549cbb05348e2b150196a737f"
+                }
+            ]
+        },
+        {
+            "name": "glib",
+            "config-opts": [ "--with-pcre=system", "--with-python=python3" ],
+            "ensure-writable": [ "/share/glib-2.0/codegen/*.pyc" ],
+            "cleanup-platform": [ "/share/glib-2.0/codegen",
+                                  "/bin/gdbus-codegen",
+                                  "/bin/glib-*",
+                                  "/bin/gobject-query",
+                                  "/bin/gresource",
+                                  "/bin/gtester*"
+                               ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/glib.git"
+                }
+            ]
+        },
+        {
+            "name": "gobject-introspection",
+            "config-opts": ["--disable-static" ],
+            "ensure-writable": [ "/lib/gobject-introspection/giscanner/*.pyc",
+                                 "/lib/gobject-introspection/giscanner/*/*.pyc" ],
+            "cleanup-platform": ["/lib/gobject-introspection/giscanner",
+                                 "/share/gobject-introspection/giscanner",
+                                 "/bin"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/gobject-introspection.git"
+                }
+            ]
+        },
+        {
+            "name": "gsettings-desktop-schemas",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/gsettings-desktop-schemas"
+                }
+            ]
+        },
+        {
+            "name": "glib-networking",
+            "buildsystem": "meson",
+            "ensure-writable": [
+                "/share/locale/*/LC_MESSAGES/*.mo",
+                "/share/runtime/locale/*/share/*/LC_MESSAGES/*.mo"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/glib-networking"
+                }
+            ]
+        },
+        {
+            "name": "vala-bootstrap",
+            "cleanup": [ "/bin/*-0.16",
+                         "/lib/*-0.16*",
+                         "/lib/pkgconfig/*",
+                         "/include/vala-0.16",
+                         "/share/vala-0.16" ],
+            "cleanup-platform": [ "*" ],
+            "config-opts": [ "--disable-build-from-vala",
+                             "--disable-vapigen" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/vala-bootstrap"
+                }
+            ]
+        },
+        {
+            "name": "vala",
+            "cleanup-platform": [ "*" ],
+            "config-opts": [ "--enable-vapigen", "--enable-unversioned" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/vala",
+                    "branch": "0.36"
+                }
+            ]
+        },
+        {
+            "name": "dconf",
+            "buildsystem": "meson",
+            "cleanup": [ "/libexec/dconf-service", "/share/dbus-1/services/*" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/dconf"
+                },
+                {
+                    "type": "patch",
+                    "path": "dconf-override.patch"
+                }
+            ]
+        },
+        {
+            "name": "libsoup",
+            "config-opts": ["--disable-static"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/libsoup"
+                }
+            ]
+        },
+        {
+            "name": "dbus-glib",
+            "config-opts": [ "--disable-static" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://anongit.freedesktop.org/git/dbus/dbus-glib.git"
+                }
+            ]
+        },
+        {
+            "name": "json-glib",
+            "buildsystem": "meson",
+            "builddir": true,
+            "ensure-writable": [
+                "/share/locale/*/LC_MESSAGES/json-glib-1.0.mo",
+                "/share/runtime/locale/*/share/*/LC_MESSAGES/json-glib-*.mo"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/json-glib.git"
+                }
+            ]
+        },
+        {
+            "name": "libdatrie",
+            "config-opts": ["--disable-static"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://linux.thai.net/pub/thailinux/software/libthai/libdatrie-0.2.10.tar.xz",
+                    "sha256": "180eff7b0309ca19a02d5864e744185d715f021398a096fec6cf960f8ebfaa2b"
+                }
+            ]
+        },
+        {
+            "name": "libthai",
+            "config-opts": ["--disable-static"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://linux.thai.net/pub/thailinux/software/libthai/libthai-0.1.27.tar.xz",
+                    "sha256": "1659fa1b7b1d6562102d7feb8c8c3fd94bb2dc5761ed7dbaae4f300e1c03eff6"
+                }
+            ]
+        },
+        {
+            "name": "wayland-updated",
+            "config-opts": ["--disable-static", "--disable-documentation"],
+            "cleanup-platform": [ "/bin/wayland-scanner" ],
+            "sources": [
+                 {
+                     "type": "archive",
+                     "url": "https://wayland.freedesktop.org/releases/wayland-1.14.0.tar.xz",
+                     "sha256": "ed80cabc0961a759a42092e2c39aabfc1ec9a13c86c98bbe2b812f008da27ab8"
+                 }
+            ]
+        },
+        {
+            "name": "wayland-protocols-updated",
+            "cleanup-platform": [ "*" ],
+            "sources": [
+                 {
+                     "type": "archive",
+                     "url": "https://wayland.freedesktop.org/releases/wayland-protocols-1.13.tar.xz",
+                     "sha256": "0758bc8008d5332f431b2a84fea7de64d971ce270ed208206a098ff2ebc68f38"
+                 }
+            ]
+        },
+        {
+            "name": "fribidi",
+            "buildsystem": "meson",
+            "config-opts": [ "-Ddocs=false" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/fribidi/fribidi.git"
+                }
+            ]
+        },
+        {
+            "name": "pango",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/pango"
+                }
+            ]
+        },
+        {
+            "name": "atk",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/atk"
+                }
+            ]
+        },
+        {
+            "name": "at-spi2-core",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/at-spi2-core/2.26/at-spi2-core-2.26.2.tar.xz",
+                    "sha256": "c80e0cdf5e3d713400315b63c7deffa561032a6c37289211d8afcfaa267c2615"
+                }
+            ]
+        },
+        {
+            "name": "at-spi2-atk",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/at-spi2-atk/2.26/at-spi2-atk-2.26.1.tar.xz",
+                    "sha256": "b4f0c27b61dbffba7a5b5ba2ff88c8cee10ff8dac774fa5b79ce906853623b75"
+                }
+            ]
+        },
+        {
+            "name": "gdk-pixbuf",
+            "ensure-writable": ["/lib/gdk-pixbuf-2.0/*/loaders.cache"],
+            "config-opts": ["--disable-static",
+                            "--without-x11",
+                            "--without-libjasper",
+                            "--with-included-loaders=png,jpeg" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/gdk-pixbuf"
+                },
+                {
+                    "type": "shell",
+                    /* Temporary workaround until fixed in fd.o sdk (81b7e21a0) */
+                    "commands": ["update-mime-database /usr/share/mime"]
+                }
+            ]
+        },
+        {
+            "name": "libcroco",
+            "config-opts": ["--disable-static"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/libcroco"
+                }
+            ]
+        },
+        {
+            "name": "librsvg",
+            "config-opts": ["--disable-static"],
+            "ensure-writable": ["/lib/gdk-pixbuf-2.0/*/loaders.cache"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/librsvg.git",
+                    "branch": "librsvg-2-40"
+                }
+            ]
+        },
+        {
+            "name": "gtk2",
+            "config-opts": ["--disable-man",
+                            "--with-xinput=xfree"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/gtk.git",
+                    "branch": "gtk-2-24"
+                }
+            ]
+        },
+        {
+            "name": "gtk3",
+            "config-opts": [ "--enable-xkb",
+                             "--enable-xinerama",
+                             "--enable-xrandr",
+                             "--enable-xfixes",
+                             "--enable-xcomposite",
+                             "--enable-xdamage",
+                             "--enable-x11-backend",
+                             "--enable-wayland-backend" ],
+            "cleanup-platform": [
+                "/bin/gtk3-*",
+                "/bin/gtk-builder-tool",
+                "/bin/gtk-encode-symbolic-svg"
+            ],
+            "ensure-writable": ["/lib/gtk-3.0/*/immodules.cache"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/gtk.git",
+                    "branch": "gtk-3-22"
+                }
+            ]
+        },
+        {
+            "name": "adwaita-icon-theme",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/adwaita-icon-theme"
+                }
+            ]
+        },
+        {
+            "name": "gstreamer",
+            "config-opts": ["--enable-debug", "--disable-examples", "--disable-fatal-warnings" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://anongit.freedesktop.org/git/gstreamer/gstreamer.git"
+                }
+            ],
+            "build-commands": [
+                /* We delete all the 1.10 plugins to avoid version mismatches with renamed or removed plugins */
+                "rm -rf /usr/lib/gstreamer-1.0"
+            ]
+        },
+        {
+            "name": "opus",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.xiph.org/opus.git"
+                }
+            ]
+        },
+        {
+            "name": "gstreamer-plugins-base",
+            "config-opts": ["--enable-experimental", "--enable-orc" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://anongit.freedesktop.org/git/gstreamer/gst-plugins-base.git"
+                }
+            ]
+        },
+        {
+            "name": "cogl",
+            "config-opts": [  "--enable-cairo=yes",
+                              "--enable-cogl-pango=yes",
+                              "--enable-gdk-pixbuf=yes",
+                              "--enable-glx=yes",
+                              "--enable-introspection=yes",
+                              "--enable-kms-egl-platform",
+                              "--enable-wayland-egl-platform",
+                              "--enable-wayland-egl-server",
+                              "--enable-xlib-egl-platform",
+                              "--enable-cogl-gst" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "branch": "cogl-1.22",
+                    "url": "https://git.gnome.org/browse/cogl"
+                }
+            ]
+        },
+        {
+            "name": "clutter",
+            "config-opts": ["--enable-gdk-backend",
+                            "--enable-xinput",
+                            "--enable-evdev-input" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/clutter"
+                }
+            ]
+        },
+        {
+            "name": "clutter-gst",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/clutter-gst",
+                    "branch": "clutter-gst-3.0"
+                }
+            ]
+        },
+        {
+            "name": "clutter-gtk",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/clutter-gtk"
+                }
+            ]
+        },
+        {
+            "name": "gstreamer-plugins-good",
+            "build-options" : {
+                "arch" : {
+                    "i386" : {
+                        "config-opts" : [
+                            "--build=i586-unknown-linux-gnu"
+                        ]
+                    },
+                    "arm" : {
+                        "config-opts" : [
+                            "--build=arm-unknown-linux-gnueabi"
+                        ]
+                    }
+                }
+            },
+            "config-opts": ["--enable-experimental", "--enable-orc" ,
+                            "--disable-monoscope",
+                            "--disable-aalib",
+                            "--enable-cairo",
+                            "--disable-libcaca",
+                            "--disable-jack",
+                            "--with-default-visualizer=autoaudiosink" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://anongit.freedesktop.org/git/gstreamer/gst-plugins-good.git"
+                }
+            ]
+        },
+        {
+            "name": "gstreamer-plugins-bad",
+            "build-options" : {
+                "arch" : {
+                    "i386" : {
+                        "config-opts" : [
+                            "--build=i586-unknown-linux-gnu"
+                        ]
+                    },
+                    "arm" : {
+                        "config-opts" : [
+                            "--build=arm-unknown-linux-gnueabi"
+                        ]
+                    }
+                }
+            },
+            "config-opts": ["--enable-experimental", "--enable-orc", "--disable-fatal-warnings" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://anongit.freedesktop.org/git/gstreamer/gst-plugins-bad.git"
+                }
+            ]
+        },
+        {
+            "name": "gstreamer-libav",
+            "build-options" : {
+                "arch" : {
+                    "i386" : {
+                        "config-opts" : [
+                            "--build=i586-unknown-linux-gnu"
+                        ]
+                    },
+                    "arm" : {
+                        "config-opts" : [
+                            "--build=arm-unknown-linux-gnueabi"
+                        ]
+                    }
+                }
+            },
+            "config-opts": ["--with-system-libav" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://anongit.freedesktop.org/git/gstreamer/gst-libav.git"
+                }
+            ]
+        },
+        {
+            "name": "libcanberra",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "http://git.0pointer.net/clone/libcanberra.git" /* No HTTPS unfortunately */
+                }
+            ]
+        },
+        {
+            "name": "libsecret",
+            "config-opts": ["--disable-static", "--disable-manpages"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/libsecret"
+                }
+            ]
+        },
+        {
+            "name": "libnotify",
+            "config-opts": ["--disable-static"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/libnotify"
+                }
+            ]
+        },
+        {
+            "name": "gvfs",
+            "cleanup": [ "/libexec/*", "/share/dbus-1/services/*", "/share/gvfs/mounts" ],
+            "config-opts": [ "--disable-hal", "--disable-gdu", "--disable-gcr", "--disable-obexftp",
+                             "--disable-avahi", "--disable-documentation", "--disable-admin" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/gvfs"
+                }
+            ]
+        },
+        {
+            "name": "enchant",
+            "config-opts": ["--disable-static", "--with-myspell-dir=/usr/share/hunspell"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://www.abisource.com/downloads/enchant/1.6.0/enchant-1.6.0.tar.gz",
+                    "sha256": "2fac9e7be7e9424b2c5570d8affe568db39f7572c10ed48d4e13cddf03f7097f"
+                },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "cp -f /usr/share/gnu-config/config.sub .",
+                        "cp -f /usr/share/gnu-config/config.guess ."
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "gcab",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/gcab"
+                }
+            ]
+        },
+        {
+            "name": "gnome-themes-extra",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/gnome-themes-extra.git"
+                }
+            ]
+        },
+        {
+            "name": "mozjs52",
+            "build-options": {
+                "arch" : {
+                    "i386" : {
+                        "config-opts" : [
+                            "--host=i586-unknown-linux-gnu"
+                        ]
+                    },
+                    "arm" : {
+                        /* Workaround for bug seebugzilla.gnome.org, bug 790097 */
+                        "cflags": "-fno-schedule-insns",
+                        "cxxflags": "-fno-schedule-insns",
+                        "config-opts" : [
+                            "--host=arm-unknown-linux-gnueabi"
+                        ]
+                    }
+                }
+            },
+            "config-opts": [  "--enable-posix-nspr-emulation",
+                              "--with-system-zlib",
+                              "--without-system-icu",
+                              "--with-intl-api",
+                              "AUTOCONF=autoconf"],
+            "subdir": "js/src",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/ptomato/mozjs.git",
+                    "branch": "mozjs52"
+                }
+            ],
+            "post-install": [
+                "cp -p js/src/js-config.h /usr/include/mozjs-52",
+                "rm /usr/lib/libjs_static.ajs"
+            ]
+        },
+        {
+            "name": "gjs",
+            "config-opts": [  "--disable-Werror"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/gjs.git"
+                }
+            ]
+        },
+        /* VTE needs pcre2 */
+        {
+            "name": "pcre2",
+            "config-opts": ["--enable-jit",
+                            "--enable-pcre2grep-jit",
+                            "--disable-bsr-anycrlf",
+                            "--disable-coverage",
+                            "--disable-ebcdic",
+                            "--disable-never-backslash-C",
+                            "--enable-newline-is-lf",
+                            "--enable-pcre2-8",
+                            "--enable-pcre2-16",
+                            "--enable-pcre2-32",
+                            "--disable-pcre2test-libedit",
+                            "--enable-pcre2test-libreadline",
+                            "--enable-pcre2grep-callout",
+                            "--disable-pcre2grep-libbz2",
+                            "--disable-pcre2grep-libz",
+                            "--disable-rebuild-chartables",
+                            "--enable-shared",
+                            "--enable-stack-for-recursion",
+                            "--disable-static",
+                            "--enable-unicode",
+                            "--disable-valgrind"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "http://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-10.22.tar.gz",
+                    "sha256": "7627f93f2763ee6e11ac58558d8cfbf29e1070757b45571c0ba30ce9e096505c"
+                }
+            ]
+        },
+        {
+            "name": "vte",
+            "build-options" : {
+                "cflags": "-fPIE -DPIE",
+                "cxxflags": "-fPIE -DPIE",
+                "ldflags": "-pie -lssp"
+            },
+            "config-opts": ["--disable-gnome-pty-helper",
+                            "--disable-static",
+                            "--with-gtk=3.0",
+                            "--enable-introspection",
+                            "--without-pcre2"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/vte"
+                }
+            ]
+        },
+        {
+            "name": "brotli",
+            "buildsystem": "cmake",
+            "config-opts": [
+                "-DCMAKE_INSTALL_PREFIX:PATH=/usr",
+                "-DCMAKE_INSTALL_LIBDIR:PATH=/usr/lib"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/google/brotli/archive/v1.0.1.tar.gz",
+                    "sha256": "6870f9c2c63ef58d7da36e5212a3e1358427572f6ac5a8b5a73a815cf3e0c4a6"
+                }
+            ]
+        },
+        {   "name": "woff2",
+            "buildsystem": "cmake",
+            "config-opts": [
+                "-DCMAKE_INSTALL_PREFIX:PATH=/usr",
+                "-DCMAKE_INSTALL_LIBDIR:PATH=/usr/lib"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/google/woff2/archive/v1.0.2/woff2-1.0.2.tar.gz",
+                    "sha256": "add272bb09e6384a4833ffca4896350fdb16e0ca22df68c0384773c67a175594"
+                }
+            ]
+        },
+        {
+            "name": "WebKitGTK+",
+            "cleanup-platform": [ "/libexec/webkit2gtk-4.0/MiniBrowser" ],
+            "buildsystem": "cmake",
+            "build-options" : {
+                "cflags": "-g1",
+                "cxxflags": "-g1",
+                "arch" : {
+                    "i386" : {
+                        "config-opts" : [
+                            "-DCMAKE_SYSTEM_PROCESSOR=i586"
+                        ]
+                    },
+                    "arm" : {
+                        "config-opts" : [
+                            "-DCMAKE_SYSTEM_PROCESSOR=arm",
+                            "-DENABLE_JIT=OFF"
+                        ]
+                    }
+                }
+            },
+            "config-opts": [
+                "-DPORT=GTK",
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DCMAKE_INSTALL_PREFIX:PATH=/usr",
+                "-DLIB_INSTALL_DIR:PATH=/usr/lib",
+                "-DSYSCONF_INSTALL_DIR:PATH=/usr/etc",
+                "-DSHARE_INSTALL_PREFIX:PATH=/usr/share",
+                "-DINCLUDE_INSTALL_DIR:PATH=/usr/include",
+                "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
+                "-DENABLE_MINIBROWSER=ON"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://webkitgtk.org/releases/webkitgtk-2.20.0.tar.xz",
+                    "sha256": "57f640f720bd9a8a7207f3321cf803a15c2f207b4e7b75ff1be17bc1eeb00a3c"
+                }
+            ]
+        },
+        {
+            "name": "yelp",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/yelp"
+                },
+                {
+                    "type": "patch",
+                    "path": "yelp-use-in-sandbox.patch"
+                }
+            ]
+        },
+        {
+            "name": "pycairo",
+            "build-options" : {
+                "env": {
+                    "PYTHON": "/usr/bin/python3"
+                }
+            },
+            "buildsystem": "simple",
+            "build-commands": [
+                "python3 ./setup.py build",
+                "python3 ./setup.py install"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/pygobject/pycairo/releases/download/v1.14.1/pycairo-1.14.1.tar.gz",
+                    "sha256": "0d13a0a6eeaf0c357db04392943eb9b25767445608d31dde1307f003f68c5754"
+                }
+            ]
+        },
+        {
+            "name": "pygobject",
+            "config-opts": ["--enable-compile-warnings=minimum"],
+            "build-options" : {
+                "env": {
+                    "PYTHON": "/usr/bin/python3"
+                }
+            },
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/pygobject.git"
+                }
+            ]
+        },
+        {
+            "name": "python-gstreamer",
+            "build-options" : {
+                "env": {
+                    "PYTHON": "/usr/bin/python3"
+                }
+            },
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://anongit.freedesktop.org/git/gstreamer/gst-python.git"
+                }
+            ]
+        },
+        {
+            "name": "gcr",
+            "cleanup": [ "/share/GConf" ],
+            "cleanup-platform": [ "/libexec", "/bin", "/share/applications", "/share/dbus-1/services" ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.gnome.org/browse/gcr"
+                }
+            ]
+        },
+        {
+            "name": "ibus",
+            "config-opts": ["--disable-xim", "--disable-static", "--disable-dconf", "--disable-schemas-compile",
+                            "--disable-setup", "--disable-ui", "--disable-engine", "--disable-libnotify", "--disable-emoji-dict",
+                            "--disable-appindicator", "--disable-tests"],
+            "cleanup": [
+                "/bin", "/libexec", "/share/bash-completion", "/share/dbus-1",
+                "/share/icons", "/share/man", "/share/ibus" ],
+            "post-install": [ "gtk-query-immodules-3.0 --update-cache",
+                              "gtk-query-immodules-2.0 --update-cache" ],
+
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/ibus/ibus/releases/download/1.5.16/ibus-1.5.16.tar.gz",
+                    "sha256": "36b57bfbe4f92e3281fb535cae65794b6f25164b2a3288e73e6d06b4a409fe1e"
+                },
+                {
+                    "type": "patch",
+                    "path": "ibus-portal.patch"
+                }
+            ]
+        },
+        {
+            "name": "os-release",
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "os-release"
+                },
+                {
+                    "type": "file",
+                    "path": "issue"
+                },
+                {
+                    "type": "file",
+                    "path": "issue.net"
+                },
+                {
+                    "type": "file",
+                    "path": "org.gnome.Sdk.appdata.xml"
+                },
+                {
+                    "type": "file",
+                    "path": "org.gnome.Platform.appdata.xml"
+                },
+                {
+                    "type": "file",
+                    "path": "os-release-configure",
+                    "dest-filename": "configure"
+                }
+            ]
+        }
+    ]
+}
+
+```
