@@ -8,17 +8,48 @@
     "tags": ["nightly"],
     "desktop-file-name-prefix": "(Nightly) ",
     "finish-args": [
-        "--socket=x11",
-        "--share=ipc",
-        "--socket=session-bus",
-        "--share=network",
+        /* X11 + XShm access */
+        "--socket=x11", "--share=ipc",
+
+        /* Wayland access */
         "--socket=wayland",
+
+        /* Needs network, obviously */
+        "--share=network",
+
+        /* Our client name */
+        "--own-name=org.scarlett.Listener",
+        "--own-name=org.scarlett.Listener.*",
+
+        /* Keyring */
+        "--talk-name=org.freedesktop.secrets",
+
+        /* Audio Access */
+        "--socket=pulseaudio",
+
+        /* Dbus Access */
+        "--socket=session-bus",
+
+        /* SOURCE: https://github.com/flathub/org.gnome.Builder/blob/master/org.gnome.Builder.json */
+        "--filesystem=home",
+        "--filesystem=host",
+        "--system-talk-name=org.freedesktop.Avahi",
+        "--talk-name=org.freedesktop.secrets",
+        "--filesystem=xdg-run/keyring",
+        "--env=SSL_CERT_DIR=/etc/ssl/certs",
+        "--filesystem=/etc/ssl:ro",
+        "--filesystem=/etc/pki:ro",
+        "--filesystem=/etc/ca-certificates:ro",
+        "--filesystem=~/.local/share/flatpak",
+        "--filesystem=/var/lib/flatpak",
+
+        /* dconf */
         "--filesystem=xdg-run/dconf",
         "--filesystem=~/.config/dconf:ro",
         "--talk-name=ca.desrt.dconf",
         "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
-        "--filesystem=host",
-        "--socket=pulseaudio"
+
+        "--filesystem=host"
     ],
     "build-options" : {
         "cflags": "-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer",
@@ -38,10 +69,13 @@
         "/share/vala",
         "*.la",
         "*.a",
-        "/include",
         "/lib/girepository-1.0",
         "/share/doc",
-        "/share/gir-1.0"
+        "/share/gir-1.0",
+        "/lib/python*",
+        "/share/dbus-1/services/org.freedesktop*",
+        "/share/info",
+        "/share/man"
     ],
     "modules": [
         {
@@ -71,10 +105,10 @@
             },
             "build-commands": [
                 "mkdir -p /app/lib/python3.5/site-packages",
-                "CFLAGS='-L/usr/lib -Lbuild/temp.linux-x86_64-3.4 -I/usr/include -I/usr/include/python3.5m/' CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ pip3 install --target=/app --root=/ -r requirements.txt",
-                "CFLAGS='-L/usr/lib -Lbuild/temp.linux-x86_64-3.4 -I/usr/include -I/usr/include/python3.5m/' CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ pip install --target=/app --root=/ -r requirements_dev.txt",
-                "CFLAGS='-L/usr/lib -Lbuild/temp.linux-x86_64-3.4 -I/usr/include -I/usr/include/python3.5m/' CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ python3 setup.py install --prefix=/app --root=/",
-                "CFLAGS='-L/usr/lib -Lbuild/temp.linux-x86_64-3.4 -I/usr/include -I/usr/include/python3.5m/' CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ pip3 install --target=/app --root=/ -e .[test]"
+                "CFLAGS='-L/usr/lib -Lbuild/temp.linux-x86_64-3.4 -I/usr/include -I/usr/include/python3.5m/' CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ pip3.5 install --target=/app --root=/ -r requirements.txt",
+                "CFLAGS='-L/usr/lib -Lbuild/temp.linux-x86_64-3.4 -I/usr/include -I/usr/include/python3.5m/' CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ pip3.5 install --target=/app --root=/ -r requirements_dev.txt",
+                "CFLAGS='-L/usr/lib -Lbuild/temp.linux-x86_64-3.4 -I/usr/include -I/usr/include/python3.5m/' CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ python3.5 setup.py install --prefix=/app --root=/",
+                "CFLAGS='-L/usr/lib -Lbuild/temp.linux-x86_64-3.4 -I/usr/include -I/usr/include/python3.5m/' CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ pip3.5 install --target=/app --root=/ -e .[test]"
             ],
             "sources": [
                 {
