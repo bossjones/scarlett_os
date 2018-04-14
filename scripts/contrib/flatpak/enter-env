@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# SOURCE: https://github.com/GNOME/pitivi/blob/0fcc448e098d430f226bc6a2912a3909c2429400/build/flatpak/enter-env
+
+PITIVI_DIR=$(realpath $(dirname $0)/../../)
+
+function generate_path_and_completion_calls {
+  echo "export PATH=$PITIVI_DIR/bin/:/app/bin/:/usr/bin/:\$PATH"
+}
+
+RCFILE=$PITIVI_DIR/.bashrc
+cp ~/.bashrc $RCFILE
+
+echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/app/lib/" >> $RCFILE
+echo "export PS1=[ptv]\ \$PS1" >> $RCFILE
+generate_path_and_completion_calls >> $RCFILE
+
+
+echo "=============================="
+echo "Entering own built environment"
+echo "=============================="
+
+bash --rcfile $RCFILE

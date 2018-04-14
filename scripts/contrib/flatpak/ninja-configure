@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# SOURCE: https://github.com/GNOME/pitivi/blob/0fcc448e098d430f226bc6a2912a3909c2429400/build/flatpak/ninja-configure
+
+FLAGS="$@"
+
+cat <<EOF > Makefile
+all:
+	echo "Nothing"
+install:
+	cp ninja /app/bin/
+EOF
+

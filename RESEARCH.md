@@ -2009,3 +2009,104 @@ source: https://github.com/GNOME/gnome-sdk-images/blob/master/org.gnome.Sdk.json
 - https://github.com/GNOME/gnome-settings-daemon/blob/c343f5de1d53ce1c0e0634e73684939a1f2cc530/.gitlab-ci.yml
 - https://github.com/GNOME/pitivi/blob/b8b22123966cff0ba513300ef2b4fd3dec624c5a/meson.build
 - https://github.com/GNOME/gnome-music/blob/88ca0fb55d5c3a035929c5d8a39c2808c27b58bd/meson.build
+- https://github.com/GNOME/gtk/blob/1b62d28cbb561c12f43f08819e1714c8bf068ef7/build-aux/flatpak/org.gtk.WidgetFactory.json
+
+
+# org.gtk.WidgetFactory.json
+```
+
+{
+    "app-id": "org.gtk.WidgetFactory",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "master",
+    "sdk": "org.gnome.Sdk",
+    "command": "gtk4-widget-factory",
+    "tags": ["devel", "development", "nightly"],
+    "rename-desktop-file": "gtk4-widget-factory.desktop",
+    "rename-icon": "gtk4-widget-factory",
+    "desktop-file-name-prefix": "(Development) ",
+    "finish-args": [
+        "--device=dri",
+        "--share=ipc",
+        "--socket=x11",
+        "--socket=wayland",
+        "--talk-name=org.gtk.vfs", "--talk-name=org.gtk.vfs.*",
+        "--talk-name=ca.desrt.conf", "--env=DCONF_USER_CONFIG_DIR=.config/dconf"
+    ],
+    "cleanup": [
+        "/include",
+        "/lib/pkgconfig", "/share/pkgconfig",
+        "/share/aclocal",
+        "/man", "/share/man", "/share/gtk-doc",
+        "*.la", ".a",
+        "/lib/girepository-1.0",
+        "/share/gir-1.0",
+        "/share/doc"
+    ],
+    "modules": [
+        {
+            "name": "graphene",
+            "buildsystem": "meson",
+            "builddir": true,
+            "config-opts": [
+                "--libdir=/app/lib"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/ebassi/graphene.git"
+                }
+            ]
+        },
+        {
+            "name": "gtk",
+            "buildsystem": "meson",
+            "builddir": true,
+            "config-opts": [
+                "--libdir=/app/lib"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/gtk.git"
+                }
+            ]
+        }
+    ]
+}
+
+```
+
+# Flatpak-builder steps
+
+Now that the app has a manifest, flatpak-builder can be used to build it. This is done by specifying the manifest file and a target directory:
+
+`$ flatpak-builder app-dir org.flatpak.Hello.json`
+
+```
+[developer@dev-experimental flatpak-demo]$ flatpak-builder app-dir org.flatpak.Hello.json
+Downloading sources
+Initializing build dir
+Committing stage init to cache
+Starting build of org.flatpak.Hello
+========================================================================
+Building module hello in /home/developer/Projects/flatpak-demo/.flatpak-builder/build/hello-1
+========================================================================
+Running: install -D hello.sh /app/bin/hello.sh
+Committing stage build-hello to cache
+Cleaning up
+Committing stage cleanup to cache
+Finishing app
+Please review the exported files and the metadata
+Committing stage finish to cache
+Pruning cache
+[developer@dev-experimental flatpak-demo]$
+```
+
+This command will build each module that is listed in the manifest and install it to the /app subdirectory, inside the
+app-dir directory.
+
+5. Test the build
+To verify that the build was successful, run the following:
+
+`$ flatpak-builder --run app-dir org.flatpak.Hello.json hello.sh`

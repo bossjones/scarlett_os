@@ -983,5 +983,13 @@ sshfs-unmount-all:
 	$(MAKE) sshfs-unmount-scarlett_os-sshfs-code
 	$(MAKE) sshfs-unmount-scarlett_os-sshfs-virtualenv
 
+.PHONY: flatpak-shell
 flatpak-shell:
 	flatpak-builder --run app org.scarlett.Listener.json sh
+
+.PHONY: flatpak-build
+flatpak-build:
+	pip3 install --prefix=/app --root=/ -r requirements.txt
+	pip install --prefix=/app --root=/ -r requirements_dev.txt
+	python3 setup.py install --prefix=/app --root=/
+	pip3 install --prefix=/app --root=/ -e .[test]
