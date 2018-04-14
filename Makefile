@@ -990,3 +990,7 @@ flatpak-shell:
 .PHONY: flatpak-build
 flatpak-build:
 	flatpak-builder app-dir org.scarlett.Listener.json
+
+.PHONY: flatpak-builder
+flatpak-build-force:
+	flatpak-builder --force-clean app-dir --force-cleanorg.scarlett.Listener.json
