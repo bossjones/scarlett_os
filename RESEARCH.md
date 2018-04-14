@@ -1995,3 +1995,17 @@ source: https://github.com/GNOME/gnome-sdk-images/blob/master/org.gnome.Sdk.json
 }
 
 ```
+
+
+# Meson.build files using python (examples )
+
+- General search: https://github.com/search?q=org%3AGNOME+meson.build+python&type=Code
+- https://github.com/GNOME/grilo/blob/4538c07aafae1d23211335ecfd51fb97e4f4d96d/tools/grilo-inspect/meson.build
+- https://github.com/GNOME/baobab/blob/884fb555173c46fcb4a80a5cc9cbd32bad8186ba/meson.build
+- https://github.com/GNOME/gnome-clocks/blob/b501c0defa9bf02341907d557621908293c4fad9/snap/plugins/x-meson.py
+- https://github.com/GNOME/gnome-dictionary/blob/42b3f0afe085ef266af7c3905ef716e0764824a3/README.md
+- https://github.com/GNOME/gnome-clocks/blob/57a9ea019209695532f92ad633fb55b51990b0b0/meson.build
+- https://github.com/GNOME/libgd/blob/44f7d2673d4ba19be99dfe6a775b18e67bc4b56e/meson_readme.md
+- https://github.com/GNOME/gnome-settings-daemon/blob/c343f5de1d53ce1c0e0634e73684939a1f2cc530/.gitlab-ci.yml
+- https://github.com/GNOME/pitivi/blob/b8b22123966cff0ba513300ef2b4fd3dec624c5a/meson.build
+- https://github.com/GNOME/gnome-music/blob/88ca0fb55d5c3a035929c5d8a39c2808c27b58bd/meson.build

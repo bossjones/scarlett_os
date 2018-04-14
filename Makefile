@@ -982,3 +982,6 @@ sshfs-unmount-scarlett_os-sshfs-code:
 sshfs-unmount-all:
 	$(MAKE) sshfs-unmount-scarlett_os-sshfs-code
 	$(MAKE) sshfs-unmount-scarlett_os-sshfs-virtualenv
+
+flatpak-shell:
+	flatpak-builder --run app org.scarlett.Listener.json sh

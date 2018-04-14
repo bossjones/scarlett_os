@@ -22,7 +22,7 @@
         "--socket=pulseaudio"
     ],
     "build-options" : {
-        "cflags": "-O2 -g",
+        "cflags": "-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer",
         "cxxflags": "-O2 -g",
         "env": {
             "V": "1"
@@ -48,17 +48,24 @@
         {
             "name": "scarlett_os",
             "buildsystem": "simple",
+            "build-options": {
+                "env": {
+                    "PYTHON": "/usr/bin/python3",
+                    "CFLAGS": "-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer",
+                    "GSTREAMER": "1.0",
+                    "ENABLE_PYTHON3": "yes",
+                    "ENABLE_GTK": "yes",
+                    "PYTHON_VERSION": "3.5",
+                    "MAKEFLAGS": "-j4 V=1",
+                    "CC": "gcc"
+                }
+            },
             "build-commands": [
                 "pip3 install --prefix=/app --root=/ -r requirements.txt",
                 "pip install --prefix=/app --root=/ -r requirements_dev.txt",
                 "python3 setup.py install --prefix=/app --root=/",
                 "pip3 install --prefix=/app --root=/ -e .[test]"
             ],
-            "build-options": {
-                "env": {
-                    "PYTHON": "/usr/bin/python3"
-                }
-            },
             "sources": [
                 {
                     "type": "git",
