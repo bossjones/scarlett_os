@@ -8,9 +8,8 @@
     "tags": ["nightly"],
     "desktop-file-name-prefix": "(Nightly) ",
     "finish-args": [
-        "--share=ipc",
         "--socket=x11",
-        "--socket=system-bus",
+        "--share=ipc",
         "--socket=session-bus",
         "--share=network",
         "--socket=wayland",
@@ -52,6 +51,7 @@
                 "easy-install.pth"
             ],
             "build-options": {
+                "build-args": ["--share=network"],
                 "cflags": "-O0 -g",
                 "cxxflags": "-O0 -g",
                 "env": {
