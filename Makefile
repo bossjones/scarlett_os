@@ -993,4 +993,4 @@ flatpak-build:
 
 .PHONY: flatpak-builder
 flatpak-build-force:
-	flatpak-builder --force-clean app-dir --force-cleanorg.scarlett.Listener.json
+	flatpak-builder --force-clean app-dir --force-clean org.scarlett.Listener.json
