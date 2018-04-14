@@ -989,7 +989,4 @@ flatpak-shell:
 
 .PHONY: flatpak-build
 flatpak-build:
-	pip3 install --prefix=/app --root=/ -r requirements.txt
-	pip install --prefix=/app --root=/ -r requirements_dev.txt
-	python3 setup.py install --prefix=/app --root=/
-	pip3 install --prefix=/app --root=/ -e .[test]
+	flatpak-builder app-dir org.scarlett.Listener.json

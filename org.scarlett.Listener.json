@@ -49,16 +49,22 @@
             "name": "scarlett_os",
             "buildsystem": "simple",
             "build-options": {
+                "cflags": "-O0 -g",
+                "cxxflags": "-O0 -g",
                 "env": {
-                    "PYTHON": "/usr/bin/python3",
-                    "CFLAGS": "-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer",
+                    "PYTHON": "python3",
+                    "GST_PLUGIN_SYSTEM_PATH": "/app/lib/gstreamer-1.0/",
+                    "FREI0R_PATH": "/app/lib/frei0r-1/",
                     "GSTREAMER": "1.0",
                     "ENABLE_PYTHON3": "yes",
                     "ENABLE_GTK": "yes",
                     "PYTHON_VERSION": "3.5",
                     "MAKEFLAGS": "-j4 V=1",
-                    "CC": "gcc"
-                }
+                    "CC": "gcc",
+                    "V": "1"
+                },
+                "strip": false,
+                "no-debuginfo": false
             },
             "build-commands": [
                 "pip3 install --prefix=/app --root=/ -r requirements.txt",

@@ -2010,6 +2010,7 @@ source: https://github.com/GNOME/gnome-sdk-images/blob/master/org.gnome.Sdk.json
 - https://github.com/GNOME/pitivi/blob/b8b22123966cff0ba513300ef2b4fd3dec624c5a/meson.build
 - https://github.com/GNOME/gnome-music/blob/88ca0fb55d5c3a035929c5d8a39c2808c27b58bd/meson.build
 - https://github.com/GNOME/gtk/blob/1b62d28cbb561c12f43f08819e1714c8bf068ef7/build-aux/flatpak/org.gtk.WidgetFactory.json
+- https://github.com/flathub ( LOOK AT ME FOR ALL MANIFESTS )
 
 
 # org.gtk.WidgetFactory.json
