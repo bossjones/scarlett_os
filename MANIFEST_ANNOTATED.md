@@ -1,3 +1,4 @@
+```
 
 {
     "app-id": "org.scarlett.Listener",
@@ -8,22 +9,29 @@
     "tags": ["nightly"],
     "desktop-file-name-prefix": "(Nightly) ",
     "finish-args": [
+        /* X11 + XShm access */
         "--socket=x11", "--share=ipc",
 
+        /* Wayland access */
         "--socket=wayland",
 
+        /* Needs network, obviously */
         "--share=network",
 
+        /* Our client name */
         "--own-name=org.scarlett.Listener",
         "--own-name=org.scarlett.Listener.*",
 
+        /* Keyring */
         "--talk-name=org.freedesktop.secrets",
 
-
+        /* Audio Access */
         "--socket=pulseaudio",
 
+        /* Dbus Access */
         "--socket=session-bus",
 
+        /* SOURCE: https://github.com/flathub/org.gnome.Builder/blob/master/org.gnome.Builder.json */
         "--filesystem=home",
         "--filesystem=host",
         "--system-talk-name=org.freedesktop.Avahi",
@@ -36,7 +44,7 @@
         "--filesystem=~/.local/share/flatpak",
         "--filesystem=/var/lib/flatpak",
 
-
+        /* dconf */
         "--filesystem=xdg-run/dconf",
         "--filesystem=~/.config/dconf:ro",
         "--talk-name=ca.desrt.dconf",
@@ -118,3 +126,5 @@
         }
     ]
 }
+
+```
