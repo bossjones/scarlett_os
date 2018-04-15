@@ -100,14 +100,10 @@
                 "no-debuginfo": false
             },
             "build-commands": [
-                "flatpak_build.sh"
+                "install -D flatpak_build.sh /app/bin/flatpak_build.sh",
+                "/app/bin/flatpak_build.sh"
             ],
             "sources": [
-                {
-                    "type": "git",
-                    "url": "https://github.com/bossjones/scarlett_os.git",
-                    "branch": "feature-config-schema"
-                },
                 {
                     "type": "file",
                     "url": "flatpak_build.sh"
