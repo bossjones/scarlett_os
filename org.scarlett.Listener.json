@@ -105,8 +105,13 @@
             ],
             "sources": [
                 {
+                    "type": "git",
+                    "url": "https://github.com/bossjones/scarlett_os.git",
+                    "branch": "feature-config-schema"
+                },
+                {
                     "type": "file",
-                    "url": "flatpak_build.sh"
+                    "path": "flatpak_build.sh"
                 }
             ],
             "cleanup": [
