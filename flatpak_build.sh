@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+pyenv init - > ~/pyenv_temp
+pyenv virtualenv-init - > ~/pyenv_venv_init
+source ~/pyenv_temp
+source ~/pyenv_venv_init
+export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
+export PATH="/app/bin:$PATH"
+
 source /home/developer/.bashrc
 
 pyenv version 3.5.2;
