@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
-curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+export NON_ROOT_USER=developer
+
+curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash && \
+    git clone https://github.com/pyenv/pyenv-virtualenvwrapper /home/${NON_ROOT_USER}/.pyenv/plugins/pyenv-virtualenvwrapper && \
+    git clone https://github.com/pyenv/pyenv-pip-rehash /home/${NON_ROOT_USER}/.pyenv/plugins/pyenv-pip-rehash && \
+    git clone https://github.com/pyenv/pyenv-pip-migrate /home/${NON_ROOT_USER}/.pyenv/plugins/pyenv-pip-migrate && \
+    pyenv install 3.5.2
+
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 pyenv init - > ~/pyenv_temp
@@ -10,7 +17,7 @@ source ~/pyenv_venv_init
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 export PATH="/app/bin:$PATH"
 
-source /home/developer/.bashrc
+# source /home/developer/.bashrc
 
 pyenv version 3.5.2;
 mkdir -p /app/lib/python3.5/site-packages;
