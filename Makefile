@@ -162,7 +162,7 @@ __check_defined = \
     $(if $(value $1),, \
       $(error Undefined $1$(if $(value 2), ($(strip $2)))))
 
-list_allowed_args := name
+list_allowed_args := name interface
 
 help:
 	@printf "\033[1m$$ASCILOGO $$NC\n"
@@ -994,3 +994,9 @@ flatpak-build:
 .PHONY: flatpak-builder
 flatpak-build-force:
 	flatpak-builder --force-clean app-dir --force-clean org.scarlett.Listener.json
+
+.PHONY: run-gnome-builder
+run-gnome-builder: TRACE=1
+run-gnome-builder:
+	$(call check_defined, interface, Please set interface)
+	./run-gnome-builder-docker.sh $(interface)
