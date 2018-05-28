@@ -77,4 +77,4 @@ xdot==0.9
 yapf==0.20.2
 
 # Update packages in a requirements.txt file to latest versions.
-pur==4.0.3
+pur==5.0.0
