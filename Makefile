@@ -22,6 +22,9 @@ projects := scarlett_os
 username := bossjones
 container_name := scarlett_os
 
+gnome_username := scarlettos
+gnome_container_name := docker-gnome-builder-meson
+
 # label-schema spec: http://label-schema.org/rc1/
 
 #CONTAINER_VERSION  = $(shell \cat ./VERSION | awk '{print $1}')
@@ -1000,3 +1003,6 @@ run-gnome-builder: TRACE=1
 run-gnome-builder:
 	$(call check_defined, interface, Please set interface)
 	./run-gnome-builder-docker.sh $(interface)
+
+pull-gnome-builder:
+	docker pull $(gnome_username)/$(gnome_container_name):latest
