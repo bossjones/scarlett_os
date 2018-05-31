@@ -36,6 +36,10 @@ from scarlett_os.internal.gi import GLib
 from scarlett_os.internal.gi import Gst
 from scarlett_os.internal.gi import Gio
 
+# FIXME: Don't forget to comment this out
+# import hunter
+# hunter.trace(module='gi', action=hunter.CallPrinter)
+
 from scarlett_os.exceptions import NoStreamError
 from scarlett_os.exceptions import FileReadError
 
@@ -349,7 +353,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if self.read_exc:
             # An error occurred before the stream became ready.
             self.close(True)
-            raise self.read_exc
+            raise self.read_exc  # pylint: disable=raising-bad-type
 
     def scarlett_reset_listen(self):
         self.failed = 0
@@ -485,6 +489,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.dbus_proxy.emitConnectedToListener('ScarlettListener')
         time.sleep(2)
         logger.info('_connect_to_dbus')
+        # TODO: Add a ss_cancel_signal.disconnect() function later
         ss_cancel_signal = self.bus.subscribe(sender=None,
                                               iface="org.scarlett.Listener",
                                               signal="ListenerCancelSignal",
@@ -492,28 +497,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                                               arg0=None,
                                               flags=0,
                                               signal_fired=self.on_cancel_listening)
-
-    # def reset(self):
-    #     """Reset the Handler helper.
-
-    #     Should be called whenever the source changes and we are not setting up
-    #     a new appsrc.
-    #     """
-    #     self._handler.clear()
-    #     self._cancel_signal_callback = None
-
-    # def prepare(self, player_cb, command_cb, connected_to_listener_cb):
-    #     """Store info we will need when the appsrc element gets installed."""
-    #     self._handler.clear()
-    #     self._cancel_signal_callback = player_cb
-
-    # def configure(self):
-    #     """Configure the supplied bus for use.
-    #     """
-    #     bus = self.__dr.get_session_bus()
-
-    #     if self._cancel_signal_callback:
-    #         self._handler.connect(bus, "ListenerCancelSignal", self._cancel_signal_callback)
 
     # NOTE: This function generates the dot file, checks that graphviz in installed and
     # then finally generates a png file, which it then displays
@@ -535,19 +518,14 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         pp.pprint(final_hyp)
         logger.debug("kw_to_find: {}".format(self.kw_to_find))
         if final_hyp in self.kw_to_find and final_hyp != '':
-            logger.debug(
-                "HYP-IS-SOMETHING: " +
-                final_hyp +
-                "\n\n\n")
+            logger.debug("HYP-IS-SOMETHING: {}\n\n\n".format(final_hyp))
             self.failed = 0
             self.kw_found = 1
             self.dbus_proxy.emitKeywordRecognizedSignal()  # CHANGEME
         else:
             failed_temp = self.failed + 1
             self.failed = failed_temp
-            logger.debug(
-                "self.failed = %i" %
-                (self.failed))
+            logger.debug("self.failed = {}".format(int(self.failed)))
             if self.failed > 4:
                 # reset pipline
                 self.dbus_proxy.emitSttFailedSignal()  # CHANGEME
@@ -556,9 +534,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     def run_cmd(self, final_hyp):
         logger.debug("Inside run_cmd function")
         logger.debug("KEYWORD IDENTIFIED BABY")
-        logger.debug(
-            "self.kw_found = %i" %
-            (self.kw_found))
+        logger.debug("self.kw_found = {}".format(int(self.kw_found)))
         if final_hyp == 'CANCEL':
             self.dbus_proxy.emitListenerCancelSignal()  # CHANGEME
             self.on_cancel_listening()
@@ -566,11 +542,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             current_kw_identified = self.kw_found
             self.kw_found = current_kw_identified
             self.dbus_proxy.emitCommandRecognizedSignal(final_hyp)  # CHANGEME
-            logger.info(
-                " Command = {}".format(final_hyp))
-            logger.debug(
-                "AFTER run_cmd, self.kw_found = %i" %
-                (self.kw_found))
+            logger.info("Command = {}".format(final_hyp))
+            logger.debug("AFTER run_cmd, self.kw_found = {}".format(int(self.kw_found)))
 
     def init_gst(self):
         logger.debug("Inside init_gst")
@@ -656,25 +629,26 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.queue = queue.Queue(QUEUE_SIZE)
         self.thread = get_loop_thread()
 
-    def _on_handoff(self, element, buf):
-        logger.debug('buf:')
-        pp.pprint(buf)
-        pp.pprint(dir(buf))
-        logger.debug('on_handoff - %d bytes' % len(buf))
+    # NOTE: Disabled since we aren't connecting to handoff
+    # def _on_handoff(self, element, buf):
+    #     logger.debug('buf:')
+    #     pp.pprint(buf)
+    #     pp.pprint(dir(buf))
+    #     logger.debug("on_handoff - %d bytes".format(len(buf))
 
-        if self.signed is None:
-            # only ever one caps struct on our buffers
-            struct = buf.get_caps().get_structure(0)
+    #     if self.signed is None:
+    #         # only ever one caps struct on our buffers
+    #         struct = buf.get_caps().get_structure(0)
 
-            # I think these are always set too, but catch just in case
-            try:
-                self.signed = struct["signed"]
-                self.depth = struct["depth"]
-                self.rate = struct["rate"]
-                self.channels = struct["channels"]
-            except:
-                logger.debug('on_handoff: missing caps')
-                pass
+    #         # I think these are always set too, but catch just in case
+    #         try:
+    #             self.signed = struct["signed"]
+    #             self.depth = struct["depth"]
+    #             self.rate = struct["rate"]
+    #             self.channels = struct["channels"]
+    #         except Exception:
+    #             logger.debug('on_handoff: missing caps')
+    #             pass
 
         # raw = str(buf)
         #
@@ -797,9 +771,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
 
             try:
                 gst_bus = self.gst_bus_stack[0]
-            except:
+            except Exception:
                 logger.error("Failed to get gst_bus from gst_bus_stack[0]")
-                pass
 
             if gst_bus:
                 gst_bus.remove_signal_watch()
@@ -928,7 +901,7 @@ if __name__ == '__main__':
             # NOTE: fixme, we still have a leak in the gst pipeline, it doesn't actually stop.
             demo.quit(1)
             loop.quit()
-            pass
+            # pass
         except:
             raise
     else:

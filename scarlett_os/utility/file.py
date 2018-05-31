@@ -2,7 +2,11 @@
 
 from __future__ import with_statement, division
 
-from scarlett_os.compat import *
+from scarlett_os.compat import os
+from scarlett_os.compat import errno
+from scarlett_os.compat import environ
+from scarlett_os.compat import text_type
+from scarlett_os.compat import _FSCODING
 
 
 def format_size(size):

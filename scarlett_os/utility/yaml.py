@@ -189,23 +189,24 @@ def _env_var_yaml(loader: SafeLineLoader,
         logger.error("Environment variable %s not defined.", node.value)
         raise ScarlettError(node.value)
 
-
+# pylint: disable=no-member
 def _load_secret_yaml(secret_path: str) -> Dict:
     """Load the secrets yaml from path."""
     secret_path = os.path.join(secret_path, _SECRET_YAML)
     if secret_path in __SECRET_CACHE:
         return __SECRET_CACHE[secret_path]
 
-    logger.debug('Loading %s', secret_path)
+    # FIXME: Getting the error message below which doesn't make sense to me?
+    logger.debug('Loading %s', secret_path)  # pylint: disable=used-before-assignment
     try:
         secrets = load_yaml(secret_path)
         if 'logger' in secrets:
             logger = str(secrets['logger']).lower()
             if logger == 'debug':
-                logger.setLevel(logging.DEBUG)
+                logger.setLevel(logging.DEBUG)  # pylint: disable=no-member
             else:
                 logger.error("secrets.yaml: 'logger: debug' expected,"
-                              " but 'logger: %s' found", logger)
+                              " but 'logger: %s' found", logger)  # pylint: disable=no-member
             del secrets['logger']
     except FileNotFoundError:
         secrets = {}

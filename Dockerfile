@@ -49,7 +49,7 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     # https://github.com/pypa/pip/issues/4216
     # ORIG: https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip
     # Locking to bossjones fork just in case this changes without use knowing, tested and it works
-    && pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
+    && pip install --ignore-installed -U pip \
     && pip install --upgrade setuptools==36.0.1 wheel==0.29.0 \
     && jhbuild run -- pip install -r requirements.txt \
     && jhbuild run -- pip freeze \

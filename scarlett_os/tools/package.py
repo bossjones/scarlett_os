@@ -7,7 +7,9 @@ import warnings
 def add_gstreamer_packages():
     import os
     import sys
-    from distutils.sysconfig import get_python_lib
+    # NOTE: Keep in mind this guy -
+    # https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
+    from distutils.sysconfig import get_python_lib  # pylint: disable=import-error
 
     dest_dir = get_python_lib()
 
@@ -53,7 +55,9 @@ def get_uniq_list(seq):
 def add_gi_packages():
     import os
     import sys
-    from distutils.sysconfig import get_python_lib
+    # NOTE: Keep in mind this guy -
+    # https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
+    from distutils.sysconfig import get_python_lib  # pylint: disable=import-error
     import itertools
 
     dest_dir = get_python_lib()
@@ -63,10 +67,8 @@ def add_gi_packages():
     python_version = sys.version[:3]
     global_path = os.path.join('/usr/lib', 'python' + python_version)
 
-    # import sys
-    # sys.path
-
     if os.environ.get('PYTHONPATH'):
+        # INFO: PYTHONPATH=/usr/local/share/jhbuild/sitecustomize
         py_path = os.environ.get('PYTHONPATH')
         py_paths = py_path.split(':')
 
@@ -87,6 +89,24 @@ def add_gi_packages():
     print('all_package_paths', all_package_paths)
     print('package_list_with_dups', package_list_with_dups)
     print('uniq_package_list', uniq_package_list)
+    ##########################################################
+    # Example Output
+    ##########################################################
+    # dest_dir /home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages
+    # packages ['gi']
+    # python_version 3.5
+    # global_path /usr/lib/python3.5
+    # global_sitepackages ['/usr/lib/python3.5/dist-packages', '/usr/lib/python3.5/site-packages']
+    # all_package_paths [['/usr/local/share/jhbuild/sitecustomize'], ['/usr/lib/python3.5/dist-packages', '/usr/lib/python3.5/site-packages']]
+    # package_list_with_dups ['/usr/local/share/jhbuild/sitecustomize', '/usr/lib/python3.5/dist-packages', '/usr/lib/python3.5/site-packages']
+    # uniq_package_list ['/usr/local/share/jhbuild/sitecustomize', '/usr/lib/python3.5/dist-packages', '/usr/lib/python3.5/site-packages']
+    # src /usr/local/share/jhbuild/sitecustomize/gi
+    # dest /home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/gi
+    # src /usr/lib/python3.5/dist-packages/gi
+    # dest /home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/gi
+    # src /usr/lib/python3.5/site-packages/gi
+    # dest /home/pi/.virtualenvs/scarlett_os/lib/python3.5/site-packages/gi
+    ##########################################################
 
     for package in packages:
         for pack_dir in uniq_package_list:

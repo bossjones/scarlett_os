@@ -29,6 +29,8 @@ fswatch -o . -e .git | xargs -n1 -I{} rsync -avz -e \
    --exclude develop-eggs/ \
    --exclude dist/ \
    --exclude downloads/ \
+   --exclude gir-1.0/ \
+   --exclude *.gir-1.0/ \
    --exclude eggs/ \
    --exclude env/ \
    --exclude espeak_tmp.wav/ \
@@ -39,4 +41,5 @@ fswatch -o . -e .git | xargs -n1 -I{} rsync -avz -e \
    --exclude parts/ \
    --exclude sdist/ \
    --exclude var/ \
+   --exclude fakegir/ \
    . pi@127.0.0.1:/home/pi/dev/bossjones-github/scarlett_os/

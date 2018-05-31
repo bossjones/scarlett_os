@@ -22,6 +22,9 @@ projects := scarlett_os
 username := bossjones
 container_name := scarlett_os
 
+gnome_username := scarlettos
+gnome_container_name := docker-gnome-builder-meson
+
 # label-schema spec: http://label-schema.org/rc1/
 
 #CONTAINER_VERSION  = $(shell \cat ./VERSION | awk '{print $1}')
@@ -39,6 +42,7 @@ PROJECT_NAME            := scarlett_os
 REPO_NAME               := $(ORG_NAME)/$(PROJECT_NAME)
 IMAGE_TAG               := $(REPO_NAME):$(GIT_SHA)
 CONTAINER_NAME          := $(shell echo -n $(IMAGE_TAG) | openssl dgst -sha1 | sed 's/^.* //'  )
+
 
 #################################################################################
 # DOCKER_RUN_ARGS   = \
@@ -161,7 +165,7 @@ __check_defined = \
     $(if $(value $1),, \
       $(error Undefined $1$(if $(value 2), ($(strip $2)))))
 
-list_allowed_args := name
+list_allowed_args := name interface
 
 help:
 	@printf "\033[1m$$ASCILOGO $$NC\n"
@@ -465,6 +469,20 @@ scp-local-htmlcov: export SCARLETT_SCP_RECURSIVE=1
 scp-local-htmlcov:
 	rm -rfv scp-local-htmlcov; \
 	./scripts/contrib/scp_local.sh htmlcov; \
+
+.PHONY: scp-local-gir
+scp-local-gir: export SCARLETT_SCP_RECURSIVE=1
+scp-local-gir:
+	rm -rfv gir-1.0; \
+	./scripts/contrib/scp_local.sh gir-1.0; \
+
+# fakegir: Bring autocompletion to your PyGObject code
+fakegir:
+	git clone git@github.com:bossjones/fakegir.git
+
+.PHONY: fakegir-bootstrap
+fakegir-bootstrap:
+	pip install -r requirements_autocomplete.txt
 
 .PHONY: scp-local-coverage-reports
 scp-local-coverage-reports:
@@ -881,3 +899,110 @@ makelint-install:
 # 	@echo 'git commit -a -m "Released $(RELEASE) via make release"'
 # 	@echo 'git tag --force v$(VERSION)'
 # 	@echo 'git push --tags origin master'
+
+.PHONY: run-pylint-error
+run-pylint-error:
+	pylint -E scarlett_os
+
+.PHONY: jhbuild-run-pylint-error
+jhbuild-run-pylint-error:
+	jhbuild run -- pylint -E scarlett_os
+
+# sshfs testing
+
+.PHONY: sshfs-mount-fake-venv
+sshfs-mount-fake-venv:
+	sshfs -p 2222 \
+	pi@127.0.0.1:/home/pi/fake-venv \
+	~/fake-venv \
+	-o reconnect -o delay_connect \
+	-o sshfs_debug \
+	-o allow_other \
+	-o defer_permissions \
+	-o IdentityFile=~/dev/bossjones/scarlett-ansible/keys/vagrant_id_rsa \
+	-o UserKnownHostsFile=/dev/null \
+	-o StrictHostKeyChecking=no \
+	-o PasswordAuthentication=no\
+	-o IdentitiesOnly=yes \
+	-o LogLevel=VERBOSE \
+	-o volname=fake-venv
+
+.PHONY: sshfs-unmount-fake-venv
+sshfs-unmount-fake-venv:
+	umount ~/fake-venv
+
+# Mount virtualenv
+.PHONY: sshfs-mount-scarlett_os-sshfs-virtualenv
+sshfs-mount-scarlett_os-sshfs-virtualenv:
+	mkdir -p ~/.virtualenvs/scarlett_os-sshfs ; \
+	sshfs -p 2222 \
+	pi@127.0.0.1:/home/pi/.virtualenvs/scarlett_os-sshfs \
+	~/.virtualenvs/scarlett_os-sshfs \
+	-o reconnect \
+	-o delay_connect \
+	-o sshfs_debug \
+	-o allow_other \
+	-o defer_permissions \
+	-o IdentityFile=~/dev/bossjones/scarlett-ansible/keys/vagrant_id_rsa \
+	-o UserKnownHostsFile=/dev/null \
+	-o StrictHostKeyChecking=no \
+	-o PasswordAuthentication=no \
+	-o IdentitiesOnly=yes \
+	-o LogLevel=VERBOSE \
+	-o volname=scarlett_os-sshfs-virtualenv \
+	-o ServerAliveInterval=30 ; \
+
+.PHONY: sshfs-unmount-scarlett_os-sshfs-virtualenv
+sshfs-unmount-scarlett_os-sshfs-virtualenv:
+	umount ~/.virtualenvs/scarlett_os-sshfs
+
+# mount source code
+.PHONY: sshfs-mount-scarlett_os-sshfs-code
+sshfs-mount-scarlett_os-sshfs-code:
+	mkdir -p ~/scarlett_os-sshfs ; \
+	sshfs -p 2222 \
+	pi@127.0.0.1:/home/pi/dev/bossjones-github/scarlett_os-sshfs \
+	~/scarlett_os-sshfs \
+	-o reconnect \
+	-o delay_connect \
+	-o sshfs_debug \
+	-o allow_other \
+	-o defer_permissions \
+	-o IdentityFile=~/dev/bossjones/scarlett-ansible/keys/vagrant_id_rsa \
+	-o UserKnownHostsFile=/dev/null \
+	-o StrictHostKeyChecking=no \
+	-o PasswordAuthentication=no \
+	-o IdentitiesOnly=yes \
+	-o LogLevel=VERBOSE \
+	-o volname=scarlett_os-sshfs-code \
+	-o ServerAliveInterval=30 ; \
+
+.PHONY: sshfs-unmount-scarlett_os-sshfs-code
+sshfs-unmount-scarlett_os-sshfs-code:
+	umount ~/scarlett_os-sshfs
+
+.PHONY: sshfs-unmount-all
+sshfs-unmount-all:
+	$(MAKE) sshfs-unmount-scarlett_os-sshfs-code
+	$(MAKE) sshfs-unmount-scarlett_os-sshfs-virtualenv
+
+.PHONY: flatpak-shell
+flatpak-shell:
+	flatpak-builder --run app org.scarlett.Listener.json sh
+
+.PHONY: flatpak-build
+flatpak-build:
+	flatpak-builder app-dir org.scarlett.Listener.json
+
+.PHONY: flatpak-builder
+flatpak-build-force:
+	flatpak-builder --force-clean app-dir --force-clean org.scarlett.Listener.json
+
+.PHONY: run-gnome-builder
+run-gnome-builder: TRACE=1
+run-gnome-builder:
+	$(call check_defined, interface, Please set interface)
+	./run-gnome-builder-docker.sh $(interface)
+
+pull-gnome-builder:
+	docker pull $(gnome_username)/$(gnome_container_name):latest

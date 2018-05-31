@@ -198,6 +198,18 @@ foreground {
         # NOTE: verify that we're the correct user, pi
         ifelse { s6-test $SKIP_TRAVIS_CI_PYTEST = false }
         {
+
+            # FIXME: (3/1/2018) Horrible HORRIBLE temporary fix to deal with travisci permissions issues.
+            # Find fatal level errors thrown by pylint
+            foreground {
+                cd /home/pi/dev/bossjones-github/scarlett_os
+                s6-applyuidgid -u 1000 -g 1000 umask 000 bash -c "make jhbuild-run-pylint-error"
+            }
+
+            importas REXIT ?
+            foreground { s6-echo " [run] goss exited ${REXIT}." }
+            foreground { s6-echo " [run] goss tests ran succesfully fool" }
+
             # FIXME: (8/26/2017) Horrible HORRIBLE temporary fix to deal with travisci permissions issues.
             # Need to finish refactoring Docker Parent Containers so it's easier to refactor things
             foreground {

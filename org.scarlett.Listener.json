@@ -1,0 +1,124 @@
+
+{
+    "app-id": "org.scarlett.Listener",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "3.24",
+    "sdk": "org.gnome.Sdk",
+    "command": "python -c 'import gi'",
+    "tags": ["nightly"],
+    "desktop-file-name-prefix": "(Nightly) ",
+    "finish-args": [
+        "--socket=x11", "--share=ipc",
+
+        "--socket=wayland",
+
+        "--share=network",
+
+        "--own-name=org.scarlett.Listener",
+        "--own-name=org.scarlett.Listener.*",
+
+        "--talk-name=org.freedesktop.secrets",
+
+
+        "--socket=pulseaudio",
+
+        "--socket=session-bus",
+
+        "--filesystem=home",
+        "--filesystem=host",
+        "--system-talk-name=org.freedesktop.Avahi",
+        "--talk-name=org.freedesktop.secrets",
+        "--filesystem=xdg-run/keyring",
+        "--env=SSL_CERT_DIR=/etc/ssl/certs",
+        "--filesystem=/etc/ssl:ro",
+        "--filesystem=/etc/pki:ro",
+        "--filesystem=/etc/ca-certificates:ro",
+        "--filesystem=~/.local/share/flatpak",
+        "--filesystem=/var/lib/flatpak",
+
+
+        "--filesystem=xdg-run/dconf",
+        "--filesystem=~/.config/dconf:ro",
+        "--talk-name=ca.desrt.dconf",
+        "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
+
+        "--filesystem=host"
+    ],
+    "build-options" : {
+        "cflags": "-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer",
+        "cxxflags": "-O2 -g",
+        "env": {
+            "V": "1"
+        }
+    },
+    "cleanup": [
+        "/include",
+        "/lib/pkgconfig",
+        "/share/pkgconfig",
+        "/share/aclocal",
+        "/man",
+        "/share/man",
+        "/share/gtk-doc",
+        "/share/vala",
+        "*.la",
+        "*.a",
+        "/lib/girepository-1.0",
+        "/share/doc",
+        "/share/gir-1.0",
+        "/lib/python*",
+        "/share/dbus-1/services/org.freedesktop*",
+        "/share/info",
+        "/share/man"
+    ],
+    "modules": [
+        {
+            "name": "scarlett_os",
+            "buildsystem": "simple",
+            "ensure-writable": [
+                "/lib/python*/site-packages/easy-install.pth",
+                "/lib/python*/site-packages/setuptools.pth",
+                "/app/lib/python*/site-packages/easy-install.pth",
+                "/app/lib/python*/site-packages/setuptools.pth"
+            ],
+            "build-options": {
+                "build-args": ["--share=network"],
+                "cflags": "-O0 -g",
+                "cxxflags": "-O0 -g",
+                "env": {
+                    "PYTHON": "python3",
+                    "GST_PLUGIN_SYSTEM_PATH": "/app/lib/gstreamer-1.0/",
+                    "FREI0R_PATH": "/app/lib/frei0r-1/",
+                    "GSTREAMER": "1.0",
+                    "ENABLE_PYTHON3": "yes",
+                    "ENABLE_GTK": "yes",
+                    "PYTHON_VERSION": "3.5",
+                    "MAKEFLAGS": "-j4 V=1",
+                    "CC": "gcc",
+                    "V": "1"
+                },
+                "strip": false,
+                "no-debuginfo": false
+            },
+            "build-commands": [
+                "install -D flatpak_build.sh /app/bin/flatpak_build.sh",
+                "/app/bin/flatpak_build.sh"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/bossjones/scarlett_os.git",
+                    "branch": "feature-config-schema"
+                },
+                {
+                    "type": "file",
+                    "path": "flatpak_build.sh"
+                }
+            ],
+            "cleanup": [
+                "/include",
+                "/lib/pkgconfig",
+                "/lib/python3.5/site-packages/gi/*.la"
+            ]
+        }
+    ]
+}

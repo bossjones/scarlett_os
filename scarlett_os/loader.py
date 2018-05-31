@@ -10,6 +10,8 @@ call get_component('switch.your_platform'). In both cases the config directory
 is checked to see if it contains a user provided version. If not available it
 will check the built-in automations and platforms.
 """
+
+# pylint: disable=unused-import
 import importlib
 import logging
 import os
@@ -17,7 +19,6 @@ import pkgutil
 import sys
 
 from types import ModuleType
-# pylint: disable=unused-import
 from typing import Optional, Sequence, Set, Dict  # noqa
 
 from scarlett_os.const import PLATFORM_FORMAT

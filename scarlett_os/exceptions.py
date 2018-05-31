@@ -31,6 +31,12 @@ class TemplateError(ScarlettError):
                                          exception))
 
 
+class FindError(ScarlettError):
+
+    def __init__(self, message, errno=None):
+        super(FindError, self).__init__(message, errno)
+        self.errno = errno
+
 class DecodeError(Exception):
     """The base exception class for all decoding errors raised by this package."""
 
