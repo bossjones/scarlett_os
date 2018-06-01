@@ -1,3 +1,13 @@
+# scarlett_os
+# SOURCE: https://www.reddit.com/r/Python/comments/40s8qw/simplify_your_manifestin_commands/
+
+include setup.cfg
+include COPYING
+include *.in
+include README.rst
+include .travis.yml
+include meson.build
+include meson_options.txt
 include AUTHORS.rst
 include CONTRIBUTING.rst
 include HISTORY.rst
@@ -6,11 +16,12 @@ include README.rst
 include .dockerignore
 include Dockerfile
 include requirements*.txt
+graft scarlett_os
+graft tests
+# recursive-include scarlett_os *.h meson.build
+# recursive-include tests *.py *.c *.h *.xml *.supp meson.build
+recursive-include docs *.rst *.svg LICENSE *.ico *.png *.css *.py *.dia Makefile
+recursive-include ci *.sh *.rst *.py Dockerfile*
+recursive-include Dockerfile doker-compose* getenvvar.py
 
-recursive-include tests *
-
-recursive-exclude * __pycache__
-recursive-exclude * *.py[co]
-recursive-exclude * *.swp
-
-recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
+global-exclude *.py[co]
