@@ -1,12 +1,5 @@
 {
-  // INFO: Good default settings config - https://github.com/DonJayamanne/vscode-setup/blob/master/settings.json
-  // Render all the whitespaces
   "editor.renderWhitespace": "all",
-  // Controls how lines should wrap. Can be:
-  //  - 'off' (disable wrapping),
-  //  - 'on' (viewport wrapping),
-  //  - 'wordWrapColumn' (wrap at `editor.wordWrapColumn`) or
-  //  - 'bounded' (wrap at minimum of viewport and `editor.wordWrapColumn`).
   "editor.wordWrap": "on",
   "workbench.iconTheme": "material-icon-theme",
   "window.zoomLevel": 0,
@@ -117,7 +110,14 @@
     "htmlcov": true,
     "gir-1.0": true,
     "gir-1.0/*": true,
-    "fakegir/": true
+    "fakegir/": true,
+    "mesonbuild/": "explorerExcludedFiles",
+    "bin/scarlett": "explorerExcludedFiles",
+    ".bashrc": "explorerExcludedFiles",
+    "*.flatpak-builder/": "explorerExcludedFiles",
+    "build/flatpak/Scarlett.*.json": "explorerExcludedFiles",
+    "build/flatpak/scarlett/*": "explorerExcludedFiles",
+    "build/devel/": "explorerExcludedFiles"
   },
   "files.trimTrailingWhitespace": true,
   "search.exclude": {
@@ -127,16 +127,12 @@
     "**/.vendor": true,
     "**/build": true
   },
-  // Exclude types of warnings, for example ["SC1090"].
   "shellcheck.exclude": [
     "2086"
   ],
   "python.pythonPath": "~/.virtualenvs/scarlett-os-venv2/bin/python3",
   "python.formatting.provider": "autopep8",
-
-  // Turn off formatting on type
   "editor.formatOnType": false,
-
   "python.linting.pylintArgs": [
     "--rcfile",
     "${workspaceFolder}/pylintrc"
@@ -148,7 +144,6 @@
   "python.venvPath": "~/.virtualenvs",
   "python.sortImports.path": "~/.virtualenvs/scarlett-os-venv2/bin/isort",
   "python.autoComplete.extraPaths": [
-    // "~/.cache/fakegir/",
     "~/.virtualenvs/scarlett-os-venv2/lib/python3.5/site-packages"
   ],
   "terminal.integrated.shellArgs.osx": [
@@ -157,15 +152,10 @@
   "terminal.integrated.shellArgs.linux": [
     "-l"
   ],
-  // The path of the shell that the terminal uses on Linux.
   "terminal.integrated.shell.linux": "/usr/local/bin/bash",
-  // Path to the shellcheck executable.
   "shellcheck.executablePath": "/usr/local/bin/shellcheck",
-  // Controls whether locale variables are set at startup of the terminal, this defaults to true on OS X, false on other platforms.
   "terminal.integrated.setLocaleVariables": true,
-  // The path of the shell that the terminal uses on OS X.
   "terminal.integrated.shell.osx": "/usr/local/bin/bash",
-  // Glob patterns that defines the files to search for. Only include files you need, DO NOT USE `{**/*.*}` for both permormance and avoiding binary files reason.
   "todohighlight.keywords": [
     {
       "text": "TODO:",
@@ -215,16 +205,9 @@
       "backgroundColor": "maroon"
     }
   ],
-
-  // The number of spaces a tab is equal to. This setting is overridden based on the file contents when `editor.detectIndentation` is on.
   "editor.tabSize": 4,
-
-  // Insert spaces when pressing Tab. This setting is overridden based on the file contents when `editor.detectIndentation` is on.
   "editor.insertSpaces": true,
-
-  // When opening a file, `editor.tabSize` and `editor.insertSpaces` will be detected based on the file contents.
   "editor.detectIndentation": true,
-
   "todohighlight.toggleURI": false,
   "todohighlight.exclude": [
     "**/node_modules/**",
@@ -240,7 +223,6 @@
     "**/.next/**"
   ],
   "todohighlight.maxFilesForSearch": 5120,
-  // Specifies whether or not to enable GitLens telemetry (even if enabled still abides   by the overall `telemetry.enableTelemetry` setting
   "gitlens.advanced.telemetry.enabled": false,
   "todohighlight.include": [
     "**/*.js",

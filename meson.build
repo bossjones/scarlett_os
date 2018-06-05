@@ -13,7 +13,6 @@ project('scarlett-os', ['python'], version: '0.1.0')
 # Import(): Importing modules
 # Imports the given extension module. Returns an opaque object that can be used to call the methods of the module. Here's an example for a hypothetical testmod module.
 gnome = import('gnome')
-i18n  = import('i18n')
 python = import('python3')
 
 # Make sure Python is installed and found
@@ -23,6 +22,7 @@ endif
 
 # FIXME: Replace this with gstreamer-espeak
 # gst_transcoder_dep = dependency('gst-transcoder-1.0', version : '>= 1.8.1', fallback : ['gst-transcoder', 'gst_transcoder_dep'])
+espeak_dep = dependency('espeak', fallback : ['espeak', 'espeak_dep'])
 
 pkgdatadir = join_paths(get_option('datadir'), meson.project_name())
 
@@ -44,7 +44,7 @@ VERSIONED_CAMEL_CASE_NAME = CAMEL_CASE_NAME +'-'+ API_VERSION
 
 PACKAGE_URL = 'https://github.com/bossjones/scarlett_os'
 PACKAGE_URL_BUG = 'https://github.com/bossjones/scarlett_os'
-PROJECT_RDNN_NAME='org.scarlett.Listener'
+PROJECT_RDNN_NAME='org.scarlett.ScarlettOS'
 
 PYTHON_DIR = join_paths(get_option('prefix'), python.sysconfig_path('purelib'))
 PKGDATA_DIR = join_paths(get_option('prefix'), get_option('datadir'), PROJECT_RDNN_NAME)
@@ -59,8 +59,6 @@ pycairo_dep = dependency('py3cairo')
 
 dependency('gobject-introspection-1.0', version: '>= 1.35.0')
 dependency('gtk+-3.0', version: '>= 3.19.3')
-# dependency('libmediaart-2.0', version: '>= 1.9.1')
-# dependency('tracker-sparql-2.0', version: '>= 1.99.1')
 dependency('pygobject-3.0', version: '>= 3.21.1')
 dependency('py3cairo', version: '>= 1.14.0')
 dependency('grilo-0.3', version: '>= 0.3.4')
@@ -81,73 +79,42 @@ dependency('grilo-0.3', version: '>= 0.3.4')
 #         'pkglibdir=' + PKGLIB_DIR
 #    ])
 
-# subdir('data')
-# subdir('help')
-# subdir('po')
+subdir('data')
 
 # FIXME: This is from Pitivi, add this in to our stuff
 # SOURCE: https://github.com/GNOME/pitivi/blob/b8b22123966cff0ba513300ef2b4fd3dec624c5a/meson.build
-# geteenvvar = find_program('getenvvar.py')
-# cdata = configuration_data()
-# cdata.set('CONFIGURED_PYTHONPATH', run_command(geteenvvar, 'PYTHONPATH').stdout().strip())
-# cdata.set('CONFIGURED_GI_TYPELIB_PATH', run_command(geteenvvar, 'GI_TYPELIB_PATH').stdout().strip())
-# cdata.set('CONFIGURED_LD_LIBRARY_PATH', run_command(geteenvvar, 'LD_LIBRARY_PATH').stdout().strip())
-# cdata.set('CONFIGURED_GST_PLUGIN_PATH', run_command(geteenvvar, 'GST_PLUGIN_PATH').stdout().strip())
-# cdata.set('CONFIGURED_GST_PLUGIN_SYSTEM_PATH', run_command(geteenvvar, 'GST_PLUGIN_SYSTEM_PATH').stdout().strip())
-# cdata.set('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
-# cdata.set('DATADIR', join_paths(get_option('prefix'), get_option('datadir')))
-# cdata.set('PACKAGE_NAME', 'Pitivi')
-# cdata.set('PACKAGE', 'pitivi')
-# cdata.set('GITVERSION', GITVERSION)
-# cdata.set('VERSION', meson.project_version())
-# cdata.set('BUILDDIR', meson.current_build_dir())
+geteenvvar = find_program('getenvvar.py')
+cdata = configuration_data()
+cdata.set('CONFIGURED_PYTHONPATH', run_command(geteenvvar, 'PYTHONPATH').stdout().strip())
+cdata.set('CONFIGURED_LD_LIBRARY_PATH', run_command(geteenvvar, 'LD_LIBRARY_PATH').stdout().strip())
+cdata.set('CONFIGURED_GST_PLUGIN_PATH', run_command(geteenvvar, 'GST_PLUGIN_PATH').stdout().strip())
+cdata.set('CONFIGURED_GST_PLUGIN_SYSTEM_PATH', run_command(geteenvvar, 'GST_PLUGIN_SYSTEM_PATH').stdout().strip())
+cdata.set('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
+cdata.set('DATADIR', join_paths(get_option('prefix'), get_option('datadir')))
+cdata.set('PACKAGE_NAME', 'ScarlettOS')
+cdata.set('PACKAGE', 'scarlett')
+cdata.set('GITVERSION', GITVERSION)
+cdata.set('VERSION', meson.project_version())
+cdata.set('BUILDDIR', meson.current_build_dir())
 
+scarlett_os_install_dir = get_option('libdir') + '/scarlett_os/python/'
 
-install_subdir(
-    'scarlett_os',
-    install_dir: PYTHON_DIR
-)
+# run_command(python, '-m', 'compileall', meson.current_source_dir() + '/pitivi')
+install_subdir('scarlett_os', install_dir: scarlett_os_install_dir)
 
-# Install the executable file
-# configuration_data(): Creates an empty configuration object. You should add your configuration
-# with its method calls and finally use it in a call to configure_file.
-bin_config = configuration_data()
-bin_config.set('rdnn_name', PROJECT_RDNN_NAME)
-bin_config.set('pkgdatadir', PKGDATA_DIR)
-bin_config.set('localedir', join_paths(get_option('prefix'), get_option('datadir'), 'locale'))
-bin_config.set('pythondir', PYTHON_DIR)
-bin_config.set('pyexecdir', join_paths(get_option('prefix'), python.sysconfig_path('stdlib')))
-bin_config.set('schemasdir', '')
-# Used for libgd
-bin_config.set('pkglibdir', PKGLIB_DIR)
+# SOURCE: pitivi
+configure_file(input: 'scarlett_os/configure.py.in',
+               output: 'configure.py',
+               configuration: cdata)
 
-bin_config.set('local_build', 'False')
+configure_file = '@0@/configure.py'.format(meson.current_build_dir())
+install_data(configure_file, install_dir: pitivi_install_dir + 'scarlett_os')
 
-configure_file(
-    input: 'scarlett_os.in',
-    output: 'scarlettOS',
-    configuration: bin_config,
-    install_dir: get_option('bindir')
-)
+# FIXME work around to get testsuite working
+run_command('cp', configure_file, meson.current_source_dir() + '/scarlett_os')
 
-# Install the builddir executable
-local_config = configuration_data()
-local_config.set('rdnn_name', PROJECT_RDNN_NAME)
-local_config.set('pkgdatadir', join_paths(meson.build_root(), 'data'))
-local_config.set('localedir', join_paths(get_option('prefix'), get_option('datadir'), 'locale'))
-local_config.set('pythondir', meson.source_root())
-local_config.set('pyexecdir', meson.source_root())
-local_config.set('schemasdir', join_paths(meson.build_root(), 'data'))
-# Used for libgd
-# local_config.set('pkglibdir', join_paths(meson.build_root(), 'subprojects', 'libgd', 'libgd'))
-
-local_config.set('local_build', 'True')
-
-configure_file(
-    input: 'scarlett_os.in',
-    output: 'scarlett_os_tasker',
-    configuration: local_config
-)
-
-# meson.add_postconf_script('meson_post_conf.py')
-# meson.add_install_script('meson_post_install.py')
+subdir('bin')
+# if not get_option('disable-help')
+#     subdir('help')
+# endif
+subdir('tests')

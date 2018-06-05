@@ -1,0 +1,13 @@
+[Desktop Entry]
+GenericName=Home Automation System
+Name=ScarlettOS
+Comment=Home Automation Voice Controlled System
+Exec=tree
+Terminal=true
+Type=Application
+Icon=org.scarlett.ScarlettOS
+StartupNotify=true
+Categories=GNOME;GTK;AudioVideo;Video;AudioVideoEditing;
+MimeType=text/x-xges;text/x-xptv;
+Keywords=video;film;movie;editor;
+# DBusActivatable=true

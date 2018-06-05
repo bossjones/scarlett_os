@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # Pitivi video editor
 # Copyright (c) 2016, Thibault Saunier <tsaunier@gnome.org>
@@ -34,16 +33,12 @@ from urllib.request import urlretrieve
 # The default branch is master because the script is used most often
 # for development.
 PITIVI_BRANCH = "master"
-MANIFEST_NAME = "org.pitivi.Pitivi.json"
+MANIFEST_NAME = "org.scarlett.ScarlettOS.json"
 # To see the existing branches, run:
 # flatpak remote-ls pitivi --user -d
-SDK_BRANCH = {"0.96": "3.20",
-              "0.97.1": "3.20",
-              "0.98": "3.22",
-              "stable": "3.24",
-              "master": "3.24"}
+SDK_BRANCH = {"master": "3.24"}
 FLATPAK_REQ = "0.6.4"
-DEFAULT_GST_BRANCH = 'master'
+DEFAULT_GST_BRANCH = '1.8.2'
 
 
 class Colors:  # pylint: disable=too-few-public-methods
@@ -144,6 +139,8 @@ class FlatpakObject:  # pylint: disable=too-few-public-methods
                 command.append("--user")
         command.extend(args)
 
+        if comment:
+            Console.message(" ".join(command))
         if not show_output:
             return subprocess.check_output(command).decode("utf-8")
 
@@ -163,14 +160,16 @@ class FlatpakPackages(FlatpakObject):  # pylint: disable=too-few-public-methods
 
     def __detect_packages(self, *args):
         packs = []
-        package_defs = [rd for rd in
-                        self.flatpak("list", "-d", *args).split("\n") if rd]
+        package_defs = [rd
+                        for rd in self.flatpak("list", "-d", *args).split("\n")
+                        if rd]
         for package_def in package_defs:
-            splited_packaged_def = [p for p in package_def.split(" ") if p]
+            splited_packaged_def = package_def.split()
             name, arch, branch = splited_packaged_def[0].split("/")
 
             # If installed from a file, the package is in no repo
-            repo = self.repos.repos.get(splited_packaged_def[1])
+            repo_name = splited_packaged_def[1]
+            repo = self.repos.repos.get(repo_name)
 
             packs.append(FlatpakPackage(name, branch, repo, arch))
 
@@ -191,93 +190,90 @@ class FlatpakRepos(FlatpakObject):
 
     def __init__(self, user=True):
         FlatpakObject.__init__(self, user=user)
+        # The remote repositories, name -> FlatpakRepo
         self.repos = {}
         self.update()
 
     def update(self):
         self.repos = {}
-        repo_defs = [rd for rd in
-                     self.flatpak("remote-list", "-d").split("\n") if rd]
-        for repo in repo_defs:
-            components = repo.split(" ")
-            name = components[0]
-            desc = ""
-            url = None
-            for elem in components[1:]:
-                if not elem:
-                    continue
-                parsed_url = urlparse(elem)
-                if parsed_url.scheme:
-                    url = elem
-                    break
+        remotes = [row
+                   for row in self.flatpak("remote-list", "-d").split("\n")
+                   if row]
+        for repo in remotes:
+            for components in [repo.split(" "), repo.split("\t")]:
+                if len(components) == 1:
+                    components = repo.split("\t")
+                name = components[0]
+                desc = ""
+                url = None
+                for elem in components[1:]:
+                    if not elem:
+                        continue
+                    parsed_url = urlparse(elem)
+                    if parsed_url.scheme:
+                        url = elem
+                        break
 
-                if desc:
-                    desc += " "
-                desc += elem
+                    if desc:
+                        desc += " "
+                    desc += elem
+
+                if url:
+                    break
 
             if not url:
                 Console.message("No valid URI found for: %s", repo)
                 continue
 
-            self.repos[name] = FlatpakRepo(name, desc, url, repos=self)
+            self.repos[name] = FlatpakRepo(name, url, desc, repos=self)
 
         self.packages = FlatpakPackages(self)
 
-    def add(self, repo, override=True):
+    def add(self, name, flatpakrepo_url, override=True):
+        flatpakrepo = tempfile.NamedTemporaryFile(mode="w")
+        urlretrieve(flatpakrepo_url, flatpakrepo.name)
+        repo = configparser.ConfigParser()
+        repo.read(flatpakrepo.name)
+        url = repo["Flatpak Repo"]["Url"]
+
         same_name = None
-        for name, tmprepo in self.repos.items():
-            if repo.url == tmprepo.url:
+        for tmpname, tmprepo in self.repos.items():
+            if url == tmprepo.url:
                 return tmprepo
-            if repo.name == name:
+            if name == tmpname:
                 same_name = tmprepo
 
         if same_name:
+            Console.message("Flatpak remote with the same name already exists: %s", same_name)
             if not override:
+                Console.message("%sNote the URL is %s, not %s%s",
+                                Colors.WARNING, same_name.url, url, Colors.ENDC)
                 return None
 
-            self.flatpak("remote-modify", repo.name, "--url=" + repo.url,
+            Console.message("The URL is different. Overriding.")
+            self.flatpak("remote-modify", name, "--url=" + url,
                          comment="Setting repo %s URL from %s to %s"
-                         % (repo.name, same_name.url, repo.url))
-            same_name.url = repo.url
+                         % (name, same_name.url, url))
+            same_name.url = url
             return same_name
 
-        self.flatpak("remote-add", "--if-not-exists", repo.name, "--from",
-                     repo.repo_file.name,
-                     comment="Adding repo %s" % repo.name)
-        repo.repos = self
-        return repo
+        self.flatpak("remote-add", "--no-gpg-verify", "--if-not-exists", name,
+                     "--from", flatpakrepo_url,
+                     comment="Adding repo %s" % name)
+        self.update()
+        return self.repos[name]
 
 
 class FlatpakRepo(FlatpakObject):  # pylint: disable=too-few-public-methods
 
-    def __init__(self, name, desc=None, url=None,  # pylint: disable=too-many-arguments
-                 repo_file=None, user=True, repos=None):
+    def __init__(self, name, url, desc=None, user=True, repos=None):  # pylint: disable=too-many-arguments
         FlatpakObject.__init__(self, user=user)
 
         self.name = name
-        self.url = url
-        self.desc = desc
-        self.repo_file_name = repo_file
-        self._repo_file = None
-        self.repos = repos
         assert name
-        if repo_file and not url:
-            repo = configparser.ConfigParser()
-            repo.read(self.repo_file.name)
-            self.url = repo["Flatpak Repo"]["Url"]
-        else:
-            assert url
-
-    @property
-    def repo_file(self):
-        if self._repo_file:
-            return self._repo_file
-
-        assert self.repo_file_name
-        self._repo_file = tempfile.NamedTemporaryFile(mode="w")
-        urlretrieve(self.repo_file_name, self._repo_file.name)
-
-        return self._repo_file
+        self.desc = desc
+        self.repos = repos
+        self.url = url
 
 
 class FlatpakPackage(FlatpakObject):
@@ -299,12 +295,19 @@ class FlatpakPackage(FlatpakObject):
             # Bundle installed from file
             return True
 
-        self.repo.repos.update()
-        for package in self.repo.repos.packages:
-            if package.name == self.name and \
-                    package.branch == self.branch and \
-                    package.arch == self.arch:
+        if len(self.name.split(".")) <= 3:
+            self.repo.repos.update()
+            for package in self.repo.repos.packages:
+                if package.name == self.name and \
+                        package.arch == self.arch and \
+                        package.branch == self.branch:
+                    return True
+        else:
+            try:
+                self.flatpak("info", self.name)
                 return True
+            except subprocess.CalledProcessError:
+                return False
 
         return False
 
@@ -313,7 +316,7 @@ class FlatpakPackage(FlatpakObject):
             return
 
         self.flatpak("install", self.repo.name, self.name,
-                     self.branch, show_output=True,
+                     self.branch, "--reinstall", show_output=True,
                      comment="Installing %s" % self.name)
 
     def update(self):
@@ -331,16 +334,18 @@ class FlatpakPackage(FlatpakObject):
                      comment="Running %s (%s)" % (self.name, self.branch))
 
 
-class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
+class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
-        self.name = "Pitivi"
+        self.name = "ScarlettOS"
         self.sdk_repo = None
+        self.gnome_repo = None
         self.runtime = None
         self.locale = None
         self.sdk = None
 
         self.packs = []
+        self.init = False
         self.update = False
         self.json = None
         self.args = []
@@ -372,7 +377,8 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
             finally:
                 devnull.close()
 
-    def check_flatpak(self):
+    @staticmethod
+    def check_flatpak():
         try:
             output = subprocess.check_output(["flatpak", "--version"])
         except FileNotFoundError:
@@ -382,7 +388,7 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
                             " how to install it for your distribution at:\n"
                             "    * http://flatpak.org/%s\n", Colors.FAIL,
                             FLATPAK_REQ, sys.argv[0], Colors.ENDC)
-            self.exit(1)
+            exit(1)
 
         def comparable_version(version):
             return [int(number) for number in version.split(".")]
@@ -392,13 +398,7 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
             Console.message("\n%sFlatpak %s required but %s found."
                             " Please update and try again%s\n", Colors.FAIL,
                             FLATPAK_REQ, version, Colors.ENDC)
-            self.exit(1)
-
-    def exit(self, exitcode):
-        if self.installer:
-            input("Failure installing %s press <enter> to continue" % self.name)
-
-        exit(exitcode)
+            exit(1)
 
     def clean_args(self):
         Console.quiet = self.quiet
@@ -406,10 +406,12 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
         self.check_flatpak()
 
         repos = FlatpakRepos()
-        self.sdk_repo = repos.add(
-            FlatpakRepo("gnome",
-                        url="http://sdk.gnome.org/repo/",
-                        repo_file="https://sdk.gnome.org/gnome.flatpakrepo"))
+        self.sdk_repo = repos.add("flathub",
+                                  "https://dl.flathub.org/repo/flathub.flatpakrepo")
+        self.sdk_repo = repos.add("gnome",
+                                  "https://sdk.gnome.org/gnome.flatpakrepo")
+
+
 
         sdk_branch = SDK_BRANCH[self.branch]
         self.runtime = FlatpakPackage(
@@ -430,27 +432,39 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
 
     def run(self):
         if self.clean:
+            Console.message("Removing prefix")
             try:
                 shutil.rmtree(self.prefix)
             except FileNotFoundError:
                 pass
 
-        fresh_install = not os.path.exists(self.prefix)
-        if fresh_install or self.update:
+        missing_prefix = not os.path.exists(self.prefix)
+        if self.init or self.update:
             self.install_flatpak_runtimes()
-            self.setup_sandbox()
+            if missing_prefix or self.update:
+                self.setup_sandbox()
             self.install_development_tools()
+        else:
+            if missing_prefix:
+                Console.message("%sPrefix missing, create it with: %s --init%s",
+                                Colors.FAIL, __file__, Colors.ENDC)
+                exit(1)
 
         if self.check:
-            self.run_in_sandbox("gst-validate-launcher",
-                                os.path.join(self.topdir, "tests/ptv_testsuite.py"),
-                                "--xunit-file", "xunit.xml", exit_on_failure=True,
+            # self.run_in_sandbox("gst-validate-launcher",
+            #                     os.path.join(
+            #                         self.topdir, "tests/ptv_testsuite.py"),
+            #                     "--xunit-file", "xunit.xml", exit_on_failure=True,
+            #                     cwd=self.topdir)
+            self.run_in_sandbox("gst-inspect-1.0",
+                                "espeak",
+                                exit_on_failure=True,
                                 cwd=self.topdir)
 
         if self.bundle:
             self.update_bundle()
 
-        if not self.check and not self.update and not self.bundle:
+        if not self.check and not self.init and not self.update and not self.bundle:
             assert self.args
             self.run_in_sandbox(*self.args, exit_on_failure=True)
 
@@ -475,7 +489,7 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
         try:
             subprocess.check_call(build_export_args)
         except subprocess.CalledProcessError:
-            self.exit(1)
+            exit(1)
 
         update_repo_args = ["flatpak", "build-update-repo"]
 
@@ -488,11 +502,11 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
         try:
             subprocess.check_call(update_repo_args)
         except subprocess.CalledProcessError:
-            self.exit(1)
+            exit(1)
 
     def setup_sandbox(self):
         """Creates and updates the sandbox."""
-        Console.message("Building Pitivi %s and dependencies in %s",
+        Console.message("Building ScarlettOS %s and dependencies in %s",
                         self.branch, self.prefix)
 
         json_template = os.path.join(self.scriptdir, MANIFEST_NAME)
@@ -510,7 +524,7 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
         except FileNotFoundError:
             Console.message("\n%sYou need to install flatpak-builder%s\n",
                             Colors.FAIL, Colors.ENDC)
-            self.exit(1)
+            exit(1)
         subprocess.check_call(builder_args, cwd=self.scriptdir)
 
         if not os.path.isdir("mesonbuild/"):
@@ -528,15 +542,17 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
 
     def install_development_tools(self):
         venv_path = os.path.join(self.scriptdir, "pyvenv")
-        Console.message("Setting up a Python virtual env for development: %s", venv_path)
+        Console.message(
+            "Setting up a Python virtual env for development: %s", venv_path)
         if not os.path.isdir(venv_path):
             venv.create(venv_path, with_pip=True)
 
         activate_script = os.path.join(venv_path, "bin", "activate")
-        pip_modules = "pre-commit git-pylint-commit-hook git_pep8_commit_hook pylint"
-        Console.message("Installing development tools in the Python virtual env: %s", pip_modules)
+        pip_modules = "pre-commit git-pylint-commit-hook git_pep8_commit_hook pylint black"
+        Console.message(
+            "Installing development tools in the Python virtual env: %s", pip_modules)
         subprocess.check_call(
-            ". %s && pip install -U %s" % (activate_script, pip_modules),
+            ". %s && pip install -q -U %s" % (activate_script, pip_modules),
             shell=True)
 
         # git-pylint-commit-hook must run pylint in the sandbox so it uses
@@ -544,8 +560,9 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
         # installed in the development pyvenv which is outside the sandbox
         # because git-pylint-commit-hook needs to import pylint.config.
         pip_modules = ["pylint"]
-        Console.message("Installing development tools in the sandbox: %s", pip_modules)
-        self.run_in_sandbox("pip3", "install", "-U", "--user", *pip_modules,
+        Console.message(
+            "Installing development tools in the sandbox: %s", pip_modules)
+        self.run_in_sandbox("pip3", "install", "-q", "-U", "--user", *pip_modules,
                             exit_on_failure=True)
 
     def run_in_sandbox(self, *args, exit_on_failure=False, cwd=None):
@@ -554,7 +571,7 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
 
         flatpak_command = ["flatpak", "build", "--socket=x11",
                            "--socket=session-bus", "--socket=pulseaudio",
-                           "--share=network", "--env=PITIVI_DEVELOPMENT=1",
+                           "--share=network", "--env=SCARLETTOS_DEVELOPMENT=1",
                            "--env=PYTHONUSERBASE=/app/",
                            "--env=CC=ccache gcc",
                            "--env=CXX=ccache g++", "--device=dri"]
@@ -562,17 +579,14 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
         # The forwarded environment variables.
         forwarded = {}
         for envvar, value in os.environ.items():
-            if envvar.split("_")[0] in ("GST", "GTK", "PITIVI", "LC") or \
+            if envvar.split("_")[0] in ("GST", "GTK", "SCARLETT", "LC") or \
                     envvar in ["DISPLAY", "LANG"]:
                 forwarded[envvar] = value
 
         prefixes = {
-            "GST_ENCODING_TARGET_PATH":
-                "/app/share/gstreamer-1.0/encoding-profiles/:/app/share/pitivi/encoding-profiles/",
             "GST_PLUGIN_SYSTEM_PATH": "/app/lib/gstreamer-1.0/",
-            "FREI0R_PATH": "/app/lib/frei0r-1/",
             "GST_PRESET_PATH":
-                "/app/share/gstreamer-1.0/presets/:/app/share/pitivi/gstpresets/",
+                "/app/share/gstreamer-1.0/presets/",
         }
         for envvar, path in prefixes.items():
             value = forwarded.get(envvar, "")
@@ -586,32 +600,35 @@ class PitiviFlatpak:  # pylint: disable=too-many-instance-attributes
         flatpak_command.extend(args)
 
         Console.message("Running in sandbox: %s", ' '.join(args))
+        Console.message(" ".join(flatpak_command))
         try:
             subprocess.check_call(flatpak_command, cwd=cwd)
         except subprocess.CalledProcessError as e:
             if exit_on_failure:
-                self.exit(e.returncode)
+                exit(e.returncode)
 
     def install_flatpak_runtimes(self):
         for runtime in self.packs:
             if not runtime.is_installed():
                 runtime.install()
             else:
-                runtime.update()
+                # Update only if requested.
+                if self.update:
+                    runtime.update()
 
 
 if __name__ == "__main__":
-    app_flatpak = PitiviFlatpak()
+    app_flatpak = ScarlettOSFlatpak()
 
-    parser = argparse.ArgumentParser(prog="pitivi-flatpak")
+    parser = argparse.ArgumentParser(prog="scarlett-flatpak")
 
     general = parser.add_argument_group("General")
+    general.add_argument("--init", dest="init",
+                         action="store_true",
+                         help="Initialize the runtime/sdk/app and build the development environment if needed")
     general.add_argument("--update", dest="update",
                          action="store_true",
-                         help="Update the runtime/sdk/app and rebuild the development environment if needed")
-    general.add_argument("--installer", dest="installer",
-                         action="store_true",
-                         help="Wait for Enter to be pressed when the script exits because something failed")
+                         help="Update the runtime/sdk/app and rebuild the development environment")
     general.add_argument("-q", "--quiet", dest="quiet",
                          action="store_true",
                          help="Do not print anything")

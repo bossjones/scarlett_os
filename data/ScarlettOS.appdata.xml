@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2018 Malcolm Jones <bossjones@theblacktonystark.com> -->
+<component type="desktop">
+  <id>org.scarlett.ScarlettOS</id>
+  <launchable type="desktop">org.scarlett.ScarlettOS.desktop</launchable>
+  <metadata_license>CC-BY-3.0</metadata_license>
+  <project_license>LGPL-2.0+</project_license>
+  <name>ScarlettOS</name>
+  <summary>Create and edit your own movies</summary>
+  <description>
+    <p>ScarlettOS is home automation system.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <image>http://www.pitivi.org/i/screenshots/software_center_main.jpg</image>
+    </screenshot>
+  </screenshots>
+  <url type="bugtracker">https://github.com/bossjones/scarlett_os/</url>
+  <url type="translate">https://wiki.gnome.org/TranslationProject#How_can_I_help.3F</url>
+  <kudos>
+    <kudo>HiDpiIcon</kudo>
+    <kudo>UserDocs</kudo>
+    <kudo>ModernToolkit</kudo>
+    <kudo>Notifications</kudo>
+  </kudos>
+  <update_contact>bossjones@theblacktonystark.com</update_contact>
+  <project_group>SCARLETT</project_group>
+  <developer_name>The ScarlettOS Team</developer_name>
+</component>

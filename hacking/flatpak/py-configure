@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# SOURCE: https://github.com/GNOME/pitivi/blob/0fcc448e098d430f226bc6a2912a3909c2429400/build/flatpak/py-configure
-
 for i in "$@"
 do
   case $i in
@@ -20,7 +18,10 @@ done
 cat <<EOF > Makefile
 all:
 	echo "Nothing"
+
 install:
 	CXX=/usr/bin/g++ CC=/usr/bin/gcc PYTHONUSERBASE=/app/ pip3 install --user $MODULENAME
+
+
 EOF
 
