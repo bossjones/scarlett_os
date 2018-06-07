@@ -99,6 +99,8 @@
             },
             "buildsystem": "simple",
             "build-commands": [
+                "pwd",
+                "ls -lta",
                 "python3 ./setup.py sdist",
                 "pip3 install dist/*.tar.gz"
             ],
