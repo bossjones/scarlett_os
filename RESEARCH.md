@@ -2114,3 +2114,38 @@ app-dir directory.
 To verify that the build was successful, run the following:
 
 `$ flatpak-builder --run app-dir org.flatpak.Hello.json hello.sh`
+
+
+
+# os x virtualenv artifacts ( old shit before updating things with brew )
+
+```
+l
+ |2.4.2|  using virtualenv: scarlett-os-venv2   hyenatop in ~/.virtualenvs/scarlett-os-venv2/lib/python3.5/site-packages/gi
+○ → ls -lta
+total 1072
+drwxr-xr-x  284 malcolm  staff    9656 Mar  8 12:18 ..
+drwxr-xr-x   21 malcolm  staff     714 Sep  5  2016 .
+-rwxr-xr-x    1 malcolm  staff  412772 Sep  5  2016 _gi.cpython-35m-darwin.so
+-rwxr-xr-x    1 malcolm  staff    1214 Sep  5  2016 _gi.la
+-rwxr-xr-x    1 malcolm  staff   16148 Sep  5  2016 _gi_cairo.cpython-35m-darwin.so
+-rwxr-xr-x    1 malcolm  staff    1249 Sep  5  2016 _gi_cairo.la
+drwxr-xr-x    4 malcolm  staff     136 Sep  5  2016 _gobject
+drwxr-xr-x   12 malcolm  staff     408 Sep  5  2016 overrides
+-rw-r--r--    1 malcolm  staff    4605 Sep  5  2016 __init__.py
+drwxr-xr-x   24 malcolm  staff     816 Sep  5  2016 __pycache__
+-rw-r--r--    1 malcolm  staff    2078 Sep  5  2016 _constants.py
+-rw-r--r--    1 malcolm  staff    2080 Sep  5  2016 _error.py
+-rw-r--r--    1 malcolm  staff   13249 Sep  5  2016 _option.py
+-rw-r--r--    1 malcolm  staff   15175 Sep  5  2016 _propertyhelper.py
+-rw-r--r--    1 malcolm  staff    9860 Sep  5  2016 _signalhelper.py
+-rw-r--r--    1 malcolm  staff    6688 Sep  5  2016 docstring.py
+-rw-r--r--    1 malcolm  staff    5288 Sep  5  2016 importer.py
+-rw-r--r--    1 malcolm  staff   10037 Sep  5  2016 module.py
+-rw-r--r--    1 malcolm  staff     766 Sep  5  2016 pygtkcompat.py
+drwxr-xr-x    4 malcolm  staff     136 Sep  5  2016 repository
+-rw-r--r--    1 malcolm  staff   13801 Sep  5  2016 types.py
+
+ |2.4.2|  using virtualenv: scarlett-os-venv2   hyenatop in ~/.virtualenvs/scarlett-os-venv2/lib/python3.5/site-packages/gi
+○ →
+```

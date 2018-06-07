@@ -32,7 +32,7 @@ from urllib.request import urlretrieve
 
 # The default branch is master because the script is used most often
 # for development.
-PITIVI_BRANCH = "master"
+SCARLETT_BRANCH = "master"
 MANIFEST_NAME = "org.scarlett.ScarlettOS.json"
 # To see the existing branches, run:
 # flatpak remote-ls pitivi --user -d
@@ -571,7 +571,7 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
 
         flatpak_command = ["flatpak", "build", "--socket=x11",
                            "--socket=session-bus", "--socket=pulseaudio",
-                           "--share=network", "--env=SCARLETTOS_DEVELOPMENT=1",
+                           "--share=network", "--env=SCARLETT_DEBUG_MODE=1",
                            "--env=PYTHONUSERBASE=/app/",
                            "--env=CC=ccache gcc",
                            "--env=CXX=ccache g++", "--device=dri"]

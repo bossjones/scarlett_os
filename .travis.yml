@@ -93,8 +93,8 @@ notifications:
   email:
     recipients:
       - bossjones@theblacktonystark.com
-    on_success: always # default: change
-    on_failure: always # default: always
+    on_success: change # default: change
+    on_failure: change # default: always
 
 deploy:
   distributions: sdist bdist_wheel
@@ -109,8 +109,8 @@ deploy:
 
 notifications:
   slack:
-    # on_success: change
-    on_success: always
-    on_failure: always
+    on_success: change
+    # on_success: always
+    on_failure: change
     rooms:
       secure: arS7e7IDG80ukrrjy4fVfNDh5Yqrz4mxmduWqJU2zHzwxL0QkJWnhncWBpTgXr06MVgWYwq/YnoCGZ+wcWHkYzsqDHWtFI0JguZuJcFAWV5l7PWOxcUUh731hipRcgkZIH03pqnfZTbN3kkNTvFcTL9NG92ZOYd/ZSQeCnNPF9T2PUjn5LnPNwOxJSVAdmvz7CoLJWIR6vF9ojoxZdMj1RhV4b1C9orP3pBh3V3sVc5ExX6cUePXJtkvb51fXwdCsGNA22xZrDfbxCoOXfMmgDuN/7W/DVPPyaZCInYQl2B/oLF+3TOqUZ8STM3BPDIBjxgPRBdULIqeaQJNNJ9rfQ6h+YhvCWDmZD5ugdTQkGCSX2hR4TGMnS9v/nu5KKSalQEkNOfcqZUSTRVHKL800arEwja2avRGu9KBlijg79r/k2EILb7sPfleeS0+eLKIYTBVyQvuiqo31NcZ4Yun9ykQlTJW0n1NiVrLRVHbCIScrHwyH8pI4ts6PbwtUO8HWWDXEUSZRipc14ckZBzqB6ozAAwtF4fStnHC5rkd1sRreZalLKsZxaVpsX0mspZfSLfz6eV34vnDs9Xv0+tPuW0X0P1/FZIykvjDrmoM8s5TD1xzES9zRslhWxK2yv0a5OaryWvicQKcCwg8zwdiCTAwq1wBNkYzrtTnTN9QnRA=

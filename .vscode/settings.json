@@ -117,7 +117,8 @@
     "*.flatpak-builder/": "explorerExcludedFiles",
     "build/flatpak/Scarlett.*.json": "explorerExcludedFiles",
     "build/flatpak/scarlett/*": "explorerExcludedFiles",
-    "build/devel/": "explorerExcludedFiles"
+    "build/devel/": "explorerExcludedFiles",
+    ".pytest_cache": "explorerExcludedFiles"
   },
   "files.trimTrailingWhitespace": true,
   "search.exclude": {

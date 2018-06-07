@@ -499,7 +499,7 @@
                 },
                 {
                     "type": "patch",
-                    "path": "alsa-lib-plugin-path.patch"
+                    "path": "patches/alsa-lib-plugin-path.patch"
                 }
             ]
         },
@@ -577,7 +577,7 @@
         },
 
         {
-            "name": "gst-plugins-espeak",
+            "name": "boss-gst-plugins-espeak",
             "buildsystem": "simple",
             "build-commands": [
                 "./configure --prefix=/app",
@@ -606,7 +606,7 @@
                 },
                 {
                     "type": "patch",
-                    "path": "bossjones-gst-plugins-espeak.patch"
+                    "path": "patches/bossjones-gst-plugins-espeak.patch"
                 }
             ]
         },
@@ -861,7 +861,7 @@
                 },
                 {
                     "type": "patch",
-                    "path": "tree-Makefile.patch"
+                    "path": "patches/tree-Makefile.patch"
                 }
             ]
         },
@@ -908,7 +908,7 @@
                 },
                 {
                     "type": "patch",
-                    "path": "scarlett_os_package.py.patch"
+                    "path": "patches/scarlett_os_package.py.patch"
                 }
             ]
         },
