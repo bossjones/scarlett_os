@@ -362,11 +362,14 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
         self.args = []
         self.build = False
         self.scriptdir = os.path.abspath(os.path.dirname(__file__))
+        # FLATPAK_ENVPATH=/home/pi/dev/scarlett_os-dev
         self.envpath = os.environ.get("FLATPAK_ENVPATH",
                                       os.path.expanduser("~/%s-flatpak" %
                                                          self.name.lower()))
+        # FLATPAK_ENVPATH=/home/pi/dev/scarlett_os-dev/scarlettos-prefix
         self.prefix = os.path.join(
             self.envpath, "%s-prefix" % self.name.lower())
+        # FLATPAK_ENVPATH=/home/pi/dev/scarlett_os-dev/scarlettos-prefix/flatpak-repos
         self.repodir = os.path.join(
             self.envpath, "flatpak-repos", self.name.lower())
         self.local_repos_path = os.path.abspath(os.path.join(
@@ -579,6 +582,38 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
     def run_in_sandbox(self, *args, exit_on_failure=False, cwd=None):
         if not args:
             return
+
+
+        # "--allow=devel",
+        # "--talk-name=org.freedesktop.Flatpak",
+        # "--socket=x11",
+        # "--share=ipc",
+        # "--socket=wayland",
+        # "--share=network",
+        # "--own-name=org.scarlett.Listener",
+        # "--own-name=org.scarlett.Listener.*",
+        # "--talk-name=org.freedesktop.secrets",
+        # "--talk-name=org.freedesktop.DBus.Proprieties",
+        # "--talk-name=org.freedesktop.IBus",
+        # "--talk-name=org.freedesktop.Notifications",
+        # "--socket=pulseaudio",
+        # "--device=dri",
+        # "--talk-name=org.gtk.vfs.*",
+        # "--socket=session-bus",
+        # "--filesystem=host",
+        # "--system-talk-name=org.freedesktop.Avahi",
+        # "--talk-name=org.freedesktop.secrets",
+        # "--filesystem=xdg-run/keyring",
+        # "--env=SSL_CERT_DIR=/etc/ssl/certs",
+        # "--filesystem=/etc/ssl:ro",
+        # "--filesystem=/etc/pki:ro",
+        # "--filesystem=/etc/ca-certificates:ro",
+        # "--filesystem=~/.local/share/flatpak",
+        # "--filesystem=/var/lib/flatpak",
+        # "--filesystem=xdg-run/dconf",
+        # "--filesystem=~/.config/dconf:ro",
+        # "--talk-name=ca.desrt.dconf",
+        # "--env=DCONF_USER_CONFIG_DIR=.config/dconf"
 
         flatpak_command = ["flatpak", "build", "--socket=x11",
                            "--socket=session-bus", "--socket=pulseaudio",
