@@ -1079,9 +1079,9 @@
             "mkdir -p /app/share/applications/",
             "mkdir -p /app/cache/scarlett/",
             "mkdir -p /app/share/icons/hicolor/64x64/apps/",
-            "cp ScarlettOS.appdata.xml /app/share/metainfo/org.scarlett.ScarlettOS.appdata.xml",
+            "cp org.scarlett.ScarlettOS.appdata.xml /app/share/metainfo/org.scarlett.ScarlettOS.appdata.xml",
             "cp scarlettOS.png /app/share/icons/hicolor/64x64/apps/org.scarlett.ScarlettOS.png",
-            "cp ScarlettOS.desktop /app/share/applications/org.scarlett.ScarlettOS.desktop"
+            "cp org.scarlett.ScarlettOS.desktop /app/share/applications/org.scarlett.ScarlettOS.desktop"
         ],
         "sources": [
             {
