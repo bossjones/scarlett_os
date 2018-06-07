@@ -8,15 +8,11 @@
     "desktop-file-name-prefix": "(Nightly) ",
     "copy-icon": true,
     "finish-args": [
-        /* Allow access to developer tools */
         "--allow=devel",
         "--talk-name=org.freedesktop.Flatpak",
-        /* X11 + XShm access */
         "--socket=x11",
         "--share=ipc",
-        /* Wayland access */
         "--socket=wayland",
-        /* Needs to talk to the network: */
         "--share=network",
         "--own-name=org.scarlett.Listener",
         "--own-name=org.scarlett.Listener.*",
@@ -24,7 +20,6 @@
         "--talk-name=org.freedesktop.DBus.Proprieties",
         "--talk-name=org.freedesktop.IBus",
         "--talk-name=org.freedesktop.Notifications",
-        /* Pulseaudio */
         "--socket=pulseaudio",
         "--device=dri",
         "--talk-name=org.gtk.vfs.*",
@@ -55,27 +50,20 @@
         {
             "name": "cpython",
             "post-install": [
-                /* These are needed for the triggers */
                 "ls -lta `pwd`",
                 "/app/bin/python3 -m pip install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} pip setuptools wheel"
             ],
             "build-options": {
-                /* This is an array containing extra options to pass to flatpak build. */
                 "build-args": [
                     "--share=network",
                     "--allow=devel"
                 ],
-                /* This is an array containing extra options to pass to configure. */
                 "config-opts": [
                     "--with-pydebug"
                 ],
-                /* This is set in the environment variable CFLAGS during the build. Multiple specifications of this (in e.g. per-arch area) are concatenated, separated by spaces. */
                 "cflags": "-O0 -g",
-                /* This is set in the environment variable CXXFLAGS during the build. Multiple specifications of this (in e.g. per-arch area) are concatenated, separated by spaces. */
                 "cxxflags": "-O0 -g",
-                /* If this is true (the default is false) then all ELF files will be stripped after install. */
                 "strip": false,
-                /* By default (if strip is not true) flatpak-builder extracts all debug info in ELF files to a separate files and puts this in an extension. If you want to disable this, set no-debuginfo to true. */
                 "no-debuginfo": false
             },
             "sources": [
@@ -275,7 +263,6 @@
                 }
             },
             "build-commands": [
-                /* We delete all the overlapping freedesktop SDK plugins to avoid version mismatches with renamed or removed plugins */
                 "rm -rf /usr/lib/*/gstreamer-1.0"
             ],
             "sources": [
@@ -551,7 +538,6 @@
                 "ESPEAK_DATA_PATH=/app/usr/share/espeak-ng-data"
             ],
             "build-options": {
-                /* This is an array containing extra options to pass to flatpak build. */
                 "build-args": [
                     "--share=network",
                     "--allow=devel"
@@ -562,9 +548,7 @@
                     "ESPEAK_DATA_PATH": "/app/usr/share/espeak-ng-data",
                     "LIBDIR": "/app/lib"
                 },
-                /* If this is true (the default is false) then all ELF files will be stripped after install. */
                 "strip": false,
-                /* By default (if strip is not true) flatpak-builder extracts all debug info in ELF files to a separate files and puts this in an extension. If you want to disable this, set no-debuginfo to true. */
                 "no-debuginfo": false
             },
             "sources": [
@@ -712,11 +696,9 @@
             ],
             "buildsystem": "simple",
             "build-commands": [
-                /* These are needed for the triggers */
                 "/app/bin/python3 -m pip install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} fancycompleter wmctrl pygments pdbpp"
             ],
             "build-options": {
-                /* This is an array containing extra options to pass to flatpak build. */
                 "build-args": [
                     "--share=network",
                     "--allow=devel"
@@ -840,17 +822,13 @@
             "name": "tree",
             "no-autogen": true,
             "build-options": {
-                /* This is an array containing extra options to pass to flatpak build. */
                 "build-args": [
                     "--share=network",
                     "--allow=devel",
                     "--filesystem=home:rw"
                 ],
-                /* This is set in the environment variable CFLAGS during the build. Multiple specifications of this (in e.g. per-arch area) are concatenated, separated by spaces. */
                 "cflags": "-ggdb -Wall -DLINUX -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64",
-                /* If this is true (the default is false) then all ELF files will be stripped after install. */
                 "strip": false,
-                /* By default (if strip is not true) flatpak-builder extracts all debug info in ELF files to a separate files and puts this in an extension. If you want to disable this, set no-debuginfo to true. */
                 "no-debuginfo": false
             },
             "sources": [
@@ -912,8 +890,6 @@
                 }
             ]
         },
-
-        /* Neovim dependencies from third-party. Source: org.daa.NeovimGtk.json, note this libtool change is most likely very bad */
         {
             "name": "libtool",
             "sources": [
