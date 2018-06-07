@@ -110,7 +110,7 @@ bin/scarlett
 # xdg-app/flatpak
 .bashrc
 *.flatpak-builder/
-build/flatpak/Scarlett.*.json
-build/flatpak/scarlett/*
-build/devel/
+hacking/flatpak/Scarlett.*.json
+hacking/flatpak/scarlett/*
+hacking/devel/
 .pytest_cache

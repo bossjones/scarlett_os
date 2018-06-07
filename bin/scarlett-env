@@ -18,7 +18,7 @@ export CURRENT_GST=$FLATPAK_ENVPATH
 export PATH="$FLATPAK_ENVPATH/bin/:$PATH"
 
 # Use scarlettvenv for entering or running commands in the sandbox.
-alias scarlettvenv="$SCARLETT_REPO_DIR/build/flatpak/scarlett-flatpak"
+alias scarlettvenv="$SCARLETT_REPO_DIR/hacking/flatpak/scarlett-flatpak"
 
 echo "-> Setting up the prefix for the sandbox..."
 # This builds the local flatpak repo if it is not yet built.

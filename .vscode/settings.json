@@ -115,9 +115,9 @@
     "bin/scarlett": "explorerExcludedFiles",
     ".bashrc": "explorerExcludedFiles",
     "*.flatpak-builder/": "explorerExcludedFiles",
-    "build/flatpak/Scarlett.*.json": "explorerExcludedFiles",
-    "build/flatpak/scarlett/*": "explorerExcludedFiles",
-    "build/devel/": "explorerExcludedFiles",
+    "hacking/flatpak/Scarlett.*.json": "explorerExcludedFiles",
+    "hacking/flatpak/scarlett/*": "explorerExcludedFiles",
+    "hacking/devel/": "explorerExcludedFiles",
     ".pytest_cache": "explorerExcludedFiles"
   },
   "files.trimTrailingWhitespace": true,
