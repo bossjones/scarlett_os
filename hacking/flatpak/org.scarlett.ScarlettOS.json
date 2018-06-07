@@ -1077,33 +1077,33 @@
             "mkdir -p /app/share/applications/",
             "mkdir -p /app/cache/scarlett/",
             "mkdir -p /app/share/icons/hicolor/64x64/apps/",
-            "cp data/ScarlettOS.appdata.xml /app/share/metainfo/org.scarlett.ScarlettOS.appdata.xml",
-            "cp data/icons/64x64/scarlettOS.png /app/share/icons/hicolor/64x64/apps/org.scarlett.ScarlettOS.png",
-            "cp data/ScarlettOS.desktop /app/share/applications/org.scarlett.ScarlettOS.desktop"
+            "cp ../data/ScarlettOS.appdata.xml /app/share/metainfo/org.scarlett.ScarlettOS.appdata.xml",
+            "cp ../data/icons/64x64/scarlettOS.png /app/share/icons/hicolor/64x64/apps/org.scarlett.ScarlettOS.png",
+            "cp ../data/ScarlettOS.desktop /app/share/applications/org.scarlett.ScarlettOS.desktop"
         ],
         "sources": [
             {
                 "type": "file",
-                "path": "data/icons-install.sh",
+                "path": "../data/icons-install.sh",
                 "dest-filename": "icons-install.sh"
             },
             {
                 "type": "file",
-                "path": "data/install-desktop-file.sh",
+                "path": "../data/install-desktop-file.sh",
                 "dest-filename": "install-desktop-file.sh"
             },
             {
                 "type": "file",
-                "path": "data/icons/64x64/scarlettOS.png"
+                "path": "../data/icons/64x64/scarlettOS.png"
             },
             {
                 "type": "file",
-                "path": "data/ScarlettOS.desktop",
+                "path": "../data/ScarlettOS.desktop",
                 "dest-filename": "org.scarlett.ScarlettOS.desktop"
             },
             {
                 "type": "file",
-                "path": "data/ScarlettOS.appdata.xml",
+                "path": "../data/ScarlettOS.appdata.xml",
                 "dest-filename": "org.scarlett.ScarlettOS.appdata.xml"
             }
         ]
