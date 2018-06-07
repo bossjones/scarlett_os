@@ -1,0 +1,603 @@
+{
+    "name": "scarlett_deps",
+    "disabled": false,
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} PyYAML Sphinx bumpversion coverage coveralls cryptography cython freezegun gnureadline hunter ipython isort mock-open mypy-lang objgraph pdbpp pydocstyle pylint pystuck pytest pytest-benchmark[histogram] pytest-cov pytest-rerunfailures pytest-sugar pytest-timeout requests_mock watchdog xdot yapf Click Fabric3 PyYAML click-plugins colorlog jinja2 layeredconfig psutil pydbus ruamel.yaml ruamel.yaml.cmd six typing voluptuous xdg yapf"
+    ],
+    "build-options": {
+        "build-args": [
+            "--share=network",
+            "--allow=devel",
+            "--filesystem=home:rw"
+        ],
+        "cflags": "-O0 -g",
+        "cxxflags": "-O0 -g",
+        "env": {
+            "PYTHON": "/app/bin/python3",
+            "PYTHONUSERBASE": "/app",
+            "GST_PLUGIN_SYSTEM_PATH": "/app/lib/gstreamer-1.0/",
+            "GSTREAMER": "1.0",
+            "ENABLE_PYTHON3": "yes",
+            "ENABLE_GTK": "yes",
+            "PYTHON_VERSION": "3.5",
+            "MAKEFLAGS": "-j2 V=1",
+            "CC": "gcc",
+            "V": "1"
+        },
+        "strip": false,
+        "no-debuginfo": false
+    },
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e5/7f/8d07d4bf29c81f34242374a8b5d5983eed34f91c6266fd8cfdce226c26e0/ruamel.std.argparse-0.8.1.tar.gz",
+            "sha256": "d5ba6534706dc7953c070768135d3fb11557681f86770ba877aa852bcf11c9d1"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a7/d7/eeb3cc66469e21843748e9b8f196eefd42fc81ea43191715e8ec54fee4df/pbr-4.0.3.tar.gz",
+            "sha256": "6874feb22334a1e9a515193cba797664e940b763440c88115009ec323a7f2df5"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/68/73/a34efe529fad3fb33c2d1f5bb357d1a8b9382cf0f3053c7468eb5862e9ce/yapf-0.22.0.tar.gz",
+            "sha256": "a98a6eacca64d2b920558f4a2f78150db9474de821227e60deaa29f186121c63"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/75/d3/89151e5c24f59ac5577368651f9d2a5db3cdd870e8f96896e505cb876187/xdot-0.9.tar.gz",
+            "sha256": "a33701664ecfefe7c7313a120a587e87334f3a566409bc451538fcde5edd6907"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/1a/14/5bb008f64444c5257fce77adc9356c89cdf9bf674e423af41d4287f00cde/xdg-3.0.2.tar.gz",
+            "sha256": "7ce9fc52cee0f8e31d0beb0f29e102f23725c0c470aee447d907e1999ffda7b7"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a0/47/66897906448185fcb77fc3c2b1bc20ed0ecca81a0f2f88eda3fc5a34fc3d/wrapt-1.10.11.tar.gz",
+            "sha256": "d4d560d479f2c21e1b5443bbd15fe7ec4b37fe7e53d335d3b9b0a7b1226fe3c6"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/55/11/e4a2bb08bb450fdbd42cc709dd40de4ed2c472cf0ccb9e64af22279c5495/wcwidth-0.1.7.tar.gz",
+            "sha256": "3df37372226d6e63e1b1e1eda15c594bca98a22d33a23832a90998faa96bc65e"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/54/7d/c7c0ad1e32b9f132075967fc353a244eb2b375a3d2f5b0ce612fd96e107e/watchdog-0.8.3.tar.gz",
+            "sha256": "7e65882adb7746039b6f3876ee174952f8eaaa34491ba34333ddf1fe35de4162"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/64/1a/bc658313d0a228ce474648c360bd06e28af3ed5e24029b1a4108739c23f4/voluptuous-0.11.1.tar.gz",
+            "sha256": "af7315c9fa99e0bfd195a21106c82c81619b42f0bd9b6e287b797c6b6b6a9918"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/dc/bf/5ea6941c9511bb0ae842e673e6ac2dc6811b9078ae14ac04ccf050ab6cc6/virtualenvwrapper-4.8.2.tar.gz",
+            "sha256": "18d8e4c500c4c4ee794f704e050cf2bbb492537532a4521d1047e7dd1ee4e374"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/14/2f/84b6a8e380439cdfdb71e0ced2a805a66e343ac540d3304bde6bc28fbb46/virtualenv-clone-0.3.0.tar.gz",
+            "sha256": "b5cfe535d14dc68dfc1d1bb4ac1209ea28235b91156e2bba8e250d291c3fb4f8"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/33/bc/fa0b5347139cd9564f0d44ebd2b147ac97c36b2403943dbee8a25fd74012/virtualenv-16.0.0.tar.gz",
+            "sha256": "ca07b4c0b54e14a91af9f34d0919790b016923d157afda5efdde55c96718f752"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/ee/11/7c59620aceedcc1ef65e156cc5ce5a24ef87be4107c2b74458464e437a5d/urllib3-1.22.tar.gz",
+            "sha256": "cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/ec/cc/28444132a25c113149cec54618abc909596f0b272a74c55bab9593f8876c/typing-3.6.4.tar.gz",
+            "sha256": "d400a9344254803a2368533e4533a4200d21eb7b6b729c173bc38201a74db3f2"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a5/98/7f5ef2fe9e9e071813aaf9cb91d1a732e0a68b6c44a32b38cb8e14c3f069/traitlets-4.3.2.tar.gz",
+            "sha256": "9c4bd2d267b7153df9152698efb1050a5d84982d3384a37b2c1f7723ba3e7835"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/8a/48/a76be51647d0eb9f10e2a4511bf3ffb8cc1e6b14e9e4fab46173aa79f981/termcolor-1.1.0.tar.gz",
+            "sha256": "1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/ba/40/92295187c3157c109fde84eb2d4002c2bb3ab5a9c1df09f7fd96e6dfd5c9/stevedore-1.28.0.tar.gz",
+            "sha256": "f1c7518e7b160336040fee272174f1f7b29a46febb3632502a8f2055f973d60b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/c5/6b/f0630436b931ad4f8331a9399ca18a7d447f0fcc0c7178fb56b1aee68d01/sphinxcontrib-websupport-1.0.1.tar.gz",
+            "sha256": "7a85961326aa3a400cd4ad3c816d70ed6f7c740acd7ce5d78cd0a67825072eb9"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/41/32/915efa0e95ef7c79458175b09d9ea9ffc34f4d6791ff84c9b113f3439178/Sphinx-1.7.5.tar.gz",
+            "sha256": "d45480a229edf70d84ca9fae3784162b1bc75ee47e480ffe04a4b7f21a95d76d"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/20/6b/d2a7cb176d4d664d94a6debf52cd8dbae1f7203c8e42426daa077051d59c/snowballstemmer-1.2.1.tar.gz",
+            "sha256": "919f26a68b2c17a7634da993d91339e288964f93c274f1343e3bbbe2096e1128"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz",
+            "sha256": "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/3d/57/4d9c9e3ae9a255cd4e1106bb57e24056d3d0709fc01b2e3e345898e49d5b/simplegeneric-0.8.1.zip",
+            "sha256": "dc972e06094b9af5b855b3df4a646395e43d1c9d0d39ed345b7393560d0b9173"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/64/c3/0f45be56462cee9dcce4c3e4545d9c8ff88773723e5e32614a620fba9bca/ruamel.yaml.convert-0.3.0.tar.gz",
+            "sha256": "897e387d9a1fa6847aa43eaf1c66cab32468055345bc1f058321f5d10e1da08f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/44/dd/c23f94e56ec24083e3ceba3fa319a2ef394fe86e8901b1c504eb6f3fe76b/ruamel.yaml.cmd-0.4.2.tar.gz",
+            "sha256": "280dc13761f29b1340efca99cb17a7ff0d0ab24298f356b535b40603ab226a18"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/c1/ad/9557a78f1b61951623c56225e05dacdd81f80519f13fc39a926a5793edfa/ruamel.yaml-0.15.37.tar.gz",
+            "sha256": "509842d96fb194f79b57483b76429f8956d8f7ade3cb49d1e5aeb5c5e9ef4918"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/b2/91/6610549271f13fb8026f795a6b0307102073077175edf144c71f28355920/rpyc-3.4.4.tar.gz",
+            "sha256": "a8991d0412a67d7299d105b4889b2b0b0d18e9b99404ea14eea56404fdb481c7"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/24/d5/7b5254b87c50e837810a082b87c2f85aa86b99c23a83d8120c27e24d04c9/requests-mock-1.5.0.tar.gz",
+            "sha256": "a029fe6c5244963ef042c6224ff787049bfc5bab958a1b7e5b632ef0bbb05de4"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/b0/e1/eab4fc3752e3d240468a8c0b284607899d2fbfb236a56b7377a329aa8d09/requests-2.18.4.tar.gz",
+            "sha256": "9c443e7324ba5b85070c4a818ade28bfabedf16ea10206da1132edaa6dda237e"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/4a/85/db5a2df477072b2902b0eb892feb37d88ac635d36245a72a6a69b23b383a/PyYAML-3.12.tar.gz",
+            "sha256": "592766c6303207a20efc445587778322d7f73b161bd994f227adaa341ba212ab"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/10/76/52efda4ef98e7544321fd8d5d512e11739c1df18b0649551aeccfb1c8376/pytz-2018.4.tar.gz",
+            "sha256": "c06425302f2cf668f1bba7a0a03f3c1d34d4ebeef2c72003da308b3947c7f749"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a0/b0/a4e3241d2dee665fea11baec21389aec6886655cd4db7647ddf96c3fad15/python-dateutil-2.7.3.tar.gz",
+            "sha256": "e27001de32f627c22380a688bcc43ce83504a7bc5da472209b4c70f02829f0b8"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/be/e9/a9106b8bc87521c6813060f50f7d1fdc15665bc1bbbe71c0ffc1c571aaa2/pytest-timeout-1.2.1.tar.gz",
+            "sha256": "68b7d264633d5d33ee6b14ce3a7f7d05f8fd9d2f6ae594283221ec021736b7cd"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/3e/6a/a3f909083079d03bde11d06ab23088886bbe25f2c97fbe4bb865e2bf05bc/pytest-sugar-0.9.1.tar.gz",
+            "sha256": "ab8cc42faf121344a4e9b13f39a51257f26f410e416c52ea11078cdd00d98a2c"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/8a/f2/1847f14d9f5b1ba2b97b27a0869ef47955867d4700a09b855c6ad5f9ac39/pytest-rerunfailures-4.1.tar.gz",
+            "sha256": "be6bf93ed618c8899aeb6721c24f8009c769879a3b4931e05650f3c173ec17c5"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/aa/3c/a2bd69414346a57e90070e62788eb703645f48b00437c47b757256dfb560/pytest-mock-1.10.0.tar.gz",
+            "sha256": "d89a8209d722b8307b5e351496830d5cc5e192336003a485443ae9adeb7dd4c0"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/24/b4/7290d65b2f3633db51393bdf8ae66309b37620bc3ec116c5e357e3e37238/pytest-cov-2.5.1.tar.gz",
+            "sha256": "03aa752cf11db41d281ea1d807d954c4eda35cfa1b21d6971966cc041bbf6e2d"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e1/35/30e3e108dd3db531d3200f9e3234210a600fea5efc971e3dacd2458e2153/pytest-benchmark-3.1.1.tar.gz",
+            "sha256": "185526b10b7cf1804cb0f32ac0653561ef2f233c6e50a9b3d8066a9757e36480"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/67/6a/5bcdc22f8dbada1d2910d6e1a3a03f6b14306c78f81122890735b28be4bf/pytest-3.6.0.tar.gz",
+            "sha256": "39555d023af3200d004d09e51b4dd9fdd828baa863cded3fd6ba2f29f757ae2d"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/4a/6e/cb4730caaaf2ed64bf751f07c42854313d4787ff3c60122dc1a73e58bbb6/pystuck-0.8.5.tar.gz",
+            "sha256": "f5bd1dad6db82d3065caa9e9596fbd22efbb9be66a9e31a5f541f36fbd55555c"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/3c/ec/a94f8cf7274ea60b5413df054f82a8980523efd712ec55a59e7c3357cf7c/pyparsing-2.2.0.tar.gz",
+            "sha256": "0832bcf47acd283788593e7a0f542407bd9550a55a8a8435214a1960e04bcb04"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/08/19/cf56e60efd122fa6d2228118a9b345455b13ffe16a14be81d025b03b261f/PyNaCl-1.2.1.tar.gz",
+            "sha256": "e0d38fa0a75f65f556fb912f2c6790d1fa29b7dd27a1d9cc5591b281321eaaa9"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/c8/2b/0ec6a22dcb3322e9c5de073edf4bfc5610531cdba3861eba6832831ade4a/pylint-1.9.1.tar.gz",
+            "sha256": "c353d8225195b37cc3aef18248b8f3fe94c5a6a95affaf885ae21a24ca31d8eb"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/71/2a/2e4e77803a8bd6408a2903340ac498cb0a2181811af7c9ec92cb70b0308a/Pygments-2.2.0.tar.gz",
+            "sha256": "dbae1046def0efb574852fab9e90209b23f556367b5a320c0bcb871c77c3e8cc"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a0/ed/1ec50dc74226b7cbc6b6523dc9080f1471791918ac59917aebcd7ccb37ce/pygaljs-1.0.1.tar.gz",
+            "sha256": "bd778749bc387a71520dde99f36a75ea776b3dcde5f3b59b4bd079c5723b1eb8"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/14/52/2394f0f8444db3af299f2700aaff22f8cc3741fbd5ed644f782327d356b3/pygal-2.4.0.tar.gz",
+            "sha256": "9204f05380b02a8a32f9bf99d310b51aa2a932cba5b369f7a4dc3705f0a4ce83"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/ca/af/dbd99adec5704de451ae56d08024d7416dead997dedbd6be72cbc86efb08/pydocstyle-2.1.1.tar.gz",
+            "sha256": "4d5bcde961107873bae621f3d580c3e35a426d3687ffc6f8fb356f6628da5a97"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/58/56/3e84f2c1f2e39b9ea132460183f123af41e3b9c8befe222a35636baa6a5a/pydbus-0.6.0.tar.gz",
+            "sha256": "4207162eff54223822c185da06c1ba8a34137a9602f3da5a528eedf3f78d0f2c"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/8c/2d/aad7f16146f4197a11f8e91fb81df177adcc2073d36a17b1491fd09df6ed/pycparser-2.18.tar.gz",
+            "sha256": "99a8ca03e29851d96616ad0404b4aad7d9ee16f25c9f9708a11faf2810f7b226"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/28/ad/cae9654d7fd64eb3d2ab2c44c9bf8dc5bd4fb759625beab99532239aa6e8/pycodestyle-2.4.0.tar.gz",
+            "sha256": "cbfca99bd594a10f674d0cd97a3d802a1fdef635d4361e1a2658de47ed261e3a"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/0d/33/3466a3210321a02040e3ab2cd1ffc6f44664301a5d650a7e44be1dc341f2/pyasn1-0.4.3.tar.gz",
+            "sha256": "fb81622d8f3509f0026b0683fe90fea27be7284d3826a5f2edf97f69151ab0fc"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/75/d0/7e547b0abfa23234c82100d1bfe670286a3361f4382fc766329f70bc34e8/py-cpuinfo-4.0.0.tar.gz",
+            "sha256": "6615d4527118d4ea1db4d86dac4340725b3906aa04bf36b7902f7af4425fb25f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/f7/84/b4c6e84672c4ceb94f727f3da8344037b62cee960d80e999b1cd9b832d83/py-1.5.3.tar.gz",
+            "sha256": "29c9fab495d7528e80ba1e343b958684f4ace687327e6f789a94bf3d1915f881"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/51/83/5d07dc35534640b06f9d9f1a1d2bc2513fb9cc7595a1b0e28ae5477056ce/ptyprocess-0.5.2.tar.gz",
+            "sha256": "e64193f0047ad603b71f202332ab5527c5e52aa7c8b609704fc28c0dc20c4365"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/14/a2/8ac7dda36eac03950ec2668ab1b466314403031c83a95c5efc81d2acf163/psutil-5.4.5.tar.gz",
+            "sha256": "ebe293be36bb24b95cdefc5131635496e88b17fabbcf1e4bc9b5c01f5e489cfe"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/8a/ad/cf6b128866e78ad6d7f1dc5b7f99885fb813393d9860778b2984582e81b5/prompt_toolkit-1.0.15.tar.gz",
+            "sha256": "858588f1983ca497f1cf4ffde01d978a3ea02b01c8a26a8bbc5cd2e66d816917"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a0/13/2b84133b6131d16c33a1c57a8e3ccf88dc9a10a6965fc992e628a9bd825f/powerline-status-2.6.tar.gz",
+            "sha256": "3f460a72b69fcfad74646c17759f851a721d243415c11e1dbf60c5b74dc1d2c3"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/6d/ff/773ec3580139c52f24d889fb304dc05b332150743ffdf7fe01255596609b/plumbum-1.6.6.tar.gz",
+            "sha256": "d179b90a9927f91427a28c1bac2864c61342cb43ef39aa7324c7c9a96bcc23eb"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/11/bf/cbeb8cdfaffa9f2ea154a30ae31a9d04a1209312e2919138b4171a1f8199/pluggy-0.6.0.tar.gz",
+            "sha256": "7f8ae7f5bdf75671a718d2daf0a64b7885f74510bcd98b1a0bb420eb9a9d0cff"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/69/fe/dd137d84daa0fd13a709e448138e310d9ea93070620c9db5454e234af525/pickleshare-0.7.4.tar.gz",
+            "sha256": "84a9257227dfdd6fe1b4be1319096c20eb85ff1e82c7932f36efccfe1b09737b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/89/43/07d07654ee3e25235d8cea4164cdee0ec39d1fda8e9203156ebe403ffda4/pexpect-4.6.0.tar.gz",
+            "sha256": "2a8e88259839571d1251d278476f3eec5db26deb73a70be5ed5dc5435e418aba"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e7/7f/470d6fcdf23f9f3518f6b0b76be9df16dcc8630ad409947f8be2eb0ed13a/pathtools-0.1.2.tar.gz",
+            "sha256": "7c35c5421a39bb82e58018febd90e3b6e5db34c5443aaaf742b3f33d4655f1c0"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/4b/86/bc857ddcc892968b954620f18ce90a943368ee9fe84595911501da898798/parso-0.2.1.tar.gz",
+            "sha256": "f0604a40b96e062b0fd99cf134cc2d5cdf66939d0902f8267d938b0d5b26707f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/29/65/83181630befb17cd1370a6abb9a87957947a43c2332216e5975353f61d64/paramiko-2.4.1.tar.gz",
+            "sha256": "33e36775a6c71790ba7692a73f948b329cf9295a72b0102144b031114bd2a4f3"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/77/32/439f47be99809c12ef2da8b60a2c47987786d2c6c9205549dd6ef95df8bd/packaging-17.1.tar.gz",
+            "sha256": "f019b770dd64e585a99714f1fd5e01c7a8f11b45635aa953fd41c689a657375b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/6b/ca/e5c278256a82f36fc71b51e3107bf453adc4079d14bd274c4eda75f3949a/objgraph-3.4.0.tar.gz",
+            "sha256": "4a0c2c6268e10a9e8176ae054ff3faac9a432087801e1f95c3ebbe52550295a0"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/85/cf/6a29b15724cd1f377c0c470dff67e7da5e557ea86b4709ec438c3d5ee6c0/mypy-lang-0.5.0.tar.gz",
+            "sha256": "054bf1f8dfc0af7f53a49473c7a858e4c07b66e2cd8f7621e1401d6776807c45"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/c0/2f/6773347277d76c5ade4414a6c3f785ef27e7f5c4b0870ec7e888e66a8d83/more-itertools-4.2.0.tar.gz",
+            "sha256": "2b6b9893337bfd9166bee6a62c2b0c9fe7735dcf85948b387ec8cba30e85d8e8"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/bf/9a/55c5c17c1e49412f5dd63d4aa63024c4ec89b5184ed239c2fa2d52d70b23/mock-open-1.3.1.tar.gz",
+            "sha256": "0d3021f5677e4590957c6d1131897c63a02c8f3fbdf61fc1a3d9e96fc0fbcf2a"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/0c/53/014354fc93c591ccc4abff12c473ad565a2eb24dcd82490fae33dbf2539f/mock-2.0.0.tar.gz",
+            "sha256": "b158b6df76edd239b8208d481dc46b6afd45a846b7812ff0ce58971cf5bc8bba"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/06/18/fa675aa501e11d6d6ca0ae73a101b2f3571a565e0f7d38e062eec18a91ee/mccabe-0.6.1.tar.gz",
+            "sha256": "dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/4d/de/32d741db316d8fdb7680822dd37001ef7a448255de9699ab4bfcbdf4172b/MarkupSafe-1.0.tar.gz",
+            "sha256": "a6be69091dac236ea9c6bc7d012beab42010fa914c459791d627dad4910eb665"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/55/08/23c0753599bdec1aec273e322f277c4e875150325f565017f6280549f554/lazy-object-proxy-1.3.1.tar.gz",
+            "sha256": "eb91be369f945f10d3a49f5f9be8b3d0b93a4c2be8f8a5b83b0571b8123e0a7a"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/47/45/6cebc1bfda58e708528cfae7e7a6a24db9460f9274aeb9978ae90fc2bb89/layeredconfig-0.3.2.tar.gz",
+            "sha256": "bddbee70656ecdd50267ac0a86546c2b8b6e967979bebbb5fc31eb1dbdf7c69b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/56/e6/332789f295cf22308386cf5bbd1f4e00ed11484299c5d7383378cf48ba47/Jinja2-2.10.tar.gz",
+            "sha256": "f84be1bb0040caca4cea721fcbbbbd61f9be9464ca236387158b0feea01914a4"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/ff/c9/781449489b743c67ad063e33aa68139afaa8a1a5bc348eee9f5cab39b4e1/jedi-0.12.0.tar.gz",
+            "sha256": "1972f694c6bc66a2fac8718299e2ab73011d653a6d8059790c3476d2353b99ad"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/b1/de/a628d16fdba0d38cafb3d7e34d4830f2c9cb3881384ce5c08c44762e1846/isort-4.3.4.tar.gz",
+            "sha256": "b9c40e9750f3d77e6e4d441d8b0266cf555e7cdabdcff33c4fd06366ca761ef8"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e8/69/fbeffffc05236398ebfcfb512b6d2511c622871dca1746361006da310399/ipython_genutils-0.2.0.tar.gz",
+            "sha256": "eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/ee/01/2a85cd07f5a43fa2e86d60001c213647252662d44a0c2e3d69471a058f1b/ipython-6.4.0.tar.gz",
+            "sha256": "eca537aa61592aca2fef4adea12af8e42f5c335004dfa80c78caf80e8b525e5c"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/c6/3f/1db2da33804e8d7ef3a868b27b7bdc1aae6a4f693f0162d2aeeaf503864f/imagesize-1.0.0.tar.gz",
+            "sha256": "5b326e4678b6925158ccc66a9fa3122b6106d7c876ee32d7de6ce59385b96315"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/f4/bd/0467d62790828c23c47fc1dfa1b1f052b24efdf5290f071c7a91d0d82fd3/idna-2.6.tar.gz",
+            "sha256": "2c6a5de3089009e3da7c5dde64a141dbc8551d5b7f6cf4ed7c2568d0cc520a8f"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a1/b6/f0418e7aaddf97b983a214f384586cc23111401b1b243e4c8bf9543e3581/hunter-2.0.2.tar.gz",
+            "sha256": "3cbe121d4f2bfddec7afc4fecf9c2591485436fae857ee22caf849a9ab25d419"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/95/29/306d5e768c14edddaf5c4462e13d65dddaed15c0d71f848919e1209c6488/graphviz-0.8.3.zip",
+            "sha256": "c61de040e5354c088d2785ea447dd8c26fc572dcc389e4e23e2b46947808d43e"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/50/64/86085c823cd78f9df9d8e33dce0baa71618016f8860460b82cf6610e1eb3/gnureadline-6.3.8.tar.gz",
+            "sha256": "58e208ed34a53456ecf58bc11eacbe332c50d322b329457e2c645bd15192b035"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/1d/3c/fd18e8fdb662370baedae516df1b20aec9c98a6fcf5d93ff8334835552d7/freezegun-0.3.10.tar.gz",
+            "sha256": "703caac155dcaad61f78de4cb0666dca778d854dfb90b3699930adee0559a622"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e6/67/1c26634a770db5c442e361311bee73cb3a177adb2eb3f7af8953cfd9f553/flake8-polyfill-1.0.2.tar.gz",
+            "sha256": "e44b087597f6da52ec6393a709e7108b2905317d0c0b744cdca6208e670d8eda"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a5/8c/93d397e26d732ff4978b0c1568bd9ef02f0ef7aac5763ec5c9b25ed252f5/flake8-docstrings-1.3.0.tar.gz",
+            "sha256": "4e0ce1476b64e6291520e5570cf12b05016dd4e8ae454b8a8a9a48bc5f84e1cd"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/1e/ab/7730f6d6cdf73a3b7f98a2fe3b2cdf68e9e760a4a133e083607497d4c3a6/flake8-3.5.0.tar.gz",
+            "sha256": "7253265f7abd8b313e3892944044a365e3f4ac3fcdcfb4298f55ee9ddf188ba0"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/18/68/b922b5b0b2c1d99171c0ed9ad10296b55ee644eb1fa2fd5e45cafe56ae33/fields-5.0.0.tar.gz",
+            "sha256": "31d4aa03d8d44e35df13c431de35136997f047a924a597d84f7bc209e1be5727"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/24/ce/05901538f2112f48b78e1e0db0e9c8fff874ca3aa989faa4c8dfe6e6b796/Fabric3-1.14.post1.tar.gz",
+            "sha256": "647e485ec83f30b587862f92374d6affc217f3d79819d1d7f512e42e7ae51e81"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/84/f4/5771e41fdf52aabebbadecc9381d11dea0fa34e4759b4071244fa094804c/docutils-0.14.tar.gz",
+            "sha256": "51e64ef2ebfb29cae1faa133b3710143496eca21c530f3f71424d77687764274"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a2/55/8f8cab2afd404cf578136ef2cc5dfb50baa1761b68c9da1fb1e4eed343c9/docopt-0.6.2.tar.gz",
+            "sha256": "49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/6f/24/15a229626c775aae5806312f6bf1e2a73785be3402c0acdec5dbddd8c11e/decorator-4.3.0.tar.gz",
+            "sha256": "c39efa13fbdeb4506c476c9b3babf6a718da943dab7811c206005a4a956c080c"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/b3/ae/971d3b936a7ad10e65cb7672356cff156000c5132cf406cb0f4d7a980fd3/Cython-0.28.3.tar.gz",
+            "sha256": "1aae6d6e9858888144cea147eb5e677830f45faaff3d305d77378c3cba55f526"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/ec/b2/faa78c1ab928d2b2c634c8b41ff1181f0abdd9adf9193211bd606ffa57e2/cryptography-2.2.2.tar.gz",
+            "sha256": "9fc295bf69130a342e7a19a39d7bbeb15c0bcaabc7382ec33ef3b2b7d18d2f63"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/3e/dd/61b1365f2d1d3fc459f9e3d36d9c8824fb3c9cd6bf5ee721ca6c8f68c164/coveralls-1.3.0.tar.gz",
+            "sha256": "664794748d2e5673e347ec476159a9d87f43e0d2d44950e98ed0e27b98da8346"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/35/fe/e7df7289d717426093c68d156e0fd9117c8f4872b6588e8a8928a0f68424/coverage-4.5.1.tar.gz",
+            "sha256": "56e448f051a201c5ebbaa86a5efd0ca90d327204d8b059ab25ad0f35fbfd79f1"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/64/61/079eb60459c44929e684fa7d9e2fdca403f67d64dd9dbac27296be2e0fab/configobj-5.0.6.tar.gz",
+            "sha256": "a2f5650770e1c87fb335af19a9b7eb73fc05ccf22144eb68db7d00cd2bcb0902"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/2c/a8/8ce4f59cf1fcbb9ebe750fcbab723146d95687c37256ed367a11d9f74265/colorlog-3.1.4.tar.gz",
+            "sha256": "418db638c9577f37f0fae4914074f395847a728158a011be2a193ac491b9779d"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e6/76/257b53926889e2835355d74fec73d82662100135293e17d382e2b74d1669/colorama-0.3.9.tar.gz",
+            "sha256": "48eb22f4f8461b1df5734a074b57042430fb06e1d61bd1e11b078c0fe6d7a1f1"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/77/05/da5c9e19457f20cadfe22c397cd3852577066066f63e40f2baa0831b1693/click-plugins-1.0.3.tar.gz",
+            "sha256": "7acc5e7eedd2dfd719714e8d53ae99030b5357aed661d0b06dacd6c2d583d7c5"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/95/d9/c3336b6b5711c3ab9d1d3a80f1a3e2afeb9d8c02a7166462f6cc96570897/click-6.7.tar.gz",
+            "sha256": "f15516df478d5a56180fbf80e68f206010e6d160fc39fa508b65e035fd75130b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/fc/bb/a5768c230f9ddb03acc9ef3f0d4a3cf93462473795d18e9535498c8f929d/chardet-3.0.4.tar.gz",
+            "sha256": "84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e7/a7/4cd50e57cc6f436f1cc3a7e8fa700ff9b8b4d471620629074913e3735fb2/cffi-1.11.5.tar.gz",
+            "sha256": "e90f17980e6ab0f3c2f3730e56d1fe9bcba1891eeea58966e89d352492cc74f4"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/4d/9c/46e950a6f4d6b4be571ddcae21e7bc846fcbb88f1de3eff0f6dd0a6be55d/certifi-2018.4.16.tar.gz",
+            "sha256": "13e698f54293db9f89122b0581843a782ad0934a4fe0172d2a980ba77fc61bb7"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/14/41/8c9da3549f8e00c84f0432c3a8cf8ed6898374714676aab91501d48760db/bumpversion-0.5.3.tar.gz",
+            "sha256": "6744c873dd7aafc24453d8b6a1a0d6d109faf63cd0cd19cb78fd46e74932c77e"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/f3/ec/bb6b384b5134fd881b91b6aa3a88ccddaad0103857760711a5ab8c799358/bcrypt-3.1.4.tar.gz",
+            "sha256": "67ed1a374c9155ec0840214ce804616de49c3df9c5bc66740687c1c9b1cd9e8d"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/84/71/c8ca4f5bb1e08401b916c68003acf0a0655df935d74d93bf3f3364b310e0/backcall-0.1.0.tar.gz",
+            "sha256": "38ecd85be2c1e78f77fd91700c76e14667dc21e2713b63876c0eb901196e01e4"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/be/cc/9c981b249a455fa0c76338966325fc70b7265521bad641bf2932f77712f4/Babel-2.6.0.tar.gz",
+            "sha256": "8cba50f48c529ca3fa18cf81fa9403be176d374ac4d60738b839122dfaaa3d23"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e4/ac/a04671e118b57bee87dabca1e0f2d3bda816b7a551036012d0ca24190e71/attrs-18.1.0.tar.gz",
+            "sha256": "e0d0eb91441a3b53dab4d9b743eafc1ac44476296a2053b6ca3af0b139faf87b"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/a1/e1/2d9bc76838e6e6667fde5814aa25d7feb93d6fa471bf6816daac2596e8b2/atomicwrites-1.1.5.tar.gz",
+            "sha256": "240831ea22da9ab882b551b31d4225591e5e447a68c5e188db5b89ca1d487585"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/5c/f7/4127394817b558b8a630ce05e974da70f66ecb7f8cb44ccfb061a4800453/astroid-1.6.4.tar.gz",
+            "sha256": "dea42ae6e0b789b543f728ddae7ddb6740ba33a49fb52c4a4d9cb7bb4aa6ec09"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/fc/f1/8db7daa71f414ddabfa056c4ef792e1461ff655c2ae2928a2b675bfed6b4/asn1crypto-0.24.0.tar.gz",
+            "sha256": "9d5c20441baf0cb60a4ac34cc447c6c189024b6b4c6cd7877034f4965c464e49"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/e3/75/1183b5d1663a66aebb2c184e0398724b624cecd4f4b679cb6e25de97ed15/argh-0.26.2.tar.gz",
+            "sha256": "e9535b8c84dc9571a48999094fda7f33e63c3f1b74f3e5f3ac0105a58405bb65"
+        },
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/d0/a5/e3a9ad3ee86aceeff71908ae562580643b955ea1b1d4f08ed6f7e8396bd7/alabaster-0.7.10.tar.gz",
+            "sha256": "37cdcb9e9954ed60912ebc1ca12a9d12178c26637abdf124e3cde2341c257fe0"
+        }
+    ]
+}
