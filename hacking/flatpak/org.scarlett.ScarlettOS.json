@@ -1084,26 +1084,26 @@
         "sources": [
             {
                 "type": "file",
-                "path": "../data/icons-install.sh",
+                "path": "../../data/icons-install.sh",
                 "dest-filename": "icons-install.sh"
             },
             {
                 "type": "file",
-                "path": "../data/install-desktop-file.sh",
+                "path": "../../data/install-desktop-file.sh",
                 "dest-filename": "install-desktop-file.sh"
             },
             {
                 "type": "file",
-                "path": "../data/icons/64x64/scarlettOS.png"
+                "path": "../../data/icons/64x64/scarlettOS.png"
             },
             {
                 "type": "file",
-                "path": "../data/ScarlettOS.desktop",
+                "path": "../../data/ScarlettOS.desktop",
                 "dest-filename": "org.scarlett.ScarlettOS.desktop"
             },
             {
                 "type": "file",
-                "path": "../data/ScarlettOS.appdata.xml",
+                "path": "../../data/ScarlettOS.appdata.xml",
                 "dest-filename": "org.scarlett.ScarlettOS.appdata.xml"
             }
         ]
