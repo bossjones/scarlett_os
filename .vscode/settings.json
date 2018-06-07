@@ -110,7 +110,15 @@
     "htmlcov": true,
     "gir-1.0": true,
     "gir-1.0/*": true,
-    "fakegir/": true
+    "fakegir/": true,
+    "mesonbuild/": "explorerExcludedFiles",
+    "bin/scarlett": "explorerExcludedFiles",
+    ".bashrc": "explorerExcludedFiles",
+    "*.flatpak-builder/": "explorerExcludedFiles",
+    "hacking/flatpak/Scarlett.*.json": "explorerExcludedFiles",
+    "hacking/flatpak/scarlett/*": "explorerExcludedFiles",
+    "hacking/devel/": "explorerExcludedFiles",
+    ".pytest_cache": "explorerExcludedFiles"
   },
   "files.trimTrailingWhitespace": true,
   "search.exclude": {

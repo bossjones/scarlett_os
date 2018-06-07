@@ -559,7 +559,7 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
             venv.create(venv_path, with_pip=True)
 
         activate_script = os.path.join(venv_path, "bin", "activate")
-        pip_modules = "pre-commit git-pylint-commit-hook git_pep8_commit_hook pylint black"
+        pip_modules = "pre-commit git-pylint-commit-hook git_pep8_commit_hook pylint"
         Console.message(
             "Installing development tools in the Python virtual env: %s", pip_modules)
         subprocess.check_call(
