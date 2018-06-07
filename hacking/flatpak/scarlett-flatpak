@@ -638,6 +638,8 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
         for envvar, path in prefixes.items():
             value = forwarded.get(envvar, "")
             forwarded[envvar] = "%s:%s" % (path, value)
+            if forwarded[envvar].endswith(":"):
+                forwarded[envvar].rstrip(":")
 
         for envvar, value in forwarded.items():
             flatpak_command.append("--env=%s=%s" % (envvar, value))
