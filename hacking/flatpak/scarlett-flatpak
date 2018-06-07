@@ -30,6 +30,14 @@ import venv
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
+from IPython.core.debugger import Tracer  # noqa
+from IPython.core import ultratb
+
+sys.excepthook = ultratb.FormattedTB(mode='Verbose',
+                                    color_scheme='Linux',
+                                    call_pdb=True,
+                                    ostream=sys.__stdout__)
+
 # The default branch is master because the script is used most often
 # for development.
 SCARLETT_BRANCH = "master"
