@@ -85,10 +85,8 @@ def expand_json_file(json_template, outfile, basedir, gst_version, branchname):
         pass
 
     with open(json_template, "r") as tf:
-        txt = re.sub(r"/\*[^*]*\*+(?:[^/*][^*]*\*+)*/", "", tf.read())
-
-        import pdb
-        pdb.set_trace()
+        # txt = re.sub(r"/\*[^*]*\*+(?:[^/*][^*]*\*+)*/", "", tf.read())
+        txt = tf.read()
 
     template = json.loads(txt)
     if branchname == "stable":
