@@ -1,4 +1,4 @@
-project('scarlett-os', ['python'], version: '0.1.0')
+project('scarlett-os', ['c'], version: '0.1.0')
 
 # see: https://github.com/GNOME/gnome-music/blob/88ca0fb55d5c3a035929c5d8a39c2808c27b58bd/meson.build
 
