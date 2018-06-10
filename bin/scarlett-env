@@ -56,7 +56,12 @@ then
     alias flatpak-list="flatpak list"
     alias flatpak-install-from="flatpak install --from"
     alias flatpak-uninstall="flatpak uninstall"
-    alias flatpak-uninstall-all="flatpak uninstall $(flatpak list)"
+    # alias flatpak-uninstall-all="flatpak uninstall $(flatpak list)"
+
+    echo "===================================================================="
+    echo "                        Print /app/bin                              "
+    echo "===================================================================="
+    $SCARLETT_REPO_DIR/hacking/flatpak/scarlett-flatpak -q ls /app/bin/
 
     # Prefer to run some binaries in the sandbox. For example "python3".
     for i in `$SCARLETT_REPO_DIR/hacking/flatpak/scarlett-flatpak -q ls /app/bin/`;
