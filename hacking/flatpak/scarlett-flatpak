@@ -559,6 +559,15 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
         self.run_in_sandbox(*ninja_args, exit_on_failure=True,
                             cwd=self.topdir)
 
+    # def print_run_shell_cmd(self):
+    #     print("flatpak", "build", "--socket=x11",
+    #           "--socket=session-bus", "--socket=pulseaudio",
+    #           "--share=network", "--env=SCARLETT_DEBUG_MODE=1",
+    #           "--env=PYTHONUSERBASE=/app/",
+    #           "--env=CC=ccache gcc",
+    #           "--env=CXX=ccache g++", "--device=dri")
+    #     pass
+
     def rebuild_flatpak(self):
         self.setup_sandbox()
 
@@ -645,6 +654,9 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
         for envvar, path in prefixes.items():
             value = forwarded.get(envvar, "")
             forwarded[envvar] = "%s:%s" % (path, value)
+            print('START - DEBUGGER forwarded[envvar]')
+            print(forwarded[envvar])
+            print('END - DEBUGGER forwarded[envvar]')
             if forwarded[envvar].endswith(":"):
                 forwarded[envvar].rstrip(":")
 

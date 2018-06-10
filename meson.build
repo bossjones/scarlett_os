@@ -108,7 +108,7 @@ configure_file(input: 'scarlett_os/configure.py.in',
                configuration: cdata)
 
 configure_file = '@0@/configure.py'.format(meson.current_build_dir())
-install_data(configure_file, install_dir: pitivi_install_dir + 'scarlett_os')
+install_data(configure_file, install_dir: scarlett_os_install_dir + 'scarlett_os')
 
 # FIXME work around to get testsuite working
 run_command('cp', configure_file, meson.current_source_dir() + '/scarlett_os')
