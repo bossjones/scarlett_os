@@ -362,6 +362,7 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
         self.json = None
         self.args = []
         self.build = False
+        self.rebuild = False
         self.scriptdir = os.path.abspath(os.path.dirname(__file__))
         # FLATPAK_ENVPATH=/home/pi/dev/scarlett_os-dev
         self.envpath = os.environ.get("FLATPAK_ENVPATH",
@@ -465,6 +466,9 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
                                 Colors.FAIL, __file__, Colors.ENDC)
                 exit(1)
 
+        if self.rebuild:
+            self.rebuild_flatpak()
+
         if self.check:
             # self.run_in_sandbox("gst-validate-launcher",
             #                     os.path.join(
@@ -554,6 +558,9 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
         ninja_args = ["ninja", "-C", "mesonbuild/"]
         self.run_in_sandbox(*ninja_args, exit_on_failure=True,
                             cwd=self.topdir)
+
+    def rebuild_flatpak(self):
+        self.setup_sandbox()
 
     def install_development_tools(self):
         venv_path = os.path.join(self.scriptdir, "pyvenv")
@@ -675,6 +682,9 @@ if __name__ == "__main__":
     general.add_argument("--init", dest="init",
                          action="store_true",
                          help="Initialize the runtime/sdk/app and build the development environment if needed")
+    general.add_argument("--re-build", dest="rebuild",
+                         action="store_true",
+                         help="Build the development environment if needed")
     general.add_argument("--update", dest="update",
                          action="store_true",
                          help="Update the runtime/sdk/app and rebuild the development environment")
