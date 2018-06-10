@@ -102,11 +102,11 @@ scarlett_os_install_dir = get_option('libdir') + '/scarlett_os/python/'
 install_subdir('scarlett_os', install_dir: scarlett_os_install_dir)
 
 # SOURCE: pitivi
-configure_file(input: 'scarlett_os/configure.py.in',
-               output: 'configure.py',
+configure_file(input: 'scarlett_os/shim.py.in',
+               output: 'shim.py',
                configuration: cdata)
 
-configure_file = '@0@/configure.py'.format(meson.current_build_dir())
+configure_file = '@0@/shim.py'.format(meson.current_build_dir())
 install_data(configure_file, install_dir: scarlett_os_install_dir + 'scarlett_os')
 
 # FIXME work around to get testsuite working
