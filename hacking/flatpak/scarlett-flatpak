@@ -660,7 +660,7 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
             print(forwarded[envvar].rstrip(":"))
             print('END - DEBUGGER forwarded[envvar]')
             if forwarded[envvar].endswith(":"):
-                forwarded[envvar].rstrip(":")
+                forwarded[envvar] = forwarded[envvar].rstrip(":")
 
         for envvar, value in forwarded.items():
             flatpak_command.append("--env=%s=%s" % (envvar, value))
