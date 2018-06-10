@@ -22,7 +22,7 @@ Enables identical use for installed and uninstalled versions.
 """
 
 import os.path
-from gi.repository import GLib
+# from gi.repository import GLib
 
 
 # Again, mostly the same thing as in bin/pitivi.in and pitivi/utils/misc.py:
@@ -39,23 +39,23 @@ PKGDATADIR = '@DATADIR@/@PACKAGE@'
 GITVERSION = '@GITVERSION@'
 VERSION = '@VERSION@'
 APPNAME = '@PACKAGE_NAME@'
-APPURL = 'http://www.pitivi.org/'
-RELEASES_URL = 'http://pitivi.org/releases.txt'
-APPMANUALURL_ONLINE = 'http://www.pitivi.org/manual'
+APPURL = 'https://github.com/bossjones/scarlett_os'
+RELEASES_URL = 'https://github.com/bossjones/scarlett_os/releases'
+APPMANUALURL_ONLINE = 'https://github.com/bossjones/scarlett_os'
 BUILDDIR = '@BUILDDIR@'
 
 
 if in_devel():
     APPMANUALURL_OFFLINE = 'ghelp://%s' % os.path.join(_get_root_dir(), 'help/C')
 else:
-    APPMANUALURL_OFFLINE = 'help:pitivi'
+    APPMANUALURL_OFFLINE = 'help:scarlett'
 
 
 def get_data_dir():
     if in_devel():
         datadir = os.path.join(_get_root_dir(), "data")
-    elif os.getenv("PITIVI_TOP_LEVEL_DIR"):
-        top_level = os.getenv("PITIVI_TOP_LEVEL_DIR")
+    elif os.getenv("SCARLETT_TOP_LEVEL_DIR"):
+        top_level = os.getenv("SCARLETT_TOP_LEVEL_DIR")
         datadir = os.path.join(top_level, "data")
     else:
         datadir = PKGDATADIR
@@ -89,7 +89,7 @@ def get_plugins_dir():
     """Returns our default directory to store official plugins."""
     return os.path.join(_get_root_dir(), 'plugins')
 
-def get_user_plugins_dir():
-    """Returns our default directory to store non-official plugins."""
-    user_data_dir = GLib.get_user_data_dir()
-    return os.path.join(user_data_dir, 'pitivi', 'plugins')
+# def get_user_plugins_dir():
+#     """Returns our default directory to store non-official plugins."""
+#     user_data_dir = GLib.get_user_data_dir()
+#     return os.path.join(user_data_dir, 'pitivi', 'plugins')
