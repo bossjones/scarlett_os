@@ -549,8 +549,7 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
         if not os.path.isdir("mesonbuild/"):
             # Create the build directory.
             meson_args = ["meson", "mesonbuild/", "--prefix=/app",
-                          "--libdir=lib", "-Ddisable_gtkdoc=true",
-                          "-Ddisable_doc=true"]
+                          "--libdir=lib"]
             self.run_in_sandbox(*meson_args, exit_on_failure=True,
                                 cwd=self.topdir)
 
