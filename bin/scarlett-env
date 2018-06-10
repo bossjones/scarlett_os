@@ -66,7 +66,7 @@ then
     # Prefer to run some binaries in the sandbox. For example "python3".
     for i in `$SCARLETT_REPO_DIR/hacking/flatpak/scarlett-flatpak -q ls /app/bin/`;
     do
-        alias $i="scarlettvenv $i"
+        alias ${i}="scarlettvenv ${i}"
     done
 
     alias scarlett="scarlettvenv $SCARLETT_REPO_DIR/bin/scarlett"
