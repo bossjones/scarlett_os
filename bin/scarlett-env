@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Script which must be sourced to setup the development environment.
 
 # This has to be the first command because BASH_SOURCE[0] gets changed.
