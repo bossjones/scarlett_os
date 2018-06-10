@@ -656,6 +656,8 @@ class ScarlettOSFlatpak:  # pylint: disable=too-many-instance-attributes
             forwarded[envvar] = "%s:%s" % (path, value)
             print('START - DEBUGGER forwarded[envvar]')
             print(forwarded[envvar])
+            print(forwarded[envvar].endswith(":"))
+            print(forwarded[envvar].rstrip(":"))
             print('END - DEBUGGER forwarded[envvar]')
             if forwarded[envvar].endswith(":"):
                 forwarded[envvar].rstrip(":")
