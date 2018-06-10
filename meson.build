@@ -22,7 +22,7 @@ endif
 
 # FIXME: Replace this with gstreamer-espeak
 # gst_transcoder_dep = dependency('gst-transcoder-1.0', version : '>= 1.8.1', fallback : ['gst-transcoder', 'gst_transcoder_dep'])
-espeak_dep = dependency('espeak', fallback : ['espeak', 'espeak_dep'])
+espeak_dep = dependency('espeak-ng', fallback : ['espeak', 'espeak_dep'])
 
 pkgdatadir = join_paths(get_option('datadir'), meson.project_name())
 
