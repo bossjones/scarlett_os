@@ -2287,3 +2287,10 @@ build ../meson.build ../data/meson.build ../data/icons/meson.build ../getenvvar.
 ~/dev/scarlett_os-dev/scarlett_os/mesonbuild $
 
 ```
+
+# Look at these paths, inside flatpak sandbox env
+
+```
+Installing /home/pi/dev/scarlett_os-dev/scarlett_os/mesonbuild/shim.py to /app/lib/scarlett_os/python/scarlett_os
+Installing /home/pi/dev/scarlett_os-dev/scarlett_os/mesonbuild/bin/scarlett to /app/bin
+```
