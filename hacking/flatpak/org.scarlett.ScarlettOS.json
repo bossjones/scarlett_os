@@ -596,7 +596,24 @@
                 }
             ]
         },
-
+        {
+            "name": "gst-devtools",
+            "no-autogen": true,
+            "config-opts": [],
+            "build-options": {
+                "env": {
+                    "PYTHON": "/app/bin/python3",
+                    "PYTHONUSERBASE": "/app"
+                }
+            },
+            "sources": [
+                {
+                    "type": "git",
+                    "branch": "1.8.2",
+                    "url": "https://github.com/GStreamer/gst-devtools"
+                }
+            ]
+        },
         {
             "name": "python-gstreamer",
             "ensure-writable": [
