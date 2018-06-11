@@ -61,6 +61,8 @@ dependency('gobject-introspection-1.0', version: '>= 1.35.0')
 dependency('gtk+-3.0', version: '>= 3.19.3')
 dependency('pygobject-3.0', version: '>= 3.21.1')
 dependency('py3cairo', version: '>= 1.14.0')
+dependency('sphinxbase')
+dependency('pocketsphinx')
 
 # Subproject(): Takes the project specified in the positional argument and brings that
 # in the current build specification by returning a subproject object.
