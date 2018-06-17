@@ -1,0 +1,40 @@
+--- tree-1.7.0.orig/Makefile	2014-04-18 13:35:39.000000000 -0400
++++ tree-1.7.0/Makefile	2018-05-10 11:36:53.385178050 -0400
+@@ -16,7 +16,7 @@
+ # along with this program; if not, write to the Free Software
+ # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
+-prefix = /usr
++prefix = /app
+ 
+ CC=gcc
+ 
+@@ -81,7 +81,7 @@ CFLAGS=-ggdb -Wall -DLINUX -D_LARGEFILE6
+ 
+ #------------------------------------------------------------
+ 
+-all:	tree
++all:	createdirs tree
+ 
+ tree:	$(OBJS)
+ 	$(CC) $(LDFLAGS) -o $(TREE_DEST) $(OBJS)
+@@ -89,6 +89,9 @@ tree:	$(OBJS)
+ $(OBJS): %.o:	%.c tree.h
+ 	$(CC) $(CFLAGS) -c -o $@ $<
+ 
++createdirs:
++	mkdir -p /app/man/man1
++
+ clean:
+ 	if [ -x $(TREE_DEST) ]; then rm $(TREE_DEST); fi
+ 	if [ -f tree.o ]; then rm *.o; fi
+@@ -105,7 +108,8 @@ install: tree
+ distclean:
+ 	if [ -f tree.o ]; then rm *.o; fi
+ 	rm -f *~
+-	
++
+ 
+ dist:	distclean
+ 	tar zcf ../tree-$(VERSION).tgz -C .. `cat .tarball`
++

@@ -1,0 +1,61 @@
+diff --git a/config.h.in b/config.h.in
+index 7efe5a8..4b46b07 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -6,7 +6,7 @@
+ /* Define to 1 if you have the <inttypes.h> header file. */
+ #undef HAVE_INTTYPES_H
+
+-/* Define to 1 if you have the `espeak' library (-lespeak). */
++/* Define to 1 if you have the `espeak' library (-lespeak-ng). */
+ #undef HAVE_LIBESPEAK
+
+ /* Define to 1 if you have the <memory.h> header file. */
+diff --git a/configure b/configure
+index 0563b70..d92d25d 100755
+--- a/configure
++++ b/configure
+@@ -11677,17 +11677,17 @@ fi
+
+ if test "${ESPEAK_PREFIX}"; then
+     ESPEAK_CFLAGS="-I${ESPEAK_PREFIX}/include"
+-    ESPEAK_LIBS="-L${ESPEAK_PREFIX}/lib -lespeak"
++    ESPEAK_LIBS="-L${ESPEAK_PREFIX}/lib -lespeak-ng"
+
+
+ else
+-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for espeak_Initialize in -lespeak" >&5
+-$as_echo_n "checking for espeak_Initialize in -lespeak... " >&6; }
++    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for espeak_Initialize in -lespeak-ng" >&5
++$as_echo_n "checking for espeak_Initialize in -lespeak-ng... " >&6; }
+ if ${ac_cv_lib_espeak_espeak_Initialize+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lespeak  $LIBS"
++LIBS="-lespeak-ng  $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+
+@@ -11722,7 +11722,7 @@ if test "x$ac_cv_lib_espeak_espeak_Initialize" = xyes; then :
+ #define HAVE_LIBESPEAK 1
+ _ACEOF
+
+-  LIBS="-lespeak $LIBS"
++  LIBS="-lespeak-ng $LIBS"
+
+ else
+   as_fn_error $? "" "$LINENO" 5
+diff --git a/configure.ac b/configure.ac
+index 1d4f3c4..7e2d32b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -22,7 +22,7 @@ fi
+ dnl Check for 0sugar support
+ if test "${ESPEAK_PREFIX}"; then
+     ESPEAK_CFLAGS="-I${ESPEAK_PREFIX}/include"
+-    ESPEAK_LIBS="-L${ESPEAK_PREFIX}/lib -lespeak"
++    ESPEAK_LIBS="-L${ESPEAK_PREFIX}/lib -lespeak-ng"
+     AC_SUBST(ESPEAK_CFLAGS)
+     AC_SUBST(ESPEAK_LIBS)
+ else

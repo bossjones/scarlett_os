@@ -1,0 +1,95 @@
+# -*- coding: utf-8 -*-
+# Pitivi video editor
+# Copyright (c) 2005, Edward Hervey <bilboed@bilboed.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this program; if not, write to the
+# Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+# Boston, MA 02110-1301, USA.
+"""Utilities for getting the location of various directories.
+
+Enables identical use for installed and uninstalled versions.
+"""
+
+import os.path
+# from gi.repository import GLib
+
+
+# Again, mostly the same thing as in bin/pitivi.in and pitivi/utils/misc.py:
+def _get_root_dir():
+    return '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/')[:-1])
+
+
+def in_devel():
+    """Returns whether the app is run from a git checkout."""
+    return os.environ.get("PITIVI_DEVELOPMENT", "0") != "0"
+
+LIBDIR = '@LIBDIR@'
+PKGDATADIR = '@DATADIR@/@PACKAGE@'
+GITVERSION = '@GITVERSION@'
+VERSION = '@VERSION@'
+APPNAME = '@PACKAGE_NAME@'
+APPURL = 'https://github.com/bossjones/scarlett_os'
+RELEASES_URL = 'https://github.com/bossjones/scarlett_os/releases'
+APPMANUALURL_ONLINE = 'https://github.com/bossjones/scarlett_os'
+BUILDDIR = '@BUILDDIR@'
+
+
+if in_devel():
+    APPMANUALURL_OFFLINE = 'ghelp://%s' % os.path.join(_get_root_dir(), 'help/C')
+else:
+    APPMANUALURL_OFFLINE = 'help:scarlett'
+
+
+def get_data_dir():
+    if in_devel():
+        datadir = os.path.join(_get_root_dir(), "data")
+    elif os.getenv("SCARLETT_TOP_LEVEL_DIR"):
+        top_level = os.getenv("SCARLETT_TOP_LEVEL_DIR")
+        datadir = os.path.join(top_level, "data")
+    else:
+        datadir = PKGDATADIR
+    return os.path.abspath(datadir)
+
+
+def get_pixmap_dir():
+    """Returns our directory with pixmaps."""
+    return os.path.join(get_data_dir(), 'pixmaps')
+
+
+def get_ui_dir():
+    """Returns our directory with Gtk.Builder/Glade files."""
+    return os.path.join(get_data_dir(), 'ui')
+
+
+def get_audiopresets_dir():
+    """Returns our directory with Audio Presets files."""
+    return os.path.join(get_data_dir(), 'audiopresets')
+
+
+def get_videopresets_dir():
+    """Returns our directory with Video Presets files."""
+    return os.path.join(get_data_dir(), 'videopresets')
+
+def get_gstpresets_dir():
+    """Returns our directory with Gst Presets files."""
+    return os.path.join(get_data_dir(), 'gstpresets')
+
+def get_plugins_dir():
+    """Returns our default directory to store official plugins."""
+    return os.path.join(_get_root_dir(), 'plugins')
+
+# def get_user_plugins_dir():
+#     """Returns our default directory to store non-official plugins."""
+#     user_data_dir = GLib.get_user_data_dir()
+#     return os.path.join(user_data_dir, 'pitivi', 'plugins')

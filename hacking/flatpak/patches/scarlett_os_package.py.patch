@@ -1,0 +1,13 @@
+diff --git a/scarlett_os/tools/package.py b/scarlett_os/tools/package.py
+index f872576..918bf97 100644
+--- a/scarlett_os/tools/package.py
++++ b/scarlett_os/tools/package.py
+@@ -65,7 +65,7 @@ def add_gi_packages():
+     packages = ['gi']
+
+     python_version = sys.version[:3]
+-    global_path = os.path.join('/usr/lib', 'python' + python_version)
++    global_path = os.path.join('/app/lib', 'python' + python_version)
+
+     if os.environ.get('PYTHONPATH'):
+         # INFO: PYTHONPATH=/usr/local/share/jhbuild/sitecustomize

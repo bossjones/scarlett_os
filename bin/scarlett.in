@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Pitivi video editor
+# Copyright (c) 2005, Edward Hervey <bilboed@bilboed.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this program; if not, write to the
+# Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+# Boston, MA 02110-1301, USA.
+import cProfile
+import gettext
+import os
+import signal
+import sys
+# from ctypes import cdll
+# try:
+#     x11 = cdll.LoadLibrary('libX11.so')
+#     x11.XInitThreads()
+# except OSError:
+#     pass
+
+
+CONFIGURED_PYTHONPATH = '@CONFIGURED_PYTHONPATH@'
+CONFIGURED_GI_TYPELIB_PATH = '@CONFIGURED_GI_TYPELIB_PATH@'
+CONFIGURED_LD_LIBRARY_PATH = '@CONFIGURED_LD_LIBRARY_PATH@'
+CONFIGURED_GST_PLUGIN_PATH = '@CONFIGURED_GST_PLUGIN_PATH@'
+CONFIGURED_GST_PLUGIN_SYSTEM_PATH = '@CONFIGURED_GST_PLUGIN_SYSTEM_PATH@'
+LIBDIR = '@LIBDIR@'
+DATADIR = '@DATADIR@'
+BUILDDIR = '@BUILDDIR@'
+
+
+def _prepend_env_path(name, value):
+    os.environ[name] = os.pathsep.join(value +
+            os.environ.get(name, "").split(os.pathsep))
+
+
+def jump_through_hoops():
+    os.environ["JUMP_THROUGH_HOOPS"] = "1"
+    os.execv(sys.argv[0], sys.argv)
+
+
+# Check if we're in development or installed version and set paths properly
+def _in_devel():
+    return os.environ.get("SCARLETT_DEVELOPMENT", "0") != "0"
+
+
+def _add_pitivi_path():
+    try:
+        import gi.overrides
+    except ImportError:
+        print("Could not import 'gi'. Make sure you have pygobject.")
+        exit(1)
+
+    # Let Gst overrides from our prefix take precedence over any
+    # other, making sure they are used.
+    local_overrides = os.path.join(LIBDIR, "python" + sys.version[:3],
+                                   "site-packages", "gi", "overrides")
+    gi.overrides.__path__.insert(0, local_overrides)
+
+    # Make sure that flatpak gst-python overrides are always used first.
+    flatpak_gst_python_path = os.path.join("/app/lib/", "python" + sys.version[:3],
+                                           "site-packages", "gi", "overrides")
+    if os.path.exists(flatpak_gst_python_path):
+        gi.overrides.__path__.insert(0, flatpak_gst_python_path)
+    dir = os.path.dirname(os.path.abspath(__file__))
+    if _in_devel():
+        root = os.path.split(dir)[0]
+        sys.path.append(BUILDDIR)
+    else:
+        root = os.path.join(LIBDIR, 'scarlett', 'python')
+
+    if root not in sys.path:
+        sys.path.append(root)
+
+    # prepend any directories found at configure time if they're not
+    # already in the path. (if they are already in the path, the user
+    # chose to have it that way, so we leave their order)
+    for path in CONFIGURED_PYTHONPATH.split(':'):
+        if not path:
+            continue
+        path = os.path.abspath(path)
+        if path not in sys.path:
+            sys.path.append(path)
+
+    # i18n
+    if _in_devel():
+        # LC_ALL is set to en_US.UTF-8 by flatpak builder which is used
+        # when developers run ScarlettOS in the development sandbox.
+        # We don't need to use LC_ALL when developing, so unset it
+        # to avoid being surprised that setting LANG does not work.
+        try:
+            del os.environ["LC_ALL"]
+        except KeyError:
+            pass
+    # localedir = os.path.join(DATADIR, "locale")
+    # try:
+    #     gettext.bindtextdomain("pitivi", localedir)
+    #     gettext.textdomain("pitivi")
+    # except Exception as e:
+    #     print("Couldn't set the gettext domain. Translations will not work.", localedir, e)
+
+    if CONFIGURED_LD_LIBRARY_PATH or CONFIGURED_GST_PLUGIN_PATH:
+        _prepend_env_path("LD_LIBRARY_PATH", [CONFIGURED_LD_LIBRARY_PATH])
+        _prepend_env_path("GST_PLUGIN_PATH", [CONFIGURED_GST_PLUGIN_PATH])
+
+        if "JUMP_THROUGH_HOOPS" not in os.environ:
+            # ld caches LD_LIBRARY_PATH at startup so we need to execv() here. LALA.
+            jump_through_hoops()
+
+    if CONFIGURED_GST_PLUGIN_SYSTEM_PATH:
+        os.environ["GST_PLUGIN_SYSTEM_PATH"] = CONFIGURED_GST_PLUGIN_SYSTEM_PATH
+
+    if CONFIGURED_GI_TYPELIB_PATH:
+        _prepend_env_path("GI_TYPELIB_PATH", [CONFIGURED_GI_TYPELIB_PATH])
+
+
+def _initialize_modules():
+    from pitivi.check import initialize_modules
+    try:
+        initialize_modules()
+    except Exception as e:
+        print("Failed to initialize modules")
+        raise
+
+
+# def _check_requirements():
+#     from pitivi.check import check_requirements
+
+#     if not check_requirements():
+#         sys.exit(2)
+
+# FIXME: Note, for the moment this won't work cause it doesn't exist!
+def _run_scarlett():
+    from scarlett_os import application
+
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    app = application.ScarlettSystem()
+    app.run(sys.argv)
+
+
+if __name__ == "__main__":
+    _add_pitivi_path()
+    _initialize_modules()
+    # Dep checks really have to happen here, not in application.py. Otherwise,
+    # as soon as application.py starts, it will try importing all the code and
+    # the classes in application.py will not even have the opportunity to run.
+    # We do these checks on every startup (even outside the dev environment, for
+    # soft deps); doing imports and gst registry checks has near-zero cost.
+    # _check_requirements()
+    run_profile = os.environ.get("SCARLETT_PROFILING", False)
+
+    if run_profile:
+        prof = cProfile.Profile()
+        res = prof.runcall(_run_scarlett)
+        prof.dump_stats("scarlett-runstats")
+    else:
+        _run_scarlett()

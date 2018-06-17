@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# set -x
+
+# Script which must be sourced to setup the development environment.
+
+# This has to be the first command because BASH_SOURCE[0] gets changed.
+SCRIPT=${BASH_SOURCE[0]:-$0}
+
+[[ "${BASH_SOURCE[0]}" == "$0" ]] \
+    && echo "This script should not be executed but sourced like:" \
+    && echo "    $ source $0" \
+    && echo \
+    && exit 1
+
+SCRIPT_DIR=$(dirname $(realpath $SCRIPT))
+export SCARLETT_REPO_DIR=$(realpath $SCRIPT_DIR/..)
+export FLATPAK_ENVPATH=$(realpath $SCARLETT_REPO_DIR/..)
+export CURRENT_GST=$FLATPAK_ENVPATH
+export PATH="$FLATPAK_ENVPATH/bin/:$PATH"
+
+# Use scarlettvenv for entering or running commands in the sandbox.
+alias scarlettvenv="$SCARLETT_REPO_DIR/hacking/flatpak/scarlett-flatpak"
+
+echo "-> Setting up the prefix for the sandbox..."
+# This builds the local flatpak repo if it is not yet built.
+scarlettvenv --init
+if [ "$?" = "0" ];
+then
+    echo Sandbox ready.
+
+    echo Setting up aliases etc. so configuring, building takes place in the sandbox...
+
+    # Meson sets up the build directory where ninja works.
+    # Consider using `setup` instead of `meson`, see below.
+    alias meson="scarlettvenv meson"
+
+    # Normally, Pitivi's mesonbuild/ directory is created when
+    # initializing or updating (recreating) the Flatpak sandbox.
+    # The initialization happens above, look for `scarlettvenv echo`.
+    # The updating happens when you run `scarlettvenv --update`.
+    # You can also create it manually if you deleted it by mistake.
+    # This should also be used when building dependent projects
+    # such as GES, etc.
+    alias setup="mkdir mesonbuild; scarlettvenv meson mesonbuild/ --prefix=/app --libdir=lib"
+
+    # Ninja builds the buildable parts of the project.
+    alias ninja="scarlettvenv ninja"
+
+    # We could get rid of these, but some devs like them.
+    alias build="scarlettvenv ninja -C mesonbuild/"
+    alias binstall="scarlettvenv ninja -C mesonbuild/ install"
+
+    alias flatpak-update-all="flatpak update"
+    # alias fuall="flatpak update $(flatpak list)"
+    alias flatpak-list="flatpak list"
+    alias flatpak-install-from="flatpak install --from"
+    alias flatpak-uninstall="flatpak uninstall"
+    # alias flatpak-uninstall-all="flatpak uninstall $(flatpak list)"
+
+    echo "===================================================================="
+    echo "                        Print /app/bin                              "
+    echo "===================================================================="
+    $SCARLETT_REPO_DIR/hacking/flatpak/scarlett-flatpak -q ls /app/bin/
+
+    # Prefer to run some binaries in the sandbox. For example "python3".
+    for i in `$SCARLETT_REPO_DIR/hacking/flatpak/scarlett-flatpak -q ls /app/bin/`;
+    do
+        alias ${i}="scarlettvenv ${i}"
+    done
+
+    alias scarlett="scarlettvenv $SCARLETT_REPO_DIR/bin/scarlett"
+
+    # Enter the Python virtual env to have specific dev tools,
+    # such as git-phab, pre-commit, etc.
+    source $SCARLETT_REPO_DIR/hacking/flatpak/pyvenv/bin/activate
+
+    # Install our pre-commit git hook, for doing clean commits.
+    # rm -f .git/hooks/pre-commit
+    # ln -s ../../pre-commit.hook .git/hooks/pre-commit
+
+    # Update the prompt to indicate this is the Pitivi dev env.
+    export PS1="(scarlett-flatpak) $PS1"
+
+    echo "===================================================================="
+    echo "                   BATTLECRUISER OPERATIONAL                        "
+    echo "                          >(°)__/                                   "
+    echo "                           (_~_/                                    "
+    echo "                         ~~~~~~~~~~~~                               "
+    echo "===================================================================="
+fi

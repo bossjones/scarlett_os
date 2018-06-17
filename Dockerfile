@@ -54,8 +54,7 @@ RUN set -x cd /home/pi/dev/bossjones-github/scarlett_os \
     && jhbuild run -- pip install -r requirements.txt \
     && jhbuild run -- pip freeze \
     && jhbuild run python3 setup.py install \
-    && jhbuild run -- pip install -r requirements_test_all.txt && \
-    jhbuild run -- pip freeze
+    && jhbuild run -- pip install -r requirements_test_all.txt
 
 USER root
 
