@@ -2,8 +2,9 @@ import os
 import sys
 import re
 import argparse
+import getpass
 
-USERNAME = whoami()
+USERNAME = getpass.getuser()
 USERHOME = os.path.expanduser("~")
 PATH_TO_JHBUILDRC = os.path.join(USERHOME + ".config", "jhbuildrc")
 PREFIX = os.path.join(USERHOME, "jhbuild")
@@ -94,6 +95,8 @@ def setup_debug():
     environ_prepend('OBJCFLAGS', '-O0 -g')
 
 def setup_path_env():
+    print("before")
+    dump_env_var("PATH")
     # /home/pi/jhbuild/bin
     # /home/pi/jhbuild/sbin
     # /home/pi/jhbuild/bin
@@ -126,6 +129,8 @@ def setup_path_env():
     path_prepend("{}/.pyenv/shims".format(USERHOME))
     path_prepend("{}/jhbuild/sbin".format(USERHOME))
     path_prepend("{}/jhbuild/bin".format(USERHOME))
+    print("AFTER")
+    dump_env_var("PATH")
 
 def write_jhbuildrc():
     # path_to_main_yml = os.path.join(path_to_role_subdir, 'main.yml')
@@ -141,7 +146,7 @@ def main(context):
     # mkdir_role(context)
     # mkdirs_playbook(context)
     setup_path_env()
-    dump_env_var(PATH)
+    dump_env_var("PATH")
     pass
 
 
