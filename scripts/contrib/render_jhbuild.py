@@ -133,7 +133,7 @@ def clone_jhbuild():
         # check if folder is a git repo
         if scm(PREFIX) != 'git':
             # nuke folder
-            remove(PREFIX)
+            # remove(PREFIX)
             # clone it
             jhbuild_clone_cmd = "git clone {repo} {dest}".format(repo=JHBUILD_GITHUB_URL,
                                                                             dest=PREFIX)
