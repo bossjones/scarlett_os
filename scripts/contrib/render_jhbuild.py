@@ -115,7 +115,8 @@ def _popen(cmd_arg):
     return retval
 
 def _popen_stdout(cmd_arg):
-    cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # if passing a single string, either shell mut be True or else the string must simply name the program to be executed without specifying any arguments
+    cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     Console.message("BEGIN: {}".format(cmd_arg))
     for line in io.TextIOWrapper(cmd.stdout, encoding="utf-8"):
         Console.message(line)
@@ -145,14 +146,12 @@ def clone_jhbuild():
             # clone it
             jhbuild_clone_cmd = "git clone {repo} {dest}".format(repo=JHBUILD_GITHUB_URL,
                                                                             dest=PREFIX)
-            _retval_clone = _popen_stdout(jhbuild_clone_cmd)
-            Console.message("_retval_clone: {}".format(_retval_clone))
+            _popen_stdout(jhbuild_clone_cmd)
 
             # CD to directory
             with cd(PREFIX):
                 jhbuild_checkout_cmd = "git checkout {sha}".format(sha=JHBUILD_SHA)
-                _retval_checkout = _popen_stdout(jhbuild_checkout_cmd)
-                Console.message("_retval_checkout: {}".format(_retval_checkout))
+                _popen_stdout(jhbuild_checkout_cmd)
 
     return PREFIX
 
