@@ -145,13 +145,13 @@ def clone_jhbuild():
             # clone it
             jhbuild_clone_cmd = "git clone {repo} {dest}".format(repo=JHBUILD_GITHUB_URL,
                                                                             dest=PREFIX)
-            _retval_clone = _popen(jhbuild_clone_cmd)
+            _retval_clone = _popen_stdout(jhbuild_clone_cmd)
             Console.message("_retval_clone: {}".format(_retval_clone))
 
             # CD to directory
             with cd(PREFIX):
                 jhbuild_checkout_cmd = "git checkout {sha}".format(sha=JHBUILD_SHA)
-                _retval_checkout = _popen(jhbuild_checkout_cmd)
+                _retval_checkout = _popen_stdout(jhbuild_checkout_cmd)
                 Console.message("_retval_checkout: {}".format(_retval_checkout))
 
     return PREFIX
