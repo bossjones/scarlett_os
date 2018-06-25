@@ -277,9 +277,9 @@ def bootstrap():
     compile_jhbuild()
 
 def main(context):
-    if context['cmd'] is 'bootstrap':
+    if context['cmd'] == 'bootstrap':
         bootstrap()
-    elif context['cmd'] is 'dump_env':
+    elif context['cmd'] == 'dump_env':
         setup_path_env()
         dump_env_var("PATH")
     else:
