@@ -8,6 +8,7 @@ import subprocess
 import sys
 import errno
 import stat
+import io
 
 USERNAME = getpass.getuser()
 USERHOME = os.path.expanduser("~")
@@ -112,6 +113,13 @@ def _popen(cmd_arg):
     if err:
         raise RuntimeError('Failed to close %s stream' % cmd_arg)
     return retval
+
+def _popen_stdout(cmd_arg):
+    cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    Console.message("BEGIN: {}".format(cmd_arg))
+    for line in io.TextIOWrapper(cmd.stdout, encoding="utf-8"):
+        Console.message(line)
+    Console.message("END: {}".format(cmd_arg))
 
 # Higher level functions
 def remove(path):
