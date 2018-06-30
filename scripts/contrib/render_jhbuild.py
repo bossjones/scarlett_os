@@ -63,7 +63,7 @@ os.environ['PYTHON'] = 'python'
 os.environ['GSTREAMER'] = '1.0'
 os.environ['ENABLE_PYTHON3'] = 'yes'
 os.environ['ENABLE_GTK'] = 'yes'
-os.environ['PYTHON_VERSION'] = '3.5'
+os.environ['PYTHON_VERSION'] = '{PYTHON_VERSION}'
 os.environ['MAKEFLAGS'] = '-j4'
 os.environ['PREFIX'] = '{PREFIX}'
 os.environ['JHBUILD'] = '{CHECKOUTROOT}'
@@ -389,6 +389,7 @@ def render_jhbuildrc_dry_run():
                                                CFLAGS=environ_get('CFLAGS'),
                                                PYTHON_VERSION=environ_get('PYTHON_VERSION'),
                                                PATH=environ_get('PATH'),
+                                               PYTHON_VERSION=environ_get('PYTHON_VERSION'),
                                                LD_LIBRARY_PATH=environ_get('LD_LIBRARY_PATH'),
                                                PYTHONPATH=environ_get('PYTHONPATH'),
                                                PKG_CONFIG_PATH=environ_get('PKG_CONFIG_PATH'),
