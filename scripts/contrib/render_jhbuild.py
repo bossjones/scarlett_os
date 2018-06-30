@@ -298,7 +298,7 @@ repo_tar_dicts = {
         "folder": "gst-libav-1.8.2",
         "compile-commands": BUILD_GST_LIBAV
     },
-    "gst-plugins-espeak-0.4.0": {
+    "gst-plugins-espeak": {
         "tar":    "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz",
         "folder": "bossjones-gst-plugins-espeak-0-4-0-0.4.1",
         "compile-commands": BUILD_GST_PLUGINS_ESPEAK
