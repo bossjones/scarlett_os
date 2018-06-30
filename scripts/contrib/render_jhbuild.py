@@ -146,8 +146,8 @@ jhbuild run make install
 
 
 BUILD_GST_PYTHON = """
-jhbuild run ./autogen.sh --prefix={PREFIX} --enabled-shared=no; \
-jhbuild run ./configure --prefix={PREFIX} --enabled-shared=no; \
+jhbuild run ./autogen.sh --prefix={PREFIX} --enable-shared=no; \
+jhbuild run ./configure --prefix={PREFIX} --enable-shared=no; \
 jhbuild run make -j4; \
 jhbuild run make install
 """
