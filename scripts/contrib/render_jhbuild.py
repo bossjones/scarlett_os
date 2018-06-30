@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 
 USERNAME = getpass.getuser()
 USERHOME = os.path.expanduser("~")
-PATH_TO_JHBUILDRC = os.path.join(USERHOME + ".config", "jhbuildrc")
+PATH_TO_JHBUILDRC = os.path.join(USERHOME + "/.config", "jhbuildrc")
 PREFIX = os.path.join(USERHOME, "jhbuild")
 CHECKOUTROOT = os.path.join(USERHOME, "gnome")
 PROJECT_HOME = os.path.join(USERHOME, "dev")
