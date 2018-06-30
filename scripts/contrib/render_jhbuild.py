@@ -22,7 +22,34 @@ PY_VERSION = '3.5'
 PY_VERSION_FULL = "{}.2".format(PY_VERSION)
 JHBUILD_GITHUB_URL = "https://github.com/GNOME/jhbuild.git"
 JHBUILD_SHA = "86d958b6778da649b559815c0a0dbe6a5d1a8cd4"
+PATH_TO_JHBUILD_BIN = os.path.join(USERHOME + ".local/bin", "jhbuild")
 
+# JHBUILD_TEMPLATE = """
+# import os
+# prefix='{PREFIX}'
+# checkoutroot='{CHECKOUTROOT}'
+# moduleset = 'gnome-world'
+# interact = False
+# makeargs = '-j4'
+# os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
+# os.environ['PYTHON'] = 'python'
+# os.environ['GSTREAMER'] = '1.0'
+# os.environ['ENABLE_PYTHON3'] = 'yes'
+# os.environ['ENABLE_GTK'] = 'yes'
+# os.environ['PYTHON_VERSION'] = '3.5'
+# os.environ['MAKEFLAGS'] = '-j4'
+# os.environ['PREFIX'] = '{PREFIX}'
+# os.environ['JHBUILD'] = '{CHECKOUTROOT}'
+# os.environ['PATH'] = '/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/home/pi/.pyenv/shims:~/.pyenv/bin/:~/.bin:/home/pi/.local/bin:/home/pi/.rbenv/shims:/home/pi/.rbenv/bin:/home/pi/.nvm/versions/node/v8.7.0/bin:/usr/lib64/ccache:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/pi/.rvm/bin:/home/pi/.go/bin:/home/pi/go/bin'
+# os.environ['LD_LIBRARY_PATH'] = '/home/pi/jhbuild/lib:/home/pi/jhbuild/lib:/usr/lib'
+# os.environ['PYTHONPATH'] = '/home/pi/.pyenv/versions/3.5.2/lib/python3.5/site-packages:/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages'
+# os.environ['PKG_CONFIG_PATH'] = '/home/pi/.pyenv/versions/3.5.2/lib/pkgconfig:/home/pi/jhbuild/lib/pkgconfig:/home/pi/jhbuild/share/pkgconfig:/usr/lib/pkgconfig'
+# os.environ['XDG_DATA_DIRS'] = '/home/pi/jhbuild/share:/usr/share'
+# os.environ['XDG_CONFIG_DIRS'] = '/home/pi/jhbuild/etc/xdg'
+# os.environ['CC'] = 'gcc'
+# os.environ['PROJECT_HOME'] = '/home/pi/dev'
+# os.environ['PYTHONSTARTUP'] = '/home/pi/.pythonrc'
+# """
 
 JHBUILD_TEMPLATE = """
 import os
@@ -40,15 +67,15 @@ os.environ['PYTHON_VERSION'] = '3.5'
 os.environ['MAKEFLAGS'] = '-j4'
 os.environ['PREFIX'] = '{PREFIX}'
 os.environ['JHBUILD'] = '{CHECKOUTROOT}'
-os.environ['PATH'] = '/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/home/pi/.pyenv/shims:~/.pyenv/bin/:~/.bin:/home/pi/.local/bin:/home/pi/.rbenv/shims:/home/pi/.rbenv/bin:/home/pi/.nvm/versions/node/v8.7.0/bin:/usr/lib64/ccache:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/pi/.rvm/bin:/home/pi/.go/bin:/home/pi/go/bin'
-os.environ['LD_LIBRARY_PATH'] = '/home/pi/jhbuild/lib:/home/pi/jhbuild/lib:/usr/lib'
-os.environ['PYTHONPATH'] = '/home/pi/.pyenv/versions/3.5.2/lib/python3.5/site-packages:/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages'
-os.environ['PKG_CONFIG_PATH'] = '/home/pi/.pyenv/versions/3.5.2/lib/pkgconfig:/home/pi/jhbuild/lib/pkgconfig:/home/pi/jhbuild/share/pkgconfig:/usr/lib/pkgconfig'
-os.environ['XDG_DATA_DIRS'] = '/home/pi/jhbuild/share:/usr/share'
-os.environ['XDG_CONFIG_DIRS'] = '/home/pi/jhbuild/etc/xdg'
+os.environ['PATH'] = '{PATH}'
+os.environ['LD_LIBRARY_PATH'] = '{LD_LIBRARY_PATH}'
+os.environ['PYTHONPATH'] = '{PYTHONPATH}'
+os.environ['PKG_CONFIG_PATH'] = '{PKG_CONFIG_PATH}'
+os.environ['XDG_DATA_DIRS'] = '{XDG_DATA_DIRS}'
+os.environ['XDG_CONFIG_DIRS'] = '{XDG_CONFIG_DIRS}'
 os.environ['CC'] = 'gcc'
-os.environ['PROJECT_HOME'] = '/home/pi/dev'
-os.environ['PYTHONSTARTUP'] = '/home/pi/.pythonrc'
+os.environ['PROJECT_HOME'] = '{PROJECT_HOME}'
+os.environ['PYTHONSTARTUP'] = '{PYTHONSTARTUP}'
 """
 
 # SOURCE: https://github.com/ARMmbed/mbed-cli/blob/f168237fabd0e32edcb48e214fc6ce2250046ab3/test/util.py
@@ -264,11 +291,92 @@ def setup_path_env():
     Console.message("AFTER")
     dump_env_var("PATH")
 
+def setup_python_version():
+    environ_set("PYTHON_VERSION", PY_VERSION)
+
+
+def setup_ld_library_path():
+    # /home/pi/jhbuild/lib
+    # /home/pi/jhbuild/lib
+    # /usr/lib
+    environ_set("LD_LIBRARY_PATH", "/usr/lib")
+    environ_set("LD_LIBRARY_PATH", "{}/jhbuild/lib".format(USERHOME))
+    Console.message("AFTER")
+    dump_env_var("LD_LIBRARY_PATH")
+
+def setup_pythonpath():
+    # /home/pi/.pyenv/versions/3.5.2/lib/python3.5/site-packages
+    # /home/pi/jhbuild/lib/python3.5/site-packages
+    # /usr/lib/python3.5/site-packages
+    environ_set("PYTHONPATH", "/usr/lib/python{}/site-packages".format(PY_VERSION))
+    environ_set("PYTHONPATH", "{}/jhbuild/lib/python{}/site-packages".format(USERHOME, PY_VERSION))
+    environ_set("PYTHONPATH", "{}/.pyenv/versions/{}/lib/python{}/site-packages".format(USERHOME, PY_VERSION_FULL, PY_VERSION))
+
+def setup_pkg_config_path():
+    # /home/pi/.pyenv/versions/3.5.2/lib/pkgconfig
+    # /home/pi/jhbuild/lib/pkgconfig
+    # /home/pi/jhbuild/share/pkgconfig
+    # /usr/lib/pkgconfig
+    environ_set("PKG_CONFIG_PATH", "/usr/lib/pkgconfig")
+    environ_set("PKG_CONFIG_PATH", "{}/jhbuild/share/pkgconfig".format(USERHOME))
+    environ_set("PKG_CONFIG_PATH", "{}/jhbuild/lib/pkgconfig".format(USERHOME))
+    environ_set("PKG_CONFIG_PATH", "{}/.pyenv/versions/{}/lib/pkgconfig".format(USERHOME, PY_VERSION_FULL))
+
+def setup_xdg_data_dirs():
+    # /home/pi/jhbuild/share
+    # /usr/share
+    environ_set("XDG_DATA_DIRS", "/usr/share")
+    environ_set("XDG_DATA_DIRS", "{}/jhbuild/share".format(USERHOME))
+
+def setup_xdg_config_dirs():
+    # /home/pi/jhbuild/etc/xdg
+    environ_set("XDG_CONFIG_DIRS", "{}/jhbuild/etc/xdg".format(USERHOME))
+
+def setup_project_home():
+    # /home/pi/dev
+    environ_set("PROJECT_HOME", "{}/dev".format(USERHOME))
+
+def setup_pythonstartup():
+    # /home/pi/.pythonrc
+    environ_set("PYTHONSTARTUP", "{}/.pythonrc".format(USERHOME))
+
+def setup_all_envs():
+    setup_debug()
+    setup_path_env()
+    setup_python_version()
+    setup_ld_library_path()
+    setup_pythonpath()
+    setup_pkg_config_path()
+    setup_xdg_data_dirs()
+    setup_xdg_config_dirs()
+    setup_project_home()
+    setup_pythonstartup()
+
+
 def write_jhbuildrc():
     # path_to_main_yml = os.path.join(path_to_role_subdir, 'main.yml')
     # with open(path_to_main_yml, 'w+') as fp:
     #     fp.write(MAIN_YML_TEMPLATE.format(role_name=context['role']))
     pass
+
+def render_jhbuildrc_dry_run():
+    rendered_jhbuild = JHBUILD_TEMPLATE.format(PREFIX=environ_get('PREFIX'),
+                                               CHECKOUTROOT=environ_get('CHECKOUTROOT'),
+                                               CFLAGS=environ_get('CFLAGS'),
+                                               PYTHON_VERSION=environ_get('PYTHON_VERSION'),
+                                               PATH=environ_get('PATH'),
+                                               LD_LIBRARY_PATH=environ_get('LD_LIBRARY_PATH'),
+                                               PYTHONPATH=environ_get('PYTHONPATH'),
+                                               PKG_CONFIG_PATH=environ_get('PKG_CONFIG_PATH'),
+                                               XDG_DATA_DIRS=environ_get('XDG_DATA_DIRS'),
+                                               XDG_CONFIG_DIRS=environ_get('XDG_CONFIG_DIRS'),
+                                               PROJECT_HOME=environ_get('PROJECT_HOME'),
+                                               PYTHONSTARTUP=environ_get('PYTHONSTARTUP')
+                                              )
+    Console.message('----------------[render_jhbuildrc_dry_run]----------------')
+    Console.message(rendered_jhbuild)
+
+    return rendered_jhbuild
 
 def mkdir_p(path):
     try:
@@ -304,6 +412,9 @@ def main(context):
         dump_env_var("PATH")
     elif context['cmd'] == 'compile':
         compile_jhbuild()
+    elif context['cmd'] == 'render-dry-run':
+        setup_all_envs()
+        render_jhbuildrc_dry_run()
     else:
         Console.message('you picked something else weird, please try again')
 
