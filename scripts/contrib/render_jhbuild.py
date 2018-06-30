@@ -128,8 +128,8 @@ jhbuild run make install
 
 BUILD_GST_PLUGINS_BAD = """
 export BOSSJONES_PATH_TO_PYTHON=$(pyenv which python3.5)
-sed -i 's,#!python3,#!$(BOSSJONES_PATH_TO_PYTHON),g' {PREFIX}/bin/gdbus-codegen; \
-sed -i 's,#!python,#!$(BOSSJONES_PATH_TO_PYTHON),g' {PREFIX}/bin/gdbus-codegen; \
+sed -i 's,#!python3,#!$BOSSJONES_PATH_TO_PYTHON,g' {PREFIX}/bin/gdbus-codegen; \
+sed -i 's,#!python,#!$BOSSJONES_PATH_TO_PYTHON,g' {PREFIX}/bin/gdbus-codegen; \
 cat {PREFIX}/bin/gdbus-codegen; \
 jhbuild run ./autogen.sh --prefix={PREFIX}; \
 jhbuild run ./configure --prefix={PREFIX} --enable-orc --enable-gtk-doc=no --disable-examples --enable-gtk-doc-html=no; \
