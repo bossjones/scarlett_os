@@ -98,7 +98,7 @@ jhbuild run make install
 
 BUILD_ORC = """
 export BOSSJONES_PATH_TO_PYTHON=$(pyenv which python3.5)
-sed -i 's,#!python,#!$(BOSSJONES_PATH_TO_PYTHON),g' {PREFIX}/bin/gtkdoc-rebase; \
+sed -i "s,#!python,#!$BOSSJONES_PATH_TO_PYTHON,g" {PREFIX}/bin/gtkdoc-rebase; \
 jhbuild run ./configure --prefix={PREFIX}; \
 jhbuild run make -j4 ; \
 jhbuild run make install;
