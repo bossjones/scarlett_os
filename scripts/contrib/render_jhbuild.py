@@ -102,6 +102,77 @@ jhbuild run make -j4 ; \
 jhbuild run make install;
 """
 
+BUILD_GST_PLUGINS_BASE = """
+jhbuild run ./autogen.sh --prefix={PREFIX}; \
+jhbuild run ./configure --prefix={PREFIX} --enable-orc --enable-introspection=yes --enable-gtk-doc=no --disable-examples --enable-gtk-doc-html=no; \
+jhbuild run make -j4; \
+jhbuild run make install
+"""
+
+BUILD_GST_PLUGINS_GOOD = """
+jhbuild run ./autogen.sh --prefix={PREFIX}; \
+jhbuild run ./configure --prefix={PREFIX} --enable-orc --enable-gtk-doc=no --disable-examples --enable-gtk-doc-html=no > /dev/null; \
+jhbuild run make -j4  > /dev/null; \
+jhbuild run make install
+"""
+
+BUILD_GST_PLUGINS_UGLY = """
+jhbuild run ./autogen.sh --prefix={PREFIX}; \
+jhbuild run ./configure --prefix={PREFIX} --enable-orc --enable-gtk-doc=no --disable-examples --enable-gtk-doc-html=no; \
+jhbuild run make -j4; \
+jhbuild run make install
+"""
+
+
+BUILD_GST_PLUGINS_BAD = """
+export BOSSJONES_PATH_TO_PYTHON=$(pyenv which python3.5)
+sed -i 's,#!python3,#!$(BOSSJONES_PATH_TO_PYTHON),g' {PREFIX}/bin/gdbus-codegen; \
+sed -i 's,#!python,#!$(BOSSJONES_PATH_TO_PYTHON),g' {PREFIX}/bin/gdbus-codegen; \
+cat {PREFIX}/bin/gdbus-codegen; \
+jhbuild run ./autogen.sh --prefix={PREFIX}; \
+jhbuild run ./configure --prefix={PREFIX} --enable-orc --enable-gtk-doc=no --disable-examples --enable-gtk-doc-html=no; \
+jhbuild run make -j4; \
+jhbuild run make install
+"""
+
+BUILD_GST_LIBAV = """
+jhbuild run ./autogen.sh --prefix={PREFIX}; \
+jhbuild run ./configure --prefix={PREFIX} --enable-orc --enable-gtk-doc=no --enable-gtk-doc-html=no; \
+jhbuild run make -j4; \
+jhbuild run make install
+"""
+
+
+BUILD_GST_PYTHON = """
+jhbuild run ./autogen.sh --prefix={PREFIX}; \
+jhbuild run ./configure --prefix={PREFIX} --enabled-shared=no; \
+jhbuild run make -j4; \
+jhbuild run make install
+"""
+
+BUILD_GST_PLUGINS_ESPEAK = """
+for i in `grep -irH "-lespeak-ng" * | cut -d ':' -f1`; do
+    sed -i 's,-lespeak-ng,-lespeak,g' $i
+done
+jhbuild run ./configure --prefix={PREFIX}; \
+jhbuild run make; \
+jhbuild run make install
+"""
+
+BUILD_SPHINXBASE = """
+jhbuild run ./autogen.sh --prefix={PREFIX}; \
+jhbuild run ./configure --prefix={PREFIX}; \
+jhbuild run make clean all; \
+jhbuild run make install
+"""
+
+BUILD_POCKETSPHINX = """
+jhbuild run ./autogen.sh --prefix={PREFIX}; \
+jhbuild run ./configure --prefix={PREFIX} --with-python; \
+jhbuild run make clean all; \
+jhbuild run make install
+"""
+
 repo_git_dicts = {
     "gtk-doc": {
         "repo": "https://github.com/GNOME/gtk-doc.git",
@@ -172,16 +243,19 @@ repo_git_dicts = {
     "gst-python": {
         "repo": "https://github.com/GStreamer/gst-python",
         "branch": "1.8.2",
+        "compile-commands": BUILD_GST_PYTHON,
         "folder": "gst-python"
     },
     "sphinxbase": {
         "repo": "https://github.com/cmusphinx/sphinxbase.git",
         "branch": "74370799d5b53afc5b5b94a22f5eff9cb9907b97",
+        "compile-commands": BUILD_SPHINXBASE,
         "folder": "sphinxbase"
     },
     "pocketsphinx": {
         "repo": "https://github.com/cmusphinx/pocketsphinx.git",
         "branch": "68ef5dc6d48d791a747026cd43cc6940a9e19f69",
+        "compile-commands": BUILD_POCKETSPHINX,
         "folder": "pocketsphinx"
     }
 }
@@ -189,31 +263,38 @@ repo_git_dicts = {
 repo_tar_dicts = {
     "gstreamer": {
        "tar": "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.8.2.tar.xz",
-       "folder": "gstreamer-1.8.2"
+       "folder": "gstreamer-1.8.2",
+       "compile-commands": BUILD_GSTREAMER
     },
     "orc": {
         "tar": "https://gstreamer.freedesktop.org/src/orc/orc-0.4.25.tar.xz",
-        "folder": "orc-0.4.25"
+        "folder": "orc-0.4.25",
+       "compile-commands": BUILD_ORC
     },
     "gst-plugins-base": {
         "tar":    "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.8.2.tar.xz",
-        "folder": "gst-plugins-base-1.8.2"
+        "folder": "gst-plugins-base-1.8.2",
+       "compile-commands": BUILD_GST_PLUGINS_BASE
     },
     "gst-plugins-good": {
         "tar":    "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.8.2.tar.xz",
-        "folder": "gst-plugins-good-1.8.2"
+        "folder": "gst-plugins-good-1.8.2",
+        "compile-commands": BUILD_GST_PLUGINS_GOOD
     },
     "gst-plugins-bad": {
         "tar":    "http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.8.2.tar.xz",
-        "folder": "gst-plugins-bad-1.8.2"
+        "folder": "gst-plugins-bad-1.8.2",
+        "compile-commands": BUILD_GST_PLUGINS_BAD
     },
     "gst-libav": {
         "tar":    "http://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.8.2.tar.xz",
-        "folder": "gst-libav-1.8.2"
+        "folder": "gst-libav-1.8.2",
+        "compile-commands": BUILD_GST_LIBAV
     },
     "gst-plugins-espeak-0.4.0": {
         "tar":    "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz",
-        "folder": "gst-plugins-espeak-0.4.0"
+        "folder": "gst-plugins-espeak-0.4.0",
+        "compile-commands": BUILD_GST_PLUGINS_ESPEAK
     },
 
 }
