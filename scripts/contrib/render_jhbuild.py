@@ -24,32 +24,90 @@ JHBUILD_GITHUB_URL = "https://github.com/GNOME/jhbuild.git"
 JHBUILD_SHA = "86d958b6778da649b559815c0a0dbe6a5d1a8cd4"
 PATH_TO_JHBUILD_BIN = os.path.join(USERHOME + ".local/bin", "jhbuild")
 
-# JHBUILD_TEMPLATE = """
-# import os
-# prefix='{PREFIX}'
-# checkoutroot='{CHECKOUTROOT}'
-# moduleset = 'gnome-world'
-# interact = False
-# makeargs = '-j4'
-# os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
-# os.environ['PYTHON'] = 'python'
-# os.environ['GSTREAMER'] = '1.0'
-# os.environ['ENABLE_PYTHON3'] = 'yes'
-# os.environ['ENABLE_GTK'] = 'yes'
-# os.environ['PYTHON_VERSION'] = '3.5'
-# os.environ['MAKEFLAGS'] = '-j4'
-# os.environ['PREFIX'] = '{PREFIX}'
-# os.environ['JHBUILD'] = '{CHECKOUTROOT}'
-# os.environ['PATH'] = '/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/home/pi/.pyenv/shims:~/.pyenv/bin/:~/.bin:/home/pi/.local/bin:/home/pi/.rbenv/shims:/home/pi/.rbenv/bin:/home/pi/.nvm/versions/node/v8.7.0/bin:/usr/lib64/ccache:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/pi/.rvm/bin:/home/pi/.go/bin:/home/pi/go/bin'
-# os.environ['LD_LIBRARY_PATH'] = '/home/pi/jhbuild/lib:/home/pi/jhbuild/lib:/usr/lib'
-# os.environ['PYTHONPATH'] = '/home/pi/.pyenv/versions/3.5.2/lib/python3.5/site-packages:/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages'
-# os.environ['PKG_CONFIG_PATH'] = '/home/pi/.pyenv/versions/3.5.2/lib/pkgconfig:/home/pi/jhbuild/lib/pkgconfig:/home/pi/jhbuild/share/pkgconfig:/usr/lib/pkgconfig'
-# os.environ['XDG_DATA_DIRS'] = '/home/pi/jhbuild/share:/usr/share'
-# os.environ['XDG_CONFIG_DIRS'] = '/home/pi/jhbuild/etc/xdg'
-# os.environ['CC'] = 'gcc'
-# os.environ['PROJECT_HOME'] = '/home/pi/dev'
-# os.environ['PYTHONSTARTUP'] = '/home/pi/.pythonrc'
-# """
+
+repo_git_dicts = {
+    "gtk-doc": {
+        "repo": "https://github.com/GNOME/gtk-doc.git",
+        "branch": "master"
+    },
+    "glib": {
+        "repo": "https://github.com/GNOME/glib.git",
+        "branch": "eaca4f4116801f99e30e42a857559e19a1e6f4ce"
+    },
+    "gobject-introspection": {
+        "repo": "https://github.com/GNOME/gobject-introspection.git",
+        "branch": ""
+    },
+    "pixman": {
+        "repo": "git://anongit.freedesktop.org/git/pixman",
+        "branch": "pixman-0.33.6"
+    },
+    "cairo": {
+        "repo": "git://anongit.freedesktop.org/git/cairo",
+        "branch": "1.14.6"
+    },
+    "pycairo": {
+        "repo": "git://anongit.freedesktop.org/git/cairo",
+        "branch": "master"
+    },
+    "pygobject": {
+        "repo": "https://github.com/GNOME/pygobject.git",
+        "branch": "fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb"
+    },
+    "fribidi": {
+        "repo": "https://github.com/fribidi/fribidi.git",
+        "branch": "fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb"
+    },
+    "pango": {
+        "repo": "https://gitlab.gnome.org/GNOME/pango.git",
+        "branch": "1.42.1"
+    },
+    "gtk2": {
+        "repo": "https://gitlab.gnome.org/GNOME/gtk.git",
+        "branch": "gtk-2-24"
+    },
+    "gtk3": {
+        "repo": "https://gitlab.gnome.org/GNOME/gtk.git",
+        "branch": "gtk-3-22"
+    },
+    "gst-python": {
+        "repo": "https://github.com/GStreamer/gst-python",
+        "branch": "1.8.2"
+    },
+    "sphinxbase": {
+        "repo": "https://github.com/cmusphinx/sphinxbase.git",
+        "branch": "74370799d5b53afc5b5b94a22f5eff9cb9907b97"
+    },
+    "pocketsphinx": {
+        "repo": "https://github.com/cmusphinx/pocketsphinx.git",
+        "branch": "68ef5dc6d48d791a747026cd43cc6940a9e19f69"
+    }
+}
+
+repo_tar_dicts = {
+    "gstreamer": {
+        "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.8.2.tar.xz": "gstreamer-1.8.2"
+    },
+    "orc": {
+        "https://gstreamer.freedesktop.org/src/orc/orc-0.4.25.tar.xz": "orc-0.4.25"
+    },
+    "gst-plugins-base": {
+        "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.8.2.tar.xz": "gst-plugins-base-1.8.2"
+    },
+    "gst-plugins-good": {
+        "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.8.2.tar.xz": "gst-plugins-good-1.8.2"
+    },
+    "gst-plugins-bad": {
+        "http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.8.2.tar.xz": "gst-plugins-bad-1.8.2"
+    },
+    "gst-libav": {
+        "http://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.8.2.tar.xz": "gst-libav-1.8.2"
+    },
+    "gst-plugins-espeak-0.4.0": {
+        "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz": "gst-plugins-espeak-0.4.0"
+    },
+
+}
 
 JHBUILD_TEMPLATE = """
 import os
@@ -170,6 +228,25 @@ def move(src, dst):
 def copy(src, dst):
     shutil.copytree(src, dst)
 
+def clone_all():
+    for k, v in repo_git_dicts.items():
+        git_clone(v['repo'], k, sha=v['branch'])
+
+# Clone everything that doesnt exist
+def git_clone(repo_url, dest, sha='master'):
+    # First check if folder exists
+    if not os.path.exists(dest):
+        # check if folder is a git repo
+        if scm(dest) != 'git':
+            clone_cmd = "git clone {repo} {dest}".format(repo=repo_url,
+                                                         dest=dest)
+            _popen_stdout(clone_cmd)
+
+            # CD to directory
+            with cd(PREFIX):
+                checkout_cmd = "git checkout {sha}".format(sha=sha)
+                _popen_stdout(checkout_cmd)
+
 def clone_jhbuild():
     # First check if folder exists
     if not os.path.exists(PREFIX):
@@ -204,6 +281,11 @@ def compile_jhbuild():
                 _popen_stdout(_make_install_cmd, cwd=PREFIX)
                 _test_jhbuild = "~/.local/bin/jhbuild --help"
                 _popen_stdout(_test_jhbuild, cwd=PREFIX)
+
+def pip_install_meson():
+    _cmd = "python3 -m pip install meson"
+    _popen_stdout(_cmd, cwd=PREFIX)
+
 
 def whoami():
     whoami = _popen('who')
@@ -396,7 +478,7 @@ def render_jhbuildrc_dry_run():
                                                XDG_CONFIG_DIRS=environ_get('XDG_CONFIG_DIRS'),
                                                PROJECT_HOME=environ_get('PROJECT_HOME'),
                                                PYTHONSTARTUP=environ_get('PYTHONSTARTUP')
-                                              )
+                                               )
     Console.message('----------------[render_jhbuildrc_dry_run]----------------')
     Console.message(rendered_jhbuild)
 
@@ -405,10 +487,11 @@ def render_jhbuildrc_dry_run():
 def mkdir_p(path):
     try:
         os.makedirs(path)
-    except OSError as exc: # Python >2.5
+    except OSError as exc:  # Python >2.5
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
-        else: raise
+        else:
+            raise
 
 def dump_env_var(var):
     Console.message("Env Var:{}={}".format(var, os.environ.get(var, "<EMPTY>")))
@@ -427,6 +510,7 @@ def bootstrap():
     mkdir_user_bin_dirs()
     clone_jhbuild()
     compile_jhbuild()
+    pip_install_meson()
 
 def main(context):
     if context['cmd'] == 'bootstrap':
@@ -443,6 +527,12 @@ def main(context):
         setup_all_envs()
         render_jhbuildrc_dry_run()
         write_jhbuildrc()
+    elif context['cmd'] == 'pip-install-meson':
+        pip_install_meson()
+    elif context['cmd'] == 'compile-gtk-doc':
+        print('compile-gtk-doc')
+    elif context['cmd'] == 'clone-all':
+        clone_all()
     else:
         Console.message('you picked something else weird, please try again')
 
