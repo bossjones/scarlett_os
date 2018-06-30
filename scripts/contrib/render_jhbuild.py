@@ -288,6 +288,11 @@ repo_tar_dicts = {
         "folder": "gst-plugins-bad-1.8.2",
         "compile-commands": BUILD_GST_PLUGINS_BAD
     },
+    "gst-plugins-ugly": {
+        "tar": "http://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.8.2.tar.xz",
+        "folder": "gst-plugins-ugly-1.8.2",
+        "compile-commands": BUILD_GST_PLUGINS_UGLY
+    },
     "gst-libav": {
         "tar":    "http://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.8.2.tar.xz",
         "folder": "gst-libav-1.8.2",
