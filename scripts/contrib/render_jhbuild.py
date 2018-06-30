@@ -230,7 +230,8 @@ def copy(src, dst):
 
 def clone_all():
     for k, v in repo_git_dicts.items():
-        git_clone(v['repo'], k, sha=v['branch'])
+        k_full_path = os.path.join(CHECKOUTROOT, k)
+        git_clone(v['repo'], k_full_path, sha=v['branch'])
 
 # Clone everything that doesnt exist
 def git_clone(repo_url, dest, sha='master'):
@@ -243,7 +244,7 @@ def git_clone(repo_url, dest, sha='master'):
             _popen_stdout(clone_cmd)
 
             # CD to directory
-            with cd(PREFIX):
+            with cd(dest):
                 checkout_cmd = "git checkout {sha}".format(sha=sha)
                 _popen_stdout(checkout_cmd)
 
@@ -506,7 +507,12 @@ def mkdir_user_bin_dirs():
     if not os.path.exists(_dot_bin_path):
         mkdir_p(_dot_bin_path)
 
+def mkdir_checkoutroot():
+    if not os.path.exists(CHECKOUTROOT):
+        mkdir_p(CHECKOUTROOT)
+
 def bootstrap():
+    mkdir_checkoutroot()
     mkdir_user_bin_dirs()
     clone_jhbuild()
     compile_jhbuild()
