@@ -1,15 +1,15 @@
 import argparse
 import contextlib
+import errno
 import getpass
+import io
 import os
 import re
+import select
 import shutil
+import stat
 import subprocess
 import sys
-import errno
-import stat
-import io
-import select
 import time
 
 USERNAME = getpass.getuser()
