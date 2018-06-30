@@ -11,6 +11,7 @@ import stat
 import subprocess
 import sys
 import time
+from urllib.parse import urlparse
 
 USERNAME = getpass.getuser()
 USERHOME = os.path.expanduser("~")
@@ -86,25 +87,32 @@ repo_git_dicts = {
 
 repo_tar_dicts = {
     "gstreamer": {
-        "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.8.2.tar.xz": "gstreamer-1.8.2"
+       "tar":     "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.8.2.tar.xz",
+       "folder":  "gstreamer-1.8.2"
     },
     "orc": {
-        "https://gstreamer.freedesktop.org/src/orc/orc-0.4.25.tar.xz": "orc-0.4.25"
+        "tar":    "https://gstreamer.freedesktop.org/src/orc/orc-0.4.25.tar.xz",
+        "folder": "orc-0.4.25"
     },
     "gst-plugins-base": {
-        "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.8.2.tar.xz": "gst-plugins-base-1.8.2"
+        "tar":    "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.8.2.tar.xz",
+        "folder": "gst-plugins-base-1.8.2"
     },
     "gst-plugins-good": {
-        "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.8.2.tar.xz": "gst-plugins-good-1.8.2"
+        "tar":    "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.8.2.tar.xz",
+        "folder": "gst-plugins-good-1.8.2"
     },
     "gst-plugins-bad": {
-        "http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.8.2.tar.xz": "gst-plugins-bad-1.8.2"
+        "tar":    "http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.8.2.tar.xz",
+        "folder": "gst-plugins-bad-1.8.2"
     },
     "gst-libav": {
-        "http://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.8.2.tar.xz": "gst-libav-1.8.2"
+        "tar":    "http://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.8.2.tar.xz",
+        "folder": "gst-libav-1.8.2"
     },
     "gst-plugins-espeak-0.4.0": {
-        "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz": "gst-plugins-espeak-0.4.0"
+        "tar":    "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz",
+        "folder": "gst-plugins-espeak-0.4.0"
     },
 
 }
@@ -232,6 +240,14 @@ def clone_all():
     for k, v in repo_git_dicts.items():
         k_full_path = os.path.join(CHECKOUTROOT, k)
         git_clone(v['repo'], k_full_path, sha=v['branch'])
+
+def get_tar_files():
+    for k, v in repo_tar_dicts.items():
+        _a_url = urlparse.urlparse(v['tar'])
+        _file_name = os.path.basename(_a_url.path)
+        with cd(CHECKOUTROOT):
+            _cmd = "curl -L '{tar}' > {}".format(v['tar'], _file_name)
+            _popen_stdout(_cmd)
 
 # Clone everything that doesnt exist
 def git_clone(repo_url, dest, sha='master'):
