@@ -239,7 +239,7 @@ def git_clone(repo_url, dest, sha='master'):
     if not os.path.exists(dest):
         # check if folder is a git repo
         if scm(dest) != 'git':
-            clone_cmd = "git clone --depth 1 {repo} {dest}".format(repo=repo_url,
+            clone_cmd = "git clone --depth 1 --no-single-branch {repo} {dest}".format(repo=repo_url,
                                                          dest=dest)
             _popen_stdout(clone_cmd)
 
