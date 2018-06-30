@@ -26,72 +26,163 @@ JHBUILD_SHA = "86d958b6778da649b559815c0a0dbe6a5d1a8cd4"
 PATH_TO_JHBUILD_BIN = os.path.join(USERHOME + ".local/bin", "jhbuild")
 
 
+BUILD_GTK_DOC = """
+jhbuild buildone -n gtk-doc
+"""
+
+BUILD_GLIB = """
+jhbuild buildone -n glib
+"""
+
+BUILD_GOBJECT_INTROSPECTION = """
+jhbuild buildone -n gobject-introspection
+"""
+
+BUILD_PIXMAN = """
+chmod +x ./autogen.sh; \
+jhbuild run ./autogen.sh; \
+jhbuild run ./configure --prefix=/home/pi/jhbuild; \
+jhbuild run make -j4; \
+jhbuild run make install
+"""
+
+BUILD_CAIRO = """
+chmod +x ./autogen.sh; \
+jhbuild run ./autogen.sh; \
+jhbuild run ./configure --prefix=/home/pi/jhbuild --enable-xlib --enable-ft --enable-svg --enable-ps --enable-pdf --enable-tee --enable-gobject; \
+jhbuild run make -j4 ; \
+jhbuild run make install
+"""
+
+BUILD_PYCAIRO = """
+jhbuild run python3 setup.py install
+"""
+
+BUILD_PYGOBJECT = """
+jhbuild run ./autogen.sh --prefix=/home/pi/jhbuild --with-python=$(pyenv which python3.5); \
+jhbuild run make install
+"""
+
+BUILD_FRIBIDI = """
+jhbuild run meson mesonbuild/ --prefix=/home/pi/jhbuild -Ddocs=false --libdir=lib --includedir=include --bindir=bin --datadir=share --mandir=share/man; \
+jhbuild run ninja -C mesonbuild/; \
+jhbuild run ninja -C mesonbuild/ install
+"""
+
+BUILD_PANGO = """
+jhbuild run meson mesonbuild/ --prefix=/home/pi/jhbuild --libdir=lib --includedir=include --bindir=bin --datadir=share --mandir=share/man; \
+ninja -C mesonbuild/ dist
+"""
+
+BUILD_GTK2 = """
+jhbuild run ./autogen.sh --prefix=/home/pi/jhbuild; \
+jhbuild run ./configure --prefix=/home/pi/jhbuild --disable-man --with-xinput=xfree; \
+jhbuild run make clean all; \
+jhbuild run make install
+"""
+
+BUILD_GTK3 = """
+jhbuild run ./autogen.sh --prefix=/home/pi/jhbuild; \
+jhbuild run ./configure --prefix=/home/pi/jhbuild --enable-xkb --enable-xinerama --enable-xrandr --enable-xfixes --enable-xcomposite --enable-xdamage
+--enable-x11-backend; \
+jhbuild run make clean all; \
+jhbuild run make install
+"""
+
+BUILD_GSTREAMER = """
+jhbuild run ./autogen.sh --prefix=/home/pi/jhbuild; \
+jhbuild run ./configure --enable-introspection=yes --enable-gtk-doc=no --prefix=/home/pi/jhbuild; \
+jhbuild run make -j4; \
+jhbuild run make install
+"""
+
+BUILD_ORC = """
+jhbuild run ./configure --prefix=/home/pi/jhbuild; \
+jhbuild run make -j4 ; \
+jhbuild run make install;
+"""
+
 repo_git_dicts = {
     "gtk-doc": {
         "repo": "https://github.com/GNOME/gtk-doc.git",
-        "branch": "master"
+        "branch": "master",
+        "compile-commands": BUILD_GTK_DOC,
+        "folder": "gtk-doc"
     },
     "glib": {
         "repo": "https://github.com/GNOME/glib.git",
-        "branch": "eaca4f4116801f99e30e42a857559e19a1e6f4ce"
+        "branch": "eaca4f4116801f99e30e42a857559e19a1e6f4ce",
+        "folder": "glib"
     },
     "gobject-introspection": {
         "repo": "https://github.com/GNOME/gobject-introspection.git",
-        "branch": ""
+        "branch": "cee2a4f215d5edf2e27b9964d3cfcb28a9d4941c",
+        "folder": "gobject-introspection"
     },
     "pixman": {
         "repo": "git://anongit.freedesktop.org/git/pixman",
-        "branch": "pixman-0.33.6"
+        "branch": "pixman-0.33.6",
+        "folder": "pixman"
     },
     "cairo": {
         "repo": "git://anongit.freedesktop.org/git/cairo",
-        "branch": "1.14.6"
+        "branch": "1.14.6",
+        "folder": "cairo"
     },
     "pycairo": {
-        "repo": "git://anongit.freedesktop.org/git/cairo",
-        "branch": "master"
+        "repo": "git://anongit.freedesktop.org/git/pycairo",
+        "branch": "master",
+        "folder": "pycairo"
     },
     "pygobject": {
         "repo": "https://github.com/GNOME/pygobject.git",
-        "branch": "fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb"
+        "branch": "fb1b8fa8a67f2c7ea7ad4b53076496a8f2b4afdb",
+        "folder": "pygobject"
     },
     "fribidi": {
         "repo": "https://github.com/fribidi/fribidi.git",
-        "branch": "master"
+        "branch": "master",
+        "folder": "fribidi"
     },
     "pango": {
         "repo": "https://gitlab.gnome.org/GNOME/pango.git",
-        "branch": "1.42.1"
+        "branch": "1.42.1",
+        "folder": "pango"
     },
     "gtk2": {
         "repo": "https://gitlab.gnome.org/GNOME/gtk.git",
-        "branch": "gtk-2-24"
+        "branch": "gtk-2-24",
+        "folder": "gtk2"
     },
     "gtk3": {
         "repo": "https://gitlab.gnome.org/GNOME/gtk.git",
-        "branch": "gtk-3-22"
+        "branch": "gtk-3-22",
+        "folder": "gtk3"
     },
     "gst-python": {
         "repo": "https://github.com/GStreamer/gst-python",
-        "branch": "1.8.2"
+        "branch": "1.8.2",
+        "folder": "gst-python"
     },
     "sphinxbase": {
         "repo": "https://github.com/cmusphinx/sphinxbase.git",
-        "branch": "74370799d5b53afc5b5b94a22f5eff9cb9907b97"
+        "branch": "74370799d5b53afc5b5b94a22f5eff9cb9907b97",
+        "folder": "sphinxbase"
     },
     "pocketsphinx": {
         "repo": "https://github.com/cmusphinx/pocketsphinx.git",
-        "branch": "68ef5dc6d48d791a747026cd43cc6940a9e19f69"
+        "branch": "68ef5dc6d48d791a747026cd43cc6940a9e19f69",
+        "folder": "pocketsphinx"
     }
 }
 
 repo_tar_dicts = {
     "gstreamer": {
-       "tar":     "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.8.2.tar.xz",
-       "folder":  "gstreamer-1.8.2"
+       "tar": "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.8.2.tar.xz",
+       "folder": "gstreamer-1.8.2"
     },
     "orc": {
-        "tar":    "https://gstreamer.freedesktop.org/src/orc/orc-0.4.25.tar.xz",
+        "tar": "https://gstreamer.freedesktop.org/src/orc/orc-0.4.25.tar.xz",
         "folder": "orc-0.4.25"
     },
     "gst-plugins-base": {
@@ -143,6 +234,7 @@ os.environ['CC'] = 'gcc'
 os.environ['PROJECT_HOME'] = '{PROJECT_HOME}'
 os.environ['PYTHONSTARTUP'] = '{PYTHONSTARTUP}'
 """
+
 
 # SOURCE: https://github.com/ARMmbed/mbed-cli/blob/f168237fabd0e32edcb48e214fc6ce2250046ab3/test/util.py
 # Process execution
@@ -306,6 +398,18 @@ def compile_jhbuild():
                 _popen_stdout(_make_install_cmd, cwd=PREFIX)
                 _test_jhbuild = "~/.local/bin/jhbuild --help"
                 _popen_stdout(_test_jhbuild, cwd=PREFIX)
+
+def get_package_dict(package_to_build):
+    if package_to_build in repo_git_dicts:
+        return repo_git_dicts
+    elif package_to_build in repo_tar_dicts:
+        return repo_tar_dicts
+
+def compile_one(package_to_build):
+    pkg_dict = get_package_dict(package_to_build)
+    path_to_folder = os.path.join(CHECKOUTROOT, pkg_dict[package_to_build]['folder'])
+    with cd(path_to_folder):
+        _popen_stdout(pkg_dict[package_to_build]['compile-commands'], cwd=path_to_folder)
 
 def pip_install_meson():
     _cmd = "python3 -m pip install meson"
@@ -567,6 +671,8 @@ def main(context):
         get_tar_files()
     elif context['cmd'] == 'untar-files':
         untar_files()
+    elif context['cmd'] == 'build':
+        compile_one(context['pkg'])
     else:
         Console.message('you picked something else weird, please try again')
 
@@ -574,13 +680,18 @@ def main(context):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("cmd", help="cmd to run. Options [render, list, dump_env, bootstrap]")
+    parser.add_argument("--pkg",
+                        type=str,
+                        required=False,
+                        help="Package name.")
 
     args, extra_args = parser.parse_known_args()
 
     assert args.cmd != None
 
     context = {
-        'cmd': args.cmd
+        'cmd': args.cmd,
+        'pkg': args.pkg
     }
 
     main(context)
