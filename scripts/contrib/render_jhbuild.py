@@ -296,6 +296,8 @@ def main(context):
     elif context['cmd'] == 'dump_env':
         setup_path_env()
         dump_env_var("PATH")
+    elif context['cmd'] == 'compile':
+        compile_jhbuild()
     else:
         Console.message('you picked something else weird, please try again')
 
