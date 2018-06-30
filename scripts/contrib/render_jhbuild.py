@@ -165,7 +165,7 @@ def clone_jhbuild():
 def compile_jhbuild():
     Console.message('First check if folder exists')
     Console.message("if not os.path.exists(PREFIX) = {}".format(PREFIX))
-    if not os.path.exists(PREFIX):
+    if os.path.exists(PREFIX):
         Console.message('check if folder is a git repo')
         if scm(PREFIX) == 'git':
             with cd(PREFIX):
