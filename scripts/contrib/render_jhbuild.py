@@ -120,11 +120,12 @@ def _popen_stdout(cmd_arg):
     # if passing a single string, either shell mut be True or else the string must simply name the program to be executed without specifying any arguments
     cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=4096, shell=True)
     Console.message("BEGIN: {}".format(cmd_arg))
-    output, err = cmd.communicate()
+    # output, err = cmd.communicate()
 
     for line in iter(cmd.stdout.readline, b''):
         # Print line
-        Console.message(">>> " + line.rstrip())
+        _line = line.rstrip()
+        Console.message(">>> {}".format(_line.decode("utf-8")))
 
     Console.message("END: {}".format(cmd_arg))
 
