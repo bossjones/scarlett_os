@@ -116,9 +116,9 @@ def _popen(cmd_arg):
         raise RuntimeError('Failed to close %s stream' % cmd_arg)
     return retval
 
-def _popen_stdout(cmd_arg):
+def _popen_stdout(cmd_arg, cwd=None):
     # if passing a single string, either shell mut be True or else the string must simply name the program to be executed without specifying any arguments
-    cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=4096, shell=True)
+    cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd, bufsize=4096, shell=True)
     Console.message("BEGIN: {}".format(cmd_arg))
     # output, err = cmd.communicate()
 
@@ -163,13 +163,14 @@ def clone_jhbuild():
     return PREFIX
 
 def compile_jhbuild():
-    # First check if folder exists
+    Console.message('First check if folder exists')
+    Console.message("if not os.path.exists(PREFIX) = {}".format(PREFIX))
     if not os.path.exists(PREFIX):
-        # check if folder is a git repo
-        if scm(PREFIX) != 'git':
+        Console.message('check if folder is a git repo')
+        if scm(PREFIX) == 'git':
             with cd(PREFIX):
                 _autogen_cmd = "./autogen.sh --prefix={}/.local".format(USERHOME)
-                _popen_stdout(_autogen_cmd)
+                _popen_stdout(_autogen_cmd, cwd=PREFIX)
 
 def whoami():
     whoami = _popen('who')
