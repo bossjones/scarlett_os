@@ -300,7 +300,7 @@ repo_tar_dicts = {
     },
     "gst-plugins-espeak-0.4.0": {
         "tar":    "https://github.com/bossjones/bossjones-gst-plugins-espeak-0-4-0/archive/v0.4.1.tar.gz",
-        "folder": "gst-plugins-espeak-0.4.0",
+        "folder": "bossjones-gst-plugins-espeak-0-4-0-0.4.1",
         "compile-commands": BUILD_GST_PLUGINS_ESPEAK
     },
 
