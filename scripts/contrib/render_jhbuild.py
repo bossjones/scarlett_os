@@ -113,8 +113,8 @@ jhbuild run make install
 
 BUILD_GST_PLUGINS_GOOD = """
 jhbuild run ./autogen.sh --prefix={PREFIX}; \
-jhbuild run ./configure --prefix={PREFIX} --enable-orc --enable-gtk-doc=no --disable-examples --enable-gtk-doc-html=no > /dev/null; \
-jhbuild run make -j4  > /dev/null; \
+jhbuild run ./configure --prefix={PREFIX} --enable-orc --enable-gtk-doc=no --disable-examples --enable-gtk-doc-html=no; \
+jhbuild run make -j4; \
 jhbuild run make install
 """
 
