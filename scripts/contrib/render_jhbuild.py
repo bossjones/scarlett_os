@@ -389,7 +389,6 @@ def render_jhbuildrc_dry_run():
                                                CFLAGS=environ_get('CFLAGS'),
                                                PYTHON_VERSION=environ_get('PYTHON_VERSION'),
                                                PATH=environ_get('PATH'),
-                                               PYTHON_VERSION=environ_get('PYTHON_VERSION'),
                                                LD_LIBRARY_PATH=environ_get('LD_LIBRARY_PATH'),
                                                PYTHONPATH=environ_get('PYTHONPATH'),
                                                PKG_CONFIG_PATH=environ_get('PKG_CONFIG_PATH'),
