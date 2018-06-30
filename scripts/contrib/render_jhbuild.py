@@ -121,8 +121,11 @@ def _popen_stdout(cmd_arg):
     cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=4096, shell=True)
     Console.message("BEGIN: {}".format(cmd_arg))
     output, err = cmd.communicate()
-    # line = io.TextIOWrapper(cmd.stdout, encoding="utf-8")
-    Console.message("Output: {}".format(output))
+
+    for line in iter(cmd.stdout.readline, b''):
+        # Print line
+        Console.message(">>> " + line.rstrip())
+
     Console.message("END: {}".format(cmd_arg))
 
 # Higher level functions
