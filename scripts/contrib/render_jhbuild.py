@@ -9,6 +9,8 @@ import sys
 import errno
 import stat
 import io
+import select
+import time
 
 USERNAME = getpass.getuser()
 USERHOME = os.path.expanduser("~")
@@ -116,10 +118,11 @@ def _popen(cmd_arg):
 
 def _popen_stdout(cmd_arg):
     # if passing a single string, either shell mut be True or else the string must simply name the program to be executed without specifying any arguments
-    cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    cmd = subprocess.Popen(cmd_arg, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=4096, shell=True)
     Console.message("BEGIN: {}".format(cmd_arg))
-    for line in io.TextIOWrapper(cmd.stdout, encoding="utf-8"):
-        Console.message(line)
+    output, err = cmd.communicate()
+    # line = io.TextIOWrapper(cmd.stdout, encoding="utf-8")
+    Console.message("Output: {}".format(output))
     Console.message("END: {}".format(cmd_arg))
 
 # Higher level functions
