@@ -246,7 +246,7 @@ def get_tar_files():
         _a_url = urlparse.urlparse(v['tar'])
         _file_name = os.path.basename(_a_url.path)
         with cd(CHECKOUTROOT):
-            _cmd = "curl -L '{tar}' > {}".format(v['tar'], _file_name)
+            _cmd = "curl -L '{tar}' > {archive_file}".format(tar=v['tar'], archive_file=_file_name)
             _popen_stdout(_cmd)
 
 # Clone everything that doesnt exist
@@ -555,6 +555,8 @@ def main(context):
         print('compile-gtk-doc')
     elif context['cmd'] == 'clone-all':
         clone_all()
+    elif context['cmd'] == 'get-all-tar-files':
+        get_tar_files()
     else:
         Console.message('you picked something else weird, please try again')
 
