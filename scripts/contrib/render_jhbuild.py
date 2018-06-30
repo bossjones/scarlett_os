@@ -175,6 +175,8 @@ def compile_jhbuild():
                 _popen_stdout(_make_cmd, cwd=PREFIX)
                 _make_install_cmd = "make install"
                 _popen_stdout(_make_install_cmd, cwd=PREFIX)
+                _test_jhbuild = "~/.local/bin/jhbuild --help"
+                _popen_stdout(_test_jhbuild, cwd=PREFIX)
 
 def whoami():
     whoami = _popen('who')
