@@ -171,6 +171,10 @@ def compile_jhbuild():
             with cd(PREFIX):
                 _autogen_cmd = "./autogen.sh --prefix={}/.local".format(USERHOME)
                 _popen_stdout(_autogen_cmd, cwd=PREFIX)
+                _make_cmd = "make".format(USERHOME)
+                _popen_stdout(_make_cmd, cwd=PREFIX)
+                _make_install_cmd = "make install".format(USERHOME)
+                _popen_stdout(_make_install_cmd, cwd=PREFIX)
 
 def whoami():
     whoami = _popen('who')
