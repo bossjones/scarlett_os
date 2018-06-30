@@ -235,7 +235,7 @@ def environ_set(key, value):
     os.environ[key] = value
 
 def environ_get(key):
-    os.environ.get(key)
+    return os.environ.get(key)
 
 def path_append(value):
     if os.path.exists(value):
