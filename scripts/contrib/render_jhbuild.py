@@ -314,6 +314,17 @@ def setup_pythonpath():
     Console.message("AFTER")
     dump_env_var("PYTHONPATH")
 
+
+def setup_prefix():
+    environ_set("PREFIX", PREFIX)
+    Console.message("AFTER")
+    dump_env_var("PREFIX")
+
+def setup_checkoutroot():
+    environ_set("CHECKOUTROOT", CHECKOUTROOT)
+    Console.message("AFTER")
+    dump_env_var("CHECKOUTROOT")
+
 def setup_pkg_config_path():
     # /home/pi/.pyenv/versions/3.5.2/lib/pkgconfig
     # /home/pi/jhbuild/lib/pkgconfig
@@ -363,6 +374,8 @@ def setup_all_envs():
     setup_xdg_config_dirs()
     setup_project_home()
     setup_pythonstartup()
+    setup_prefix()
+    setup_checkoutroot()
 
 
 def write_jhbuildrc():
