@@ -379,10 +379,9 @@ def setup_all_envs():
 
 
 def write_jhbuildrc():
-    # path_to_main_yml = os.path.join(path_to_role_subdir, 'main.yml')
-    # with open(path_to_main_yml, 'w+') as fp:
-    #     fp.write(MAIN_YML_TEMPLATE.format(role_name=context['role']))
-    pass
+    rendered_jhbuild = render_jhbuildrc_dry_run()
+    with open(PATH_TO_JHBUILDRC, 'w+') as fp:
+        fp.write(rendered_jhbuild)
 
 def render_jhbuildrc_dry_run():
     rendered_jhbuild = JHBUILD_TEMPLATE.format(PREFIX=environ_get('PREFIX'),
@@ -440,6 +439,10 @@ def main(context):
     elif context['cmd'] == 'render-dry-run':
         setup_all_envs()
         render_jhbuildrc_dry_run()
+    elif context['cmd'] == 'render':
+        setup_all_envs()
+        render_jhbuildrc_dry_run()
+        write_jhbuildrc()
     else:
         Console.message('you picked something else weird, please try again')
 
