@@ -60,7 +60,7 @@ if [[ ! -f "/usr/local/bin/jhbuild" ]] && [[ -f "/home/pi/jhbuild/autogen.sh" ]]
     cd /home/pi/gnome && \
     [ -d /home/pi/gnome/pycairo ] || git clone --depth=10 git://git.cairographics.org/git/pycairo && \
     cd pycairo && \
-    jhbuild runpython3 setup.py install && \
+    jhbuild run python3 setup.py install && \
     echo "IF THIS DOESNT WORK, LOOK AT OTHER OPTION AT BOTTOM OF SCRIPT"
 
     echo "****************[PYGOBJECT]****************" && \
@@ -82,8 +82,8 @@ if [[ ! -f "/usr/local/bin/jhbuild" ]] && [[ -f "/home/pi/jhbuild/autogen.sh" ]]
     cd /home/pi/gnome && \
     cd fribidi && \
     jhbuild run meson mesonbuild/ --prefix=/home/pi/jhbuild -Ddocs=false --libdir=lib --includedir=include --bindir=bin --datadir=share --mandir=share/man && \
-    ninja -C mesonbuild/ && \
-    ninja -C mesonbuild/ install && \
+    jhbuild run ninja -C mesonbuild/ && \
+    jhbuild run ninja -C mesonbuild/ install && \
 
     echo "****************[pango]****************" && \
     cd /home/pi/gnome && \
@@ -92,7 +92,7 @@ if [[ ! -f "/usr/local/bin/jhbuild" ]] && [[ -f "/home/pi/jhbuild/autogen.sh" ]]
     cd pango && \
     git checkout 1.42.1 && \
     jhbuild run meson mesonbuild/ --prefix=/home/pi/jhbuild --libdir=lib --includedir=include --bindir=bin --datadir=share --mandir=share/man && \
-    ninja -C mesonbuild/ dist && \
+    jhbuild run ninja -C mesonbuild/ dist && \
 
 
     echo "****************[gtk2]****************" && \
@@ -199,7 +199,7 @@ if [[ ! -f "/usr/local/bin/jhbuild" ]] && [[ -f "/home/pi/jhbuild/autogen.sh" ]]
     cd gst-python && \
     git checkout 1.8.2 && \
     jhbuild run ./autogen.sh --prefix=/home/pi/jhbuild && \
-    jhbuild run ./configure --prefix=/home/pi/jhbuild --enabled-shared=no > /dev/null && \
+    jhbuild run ./configure --prefix=/home/pi/jhbuild --enable-shared=no > /dev/null && \
     jhbuild run make -j4  > /dev/null && \
     jhbuild run make install > /dev/null && \
 
@@ -315,32 +315,32 @@ _PREFIX="${_PYENV_ROOT}/versions/$(pyenv version-name | awk -F: '{print($1)}')"
 # [ ! $RPI ] && [ ! -d gstreamer-vaapi ] && git clone git://gitorious.org/vaapi/gstreamer-vaapi.git
 
 
- {
-            "name": "gtk3",
-            "config-opts": [ "--enable-xkb",
-                             "--enable-xinerama",
-                             "--enable-xrandr",
-                             "--enable-xfixes",
-                             "--enable-xcomposite",
-                             "--enable-xdamage",
-                             "--enable-x11-backend",
-                             "--enable-wayland-backend" ],
-            "cleanup-platform": [
-                "/bin/gtk3-*",
-                "/bin/gtk-builder-tool",
-                "/bin/gtk-encode-symbolic-svg"
-            ],
-            "ensure-writable": ["/lib/*/gtk-3.0/*/immodules.cache"],
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "https://gitlab.gnome.org/GNOME/gtk.git",
-                    "branch": "gtk-3-22"
-                }
-            ]
+#  {
+#             "name": "gtk3",
+#             "config-opts": [ "--enable-xkb",
+#                              "--enable-xinerama",
+#                              "--enable-xrandr",
+#                              "--enable-xfixes",
+#                              "--enable-xcomposite",
+#                              "--enable-xdamage",
+#                              "--enable-x11-backend",
+#                              "--enable-wayland-backend" ],
+#             "cleanup-platform": [
+#                 "/bin/gtk3-*",
+#                 "/bin/gtk-builder-tool",
+#                 "/bin/gtk-encode-symbolic-svg"
+#             ],
+#             "ensure-writable": ["/lib/*/gtk-3.0/*/immodules.cache"],
+#             "sources": [
+#                 {
+#                     "type": "git",
+#                     "url": "https://gitlab.gnome.org/GNOME/gtk.git",
+#                     "branch": "gtk-3-22"
+#                 }
+#             ]
 
-# NOTE: originally from gstreamer
-jhbuild run ./configure --enable-doc-installation=no --prefix=/home/pi/jhbuild --disable-gtk-doc --disable-examples --disable-x11 --disable-glx --disable-opengl && \
+# # NOTE: originally from gstreamer
+# jhbuild run ./configure --enable-doc-installation=no --prefix=/home/pi/jhbuild --disable-gtk-doc --disable-examples --disable-x11 --disable-glx --disable-opengl && \
 
 
 # left off on gst plugins again
