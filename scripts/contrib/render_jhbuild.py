@@ -243,7 +243,7 @@ def clone_all():
 
 def get_tar_files():
     for k, v in repo_tar_dicts.items():
-        _a_url = urlparse.urlparse(v['tar'])
+        _a_url = urlparse(v['tar'])
         _file_name = os.path.basename(_a_url.path)
         with cd(CHECKOUTROOT):
             _cmd = "curl -L '{tar}' > {archive_file}".format(tar=v['tar'], archive_file=_file_name)
