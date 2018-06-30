@@ -169,8 +169,7 @@ def compile_jhbuild():
         if scm(PREFIX) != 'git':
             with cd(PREFIX):
                 _autogen_cmd = "./autogen.sh --prefix={}/.local".format(USERHOME)
-                _autogen_retval = _popen(_autogen_cmd)
-                Console.message(_autogen_retval)
+                _popen_stdout(_autogen_cmd)
 
 def whoami():
     whoami = _popen('who')
