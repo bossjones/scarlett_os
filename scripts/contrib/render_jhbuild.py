@@ -249,6 +249,14 @@ def get_tar_files():
             _cmd = "curl -L '{tar}' > {archive_file}".format(tar=v['tar'], archive_file=_file_name)
             _popen_stdout(_cmd)
 
+def untar_files():
+    for k, v in repo_tar_dicts.items():
+        _a_url = urlparse(v['tar'])
+        _file_name = os.path.basename(_a_url.path)
+        with cd(CHECKOUTROOT):
+            _cmd = "tar xvf {archive_file}".format(archive_file=_file_name)
+            _popen_stdout(_cmd)
+
 # Clone everything that doesnt exist
 def git_clone(repo_url, dest, sha='master'):
     # First check if folder exists
@@ -557,6 +565,8 @@ def main(context):
         clone_all()
     elif context['cmd'] == 'get-all-tar-files':
         get_tar_files()
+    elif context['cmd'] == 'untar-files':
+        untar_files()
     else:
         Console.message('you picked something else weird, please try again')
 
