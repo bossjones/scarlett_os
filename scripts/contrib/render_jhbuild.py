@@ -299,8 +299,8 @@ def setup_ld_library_path():
     # /home/pi/jhbuild/lib
     # /home/pi/jhbuild/lib
     # /usr/lib
-    environ_prepend("LD_LIBRARY_PATH", "/usr/lib")
-    environ_prepend("LD_LIBRARY_PATH", "{}/jhbuild/lib".format(USERHOME))
+    environ_prepend("LD_LIBRARY_PATH", "/usr/lib", ":")
+    environ_prepend("LD_LIBRARY_PATH", "{}/jhbuild/lib".format(USERHOME), ":")
     Console.message("AFTER")
     dump_env_var("LD_LIBRARY_PATH")
 
@@ -308,37 +308,49 @@ def setup_pythonpath():
     # /home/pi/.pyenv/versions/3.5.2/lib/python3.5/site-packages
     # /home/pi/jhbuild/lib/python3.5/site-packages
     # /usr/lib/python3.5/site-packages
-    environ_prepend("PYTHONPATH", "/usr/lib/python{}/site-packages".format(PY_VERSION))
-    environ_prepend("PYTHONPATH", "{}/jhbuild/lib/python{}/site-packages".format(USERHOME, PY_VERSION))
-    environ_prepend("PYTHONPATH", "{}/.pyenv/versions/{}/lib/python{}/site-packages".format(USERHOME, PY_VERSION_FULL, PY_VERSION))
+    environ_prepend("PYTHONPATH", "/usr/lib/python{}/site-packages".format(PY_VERSION), ":")
+    environ_prepend("PYTHONPATH", "{}/jhbuild/lib/python{}/site-packages".format(USERHOME, PY_VERSION), ":")
+    environ_prepend("PYTHONPATH", "{}/.pyenv/versions/{}/lib/python{}/site-packages".format(USERHOME, PY_VERSION_FULL, PY_VERSION), ":")
+    Console.message("AFTER")
+    dump_env_var("PYTHONPATH")
 
 def setup_pkg_config_path():
     # /home/pi/.pyenv/versions/3.5.2/lib/pkgconfig
     # /home/pi/jhbuild/lib/pkgconfig
     # /home/pi/jhbuild/share/pkgconfig
     # /usr/lib/pkgconfig
-    environ_prepend("PKG_CONFIG_PATH", "/usr/lib/pkgconfig")
-    environ_prepend("PKG_CONFIG_PATH", "{}/jhbuild/share/pkgconfig".format(USERHOME))
-    environ_prepend("PKG_CONFIG_PATH", "{}/jhbuild/lib/pkgconfig".format(USERHOME))
-    environ_prepend("PKG_CONFIG_PATH", "{}/.pyenv/versions/{}/lib/pkgconfig".format(USERHOME, PY_VERSION_FULL))
+    environ_prepend("PKG_CONFIG_PATH", "/usr/lib/pkgconfig", ":")
+    environ_prepend("PKG_CONFIG_PATH", "{}/jhbuild/share/pkgconfig".format(USERHOME), ":")
+    environ_prepend("PKG_CONFIG_PATH", "{}/jhbuild/lib/pkgconfig".format(USERHOME), ":")
+    environ_prepend("PKG_CONFIG_PATH", "{}/.pyenv/versions/{}/lib/pkgconfig".format(USERHOME, PY_VERSION_FULL), ":")
+    Console.message("AFTER")
+    dump_env_var("PKG_CONFIG_PATH")
 
 def setup_xdg_data_dirs():
     # /home/pi/jhbuild/share
     # /usr/share
-    environ_prepend("XDG_DATA_DIRS", "/usr/share")
-    environ_prepend("XDG_DATA_DIRS", "{}/jhbuild/share".format(USERHOME))
+    environ_prepend("XDG_DATA_DIRS", "/usr/share", ":")
+    environ_prepend("XDG_DATA_DIRS", "{}/jhbuild/share".format(USERHOME), ":")
+    Console.message("AFTER")
+    dump_env_var("XDG_DATA_DIRS")
 
 def setup_xdg_config_dirs():
     # /home/pi/jhbuild/etc/xdg
-    environ_prepend("XDG_CONFIG_DIRS", "{}/jhbuild/etc/xdg".format(USERHOME))
+    environ_prepend("XDG_CONFIG_DIRS", "{}/jhbuild/etc/xdg".format(USERHOME), ":")
+    Console.message("AFTER")
+    dump_env_var("XDG_CONFIG_DIRS")
 
 def setup_project_home():
     # /home/pi/dev
-    environ_prepend("PROJECT_HOME", "{}/dev".format(USERHOME))
+    environ_prepend("PROJECT_HOME", "{}/dev".format(USERHOME), ":")
+    Console.message("AFTER")
+    dump_env_var("PROJECT_HOME")
 
 def setup_pythonstartup():
     # /home/pi/.pythonrc
-    environ_prepend("PYTHONSTARTUP", "{}/.pythonrc".format(USERHOME))
+    environ_prepend("PYTHONSTARTUP", "{}/.pythonrc".format(USERHOME), ":")
+    Console.message("AFTER")
+    dump_env_var("PYTHONSTARTUP")
 
 def setup_all_envs():
     setup_debug()
