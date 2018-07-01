@@ -778,7 +778,7 @@ def main(context):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("cmd", help="cmd to run. Options [render, list, dump_env, bootstrap]")
+    parser.add_argument("cmd", help="cmd to run. Options [bootstrap, dump_env, compile, render-dry-run, render, pip-install-meson, compile-gtk-doc, clone-all, get-all-tar-files, untar-files, build]")
     parser.add_argument("--pkg",
                         type=str,
                         required=False,
