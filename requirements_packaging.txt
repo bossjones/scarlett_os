@@ -2,3 +2,4 @@
 # provides you with:
 # pip-compile --output-file requirements.txt setup.py
 pip-tools
+pipdeptree
