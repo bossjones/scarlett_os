@@ -794,6 +794,8 @@ def main(context):
         untar_files()
     elif context['cmd'] == 'build':
         compile_one(context['pkg'])
+    elif context['cmd'] == 'compile-all':
+        compile_all()
     else:
         Console.message('you picked something else weird, please try again')
 
