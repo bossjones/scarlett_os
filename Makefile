@@ -900,6 +900,9 @@ makelint-install:
 # 	@echo 'git tag --force v$(VERSION)'
 # 	@echo 'git push --tags origin master'
 
+
+# NOTE: You can also run pylint with warnings turned into errors using python -W error -m pylint … to get a traceback for the warnings.
+# SOURCE: https://github.com/neomake/neomake/issues/1828#issuecomment-377901357
 .PHONY: run-pylint-error
 run-pylint-error:
 	pylint -E scarlett_os
@@ -907,6 +910,16 @@ run-pylint-error:
 .PHONY: jhbuild-run-pylint-error
 jhbuild-run-pylint-error:
 	jhbuild run -- pylint -E scarlett_os
+
+.PHONY: jhbuild-run-pylint-warning-stacktrace
+jhbuild-run-pylint-warning-stacktrace:
+	jhbuild run -- python -W error -m pylint -E scarlett_os
+
+.PHONY: jhbuild-run-pip-compile-upgrade-all
+jhbuild-run-pip-compile-upgrade-all:
+	jhbuild run -- pip-compile --output-file requirements.txt requirements.in --upgrade ;\
+	jhbuild run -- pip-compile --output-file requirements_dev.txt requirements_dev.in --upgrade ;\
+	jhbuild run -- pip-compile --output-file requirements_test_all.txt requirements_test_all.in --upgrade
 
 # sshfs testing
 
