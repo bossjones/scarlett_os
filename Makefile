@@ -908,6 +908,12 @@ run-pylint-error:
 jhbuild-run-pylint-error:
 	jhbuild run -- pylint -E scarlett_os
 
+.PHONY: jhbuild-run-pip-compile-upgrade-all
+jhbuild-run-pip-compile-upgrade-all:
+	jhbuild run -- pip-compile --output-file requirements.txt requirements.in --upgrade ;\
+	jhbuild run -- pip-compile --output-file requirements_dev.txt requirements_dev.in --upgrade ;\
+	jhbuild run -- pip-compile --output-file requirements_test_all.txt requirements_test_all.in --upgrade
+
 # sshfs testing
 
 .PHONY: sshfs-mount-fake-venv
