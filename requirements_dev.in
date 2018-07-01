@@ -1,0 +1,60 @@
+# for usage with pip-compile
+pip
+bumpversion
+wheel
+watchdog
+flake8
+flake8-docstrings
+tox
+coverage
+Sphinx
+cryptography
+PyYAML
+requests_mock
+mock-open
+mock
+
+# from home assistant
+pydocstyle
+mypy-lang
+pylint
+# NOTE: We need to install android as well
+# python -m pip install astroid
+# NOTE: We need isort too
+isort
+coveralls
+
+# data science
+ipython
+gnureadline
+
+# pytest
+pytest
+pytest-cov
+pytest-timeout
+pytest-benchmark[histogram]
+freezegun
+# git+git://github.com/mverteuil/pytest-ipdb.git
+-e git+https://github.com/mverteuil/pytest-ipdb#egg=pytest-ipdb
+pdbpp
+
+pytest-sugar
+pytest-rerunfailures
+pytest-mock
+pytest-leaks
+
+# tracing and debugging
+hunter
+
+cython
+
+# trace python process
+pystuck
+objgraph
+xdot
+
+# googles smarter autoformatter to conform to autopep8
+yapf
+
+# Update packages in a requirements.txt file to latest versions.
+pur
