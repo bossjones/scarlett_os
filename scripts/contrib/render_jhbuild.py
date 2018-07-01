@@ -523,6 +523,7 @@ def compile_all():
     compile_one('pygobject')
     compile_one('gstreamer')
     compile_one('orc')
+    compile_one('gst-plugins-base')
     compile_one('gst-plugins-good')
     compile_one('gst-plugins-ugly')
     compile_one('gst-plugins-bad')
