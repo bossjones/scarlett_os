@@ -1,0 +1,24 @@
+# for usage with pip-compile
+pydbus
+colorlog
+Click
+click-plugins
+psutil
+Fabric3
+PyYAML
+jinja2
+typing
+voluptuous
+xdg
+six
+yapf
+
+# Yaml 1.2 spec
+ruamel.yaml
+
+
+# There also is a commandline utility yaml available after installing:
+ruamel.yaml.cmd
+
+# config
+layeredconfig

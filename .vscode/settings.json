@@ -131,7 +131,7 @@
   "shellcheck.exclude": [
     "2086"
   ],
-  "python.pythonPath": "~/.virtualenvs/scarlett-os-venv2/bin/python3",
+  "python.pythonPath": "/Users/malcolm/.pyenv/versions/scarlett_os-3.5.2/bin/python",
   "python.formatting.provider": "autopep8",
   "editor.formatOnType": false,
   "python.linting.pylintArgs": [
@@ -143,9 +143,9 @@
     "**/site-packages/**/*.py"
   ],
   "python.venvPath": "~/.virtualenvs",
-  "python.sortImports.path": "~/.virtualenvs/scarlett-os-venv2/bin/isort",
+  "python.sortImports.path": "/Users/malcolm/.pyenv/versions/scarlett_os-3.5.2/bin/isort",
   "python.autoComplete.extraPaths": [
-    "~/.virtualenvs/scarlett-os-venv2/lib/python3.5/site-packages"
+    "/Users/malcolm/.pyenv/versions/scarlett_os-3.5.2/lib/python3.5/site-packages"
   ],
   "terminal.integrated.shellArgs.osx": [
     "-l"

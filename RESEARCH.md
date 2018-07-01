@@ -2294,3 +2294,47 @@ build ../meson.build ../data/meson.build ../data/icons/meson.build ../getenvvar.
 Installing /home/pi/dev/scarlett_os-dev/scarlett_os/mesonbuild/shim.py to /app/lib/scarlett_os/python/scarlett_os
 Installing /home/pi/dev/scarlett_os-dev/scarlett_os/mesonbuild/bin/scarlett to /app/bin
 ```
+
+# OSX Python Environment Isolated virtualenv w/ pyenv
+
+https://stackoverflow.com/questions/22771204/virtualenv-that-can-find-relocated-libraires-like-mysqlclient-lib-for-mysqldb
+
+### Example 1. (nteract: LD_LIBRARY_PATH and DYLD_LIBRARY_PATH not imported on OS X )
+
+https://github.com/nteract/nteract/issues/1523#issuecomment-301623519
+
+```
+For what it's worth, rather than disable SIP, I've resorted to linking the .dylib objects into /usr/local/lib. E.g., ln -s $ORACLE_HOME/*.dylib* /usr/local/lib
+```
+
+### Example 2. https://github.com/splashkit/splashkit-core/issues/100
+
+```
+from ctypes import *
+from enum import Enum
+
+cdll.LoadLibrary("/Users/Alex/.splashkit/lib/libSplashKit.dylib")
+sklib = CDLL("/Users/Alex/.splashkit/lib/libsplashkit.dylib")
+```
+
+### Example 3. https://kb.iu.edu/d/aonm
+
+```
+Change your LD_LIBRARY_PATH environment variable (to make the new Python available); for example, add the following line to the bottom of your ~/.bashrc file:
+  export LD_LIBRARY_PATH=~/pythonbuild/lib:$LD_LIBRARY_PATH
+```
+
+
+# Virtualenv's bin/activate is Doing It Wrong
+
+https://gist.github.com/datagrok/2199506
+
+Implementations based on this ^ :
+- https://github.com/berdario/pew
+- https://github.com/sashahart/vex
+
+
+```
+ |2.4.2|    hyenatop in /usr/local/Cellar
+○ → find . -name "*pkgconfig" -print
+```
