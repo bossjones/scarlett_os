@@ -11,7 +11,13 @@ import stat
 import subprocess
 import sys
 import time
-from urllib.parse import urlparse
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
+
+if PY2:
+    from six.moves.urllib.parse import urlparse
+elif PY3:
+    from urllib.parse import urlparse
 
 USERNAME = getpass.getuser()
 USERHOME = os.path.expanduser("~")
