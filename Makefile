@@ -919,7 +919,19 @@ jhbuild-run-pylint-warning-stacktrace:
 jhbuild-run-pip-compile-upgrade-all:
 	jhbuild run -- pip-compile --output-file requirements.txt requirements.in --upgrade ;\
 	jhbuild run -- pip-compile --output-file requirements_dev.txt requirements_dev.in --upgrade ;\
-	jhbuild run -- pip-compile --output-file requirements_test_all.txt requirements_test_all.in --upgrade
+	jhbuild run -- pip-compile --output-file requirements_test_all.txt requirements_test_all.in --upgrade ;\
+	jhbuild run -- pip-compile --output-file requirements_test_experimental.txt requirements_test_experimental.in --upgrade ;\
+	jhbuild run -- pip-compile --output-file requirements_autocomplete.txt requirements_autocomplete.in --upgrade ;\
+	jhbuild run -- pip-compile --output-file requirements_packaging.txt requirements_packaging.in --upgrade
+
+.PHONY: jhbuild-run-pip-compile
+jhbuild-run-pip-compile:
+	jhbuild run -- pip-compile --output-file requirements.txt requirements.in ;\
+	jhbuild run -- pip-compile --output-file requirements_dev.txt requirements_dev.in ;\
+	jhbuild run -- pip-compile --output-file requirements_test_all.txt requirements_test_all.in ;\
+	jhbuild run -- pip-compile --output-file requirements_test_experimental.txt requirements_test_experimental.in ;\
+	jhbuild run -- pip-compile --output-file requirements_autocomplete.txt requirements_autocomplete.in ;\
+	jhbuild run -- pip-compile --output-file requirements_packaging.txt requirements_packaging.in
 
 # sshfs testing
 
