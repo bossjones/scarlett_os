@@ -516,6 +516,22 @@ def compile_one(package_to_build):
         _rendered_command = pkg_dict[package_to_build]['compile-commands'].format(PREFIX=PREFIX)
         _popen_stdout(_rendered_command, cwd=path_to_folder)
 
+def compile_all():
+    compile_one('gtk-doc')
+    compile_one('glib')
+    compile_one('gobject-introspection')
+    compile_one('pygobject')
+    compile_one('gstreamer')
+    compile_one('orc')
+    compile_one('gst-plugins-good')
+    compile_one('gst-plugins-ugly')
+    compile_one('gst-plugins-bad')
+    compile_one('gst-libav')
+    compile_one('gst-python')
+    compile_one('gst-plugins-espeak')
+    compile_one('sphinxbase')
+    compile_one('pocketsphinx')
+
 def pip_install_meson():
     _cmd = "python3 -m pip install meson"
     _popen_stdout(_cmd, cwd=PREFIX)
