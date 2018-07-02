@@ -90,3 +90,23 @@ class TestUser(object):
         assert scarlett_os.user.get_user_project_base_path() == "/home/fake_user_name/dev/bossjones-github/scarlett_os"
 
         mocker.stopall()
+
+@pytest.mark.unittest
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyunittest
+class TestUserOverrides(object):
+
+    # pytest -s -p no:timeout -k test_get_user_name --pdb
+    def test_get_user_name_override(self):
+        assert scarlett_os.user.get_user_name("fake_user_name") == "fake_user_name"
+
+
+    def test_get_user_home_override(self):
+        assert scarlett_os.user.get_user_home("/home/fake_user_name") == "/home/fake_user_name"
+
+    def test_get_user_project_root_path_override(self):
+
+        assert scarlett_os.user.get_user_project_root_path("/home/fake_user_name/dev") == "/home/fake_user_name/dev"
+
+    def test_get_user_project_base_path_override(self):
+        assert scarlett_os.user.get_user_project_base_path("/home/fake_user_name/dev/bossjones-github/scarlett_os") == "/home/fake_user_name/dev/bossjones-github/scarlett_os"
