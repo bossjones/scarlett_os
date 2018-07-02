@@ -45,3 +45,48 @@ class TestUser(object):
         assert scarlett_os.user.get_user_name() == "fake_user_name"
 
         mocker.stopall()
+
+    def test_get_user_home(self, mocker):
+
+        mocker.stopall()
+
+        # mock
+        os_environ_mock = mocker.MagicMock(name=__name__ + "_os_environ_mock")
+        expected_name = '/home/fake_user_name'
+        os_environ_mock.get.return_value = expected_name
+
+        mocker.patch('scarlett_os.user.os.environ', os_environ_mock)
+
+        assert scarlett_os.user.get_user_home() == "/home/fake_user_name"
+
+        mocker.stopall()
+
+    def test_get_user_project_root_path(self, mocker):
+
+        mocker.stopall()
+
+        # mock
+        os_environ_mock = mocker.MagicMock(name=__name__ + "_os_environ_mock")
+        expected_name = '/home/fake_user_name'
+        os_environ_mock.get.return_value = expected_name
+
+        mocker.patch('scarlett_os.user.os.environ', os_environ_mock)
+
+        assert scarlett_os.user.get_user_project_root_path() == "/home/fake_user_name/dev"
+
+        mocker.stopall()
+
+    def test_get_user_project_base_path(self, mocker):
+
+        mocker.stopall()
+
+        # mock
+        os_environ_mock = mocker.MagicMock(name=__name__ + "_os_environ_mock")
+        expected_name = '/home/fake_user_name'
+        os_environ_mock.get.return_value = expected_name
+
+        mocker.patch('scarlett_os.user.os.environ', os_environ_mock)
+
+        assert scarlett_os.user.get_user_project_base_path() == "/home/fake_user_name/dev/bossjones-github/scarlett_os"
+
+        mocker.stopall()
