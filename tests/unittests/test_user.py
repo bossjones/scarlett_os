@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+test_user
+----------------------------------
+
+Tests for `scarlett_os` module.
+"""
+
+# import ipdb
+
+# import mock
+import builtins
+import imp
+import os
+import signal
+import sys
+import unittest
+import unittest.mock as mock
+
+# import threading
+import pytest
+
+import scarlett_os
+from scarlett_os import user  # Module with our thing to test
+
+@pytest.mark.unittest
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyunittest
+class TestUser(object):
+
+    # pytest -s -p no:timeout -k test_get_user_name --pdb
+    def test_get_user_name(self, mocker):
+
+        mocker.stopall()
+
+        # mock
+        os_environ_mock = mocker.MagicMock(name=__name__ + "_os_environ_mock")
+        expected_name = 'fake_user_name'
+        os_environ_mock.get.return_value = expected_name
+
+        mocker.patch('scarlett_os.user.os.environ', os_environ_mock)
+
+        assert scarlett_os.user.get_user_name() == "fake_user_name"
+
+        mocker.stopall()
+
+    def test_get_user_home(self, mocker):
+
+        mocker.stopall()
+
+        # mock
+        os_environ_mock = mocker.MagicMock(name=__name__ + "_os_environ_mock")
+        expected_name = '/home/fake_user_name'
+        os_environ_mock.get.return_value = expected_name
+
+        mocker.patch('scarlett_os.user.os.environ', os_environ_mock)
+
+        assert scarlett_os.user.get_user_home() == "/home/fake_user_name"
+
+        mocker.stopall()
+
+    def test_get_user_project_root_path(self, mocker):
+
+        mocker.stopall()
+
+        # mock
+        os_environ_mock = mocker.MagicMock(name=__name__ + "_os_environ_mock")
+        expected_name = '/home/fake_user_name'
+        os_environ_mock.get.return_value = expected_name
+
+        mocker.patch('scarlett_os.user.os.environ', os_environ_mock)
+
+        assert scarlett_os.user.get_user_project_root_path() == "/home/fake_user_name/dev"
+
+        mocker.stopall()
+
+    def test_get_user_project_base_path(self, mocker):
+
+        mocker.stopall()
+
+        # mock
+        os_environ_mock = mocker.MagicMock(name=__name__ + "_os_environ_mock")
+        expected_name = '/home/fake_user_name'
+        os_environ_mock.get.return_value = expected_name
+
+        mocker.patch('scarlett_os.user.os.environ', os_environ_mock)
+
+        assert scarlett_os.user.get_user_project_base_path() == "/home/fake_user_name/dev/bossjones-github/scarlett_os"
+
+        mocker.stopall()
+
+@pytest.mark.unittest
+@pytest.mark.scarlettonly
+@pytest.mark.scarlettonlyunittest
+class TestUserOverrides(object):
+
+    # pytest -s -p no:timeout -k test_get_user_name --pdb
+    def test_get_user_name_override(self):
+        assert scarlett_os.user.get_user_name("fake_user_name") == "fake_user_name"
+
+
+    def test_get_user_home_override(self):
+        assert scarlett_os.user.get_user_home("/home/fake_user_name") == "/home/fake_user_name"
+
+    def test_get_user_project_root_path_override(self):
+
+        assert scarlett_os.user.get_user_project_root_path("/home/fake_user_name/dev") == "/home/fake_user_name/dev"
+
+    def test_get_user_project_base_path_override(self):
+        assert scarlett_os.user.get_user_project_base_path("/home/fake_user_name/dev/bossjones-github/scarlett_os") == "/home/fake_user_name/dev/bossjones-github/scarlett_os"
