@@ -29,12 +29,12 @@ def commands_unit_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
     print('Called [setup]: mocker.stopall()')
     mocker.stopall()
-    print('Called [setup]: imp.reload(player)')
+    print('Called [setup]: imp.reload(commands)')
     imp.reload(commands)
     yield mocker
     print('Called [teardown]: mocker.stopall()')
     mocker.stopall()
-    print('Called [setup]: imp.reload(player)')
+    print('Called [setup]: imp.reload(commands)')
     imp.reload(commands)
 
 

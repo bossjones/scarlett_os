@@ -167,22 +167,22 @@ class TestGetXdgConfigDirPath(object):
         assert output == '%YAML 1.2\n---\n# Name of the location where ScarlettOS Assistant is running\nname: Бага\n\nowner: Б - Бага\n'
 
     def test_get_xdg_config_dir_path(self, ruamel_config_unit_mocker_stopall):
-        assert ruamel_config.get_xdg_config_dir_path() == '/home/pi/.config'
+        assert ruamel_config.get_xdg_config_dir_path() == os.path.expanduser("~/.config")
 
     def test_get_xdg_data_dir_path(self, ruamel_config_unit_mocker_stopall):
-        assert ruamel_config.get_xdg_data_dir_path() == '/home/pi/.local/share'
+        assert ruamel_config.get_xdg_data_dir_path() == os.path.expanduser("~/.local/share")
 
     def test_get_xdg_cache_dir_path(self, ruamel_config_unit_mocker_stopall):
-        assert ruamel_config.get_xdg_cache_dir_path() == '/home/pi/.cache'
+        assert ruamel_config.get_xdg_cache_dir_path() == os.path.expanduser("~/.cache")
 
     def test_get_config_sub_dir_path(self, ruamel_config_unit_mocker_stopall):
-        assert ruamel_config.get_config_sub_dir_path() == '/home/pi/.config/scarlett'
+        assert ruamel_config.get_config_sub_dir_path() == os.path.expanduser("~/.config/scarlett")
 
     def test_get_config_file_path(self, ruamel_config_unit_mocker_stopall):
-        assert ruamel_config.get_config_file_path() == '/home/pi/.config/scarlett/config.yaml'
+        assert ruamel_config.get_config_file_path() == os.path.expanduser("~/.config/scarlett/config.yaml")
 
     def test_get_version_file_path(self, ruamel_config_unit_mocker_stopall):
-        assert ruamel_config.get_version_file_path() == '/home/pi/.config/scarlett/.SCARLETT_VERSION'
+        assert ruamel_config.get_version_file_path() == os.path.expanduser("~/.config/scarlett/.SCARLETT_VERSION")
 
     def test_get_xdg_config_dir_path_override_not_none(self, ruamel_config_unit_mocker_stopall):
         temp_mocker = ruamel_config_unit_mocker_stopall

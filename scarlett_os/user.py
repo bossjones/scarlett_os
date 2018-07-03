@@ -5,8 +5,8 @@
 
 """Scarlett User Module."""
 
-import getpass
 import os
+import getpass
 
 
 def get_user_name(override=None):
