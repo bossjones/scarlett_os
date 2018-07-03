@@ -3,13 +3,36 @@
 from importlib import import_module
 import warnings
 
+# How to deal w/ lazy imports and mocks? Move the import into a function, then mock it!
+# NOTE: https://stackoverflow.com/questions/41873928/how-can-i-mock-a-module-that-is-imported-from-a-function-and-not-present-in-sys?rq=1
+
+def get_gi_module():
+    import gi
+    return gi
+
+def get_os_module():
+    import os
+    return os
+
+def get_sys_module():
+    import sys
+    return sys
+
+def get_distutils_sysconfig_function_get_python_lib():
+    from distutils.sysconfig import get_python_lib
+    return get_python_lib
+
+def get_itertools_module():
+    import itertools
+    return itertools
+
 def check_gi():
     try:
         # NOTE: This is a lazy import
         # SOURCE: https://stackoverflow.com/questions/128478/should-import-statements-always-be-at-the-top-of-a-module
-        import gi
+        gi = get_gi_module()
     except ImportError:
-        warnings.warn('PyGI librairy is not available', ImportWarning,
+        warnings.warn('PyGI library is not available', ImportWarning,
                       stacklevel=2)
         add_gi_packages()
 
@@ -23,12 +46,13 @@ def get_uniq_list(seq):
 def add_gi_packages():
     # NOTE: This is a lazy import
     # SOURCE: https://stackoverflow.com/questions/128478/should-import-statements-always-be-at-the-top-of-a-module
-    import os
-    import sys
+    os = get_os_module()
+    sys = get_sys_module()
     # NOTE: Keep in mind this guy -
     # https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
-    from distutils.sysconfig import get_python_lib  # pylint: disable=import-error
-    import itertools
+    # from distutils.sysconfig import get_python_lib  # pylint: disable=import-error
+    get_python_lib = get_distutils_sysconfig_function_get_python_lib()
+    itertools = get_itertools_module()
 
     dest_dir = get_python_lib()
 
