@@ -306,6 +306,8 @@ class ScarlettPlayer(_IdleObject):
         # To state is PLAYING
         if msg.src.get_name() == "pipeline" and states[1] == 4:
             # TODO: Modify the creation of this path, it should be programatically created
+            # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+            # FIXME: STATIC PATH 7/3/2018
             dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
             pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
 
@@ -324,11 +326,11 @@ class ScarlettPlayer(_IdleObject):
             if not fname_exists(pngfile):
                 touch_empty_file(pngfile)
 
-            Gst.debug_bin_to_dot_file(msg.src,
-                                      Gst.DebugGraphDetails.ALL, "generator-player")
+            # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+            # FIXME: STATIC PATH 7/3/2018
+            Gst.debug_bin_to_dot_file(msg.src, Gst.DebugGraphDetails.ALL, "generator-player")
             os.system('/usr/bin/dot' + " -Tpng -o " + pngfile + " " + dotfile)
-            print("pipeline dot file created in " +
-                  os.getenv("GST_DEBUG_DUMP_DOT_DIR"))
+            print("pipeline dot file created in " + os.getenv("GST_DEBUG_DUMP_DOT_DIR"))
 
     def _listElements(self, bin, level=0):
         try:
@@ -360,6 +362,7 @@ class ScarlettPlayer(_IdleObject):
     # NOTE: This function generates the dot file, checks that graphviz in installed and
     # then finally generates a png file, which it then displays
     def on_debug_activate(self):
+        # FIXME: STATIC PATH 7/3/2018
         dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
         pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
 
@@ -378,8 +381,9 @@ class ScarlettPlayer(_IdleObject):
         if not fname_exists(pngfile):
             touch_empty_file(pngfile)
 
-        Gst.debug_bin_to_dot_file(self.pipeline,
-                                  Gst.DebugGraphDetails.ALL, "generator-player")
+        # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+        # FIXME: STATIC PATH 7/3/2018
+        Gst.debug_bin_to_dot_file(self.pipeline, Gst.DebugGraphDetails.ALL, "generator-player")
         os.system('/usr/bin/dot' + " -Tpng -o " + pngfile + " " + dotfile)
 
     # Gstreamer callbacks.

@@ -35,12 +35,12 @@ def user_unit_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
     print('Called [setup]: mocker.stopall()')
     mocker.stopall()
-    print('Called [setup]: imp.reload(player)')
+    print('Called [setup]: imp.reload(user)')
     imp.reload(user)
     yield mocker
     print('Called [teardown]: mocker.stopall()')
     mocker.stopall()
-    print('Called [setup]: imp.reload(player)')
+    print('Called [setup]: imp.reload(user)')
     imp.reload(user)
 
 # SOURCE: https://github.com/ansible/ansible/blob/370a7ace4b3c8ffb6187900f37499990f1b976a2/test/units/module_utils/basic/test_atomic_move.py

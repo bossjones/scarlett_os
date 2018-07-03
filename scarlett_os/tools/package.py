@@ -3,46 +3,14 @@
 from importlib import import_module
 import warnings
 
-
-def add_gstreamer_packages():
-    import os
-    import sys
-    # NOTE: Keep in mind this guy -
-    # https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
-    from distutils.sysconfig import get_python_lib  # pylint: disable=import-error
-
-    dest_dir = get_python_lib()
-
-    packages = ['gobject', 'glib', 'pygst', 'pygst.pyc', 'pygst.pth',
-                'gst-0.10', 'pygtk.pth', 'pygtk.py', 'pygtk.pyc']
-
-    python_version = sys.version[:3]
-    global_path = os.path.join('/usr/lib', 'python' + python_version)
-    global_sitepackages = [os.path.join(global_path,
-                                        'dist-packages'),  # for Debian-based
-                           os.path.join(global_path,
-                                        'site-packages')]  # for others
-
-    for package in packages:
-        for pack_dir in global_sitepackages:
-            src = os.path.join(pack_dir, package)
-            dest = os.path.join(dest_dir, package)
-            if not os.path.exists(dest) and os.path.exists(src):
-                os.symlink(src, dest)
-
-
-def check_gstreamer():
-    try:
-        import gobject
-        import pygst
-    except ImportError:
-        add_gstreamer_packages()
-
-
 def check_gi():
     try:
+        # NOTE: This is a lazy import
+        # SOURCE: https://stackoverflow.com/questions/128478/should-import-statements-always-be-at-the-top-of-a-module
         import gi
     except ImportError:
+        warnings.warn('PyGI librairy is not available', ImportWarning,
+                      stacklevel=2)
         add_gi_packages()
 
 
@@ -53,6 +21,8 @@ def get_uniq_list(seq):
 
 
 def add_gi_packages():
+    # NOTE: This is a lazy import
+    # SOURCE: https://stackoverflow.com/questions/128478/should-import-statements-always-be-at-the-top-of-a-module
     import os
     import sys
     # NOTE: Keep in mind this guy -
@@ -64,11 +34,68 @@ def add_gi_packages():
 
     packages = ['gi']
 
+    # >>> sys.version
+    # '3.6.5 (default, Apr 25 2018, 14:22:56) \n[GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.42.1)]'
     python_version = sys.version[:3]
+    # FIXME:
+    # USECASES WE NEED TO ACCOUNT FOR
+    # 1. brew python
+    # 2. ubuntu python
+    # 3. fedora python
+    # 4. flatpak python
+    # 5. jhbuild python
+    # 6. pyenv python
+    # 7. virtualenvs
+
+    # INFO WE NEED TO USE
+    # ---------------------
+    # A list of prefixes for site-packages directories
+    # In [2]: site.PREFIXES
+    # Out[2]: ['/Users/malcolm/.pyenv/versions/3.6.5/envs/jupyter3']
+
+    # Return a list containing all global site-packages directories (and possibly site-python).
+    # In [3]: site.getsitepackages()
+    # Out[3]: ['/Users/malcolm/.pyenv/versions/3.6.5/envs/jupyter3/lib/python3.6/site-packages']
+
+    # In [4]: site.getuserbase()
+    # Out[4]: '/Users/malcolm/.local'
+
+    # In [5]: site.getusersitepackages()
+    # Out[5]: '/Users/malcolm/.local/lib/python3.6/site-packages'
+
+    # INFO: A string giving the site-specific directory prefix where the platform-dependent Python files are installed; by default, this is also '/usr/local'. This can be set at build time with the --exec-prefix argument to the configure script. Specifically, all configuration files (e.g. the pyconfig.h header file) are installed in the directory exec_prefix/lib/pythonX.Y/config, and shared library modules are installed in exec_prefix/lib/pythonX.Y/lib-dynload, where X.Y is the version number of Python, for example 3.2.
+    # If a virtual environment is in effect, this value will be changed in site.py to point to the virtual environment. The value for the Python installation will still be available, via base_exec_prefix.
+    # In[7]: sys.exec_prefix
+    # Out[7]: '/Users/malcolm/.pyenv/versions/3.6.5/envs/jupyter3'
+
+    # INFO: Set during Python startup, before site.py is run, to the same value as exec_prefix. If not running in a virtual environment, the values will stay the same; if site.py finds that a virtual environment is in use, the values of prefix and exec_prefix will be changed to point to the virtual environment, whereas base_prefix and base_exec_prefix will remain pointing to the base Python installation (the one which the virtual environment was created from).
+    # In [8]: sys.base_exec_prefix
+    # Out[8]: '/Users/malcolm/.pyenv/versions/3.6.5'
+
+    # SYSTEM PYTHON ( OSX )
+    #  |2.4.2|    hyenatop in ~
+    # ○ → python
+    # Python 2.7.15 (default, May  1 2018, 16:44:14)
+    # [GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.42.1)] on darwin
+    # Type "help", "copyright", "credits" or "license" for more information.
+    # >>> import sys
+    # >>> import site
+    # >>> site.PREFIXES
+    # ['/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7']
+    # >>>
+
+    # python2
+    # sys.path
+    # ['', '/usr/local/lib/python2.7/site-packages/_pdbpp_path_hack', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7/lib/python27.zip', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7/lib/python2.7', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-darwin', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-tk', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-old', '/usr/local/Cellar/python@2/2.7.15/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-dynload', '/usr/local/lib/python2.7/site-packages', '/usr/local/lib/python2.7/site-packages/gtk-2.0', '/usr/local/lib/python2.7/site-packages/gtk-2.0']
+
+    # python3
+    # ['', '/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python36.zip', '/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6', '/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload', '/usr/local/lib/python3.6/site-packages']
+
     global_path = os.path.join('/usr/lib', 'python' + python_version)
 
     if os.environ.get('PYTHONPATH'):
         # INFO: PYTHONPATH=/usr/local/share/jhbuild/sitecustomize
+        # FIXME: This looks prone to error, we should have it default to something sane if PYTHONPATH isn't set 7/3/2018
         py_path = os.environ.get('PYTHONPATH')
         py_paths = py_path.split(':')
 

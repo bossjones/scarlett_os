@@ -501,14 +501,20 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     # NOTE: This function generates the dot file, checks that graphviz in installed and
     # then finally generates a png file, which it then displays
     def on_debug_activate(self):
+        # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+        # FIXME: STATIC PATH 7/3/2018
         dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener.dot"
         pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener-pipeline.png"  # NOQA
         if os.access(dotfile, os.F_OK):
             os.remove(dotfile)
         if os.access(pngfile, os.F_OK):
             os.remove(pngfile)
+
+        # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+        # FIXME: STATIC PATH 7/3/2018
         Gst.debug_bin_to_dot_file(self.pipelines_stack[0],
-                                  Gst.DebugGraphDetails.ALL, "generator-listener")
+                                  Gst.DebugGraphDetails.ALL,
+                                  "generator-listener")
         os.system('/usr/bin/dot' + " -Tpng -o " + pngfile + " " + dotfile)
 
     def result(self, final_hyp):

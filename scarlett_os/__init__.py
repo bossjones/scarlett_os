@@ -22,6 +22,8 @@ __email__ = PROJECT_EMAIL
 # source: timeside
 ts_verify.check_python3_installed()
 
+# FIXME: I think we need to set GST_DEBUG_DUMP_DOT_DIR here before we call anything gi related. 7/3/2018
+
 # Check Availability of Gstreamer python bindings
 ts_package.check_gi()
 
