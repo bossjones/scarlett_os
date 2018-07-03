@@ -1,5 +1,8 @@
 subdir('icons')
 
+subdir('sounds')
+subdir('speech')
+
 # FIXME: Re-enable these
 # # Validating the desktop file
 # desktop_file_validate = find_program('desktop-file-validate', required:false)
