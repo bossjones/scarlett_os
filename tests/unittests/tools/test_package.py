@@ -120,3 +120,26 @@ class TestPackage(object):
 
         assert len(record) == 1
         assert record[0].message.args[0] == "PyGI library is not available"
+
+    def test_add_gi_packages(self, sys_and_site_mocks, package_unit_mocker_stopall):
+        sys_and_site_mocks['os'] = package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_os_module')
+        sys_and_site_mocks['os'].environ = dict()
+
+        sys_and_site_mocks['sys'] = package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_sys_module')
+        sys_and_site_mocks['sys'].version.return_value = '3.6.5 (default, Apr 25 2018, 14:22:56) \n[GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.42.1)]'
+
+        sys_and_site_mocks['get_python_lib'] = package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_distutils_sysconfig_function_get_python_lib')
+        sys_and_site_mocks['get_python_lib'].return_value = lambda: '/usr/local/lib/python3.6/site-packages'
+
+        sys_and_site_mocks['flatpak_site_packages'] = package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_flatpak_site_packages')
+
+        sys_and_site_mocks['package_list_with_dups'] = package_unit_mocker_stopall.patch('scarlett_os.tools.package.create_list_with_dups')
+
+        sys_and_site_mocks['uniq_package_list'] = package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_uniq_list')
+
+        sys_and_site_mocks['create_package_symlinks'] = package_unit_mocker_stopall.patch('scarlett_os.tools.package.create_package_symlinks')
+
+        scarlett_os.tools.package.add_gi_packages()
+
+        # Make sure sys.version[:3] returns 3.6 for this example
+        assert sys_and_site_mocks['sys'].version.return_value[:3] == '3.6'
