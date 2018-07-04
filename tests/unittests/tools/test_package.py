@@ -219,4 +219,38 @@ class TestPackage(object):
         for i in package_list_with_dups:
             assert i in ['/app/lib/python3.6/site-packages', '/usr/local/share/jhbuild/sitecustomize', '', '/usr/lib/python3.6/dist-packages', '/usr/lib/python3.6/site-packages']
 
+    def test_uniq_package_list(self, package_unit_mocker_stopall):
+        mocks = {
+            'os': package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_os_module'),
+            'sys': package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_sys_module'),
+            'get_python_lib': package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_distutils_sysconfig_function_get_python_lib'),
+            'flatpak_site_packages': package_unit_mocker_stopall.patch('scarlett_os.tools.package.get_flatpak_site_packages'),
+            'create_package_symlinks': package_unit_mocker_stopall.patch('scarlett_os.tools.package.create_package_symlinks'),
+        }
+
+        mocks['os'].environ = {"PYTHONPATH": "/usr/local/share/jhbuild/sitecustomize"}
+        mocks['sys'].version.return_value = '3.6.5 (default, Apr 25 2018, 14:22:56) \n[GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.42.1)]'
+        mocks['get_python_lib'].return_value = lambda: '/usr/local/lib/python3.6/site-packages'
+        mocks['flatpak_site_packages'].return_value = ['/app/lib/python3.6/site-packages']
+
+        python_version = mocks['sys'].version.return_value[:3]
+
+        global_path_system = os.path.join('/usr/lib', 'python' + python_version)
+
+        py_path = mocks['os'].environ.get('PYTHONPATH')
+        py_paths = py_path.split(':')
+
+        flatpak_site_packages = mocks['flatpak_site_packages'].return_value
+        global_sitepackages = [
+            os.path.join(global_path_system, 'dist-packages'),  # for Debian-based
+            os.path.join(global_path_system, 'site-packages'),  # for others
+        ]
+
+        # Current value should be: ['/app/lib/python3.6/site-packages', ['/usr/local/share/jhbuild/sitecustomize'], ['/usr/lib/python3.6/dist-packages', '/usr/lib/python3.6/site-packages']]
+        all_package_paths = [flatpak_site_packages, py_paths, global_sitepackages]
+
+        package_list_with_dups = scarlett_os.tools.package.create_list_with_dups(all_package_paths)
+
+        uniq_package_list = scarlett_os.tools.package.get_uniq_list(package_list_with_dups)
+
         assert uniq_package_list == ['/app/lib/python3.6/site-packages', '/usr/local/share/jhbuild/sitecustomize', '/usr/lib/python3.6/dist-packages', '/usr/lib/python3.6/site-packages']
