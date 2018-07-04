@@ -50,6 +50,7 @@ from scarlett_os.utility.gnome import _IdleObject
 from scarlett_os.utility import thread as s_thread
 from scarlett_os import subprocess
 from scarlett_os import player
+from scarlett_os.user import get_user_project_base_path
 
 
 # global pretty print for debugging
@@ -151,5 +152,6 @@ if __name__ == '__main__':
                 ' I am full lee function nall, andd red ee for your commands']
     for scarlett_text in tts_list:
         with s_thread.time_logger('Scarlett Speaks'):
+            path_to_espeak_tmp_wav = os.path.join(get_user_project_base_path(), "espeak_tmp.wav")
             ScarlettSpeaker(text_to_speak=scarlett_text,
-                            wavpath="/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav")
+                            wavpath=path_to_espeak_tmp_wav)

@@ -4,12 +4,31 @@ import sys
 import signal
 import logging
 import os
-# import getpass
 logger = logging.getLogger(__name__)
 
+# SOURCE: https://github.com/mjumbewu/jokosher/blob/e181d738674a98242b10dd697a9628be54c3121a/bin/jokosher
+# if platform.system() == "Windows":
+# 	ENV_PATHS = {"JOKOSHER_DATA_PATH" : ".\\",
+# 			"JOKOSHER_IMAGE_PATH" : ".\\pixmaps\\",
+# 			"JOKOSHER_LOCALE_PATH" : ".\\locale\\",
+# 			"JOKOSHER_HELP_PATH" : ".\\help\\",
+# 			"GST_PLUGIN_PATH" : ".\\"
+# 			}
+# else:
+# 	ENV_PATHS = {"JOKOSHER_DATA_PATH" : "/usr/share/jokosher/",
+# 			"JOKOSHER_IMAGE_PATH" : "/usr/share/jokosher/pixmaps/",
+# 			"JOKOSHER_LOCALE_PATH" : "/usr/share/locale/",
+# 			"JOKOSHER_HELP_PATH" : "/usr/share/gnome/jokosher/"
+# 			}
+# #must set variables before importing Globals because it requires them
+# for var, path in ENV_PATHS.iteritems():
+# 	#if it is not already set, set the enviroment variable.
+# 	os.environ.setdefault(var, path)
 
+# NOTE:
+# enable path to dump dot files
+# this *must* be done before 'import Gst' because it reads the env var on startup. ( Double check if this is still true or not )
 def set_gst_grapviz_tracing(enabled=True):
-    # current_user = getpass.getuser()
     if enabled:
         # FIXME: If this breaks, you have to use a string explicitly for it to work.
         os.environ["GST_DEBUG_DUMP_DOT_DIR"] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"  # noqa
@@ -18,6 +37,37 @@ def set_gst_grapviz_tracing(enabled=True):
         if os.environ.get('GST_DEBUG_DUMP_DOT_DIR'):
             del os.environ['GST_DEBUG_DUMP_DOT_DIR']
 
+def set_gst_dump_dir(dump_dir):
+    if dump_dir:
+        os.environ["GST_DEBUG_DUMP_DOT_DIR"] = dump_dir
+        os.putenv('GST_DEBUG_DUMP_DIR_DIR', dump_dir)
+    else:
+        logger.error("Not setting Environment Variable GST_DEBUG_DUMP_DIR_DIR because arg 'dump_dir' is empty or not valid")
+
+def set_gst_debug_level(level):
+    # os.environ['GST_DEBUG'] = '4,python:4'
+    # os.environ['G_MESSAGES_DEBUG'] = 'all'
+    # os.environ['GST_DEBUG'] = '*:WARNING'
+    if level:
+        os.putenv('GST_DEBUG', level)
+    else:
+        logger.error("Not setting Environment Variable GST_DEBUG because arg 'level' is empty or not valid")
+
+def set_g_messages_debug(level):
+    if level:
+        os.environ['G_MESSAGES_DEBUG'] = level
+    else:
+        logger.error("Not setting Environment Variable G_MESSAGES_DEBUG because arg 'level' is empty or not valid")
+
+def set_gst_debug_file(fname):
+    # eg: os.environ['GST_DEBUG_FILE'] = 'test1.log'
+    if fname:
+        os.environ['GST_DEBUG_FILE'] = fname
+
+def set_gi_typelib_path(typelib_path):
+    # EG. os.environ['GI_TYPELIB_PATH'] = "/usr/local/lib/girepository-1.0:/usr/lib/girepository-1.0"
+    if typelib_path:
+        os.environ['GI_TYPELIB_PATH'] = typelib_path
 
 # source: http://pyrasite.readthedocs.io/en/latest/Payloads.html
 # def create_call_graph():
@@ -87,6 +137,34 @@ def dump(obj):
             print("obj.%s = %s" % (attr, getattr(obj, attr)))
 
 
+# NOTE: What is a lexer - A lexer is a software program that performs lexical analysis. Lexical analysis is the process of separating a stream of characters into different words, which in computer science we call 'tokens' . When you read my answer you are performing the lexical operation of breaking the string of text at the space characters into multiple words.
+def dump_color(obj):
+    # source: https://gist.github.com/EdwardBetts/0814484fdf7bbf808f6f
+    from pygments import highlight
+
+    # Module name actually exists, but pygments loads things in a strange manner
+    from pygments.lexers import Python3Lexer  # pylint: disable=no-name-in-module
+    from pygments.formatters.terminal256 import Terminal256Formatter  # pylint: disable=no-name-in-module
+
+    for attr in dir(obj):
+        if hasattr(obj, attr):
+            obj_data = "obj.%s = %s" % (attr, getattr(obj, attr))
+            print(highlight(obj_data, Python3Lexer(), Terminal256Formatter()))
+
+# SOURCE: https://github.com/j0nnib0y/gtao_python_wrapper/blob/9cdae5ce40f9a41775e29754b51325652584cf25/debug.py
+def dump_magic(obj, magic=False):
+    """Dumps every attribute of an object to the console.
+    Args:
+        obj (any object): object you want to dump
+        magic (bool, optional): True if you want to output "magic" attributes (like __init__, ...)
+    """
+    for attr in dir(obj):
+        if magic is True:
+            print("obj.%s = %s" % (attr, getattr(obj, attr)))
+        else:
+            if not attr.startswith('__'):
+                print("obj.%s = %s" % (attr, getattr(obj, attr)))
+
 def get_pprint():
     import pprint
     # global pretty print for debugging
@@ -99,6 +177,6 @@ def pprint_color(obj):
 
     # Module name actually exists, but pygments loads things in a strange manner
     from pygments.lexers import PythonLexer  # pylint: disable=no-name-in-module
-    from pygments.formatters import Terminal256Formatter  # pylint: disable=no-name-in-module
+    from pygments.formatters.terminal256 import Terminal256Formatter  # pylint: disable=no-name-in-module
     from pprint import pformat
     print(highlight(pformat(obj), PythonLexer(), Terminal256Formatter()))

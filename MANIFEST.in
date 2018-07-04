@@ -18,10 +18,13 @@ include Dockerfile
 include requirements*.txt
 graft scarlett_os
 graft tests
+graft data
 # recursive-include scarlett_os *.h meson.build
 # recursive-include tests *.py *.c *.h *.xml *.supp meson.build
 recursive-include docs *.rst *.svg LICENSE *.ico *.png *.css *.py *.dia Makefile
-recursive-include ci *.sh *.rst *.py Dockerfile*
-recursive-include Dockerfile doker-compose* getenvvar.py
+recursive-include ci *.sh
+include Dockerfile
+include doker-compose*
+include getenvvar.py
 
 global-exclude *.py[co]

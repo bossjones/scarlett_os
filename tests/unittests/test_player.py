@@ -25,6 +25,7 @@ from scarlett_os import player
 import scarlett_os.exceptions
 from scarlett_os.utility.gnome import _IdleObject, abort_on_exception, trace
 from tests import common
+from scarlett_os.user import get_user_project_base_path
 
 
 # DISABLED 5/8/2017 LETS TRY TO DO EVERYTHING FROM player # from scarlett_os.player import get_loop_thread, MainLoopThread, ScarlettPlayer
@@ -165,6 +166,6 @@ class TestScarlettPlayer(object):
 
     @mock.patch('scarlett_os.player.Gst.ElementFactory.make', return_value=None, spec=scarlett_os.player.Gst.ElementFactory.make, name='mock_gst_elementfactory_make')
     def test_ScarlettPlayer_init_missing_gst_elements(self, mock_gst_elementfactory_make):
-        path = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav'
+        path = os.path.join(get_user_project_base_path() + "/static/sounds", "pi-listening.wav")
         with pytest.raises(scarlett_os.exceptions.IncompleteGStreamerError):
             p = player.ScarlettPlayer(path, False, False)

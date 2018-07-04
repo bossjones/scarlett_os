@@ -79,3 +79,15 @@ try:
 except (OSError, ImportError):
     pass
 ```
+
+### Gstreamer Environment Variables
+
+Official docs: https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gst-running.html
+
+Variable | Example | Description
+--- | --- | ---
+`GST_PLUGIN_SYSTEM_PATH` | `GST_PLUGIN_SYSTEM_PATH=/usr/local/lib/gstreamer-1.0` | GStreamer will scan these paths for GStreamer plug-ins. These plug-ins will be loaded after the plug-ins in the GST_PLUGIN_PATH variable below.
+`GST_DEBUG` | `GST_DEBUG=GST_AUTOPLUG:6,GST_ELEMENT_*:4` | This variable can be set to a list of debug options, which cause GStreamer to print out different types of debugging information to stderr. The variable takes a comma-separated list of "category_name:level" pairs to set specific levels for the individual categories. The level value ranges from 0 (nothing) to 9 .
+`GST_DEBUG_DUMP_DOT_DIR` | `GST_DEBUG_DUMP_DOT_DIR=/tmp` | Set this environment variable to a path to turn on all #GST_DEBUG_BIN_TO_DOT_FILE or #GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS calls and have the dot files in that location. This will only work if the application in question makes these calls in strategic places (like when the pipeline state changes or an error occurs)
+`GST_REGISTRY_UPDATE` | `GST_REGISTRY_UPDATE=no` | Set this environment variable to "no" to prevent GStreamer from updating the plugin registry. This is useful for embedded device which is not updating the plugins frequently, it will save time when doing gst_init().
+`G_DEBUG` | `G_DEBUG=fatal_warnings` | Useful GLib environment variable. Set G_DEBUG=fatal_warnings to make GStreamer programs abort when a critical warning such as an assertion failure occurs. This is useful if you want to find out which part of the code caused that warning to be triggered and under what circumstances. Simply set G_DEBUG as mentioned above and run the program in gdb (or let it core dump). Then get a stack trace in the usual way.

@@ -25,6 +25,7 @@ import scarlett_os.exceptions
 from tests.integrationtests.stubs import create_main_loop
 
 from scarlett_os import player
+from scarlett_os.user import get_user_project_base_path
 
 import imp
 
@@ -65,9 +66,9 @@ class TestScarlettPlayer(object):
 
         player_data = []
 
+        pi_listening_wav = os.path.join(get_user_project_base_path() + "/static/sounds", "pi-listening.wav")
         # Run player
-        wavefile = [
-            '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']
+        wavefile = [pi_listening_wav]
         for path in wavefile:
             path = os.path.abspath(os.path.expanduser(path))
             with player.ScarlettPlayer(path, False, False) as f:
@@ -86,7 +87,6 @@ class TestScarlettPlayer(object):
         assert str(type(player_data[0].audioconvert)) == "<class '__gi__.GstAudioConvert'>"
         assert str(type(player_data[0].splitter)) == "<class '__gi__.GstTee'>"
         assert str(type(player_data[0].pulsesink)) == "<class '__gi__.GstFakeSink'>"
-        # assert str(type(player_data[0].queueB_sink_pad)) == "<class 'gi.overrides.Gst.Pad'>"
 
         # Means pipeline was setup correct and ran without error
         assert player_data[0].read_exc is None

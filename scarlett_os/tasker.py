@@ -43,6 +43,8 @@ from scarlett_os.internal.path import fname_exists
 
 from scarlett_os.utility.generators import GIdleThread
 
+from scarlett_os.user import get_user_project_base_path
+
 #######################################
 # FIXME: Temporary, till we figure out best way to approach logging module
 # FIXME: FAM, THIS SHIT IS NOT THREADSAFE AT ALL. LETS SEE HOW MOPIDY/PITIVI/SOMEBODY-ELSE IS HANDLING THINGS
@@ -67,8 +69,7 @@ SCARLETT_DEBUG = True
 player_run = False
 command_run = False
 
-
-STATIC_SOUNDS_PATH = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
+STATIC_SOUNDS_PATH = os.path.join(get_user_project_base_path() + "/static", "sounds")
 
 pause_in_seconds = 1
 
@@ -86,7 +87,8 @@ class SoundType:
 
     @staticmethod
     def get_speaker_path():
-        return ["/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"]
+        path_to_espeak_tmp_wav = os.path.join(get_user_project_base_path(), "espeak_tmp.wav")
+        return [path_to_espeak_tmp_wav]
 
 
 class SpeakerType:
@@ -267,7 +269,7 @@ class ScarlettTasker(_IdleObject):
         self._id_do_play_sound = None
 
     # FIXME: Okay, when this file doesn't exist, espeak can hang. For now create in advance to get around it
-    def _prep_tmp_espeak(self, wavepath="/home/pi/dev/bossjones-github/scarlett_os/espeak_tmp.wav"):
+    def _prep_tmp_espeak(self, wavepath=None):
         if not fname_exists(wavepath):
             print('[prep_tmp_espeak]: MISSING TEMP ESPEAK FILE')
             touch_empty_file(wavepath)
@@ -295,7 +297,7 @@ class ScarlettTasker(_IdleObject):
         self._command_recognized_signal_callback = command_cb
         self._cancel_signal_callback = player_cb
         self._connect_signal_callback = connected_to_listener_cb
-        self._prep_tmp_espeak()
+        self._prep_tmp_espeak(wavepath=os.path.join(get_user_project_base_path(), "espeak_tmp.wav"))
 
     def configure(self):
         """Configure the supplied bus for use.
