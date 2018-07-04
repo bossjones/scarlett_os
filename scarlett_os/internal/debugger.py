@@ -137,6 +137,34 @@ def dump(obj):
             print("obj.%s = %s" % (attr, getattr(obj, attr)))
 
 
+# NOTE: What is a lexer - A lexer is a software program that performs lexical analysis. Lexical analysis is the process of separating a stream of characters into different words, which in computer science we call 'tokens' . When you read my answer you are performing the lexical operation of breaking the string of text at the space characters into multiple words.
+def dump_color(obj):
+    # source: https://gist.github.com/EdwardBetts/0814484fdf7bbf808f6f
+    from pygments import highlight
+
+    # Module name actually exists, but pygments loads things in a strange manner
+    from pygments.lexers import Python3Lexer  # pylint: disable=no-name-in-module
+    from pygments.formatters.terminal256 import Terminal256Formatter  # pylint: disable=no-name-in-module
+
+    for attr in dir(obj):
+        if hasattr(obj, attr):
+            obj_data = "obj.%s = %s" % (attr, getattr(obj, attr))
+            print(highlight(obj_data, Python3Lexer(), Terminal256Formatter()))
+
+# SOURCE: https://github.com/j0nnib0y/gtao_python_wrapper/blob/9cdae5ce40f9a41775e29754b51325652584cf25/debug.py
+def dump_magic(obj, magic=False):
+    """Dumps every attribute of an object to the console.
+    Args:
+        obj (any object): object you want to dump
+        magic (bool, optional): True if you want to output "magic" attributes (like __init__, ...)
+    """
+    for attr in dir(obj):
+        if magic is True:
+            print("obj.%s = %s" % (attr, getattr(obj, attr)))
+        else:
+            if not attr.startswith('__'):
+                print("obj.%s = %s" % (attr, getattr(obj, attr)))
+
 def get_pprint():
     import pprint
     # global pretty print for debugging
@@ -149,6 +177,6 @@ def pprint_color(obj):
 
     # Module name actually exists, but pygments loads things in a strange manner
     from pygments.lexers import PythonLexer  # pylint: disable=no-name-in-module
-    from pygments.formatters import Terminal256Formatter  # pylint: disable=no-name-in-module
+    from pygments.formatters.terminal256 import Terminal256Formatter  # pylint: disable=no-name-in-module
     from pprint import pformat
     print(highlight(pformat(obj), PythonLexer(), Terminal256Formatter()))

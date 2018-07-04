@@ -195,15 +195,15 @@ def create_package_symlinks(packages, uniq_package_list, dest_dir):
 def create_list_with_dups(all_package_paths):
     itertools = get_itertools_module()
 
-    return list(itertools.chain.from_iterable())
+    return list(itertools.chain.from_iterable(all_package_paths))
 
 def get_flatpak_site_packages():
     os = get_os_module()
     sys = get_sys_module()
     if os.environ.get('SCARLETT_OS_FLATPAK_PYTHON_LIBDIR_PATH'):
-        return os.environ.get('SCARLETT_OS_FLATPAK_PYTHON_LIBDIR_PATH')
+        return [os.environ.get('SCARLETT_OS_FLATPAK_PYTHON_LIBDIR_PATH')]
     else:
-        return os.path.join("/app/lib/", "python" + sys.version[:3], "site-packages")
+        return [os.path.join("/app/lib/", "python" + sys.version[:3], "site-packages")]
 
 def create_gi_symlinks():
     os = get_os_module()

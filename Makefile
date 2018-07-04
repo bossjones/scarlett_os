@@ -484,6 +484,7 @@ fakegir:
 fakegir-bootstrap:
 	pip install -r requirements_autocomplete.txt
 
+# Use this one on OSX followed by "make open-coverage-report-html"
 .PHONY: scp-local-coverage-reports
 scp-local-coverage-reports:
 	$(MAKE) clean-coverge-files
