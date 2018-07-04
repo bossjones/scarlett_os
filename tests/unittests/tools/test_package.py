@@ -48,22 +48,7 @@ def package_unit_mocker_stopall(mocker):
 # SOURCE: https://github.com/ansible/ansible/blob/370a7ace4b3c8ffb6187900f37499990f1b976a2/test/units/module_utils/basic/test_atomic_move.py
 @pytest.fixture
 def sys_and_site_mocks(package_unit_mocker_stopall):
-    environ = dict()
-    mocks = {
-        # 'environ': package_unit_mocker_stopall.patch('scarlett_os.tools.package.os.environ', environ),
-        # 'getlogin': package_unit_mocker_stopall.patch('scarlett_os.tools.package.os.getlogin'),
-        # 'getuid': package_unit_mocker_stopall.patch('scarlett_os.tools.package.os.getuid'),
-        # 'getpass': package_unit_mocker_stopall.patch('scarlett_os.tools.package.getpass')
-    }
-
-    # mocks['getlogin'].return_value = 'root'
-    # mocks['getuid'].return_value = 0
-    # mocks['getpass'].getuser.return_value = 'root'
-
-    # mocks['environ']['LOGNAME'] = 'root'
-    # mocks['environ']['USERNAME'] = 'root'
-    # mocks['environ']['USER'] = 'root'
-    # mocks['environ']['LNAME'] = 'root'
+    mocks = {}
 
     yield mocks
 
@@ -254,3 +239,12 @@ class TestPackage(object):
         uniq_package_list = scarlett_os.tools.package.get_uniq_list(package_list_with_dups)
 
         assert uniq_package_list == ['/app/lib/python3.6/site-packages', '/usr/local/share/jhbuild/sitecustomize', '/usr/lib/python3.6/dist-packages', '/usr/lib/python3.6/site-packages']
+
+    def test_get_flatpak_site_packages(self, package_unit_mocker_stopall):
+        test_python_version = sys.version[:3]
+
+        flatpak_site_packages = scarlett_os.tools.package.get_flatpak_site_packages()
+
+        expected_site_packages = ["/app/lib/python{}/site-packages".format(test_python_version)]
+
+        assert flatpak_site_packages == expected_site_packages
