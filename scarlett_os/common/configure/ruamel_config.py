@@ -55,6 +55,7 @@ import voluptuous as vol
 from layeredconfig import Defaults, DictSource, LayeredConfig
 from voluptuous.humanize import humanize_error
 
+from scarlett_os import SCARLETT_ROOT_DIR
 import scarlett_os.helpers.config_validation as cv
 from scarlett_os.compat import (basestring, bytes, integer_types, string_types,
                                 text_type)
@@ -71,6 +72,7 @@ from scarlett_os.internal.path import mkdir_if_does_not_exist, ensure_dir_exists
 from scarlett_os.internal.rename import rename_over_existing
 from scarlett_os.utility import dt as date_util
 from scarlett_os.utility import location as loc_util
+from scarlett_os.utility import environment as env_util
 
 import xdg
 
@@ -227,6 +229,78 @@ name: Бага
 owner: "Б - Бага"
 """
 
+def get_pocketsphinx_hmm_folder(override=None):
+    # If environment variable exists for this, use it
+    env_var_set = os.environ.get("SCARLETT_OS_HMM_LOCATION", None)
+    if env_var_set:
+        logger.debug('Ran {}| env_var_set={}'.format(sys._getframe().f_code.co_name, env_var_set))
+        if os.path.isdir(env_var_set):
+            return env_var_set
+
+    # If the function overrides this in a test or something, use it
+    if override:
+        logger.debug('Ran {}| override={}'.format(sys._getframe().f_code.co_name, override))
+        if os.path.isdir(override):
+            return override
+
+    # if we're in a virtualenv, look for the default location to find pocketsphinx
+    if env_util.is_venv():
+        print('inside virtualenv or venv')
+        path_to_pocketsphinx_hmm_folder = os.path.join(SCARLETT_ROOT_DIR + "share/pocketsphinx/model/en-us", "en-us")
+        logger.debug('Ran {}| path_to_pocketsphinx_hmm_folder={}'.format(sys._getframe().f_code.co_name, path_to_pocketsphinx_hmm_folder))
+        if os.path.isdir(path_to_pocketsphinx_hmm_folder):
+            return path_to_pocketsphinx_hmm_folder
+
+    # if everything else fails, return none which should not work w/ the yaml file
+    return None
+
+
+def get_pocketsphinx_lm_file(override=None):
+    # If environment variable exists for this, use it
+    env_var_set = os.environ.get("SCARLETT_OS_LM_LOCATION", None)
+    if env_var_set:
+        logger.debug('Ran {}| env_var_set={}'.format(sys._getframe().f_code.co_name, env_var_set))
+        if os.path.isdir(env_var_set):
+            return env_var_set
+
+    # If the function overrides this in a test or something, use it
+    if override:
+        logger.debug('Ran {}| override={}'.format(sys._getframe().f_code.co_name, override))
+        if os.path.isdir(override):
+            return override
+
+    # check in installed data dir
+    data_dir_set = os.path.join(SCARLETT_ROOT_DIR + "/data/speech/lm", "1473.lm")
+    logger.debug('Ran {}| data_dir_set={}'.format(sys._getframe().f_code.co_name, data_dir_set))
+    if os.path.exists(data_dir_set):
+        return data_dir_set
+
+    # if everything else fails, return none which should not work w/ the yaml file
+    return None
+
+
+def get_pocketsphinx_dict_file(override=None):
+    # If environment variable exists for this, use it
+    env_var_set = os.environ.get("SCARLETT_OS_DICT_LOCATION", None)
+    if env_var_set:
+        logger.debug('Ran {}| env_var_set={}'.format(sys._getframe().f_code.co_name, env_var_set))
+        if os.path.isdir(env_var_set):
+            return env_var_set
+
+    # If the function overrides this in a test or something, use it
+    if override:
+        logger.debug('Ran {}| override={}'.format(sys._getframe().f_code.co_name, override))
+        if os.path.isdir(override):
+            return override
+
+    # check in installed data dir
+    data_dir_set = os.path.join(SCARLETT_ROOT_DIR + "/data/speech/dict", "1473.dic")
+    logger.debug('Ran {}| data_dir_set={}'.format(sys._getframe().f_code.co_name, data_dir_set))
+    if os.path.exists(data_dir_set):
+        return data_dir_set
+
+    # if everything else fails, return none which should not work w/ the yaml file
+    return None
 
 
 def lower(a_string):
@@ -575,6 +649,16 @@ def load_config(yaml_filename):
 
     return source
 
+def save_config(config, path):
+    """Save yaml configuration file to disk
+
+    Arguments:
+        config {CommentedMap} -- Should be a Ruamel YAML CommentedMap object
+        path {str} -- path to configuration file
+    """
+    with open(path, 'w', encoding='utf-8') as fp:
+        yaml.dump(config, fp)
+
 def tr(s):
     """[If you need to transform a string representation of the output provide a function that takes a string as input and returns one]
 
@@ -813,6 +897,28 @@ def prep_default_config(homedir=None):
         [str] -- [default_cfg, eg $HOME/.config/scarlett/config.yaml]
     """
 
+    # ----------------------------------------------
+    # DEFAULT CONFIG SETUP - START
+    # ----------------------------------------------
+    # Step 1. loead
+    default_yaml = os.path.join(os.path.abspath(__file__), 'default.yaml')
+    default_yaml_in_memory_config = load_config(default_yaml)
+    # Step 2. Check environment variables, if they exist, override them
+    if os.environ.get("SCARLETT_OS_CONFIG_LATITUDE"):
+        default_yaml_in_memory_config['latitude'] = os.environ.get("SCARLETT_OS_CONFIG_LATITUDE")
+    if os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE"):
+        default_yaml_in_memory_config['longitude'] = os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE")
+    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"):
+        default_yaml_in_memory_config['pocketsphinx']['hmm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM")
+    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM"):
+        default_yaml_in_memory_config['pocketsphinx']['lm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM")
+    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"):
+        default_yaml_in_memory_config['pocketsphinx']['dict'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT")
+
+    # ----------------------------------------------
+    # DEFAULT CONFIG SETUP - END
+    # ----------------------------------------------
+
     # Step 1. Get sub directory path for config
     if homedir is None:
         home = get_config_sub_dir_path()
@@ -823,21 +929,19 @@ def prep_default_config(homedir=None):
     # Step 2. ensure sub directory actually exists
     ensure_config_dir_path(home)
 
-    # if not os.path.exists(home):
-    #     os.makedirs(home)
-    # default_cfg = os.path.join(home, "config.json")
-
-    # FIXME: ? Do we want to make this a function that returns the default_cfg value?
     # Step 3. Set location of config.yaml file
-    default_cfg = os.path.join(home, 'config.yaml')
+    cfg = os.path.join(home, 'config.yaml')
 
     # Step 4. check if config file exists, if it doesnt, create a default config
-    if not os.path.exists(default_cfg):
-        # FIXME: Make this default config more dynamically configured, or start using ruamel primitives to override defaults if they aren't set
-        with open(default_cfg, 'wt') as f:
-            f.write(DEFAULT_CONFIG)
+    if not os.path.exists(cfg):
+        # Write merged config
+        with open(cfg, 'wb') as f:
+            yaml.dump(default_yaml_in_memory_config, f)
 
-    return home, default_cfg
+    # Load the newly merged configure file
+    in_memory_cfg = load_config(cfg)
+
+    return home, cfg, in_memory_cfg
 
 if __name__ == "__main__":
     import signal
