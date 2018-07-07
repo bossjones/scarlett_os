@@ -883,6 +883,16 @@ def ensure_config_dir_path(config_dir: str) -> None:
             # FIXME: Do we want this to exit?
             sys.exit(1)
 
+# TODO: Figure out if this will be useful w/ ruamel yaml configs. The ability to set default config values to None
+# SOURCE: https://github.com/shipstation/schemasnap/blob/503e30c51fbcc7dada29f0b51851a5a7bf8b1a57/schemasnap/yaml_roundtrippable.py
+# ---------------------------------------------------------------
+# def represent_none(self, data):
+#     # Write null's as "null" instead of nothing.
+#     return self.represent_scalar(u'tag:yaml.org,2002:null', u'null')
+
+
+# ruamel.yaml.representer.RoundTripRepresenter.add_representer(type(None), represent_none)
+# -------------------------------------------------------------
 
 # source: chamberlain
 def prep_default_config(homedir=None):
