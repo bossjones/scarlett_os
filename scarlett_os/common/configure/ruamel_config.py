@@ -75,6 +75,7 @@ from scarlett_os.utility import location as loc_util
 from scarlett_os.utility import environment as env_util
 
 import xdg
+import warnings
 
 
 # SOURCE: Ruamel docs, "Output of dump() as a string"
@@ -400,6 +401,8 @@ def get_xdg_config_dir_path(override=None):
         # from xdg.BaseDirectory import xdg_config_home as config_home
         from xdg import XDG_CONFIG_HOME as config_home
     except ImportError:
+        warnings.warn('Hey friend - python module xdg.XDG_CONFIG_HOME is not available', ImportWarning,
+                      stacklevel=2)
         config_home = os.path.expanduser('~/.config')
     # NOTE: Automatically get function name
     logger.debug('Ran {}| config_home={}'.format(
@@ -915,9 +918,6 @@ if __name__ == "__main__":
     # TODO: Figure out best way to use ruamel to load this in, and use it correctly
 
     _out = dump_in_memory_config_to_var(in_memory_config, stream=False)
-
-    import pdb
-    pdb.set_trace()  # pylint: disable=no-member
 
     # _dump_in_memory_config_to_stdout_and_transform(in_memory_config)
 
