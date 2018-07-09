@@ -7,7 +7,6 @@
 # (searching sys.path only) with special syntax (leading dots) for accessing package-relative imports.
 
 from __future__ import absolute_import
-# import os
 import sys
 from scarlett_os.tools import package as ts_package
 from scarlett_os.tools import verify as ts_verify
@@ -22,8 +21,6 @@ __email__ = PROJECT_EMAIL
 
 # source: timeside
 ts_verify.check_python3_installed()
-
-# SCARLETT_ROOT_DIR = os.path.abspath(__file__)
 
 # FIXME: I think we need to set GST_DEBUG_DUMP_DOT_DIR here before we call anything gi related. 7/3/2018
 # FIXME: More proof we need to set the env vars earlier
