@@ -55,6 +55,7 @@ import voluptuous as vol
 from layeredconfig import Defaults, DictSource, LayeredConfig
 from voluptuous.humanize import humanize_error
 
+# from scarlett_os import SCARLETT_ROOT_DIR
 import scarlett_os.helpers.config_validation as cv
 from scarlett_os.compat import (basestring, bytes, integer_types, string_types,
                                 text_type)
@@ -71,8 +72,10 @@ from scarlett_os.internal.path import mkdir_if_does_not_exist, ensure_dir_exists
 from scarlett_os.internal.rename import rename_over_existing
 from scarlett_os.utility import dt as date_util
 from scarlett_os.utility import location as loc_util
+from scarlett_os.utility import environment as env_util
 
 import xdg
+import warnings
 
 
 # SOURCE: Ruamel docs, "Output of dump() as a string"
@@ -226,7 +229,6 @@ name: Бага
 
 owner: "Б - Бага"
 """
-
 
 
 def lower(a_string):
@@ -399,6 +401,8 @@ def get_xdg_config_dir_path(override=None):
         # from xdg.BaseDirectory import xdg_config_home as config_home
         from xdg import XDG_CONFIG_HOME as config_home
     except ImportError:
+        warnings.warn('Hey friend - python module xdg.XDG_CONFIG_HOME is not available', ImportWarning,
+                      stacklevel=2)
         config_home = os.path.expanduser('~/.config')
     # NOTE: Automatically get function name
     logger.debug('Ran {}| config_home={}'.format(
@@ -574,6 +578,16 @@ def load_config(yaml_filename):
         source = ruamel.yaml.round_trip_load(yaml_file.read())
 
     return source
+
+def save_config(config, path):
+    """Save yaml configuration file to disk
+
+    Arguments:
+        config {CommentedMap} -- Should be a Ruamel YAML CommentedMap object
+        path {str} -- path to configuration file
+    """
+    with open(path, 'w', encoding='utf-8') as fp:
+        yaml.dump(config, fp)
 
 def tr(s):
     """[If you need to transform a string representation of the output provide a function that takes a string as input and returns one]
@@ -799,6 +813,16 @@ def ensure_config_dir_path(config_dir: str) -> None:
             # FIXME: Do we want this to exit?
             sys.exit(1)
 
+# TODO: Figure out if this will be useful w/ ruamel yaml configs. The ability to set default config values to None
+# SOURCE: https://github.com/shipstation/schemasnap/blob/503e30c51fbcc7dada29f0b51851a5a7bf8b1a57/schemasnap/yaml_roundtrippable.py
+# ---------------------------------------------------------------
+# def represent_none(self, data):
+#     # Write null's as "null" instead of nothing.
+#     return self.represent_scalar(u'tag:yaml.org,2002:null', u'null')
+
+
+# ruamel.yaml.representer.RoundTripRepresenter.add_representer(type(None), represent_none)
+# -------------------------------------------------------------
 
 # source: chamberlain
 def prep_default_config(homedir=None):
@@ -813,6 +837,28 @@ def prep_default_config(homedir=None):
         [str] -- [default_cfg, eg $HOME/.config/scarlett/config.yaml]
     """
 
+    # ----------------------------------------------
+    # DEFAULT CONFIG SETUP - START
+    # ----------------------------------------------
+    # Step 1. loead
+    default_yaml = os.path.join(os.path.abspath(__file__), 'default.yaml')
+    default_yaml_in_memory_config = load_config(default_yaml)
+    # Step 2. Check environment variables, if they exist, override them
+    if os.environ.get("SCARLETT_OS_CONFIG_LATITUDE"):
+        default_yaml_in_memory_config['latitude'] = os.environ.get("SCARLETT_OS_CONFIG_LATITUDE")
+    if os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE"):
+        default_yaml_in_memory_config['longitude'] = os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE")
+    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"):
+        default_yaml_in_memory_config['pocketsphinx']['hmm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM")
+    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM"):
+        default_yaml_in_memory_config['pocketsphinx']['lm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM")
+    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"):
+        default_yaml_in_memory_config['pocketsphinx']['dict'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT")
+
+    # ----------------------------------------------
+    # DEFAULT CONFIG SETUP - END
+    # ----------------------------------------------
+
     # Step 1. Get sub directory path for config
     if homedir is None:
         home = get_config_sub_dir_path()
@@ -823,21 +869,19 @@ def prep_default_config(homedir=None):
     # Step 2. ensure sub directory actually exists
     ensure_config_dir_path(home)
 
-    # if not os.path.exists(home):
-    #     os.makedirs(home)
-    # default_cfg = os.path.join(home, "config.json")
-
-    # FIXME: ? Do we want to make this a function that returns the default_cfg value?
     # Step 3. Set location of config.yaml file
-    default_cfg = os.path.join(home, 'config.yaml')
+    cfg = os.path.join(home, 'config.yaml')
 
     # Step 4. check if config file exists, if it doesnt, create a default config
-    if not os.path.exists(default_cfg):
-        # FIXME: Make this default config more dynamically configured, or start using ruamel primitives to override defaults if they aren't set
-        with open(default_cfg, 'wt') as f:
-            f.write(DEFAULT_CONFIG)
+    if not os.path.exists(cfg):
+        # Write merged config
+        with open(cfg, 'wb') as f:
+            yaml.dump(default_yaml_in_memory_config, f)
 
-    return home, default_cfg
+    # Load the newly merged configure file
+    in_memory_cfg = load_config(cfg)
+
+    return home, cfg, in_memory_cfg
 
 if __name__ == "__main__":
     import signal
@@ -874,9 +918,6 @@ if __name__ == "__main__":
     # TODO: Figure out best way to use ruamel to load this in, and use it correctly
 
     _out = dump_in_memory_config_to_var(in_memory_config, stream=False)
-
-    import pdb
-    pdb.set_trace()  # pylint: disable=no-member
 
     # _dump_in_memory_config_to_stdout_and_transform(in_memory_config)
 

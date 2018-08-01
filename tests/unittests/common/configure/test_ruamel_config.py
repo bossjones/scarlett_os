@@ -169,6 +169,16 @@ class TestGetXdgConfigDirPath(object):
     def test_get_xdg_config_dir_path(self, ruamel_config_unit_mocker_stopall):
         assert ruamel_config.get_xdg_config_dir_path() == os.path.expanduser("~/.config")
 
+    def test_get_xdg_config_dir_path_raise_import_error(self, ruamel_config_unit_mocker_stopall):
+        mock_get_xdg_config_dir_path = ruamel_config_unit_mocker_stopall.patch('scarlett_os.common.configure.ruamel_config.get_xdg_config_dir_path')
+        mock_get_xdg_config_dir_path.side_effect = ImportError()
+
+        with pytest.warns(ImportWarning) as record:
+            scarlett_os.common.configure.ruamel_config.get_xdg_config_dir_path()
+
+        assert len(record) == 1
+        assert record[0].message.args[0] == "Hey friend - python module xdg.XDG_CONFIG_HOME is not available"
+
     def test_get_xdg_data_dir_path(self, ruamel_config_unit_mocker_stopall):
         assert ruamel_config.get_xdg_data_dir_path() == os.path.expanduser("~/.local/share")
 

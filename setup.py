@@ -175,6 +175,7 @@ setup(
         'dev': requirements_dev,
     },
     include_package_data=True,
+    # data_files= [('data/sounds', ['data/sounds/*.wav'])],
     install_requires=requirements,
     license=PROJECT_LICENSE,
     zip_safe=False,

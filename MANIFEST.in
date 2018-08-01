@@ -18,7 +18,6 @@ include Dockerfile
 include requirements*.txt
 graft scarlett_os
 graft tests
-graft data
 # recursive-include scarlett_os *.h meson.build
 # recursive-include tests *.py *.c *.h *.xml *.supp meson.build
 recursive-include docs *.rst *.svg LICENSE *.ico *.png *.css *.py *.dia Makefile

@@ -1,0 +1,37 @@
+# Omitted values in this section will be auto detected using freegeoip.io
+
+# Location required to calculate the time the sun rises and sets.
+# Coordinates are also used for location for weather related automations.
+# Google Maps can be used to determine more precise GPS coordinates.
+latitude: 40.7056308
+longitude: -73.9780034
+
+pocketsphinx:
+    hmm: /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+    lm: /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
+    dict: /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
+    silprob: 0.1
+    wip: 1e-4
+    bestpath: 0
+
+# Impacts weather/sunrise data
+elevation: 665
+
+# 'metric' for Metric System, 'imperial' for imperial system
+unit_system: metric
+
+# Pick yours from here:
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+time_zone: America/New_York
+
+# Name of the location where ScarlettOS Assistant is running
+name: ScarlettOS
+
+owner: "Hair Ron Jones"
+
+keywords_list:
+- 'scarlett'
+- 'SCARLETT'
+
+features:
+- time
