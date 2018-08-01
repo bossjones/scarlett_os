@@ -114,3 +114,4 @@ hacking/flatpak/Scarlett.*.json
 hacking/flatpak/scarlett/*
 hacking/devel/
 .pytest_cache
+.vscode
