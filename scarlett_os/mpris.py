@@ -58,6 +58,7 @@ try:
 except:
     from six.moves import configparser
 
+
 # The signal.signal() function allows defining custom handlers to be executed when a signal is received. A small number of default handlers are installed: SIGPIPE is ignored (so write errors on pipes and sockets can be reported as ordinary Python exceptions) and SIGINT is translated into a KeyboardInterrupt exception.
 import signal
 
@@ -70,6 +71,8 @@ from scarlett_os.const import SCARLETT_CANCEL
 from scarlett_os.const import SCARLETT_LISTENING
 from scarlett_os.const import SCARLETT_RESPONSE
 from scarlett_os.const import SCARLETT_FAILED
+
+from scarlett_os.common.configure.ruamel_config import ConfigManager
 
 pp = pprint.PrettyPrinter(indent=4)
 logger = logging.getLogger(__name__)

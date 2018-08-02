@@ -405,8 +405,7 @@ def get_xdg_config_dir_path(override=None):
                       stacklevel=2)
         config_home = os.path.expanduser('~/.config')
     # NOTE: Automatically get function name
-    logger.debug('Ran {}| config_home={}'.format(
-        sys._getframe().f_code.co_name, config_home))
+    logger.debug('Ran {}| config_home={}'.format(sys._getframe().f_code.co_name, config_home))
     return config_home
 
 # TODO: Allow us to override this value purely for testing purposes 2/25/2018
@@ -564,7 +563,6 @@ def _fake_config(override=None):
 
 def load_config(yaml_filename):
     """Load a yaml file into memory using ruamel.yaml.round_trip_load
-
     Arguments:
         yaml_filename {[str]} -- [path to yaml file, eg /tmp/tmpnxz2wsa2/config.yaml]
     """
@@ -573,9 +571,22 @@ def load_config(yaml_filename):
     # INFO: How to set yaml version. Add to top of yaml file: %YAML 1.2 before ---
     # INFO: 1.2 does NOT support - Unquoted Yes and On as alternatives for
     # True and No and Off for False.
-
-    with codecs.open(yaml_filename, encoding='utf-8') as yaml_file:
-        source = ruamel.yaml.round_trip_load(yaml_file.read())
+    try:
+        try:
+            with codecs.open(yaml_filename, encoding="utf-8") as yaml_file:
+                source = ruamel.yaml.round_trip_load(yaml_file.read())
+        except YAMLError as exc:
+            print(exc)
+            # output = "[{}] {}: {}".format("UNEXPECTED", type(exc).__name__, exc)
+            # LOGGER.warning(output)
+            # LOGGER.warning(str(exc.data))
+            # exc_type, exc_value, exc_traceback = sys.exc_info()
+            # traceback.print_tb(exc_traceback)
+            # raise exc
+            raise exc
+    except FileNotFoundError as err:
+        print(err)
+        raise err
 
     return source
 
@@ -882,6 +893,62 @@ def prep_default_config(homedir=None):
     in_memory_cfg = load_config(cfg)
 
     return home, cfg, in_memory_cfg
+
+
+class ConfigManager(object):
+    CONFIG_PATH = "/".join(
+        (os.path.expanduser("~"), ".config", "scarlett_os", "config.yaml")
+    )
+
+    DEFAULT_CONFIG = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "default.yaml"
+    )
+
+    def __init__(self):
+        self._config = None
+
+
+    def check_folder_structure(self):
+        mkdir_if_does_not_exist(os.path.dirname(ConfigManager.CONFIG_PATH))
+
+    def load(self, path_override=None):
+        self.check_folder_structure()
+        if path_override:
+          self._config = load_config(path_override)
+        else:
+           self._config = load_config(ConfigManager.CONFIG_PATH)
+
+    def check_environment_overrides(self):
+        if os.environ.get("SCARLETT_OS_CONFIG_LATITUDE"):
+            self._config['latitude'] = os.environ.get("SCARLETT_OS_CONFIG_LATITUDE")
+        if os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE"):
+            self._config['longitude'] = os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE")
+        if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"):
+            self._config['pocketsphinx']['hmm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM")
+        if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM"):
+            self._config['pocketsphinx']['lm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM")
+        if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"):
+            self._config['pocketsphinx']['dict'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT")
+
+    def prep_default_config(self):
+        """setup config.yaml defaults."""
+
+        # Step 1. ensure sub directory actually exists
+        self.check_folder_structure()
+
+        # Step 2. check if config file exists, if it doesnt, create a default config
+        if not os.path.exists(ConfigManager.CONFIG_PATH):
+            # Step 2a. Load default
+            default_config = load_config(ConfigManager.DEFAULT_CONFIG)
+
+            save_config(default_config, ConfigManager.CONFIG_PATH)
+
+            print(
+                "Default config is set, please don't forget to update your github tokens, webhook tokens, and jenkins configurations appropiately! Location = {}".format(
+                    ConfigManager.CONFIG_PATH
+                )
+            )
+
 
 if __name__ == "__main__":
     import signal

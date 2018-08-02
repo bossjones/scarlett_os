@@ -95,7 +95,7 @@ class ScarlettSystem(object):
         # self.bus = EventBus(self)
         # self.services = ServiceRegistry(self.bus, self.add_job, self.loop)
         # self.states = StateMachine(self.bus, self.loop)
-        self.config = Config()  # type: Config
+        # self.config = Config()  # type: Config
         self.state = CoreState.not_running
         # self.exit_code = None
         # self._websession = None
@@ -106,7 +106,7 @@ class ScarlettSystem(object):
         return self.state in (CoreState.starting, CoreState.running)
 
     def start(self):
-        """Start home assistant."""
+        """Start Scarlett System."""
         logger.info("Starting ScarlettOS core loop")
 
     def stop(self):
@@ -115,62 +115,62 @@ class ScarlettSystem(object):
         logger.info("Stop ScarlettOS core loop")
 
 
-class Config(object):
-    """Configuration settings for ScarlettOS."""
+# class Config(object):
+#     """Configuration settings for ScarlettOS."""
 
-    # pylint: disable=too-many-instance-attributes
-    def __init__(self):
-        """Initialize a new config object."""
-        self.latitude = None  # type: Optional[float]
-        self.longitude = None  # type: Optional[float]
-        self.elevation = None  # type: Optional[int]
-        self.location_name = None  # type: Optional[str]
-        self.time_zone = None  # type: Optional[str]
-        self.units = METRIC_SYSTEM  # type: UnitSystem
+#     # pylint: disable=too-many-instance-attributes
+#     def __init__(self):
+#         """Initialize a new config object."""
+#         self.latitude = None  # type: Optional[float]
+#         self.longitude = None  # type: Optional[float]
+#         self.elevation = None  # type: Optional[int]
+#         self.location_name = None  # type: Optional[str]
+#         self.time_zone = None  # type: Optional[str]
+#         self.units = METRIC_SYSTEM  # type: UnitSystem
 
-        # If True, pip install is skipped for requirements on startup
-        self.skip_pip = False  # type: bool
+#         # If True, pip install is skipped for requirements on startup
+#         self.skip_pip = False  # type: bool
 
-        # List of loaded automations
-        self.automations = []
+#         # List of loaded automations
+#         self.automations = []
 
-        # Remote.API object pointing at local API
-        self.api = None
+#         # Remote.API object pointing at local API
+#         self.api = None
 
-        # Directory that holds the configuration
-        self.config_dir = None
+#         # Directory that holds the configuration
+#         self.config_dir = None
 
-    def distance(self: object, lat: float, lon: float) -> float:
-        """Calculate distance from ScarlettOS.
+#     def distance(self: object, lat: float, lon: float) -> float:
+#         """Calculate distance from ScarlettOS.
 
-        Async friendly.
-        """
-        return self.units.length(
-            location.distance(self.latitude, self.longitude, lat, lon), 'm')
+#         Async friendly.
+#         """
+#         return self.units.length(
+#             location.distance(self.latitude, self.longitude, lat, lon), 'm')
 
-    def path(self, *path):
-        """Generate path to the file within the config dir.
+#     def path(self, *path):
+#         """Generate path to the file within the config dir.
 
-        Async friendly.
-        """
-        if self.config_dir is None:
-            raise ScarlettError("config_dir is not set")
-        return os.path.join(self.config_dir, *path)
+#         Async friendly.
+#         """
+#         if self.config_dir is None:
+#             raise ScarlettError("config_dir is not set")
+#         return os.path.join(self.config_dir, *path)
 
-    def as_dict(self):
-        """Create a dict representation of this dict.
+#     def as_dict(self):
+#         """Create a dict representation of this dict.
 
-        Async friendly.
-        """
-        time_zone = self.time_zone or dt_utility.UTC
+#         Async friendly.
+#         """
+#         time_zone = self.time_zone or dt_utility.UTC
 
-        return {
-            'latitude': self.latitude,
-            'longitude': self.longitude,
-            'unit_system': self.units.as_dict(),
-            'location_name': self.location_name,
-            'time_zone': time_zone.zone,
-            'automations': self.automations,
-            'config_dir': self.config_dir,
-            'version': __version__
-        }
+#         return {
+#             'latitude': self.latitude,
+#             'longitude': self.longitude,
+#             'unit_system': self.units.as_dict(),
+#             'location_name': self.location_name,
+#             'time_zone': time_zone.zone,
+#             'automations': self.automations,
+#             'config_dir': self.config_dir,
+#             'version': __version__
+#         }
