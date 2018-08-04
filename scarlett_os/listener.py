@@ -57,6 +57,8 @@ from scarlett_os.utility.dbus_utils import DbusSignalHandler
 from scarlett_os.utility.dbus_runner import DBusRunner
 from scarlett_os.utility.threadmanager import SuspendableThread
 
+from scarlett_os.common.configure.ruamel_config import ConfigManager
+
 logger = logging.getLogger(__name__)
 
 # global pretty print for debugging
@@ -515,7 +517,9 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         Gst.debug_bin_to_dot_file(self.pipelines_stack[0],
                                   Gst.DebugGraphDetails.ALL,
                                   "generator-listener")
-        os.system('/usr/bin/dot' + " -Tpng -o " + pngfile + " " + dotfile)
+
+        cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(pngfile=pngfile, dotfile=dotfile)
+        os.system(cmd)
 
     def result(self, final_hyp):
         """Forward result signals on the bus to the main thread."""

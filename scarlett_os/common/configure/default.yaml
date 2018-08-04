@@ -13,6 +13,7 @@ pocketsphinx:
     silprob: 0.1
     wip: 1e-4
     bestpath: 0
+    device: plughw:CARD=Device,DEV=0
 
 # Impacts weather/sunrise data
 elevation: 665
@@ -35,3 +36,5 @@ keywords_list:
 
 features:
 - time
+
+graphviz_debug_dir: /home/pi/dev/bossjones-github/scarlett_os/_debug

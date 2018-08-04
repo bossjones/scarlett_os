@@ -52,6 +52,8 @@ from scarlett_os import subprocess
 from scarlett_os import player
 from scarlett_os.user import get_user_project_base_path
 
+from scarlett_os.common.configure.ruamel_config import ConfigManager
+
 
 # global pretty print for debugging
 pp = pprint.PrettyPrinter(indent=4)

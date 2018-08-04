@@ -16,6 +16,8 @@ from scarlett_os.internal.gi import Gio
 from scarlett_os.internal.gi import GObject
 # from scarlett_os.internal.gi import Gst
 
+from scarlett_os.common.configure.ruamel_config import ConfigManager
+
 
 pp = pprint.PrettyPrinter(indent=4)
 logger = logging.getLogger(__name__)

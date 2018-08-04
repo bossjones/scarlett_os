@@ -56,6 +56,8 @@ from scarlett_os.user import get_user_project_base_path
 # from scarlett_os.const import __version__
 # from scarlett_os import log
 
+from scarlett_os.common.configure.ruamel_config import ConfigManager
+
 logger = logging.getLogger(__name__)
 
 # global pretty print for debugging

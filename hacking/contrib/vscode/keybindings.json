@@ -14,5 +14,15 @@
         "key": "f4",
         "command": "C_Cpp.SwitchHeaderSource",
         "when": "editorTextFocus"
+    },
+    // When opening a terminal, focus on it.
+    {
+        "key": "ctrl+`",
+        "command": "workbench.action.terminal.focus"
+    },
+    {
+        "key": "ctrl+`",
+        "command": "workbench.action.terminal.toggleTerminal",
+        "when": "terminalFocus"
     }
 ]

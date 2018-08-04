@@ -57,6 +57,8 @@ from scarlett_os.internal.path import mkdir_if_does_not_exist
 from scarlett_os.internal.path import fname_exists
 from scarlett_os.internal.path import touch_empty_file
 
+from scarlett_os.common.configure.ruamel_config import ConfigManager
+
 # from scarlett_os.logger import setup_logger
 #
 # setup_logger()
