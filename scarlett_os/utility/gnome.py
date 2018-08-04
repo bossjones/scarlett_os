@@ -29,12 +29,14 @@ import time
 from functools import wraps
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
 # source: https://github.com/mopidy/mopidy/blob/develop/mopidy/audio/utils.py
 class Signals(object):
     """Helper for tracking gobject signal registrations"""
+
     def __init__(self):
         self._ids = {}
 
@@ -60,6 +62,7 @@ class Signals(object):
         for element, event in self._ids.keys():
             element.disconnect(self._ids.pop((element, event)))
 
+
 ########################################################################################################################
 # START - SOURCE: https://github.com/quodlibet/quodlibet/blob/master/quodlibet/quodlibet/util/__init__.py
 ########################################################################################################################
@@ -78,13 +81,18 @@ def get_connected_audio_devices():
         print("%s device=%r" % (type_name, device_name))
     dm.stop()
 
+
 if PY2:
+
     def gdecode(s):  # noqa
         """Returns unicode for the glib text type"""
 
         assert isinstance(s, bytes)
         return s.decode("utf-8")
+
+
 else:
+
     def gdecode(s):  # noqa
         """Returns unicode for the glib text type"""
 
@@ -115,8 +123,9 @@ def spawn(argv, stdout=False):
     if not (min(types) == max(types) == str):
         raise TypeError("executables and arguments must be str objects")
     logger.debug("Running %r" % " ".join(argv))
-    args = GLib.spawn_async(argv=argv, flags=GLib.SpawnFlags.SEARCH_PATH,
-                            standard_output=stdout)
+    args = GLib.spawn_async(
+        argv=argv, flags=GLib.SpawnFlags.SEARCH_PATH, standard_output=stdout
+    )
 
     if stdout:
         return os.fdopen(args[2])
@@ -159,8 +168,10 @@ class DeferredSignal(object):  # noqa
         self.args = None
 
         if owner:
+
             def destroy_cb(owner):
                 self.abort()
+
             owner.connect("destroy", destroy_cb)
 
         if priority is None:
@@ -169,8 +180,7 @@ class DeferredSignal(object):  # noqa
         if timeout is None:
             self.do_idle_add = lambda f: GLib.idle_add(f, priority=priority)
         else:
-            self.do_idle_add = lambda f: GLib.timeout_add(
-                timeout, f, priority=priority)
+            self.do_idle_add = lambda f: GLib.timeout_add(timeout, f, priority=priority)
 
     @property
     def __self__(self):
@@ -253,7 +263,7 @@ def _connect_destroy(sender, func, detailed_signal, handler, *args, **kwargs):
     def disconnect_cb(*args):
         sender.disconnect(handler_id)
 
-    obj.connect('destroy', disconnect_cb)
+    obj.connect("destroy", disconnect_cb)
     return handler_id
 
 
@@ -285,7 +295,9 @@ def gi_require_versions(name, versions):
         # Didn't find anything..
         # loop fell through without finding a factor
         # INFO: http://book.pythontips.com/en/latest/for_-_else.html
-        logger.error("Breaking out of for loop, we did not find a gi version that satisfies the conditional")
+        logger.error(
+            "Breaking out of for loop, we did not find a gi version that satisfies the conditional"
+        )
         raise error  # pylint: disable=raising-bad-type
 
 
@@ -372,8 +384,11 @@ class MainRunner(object):  # noqa
         with self._lock:
             if self._aborted:
                 # Make sure we have a debug statment if we catch this error accidently
-                logger.debug('Ran {}| self.aborted={}'.format(
-                    sys._getframe().f_code.co_name, self._aborted))
+                logger.debug(
+                    "Ran {}| self.aborted={}".format(
+                        sys._getframe().f_code.co_name, self._aborted
+                    )
+                )
                 raise self._error  # pylint: disable=raising-bad-type
             self._error = None
             # XXX: ideally this should be GLib.MainContext.default().is_owner()
@@ -388,8 +403,8 @@ class MainRunner(object):  # noqa
                 call_event = threading.Event()
                 self._call_id = object()
                 self._source_id = GLib.idle_add(
-                    self._idle_run, self._call_id, call_event,
-                    func, *args, **kwargs)
+                    self._idle_run, self._call_id, call_event, func, *args, **kwargs
+                )
                 # only wait for the result if we are sure it got scheduled
                 if call_event.wait(timeout):
                     self._cond.wait()
@@ -422,8 +437,8 @@ class _IdleObject(GObject.GObject):
         GObject.GObject.__init__(self)
 
     def emit(self, *args):
-        if args[0] != 'progress':
-            print('emit', args)
+        if args[0] != "progress":
+            print("emit", args)
         GObject.idle_add(GObject.GObject.emit, self, *args)
 
 
@@ -439,6 +454,7 @@ def abort_on_exception(func):  # noqa
     Note that the entire sys.exc_info() tuple is passed out, this
     allows the current traceback to be used in the other thread.
     """
+
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -446,12 +462,16 @@ def abort_on_exception(func):  # noqa
             thread_object = args[0]
             exc_type, exc_value, exc_tb = exc_info = sys.exc_info()
             filename, line_num, func_name, text = traceback.extract_tb(exc_tb)[-1]
-            logger.error('Exception Thrown from [%s] on line [%s] via function [%s]' % (filename, line_num, func_name))
+            logger.error(
+                "Exception Thrown from [%s] on line [%s] via function [%s]"
+                % (filename, line_num, func_name)
+            )
             # DISABLED: because e.message might not be available always.
             # SOURCE: https://stackoverflow.com/questions/4690600/python-exception-message-capturing
             # logger.error('Exception type %s: %s' % (e.__class__.__name__, str(e.message))
-            logger.error('Exception type %s: %s' % (e.__class__.__name__, str(e)))
-            thread_object.emit('aborted', exc_info)
+            logger.error("Exception type %s: %s" % (e.__class__.__name__, str(e)))
+            thread_object.emit("aborted", exc_info)
+
     return wrapper
 
 
@@ -460,12 +480,14 @@ def trace(func):  # noqa
     :param func: Function to wrap
     :type func: callable
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
-        logger.debug('Start {!r}'. format(func.__name__))
+        logger.debug("Start {!r}".format(func.__name__))
         result = func(*args, **kwargs)
-        logger.debug('End {!r}'. format(func.__name__))
+        logger.debug("End {!r}".format(func.__name__))
         return result
+
     return wrapper
 
 
@@ -474,7 +496,7 @@ def time_logger(name, level=logging.DEBUG):
     """Time logger context manager. Shows how long it takes to run a particular method"""
     start = time.time()
     yield
-    logger.log(level, '%s took %dms', name, (time.time() - start) * 1000)
+    logger.log(level, "%s took %dms", name, (time.time() - start) * 1000)
 
 
 def glib2fsnative(path):
@@ -487,6 +509,7 @@ def fsnative2glib(path):
     """Convert file system to native glib format"""
     assert isinstance(path, bytes)
     return path
+
 
 fsnative2bytes = fsnative2glib
 

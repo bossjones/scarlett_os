@@ -78,6 +78,7 @@ pause_in_seconds = 1
 
 class SoundType:
     """Enum of Player Types."""
+
     SCARLETT_CANCEL = "pi-cancel"
     SCARLETT_LISTENING = "pi-listening"
     SCARLETT_RESPONSE = "pi-response"
@@ -89,7 +90,9 @@ class SoundType:
 
     @staticmethod
     def get_speaker_path():
-        path_to_espeak_tmp_wav = os.path.join(get_user_project_base_path(), "espeak_tmp.wav")
+        path_to_espeak_tmp_wav = os.path.join(
+            get_user_project_base_path(), "espeak_tmp.wav"
+        )
         return [path_to_espeak_tmp_wav]
 
 
@@ -138,13 +141,15 @@ class TaskSignalHandler(object):
         # """
 
         assert (bus, dbus_signal) not in self._ids
-        self._ids[(bus, dbus_signal)] = bus.subscribe(sender=None,
-                                                      iface="org.scarlett.Listener",
-                                                      signal=dbus_signal,
-                                                      object="/org/scarlett/Listener",
-                                                      arg0=None,
-                                                      flags=0,
-                                                      signal_fired=func)
+        self._ids[(bus, dbus_signal)] = bus.subscribe(
+            sender=None,
+            iface="org.scarlett.Listener",
+            signal=dbus_signal,
+            object="/org/scarlett/Listener",
+            arg0=None,
+            flags=0,
+            signal_fired=func,
+        )
 
     def disconnect(self, bus, dbus_signal):
         """Disconnect whatever handler we have for an bus+dbus_signal pair.
@@ -172,19 +177,20 @@ class ScarlettTasker(_IdleObject):
     # source: gosa
     # Type map for signature checking
     _type_map = {
-        'as': [list],
-        'a{ss}': [dict],
-        'i': [int],
-        'n': [int],
-        'x': [int],
-        'q': [int],
-        'y': [chr],
-        'u': [int],
-        't': [int],
-        'b': [bool],
-        's': [str],
-        'o': [object],
-        'd': [float]}
+        "as": [list],
+        "a{ss}": [dict],
+        "i": [int],
+        "n": [int],
+        "x": [int],
+        "q": [int],
+        "y": [chr],
+        "u": [int],
+        "t": [int],
+        "b": [bool],
+        "s": [str],
+        "o": [object],
+        "d": [float],
+    }
 
     __active = False
     __instance = None
@@ -273,7 +279,7 @@ class ScarlettTasker(_IdleObject):
     # FIXME: Okay, when this file doesn't exist, espeak can hang. For now create in advance to get around it
     def _prep_tmp_espeak(self, wavepath=None):
         if not fname_exists(wavepath):
-            print('[prep_tmp_espeak]: MISSING TEMP ESPEAK FILE')
+            print("[prep_tmp_espeak]: MISSING TEMP ESPEAK FILE")
             touch_empty_file(wavepath)
 
     def reset(self):
@@ -299,7 +305,9 @@ class ScarlettTasker(_IdleObject):
         self._command_recognized_signal_callback = command_cb
         self._cancel_signal_callback = player_cb
         self._connect_signal_callback = connected_to_listener_cb
-        self._prep_tmp_espeak(wavepath=os.path.join(get_user_project_base_path(), "espeak_tmp.wav"))
+        self._prep_tmp_espeak(
+            wavepath=os.path.join(get_user_project_base_path(), "espeak_tmp.wav")
+        )
 
     def configure(self):
         """Configure the supplied bus for use.
@@ -310,19 +318,29 @@ class ScarlettTasker(_IdleObject):
             self._handler.connect(bus, "SttFailedSignal", self._failed_signal_callback)
 
         if self._ready_signal_callback:
-            self._handler.connect(bus, "ListenerReadySignal", self._ready_signal_callback)
+            self._handler.connect(
+                bus, "ListenerReadySignal", self._ready_signal_callback
+            )
 
         if self._keyword_recognized_signal_callback:
-            self._handler.connect(bus, "KeywordRecognizedSignal", self._keyword_recognized_signal_callback)
+            self._handler.connect(
+                bus, "KeywordRecognizedSignal", self._keyword_recognized_signal_callback
+            )
 
         if self._command_recognized_signal_callback:
-            self._handler.connect(bus, "CommandRecognizedSignal", self._command_recognized_signal_callback)
+            self._handler.connect(
+                bus, "CommandRecognizedSignal", self._command_recognized_signal_callback
+            )
 
         if self._cancel_signal_callback:
-            self._handler.connect(bus, "ListenerCancelSignal", self._cancel_signal_callback)
+            self._handler.connect(
+                bus, "ListenerCancelSignal", self._cancel_signal_callback
+            )
 
         if self._connect_signal_callback:
-            self._handler.connect(bus, "ConnectedToListener", self._connect_signal_callback)
+            self._handler.connect(
+                bus, "ConnectedToListener", self._connect_signal_callback
+            )
 
         # This function always returns False so that it may be safely
         # invoked via GLib.idle_add(). Use of idle_add() is necessary
@@ -404,9 +422,9 @@ def call_espeak_subprocess(command_run_results):
         _wavepath = SoundType.get_speaker_path()[0]
 
         # Simply write TTS -> Disk
-        s = speaker.ScarlettSpeaker(text_to_speak=scarlett_text,
-                                    wavpath=_wavepath,
-                                    skip_player=True)
+        s = speaker.ScarlettSpeaker(
+            text_to_speak=scarlett_text, wavpath=_wavepath, skip_player=True
+        )
 
         # Close file descriptor for subprocess when finished
         s.close(force=True)
@@ -465,7 +483,7 @@ def call_speaker(command_run_results):
 
 
 def on_signal_recieved(*args, **kwargs):
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         logger.debug("player_cb args")
         print_args(args)
         logger.debug("player_cb kwargs")
@@ -475,31 +493,31 @@ def on_signal_recieved(*args, **kwargs):
     # Get mainthread context before running anything that requires a MainLoop
     main = GObject.main_context_default()
 
-    if args[3] == 'ListenerReadySignal':
+    if args[3] == "ListenerReadySignal":
         msg, scarlett_sound = args[4]
         call_player(scarlett_sound)
-    elif args[3] == 'SttFailedSignal':
+    elif args[3] == "SttFailedSignal":
         msg, scarlett_sound = args[4]
         call_player(scarlett_sound)
-    elif args[3] == 'KeywordRecognizedSignal':
+    elif args[3] == "KeywordRecognizedSignal":
         msg, scarlett_sound = args[4]
         call_player(scarlett_sound)
-    elif args[3] == 'CommandRecognizedSignal':
+    elif args[3] == "CommandRecognizedSignal":
         msg, scarlett_sound, command = args[4]
         logger.debug("[CommandRecognizedSignal] WE WOULD RUN SOMETHING HERE")
 
         # 1. acknowledge that we are moving forward with running command
         # FIXME: Turn this into a dbus signal to emit?
-        call_player('pi-response')
+        call_player("pi-response")
 
         # 2. Perform command
-        print('args[4]')
+        print("args[4]")
         print(args[4])
         command_run_results = commands.Command.check_cmd(command_tuple=args[4])
         logger.debug("[command_run_results]: {}".format(command_run_results))
 
         # 3. Verify it is not a command NO_OP
-        if command_run_results == '__SCARLETT_NO_OP__':
+        if command_run_results == "__SCARLETT_NO_OP__":
             logger.error("__SCARLETT_NO_OP__")
             return False
 
@@ -517,30 +535,34 @@ def on_signal_recieved(*args, **kwargs):
         # 5. Emit signal to reset keyword match ( need to implement this )
         dr = DBusRunner.get_instance()
         bus = dr.get_session_bus()
-        ss = bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
+        ss = bus.get("org.scarlett", object_path="/org/scarlett/Listener")  # NOQA
         ss.emitListenerCancelSignal()
 
-    elif args[3] == 'ListenerCancelSignal':
+    elif args[3] == "ListenerCancelSignal":
         msg, scarlett_sound = args[4]
         call_player(scarlett_sound)
-    elif args[3] == 'ConnectedToListener':
+    elif args[3] == "ConnectedToListener":
         msg = args[4]
         ScarlettTasker.DEVICES.append(msg)
         logger.debug("[DEVICES] append: {}".format(msg))
 
 
 if __name__ == "__main__":
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         import faulthandler
+
         faulthandler.register(signal.SIGUSR2, all_threads=True)
 
         from scarlett_os.internal.debugger import init_debugger
+
         init_debugger()
 
         from scarlett_os.internal.debugger import enable_remote_debugging
+
         enable_remote_debugging()
 
     from scarlett_os.logger import setup_logger
+
     setup_logger()
 
     #######################################################################
@@ -583,16 +605,18 @@ if __name__ == "__main__":
     st.configure()
     #######################################################################
 
-    if os.environ.get('TRAVIS_CI'):
+    if os.environ.get("TRAVIS_CI"):
         # Close application silently
         try:
             loop.run()
         except KeyboardInterrupt:
-            logger.warning('***********************************************')
+            logger.warning("***********************************************")
             logger.warning('Note: Added an exception "pass" for KeyboardInterrupt')
-            logger.warning('It is very possible that this might mask other errors happening with the application.')
-            logger.warning('Remove this while testing manually')
-            logger.warning('***********************************************')
+            logger.warning(
+                "It is very possible that this might mask other errors happening with the application."
+            )
+            logger.warning("Remove this while testing manually")
+            logger.warning("***********************************************")
             st.reset()
             pass
         except:

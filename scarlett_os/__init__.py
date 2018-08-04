@@ -11,9 +11,7 @@ import sys
 from scarlett_os.tools import package as ts_package
 from scarlett_os.tools import verify as ts_verify
 
-from scarlett_os.const import (__version__,
-                               PROJECT_EMAIL,
-                               PROJECT_AUTHOR)
+from scarlett_os.const import __version__, PROJECT_EMAIL, PROJECT_AUTHOR
 
 
 __author__ = PROJECT_AUTHOR
@@ -46,5 +44,5 @@ del absolute_import
 try:
     from psutil import __version__ as psutil_version
 except ImportError:
-    print('PSutil library not found. ScarlettOS cannot start.')
+    print("PSutil library not found. ScarlettOS cannot start.")
     sys.exit(1)

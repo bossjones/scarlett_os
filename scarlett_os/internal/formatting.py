@@ -5,12 +5,12 @@ import unicodedata
 from scarlett_os.compat import text_type
 
 
-def indent(string, places=4, linebreak='\n', singles=False):
+def indent(string, places=4, linebreak="\n", singles=False):
     lines = string.split(linebreak)
     if not singles and len(lines) == 1:
         return string
     for i, line in enumerate(lines):
-        lines[i] = ' ' * places + line
+        lines[i] = " " * places + line
     result = linebreak.join(lines)
     if not singles:
         result = linebreak + result
@@ -25,19 +25,20 @@ def slugify(value):
 
     This function is based on Django's slugify implementation.
     """
-    value = unicodedata.normalize('NFKD', value)
-    value = value.encode('ascii', 'ignore').decode('ascii')
-    value = re.sub(r'[^\w\s-]', '', value).strip().lower()
-    return re.sub(r'[-\s]+', '-', value)
+    value = unicodedata.normalize("NFKD", value)
+    value = value.encode("ascii", "ignore").decode("ascii")
+    value = re.sub(r"[^\w\s-]", "", value).strip().lower()
+    return re.sub(r"[-\s]+", "-", value)
 
 
 def capitalize(str):
     """Capitalize a string, not affecting any character after the first."""
     return str[:1].upper() + str[1:]
 
-def _split_numeric_sortkey(s, limit=10,
-                           reg=re.compile(r"[0-9][0-9]*\.?[0-9]*").search,
-                           join=u" ".join):
+
+def _split_numeric_sortkey(
+    s, limit=10, reg=re.compile(r"[0-9][0-9]*\.?[0-9]*").search, join=" ".join
+):
     """Separate numeric values from the string and convert to float, so
     it can be used for human sorting. Also removes all extra whitespace."""
     result = reg(s)
@@ -49,7 +50,8 @@ def _split_numeric_sortkey(s, limit=10,
         return (
             join(s[:start].split()),
             float(result.group()),
-            _split_numeric_sortkey(s[end:], limit - 1))
+            _split_numeric_sortkey(s[end:], limit - 1),
+        )
 
 
 def human_sort_key(s, normalize=unicodedata.normalize):

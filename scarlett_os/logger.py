@@ -21,29 +21,29 @@ def setup_logger():
             datefmt=None,
             reset=True,
             log_colors={
-                'DEBUG': 'cyan',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'bold_red',
-                'TRACE': 'purple'
+                "DEBUG": "cyan",
+                "INFO": "green",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "bold_red",
+                "TRACE": "purple",
             },
             secondary_log_colors={
-                'message': {
-                    'ERROR': 'red',
-                    'CRITICAL': 'red',
-                    'DEBUG': 'yellow',
-                    'INFO': 'yellow,bg_blue'
+                "message": {
+                    "ERROR": "red",
+                    "CRITICAL": "red",
+                    "DEBUG": "yellow",
+                    "INFO": "yellow,bg_blue",
                 }
             },
-            style='%'
+            style="%",
         )
 
         handler = logging.StreamHandler()
         handler.setFormatter(formatter)
-        logging.getLogger('').addHandler(handler)
+        logging.getLogger("").addHandler(handler)
         logging.root.setLevel(logging.DEBUG)
     except ImportError:
         # No color available, use default config
-        logging.basicConfig(format='%(levelname)s: %(message)s')
+        logging.basicConfig(format="%(levelname)s: %(message)s")
         logging.warn("Disabling color, you really want to install colorlog.")

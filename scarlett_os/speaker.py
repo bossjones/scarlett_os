@@ -71,7 +71,7 @@ class ScarlettSpeaker(object):
         self._wavpath = wavpath
         self._wavefile.append(self._wavpath)
         self._voice = "en+f3"
-        self._text = _('{}'.format(text_to_speak))
+        self._text = _("{}".format(text_to_speak))
         self._word_gap = 1
         self._command = self.create_cmd()
 
@@ -80,13 +80,14 @@ class ScarlettSpeaker(object):
         self.path = None
 
         # Write espeak data
-        with s_thread.time_logger('Espeak Subprocess To File'):
+        with s_thread.time_logger("Espeak Subprocess To File"):
             self.running = True
             self.finished = False
             # FIXME: Looks like we could have a memory/file-descriptors leak here
             # FIXME: Need to close out self.res when finished
             self.res = subprocess.Subprocess(
-                self._command, name='speaker_tmp', fork=False).run()
+                self._command, name="speaker_tmp", fork=False
+            ).run()
             subprocess.check_pid(int(self.res))
             print("Did is run successfully? {}".format(self.res))
 
@@ -105,13 +106,16 @@ class ScarlettSpeaker(object):
                         pass
 
     def create_cmd(self):
-        cmd = ["espeak",
-               "-p%s" % self._pitch,
-               "-s%s" % self._speed,
-               "-g%s" % self._word_gap,
-               "-w", self._wavpath,
-               "-v%s" % self._voice,
-               ".   %s   ." % self._text]
+        cmd = [
+            "espeak",
+            "-p%s" % self._pitch,
+            "-s%s" % self._speed,
+            "-g%s" % self._word_gap,
+            "-w",
+            self._wavpath,
+            "-v%s" % self._voice,
+            ".   %s   ." % self._text,
+        ]
         print("cmd: {}".format(cmd))
         return cmd
 
@@ -136,24 +140,30 @@ class ScarlettSpeaker(object):
 
 
 # Smoke test.
-if __name__ == '__main__':
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+if __name__ == "__main__":
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         import faulthandler
+
         faulthandler.register(signal.SIGUSR2, all_threads=True)
 
         from scarlett_os.internal.debugger import init_debugger
         from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+
         init_debugger()
         set_gst_grapviz_tracing()
         # Example of how to use it
 
     from scarlett_os.logger import setup_logger
+
     setup_logger()
 
-    tts_list = ['Hello sir. How are you doing this afternoon?'
-                ' I am full lee function nall, andd red ee for your commands']
+    tts_list = [
+        "Hello sir. How are you doing this afternoon?"
+        " I am full lee function nall, andd red ee for your commands"
+    ]
     for scarlett_text in tts_list:
-        with s_thread.time_logger('Scarlett Speaks'):
-            path_to_espeak_tmp_wav = os.path.join(get_user_project_base_path(), "espeak_tmp.wav")
-            ScarlettSpeaker(text_to_speak=scarlett_text,
-                            wavpath=path_to_espeak_tmp_wav)
+        with s_thread.time_logger("Scarlett Speaks"):
+            path_to_espeak_tmp_wav = os.path.join(
+                get_user_project_base_path(), "espeak_tmp.wav"
+            )
+            ScarlettSpeaker(text_to_speak=scarlett_text, wavpath=path_to_espeak_tmp_wav)

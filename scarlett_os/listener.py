@@ -69,7 +69,7 @@ _INSTANCE = None
 # Constants
 QUEUE_SIZE = -1
 BUFFER_SIZE = 10
-SENTINEL = '__GSTDEC_SENTINEL__'
+SENTINEL = "__GSTDEC_SENTINEL__"
 SEMAPHORE_NUM = 0
 
 gst = Gst
@@ -78,39 +78,83 @@ HERE = os.path.dirname(__file__)
 # Pocketsphinx defaults
 LANGUAGE_VERSION = 1473
 HOMEDIR = "/home/pi"
-LANGUAGE_FILE_HOME = "{}/dev/bossjones-github/scarlett_os/static/speech/lm".format(HOMEDIR)
-DICT_FILE_HOME = "{}/dev/bossjones-github/scarlett_os/static/speech/dict".format(HOMEDIR)
+LANGUAGE_FILE_HOME = "{}/dev/bossjones-github/scarlett_os/static/speech/lm".format(
+    HOMEDIR
+)
+DICT_FILE_HOME = "{}/dev/bossjones-github/scarlett_os/static/speech/dict".format(
+    HOMEDIR
+)
 LM_PATH = "{}/{}.lm".format(LANGUAGE_FILE_HOME, LANGUAGE_VERSION)
 DICT_PATH = "{}/{}.dic".format(DICT_FILE_HOME, LANGUAGE_VERSION)
-HMM_PATH = "{}/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us".format(HOMEDIR)
+HMM_PATH = "{}/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us".format(
+    HOMEDIR
+)
 bestpath = 0
-PS_DEVICE = 'plughw:CARD=Device,DEV=0'
+PS_DEVICE = "plughw:CARD=Device,DEV=0"
 
 
 # NOTE: GObject.object.connect(detailed_signal: str, handler: function, *args) -> handler_id: int[source]
 SCARLETT_LISTENER_I_SIGNALS = {
-    "completed": (
-        GObject.SignalFlags.RUN_LAST, None, []),
-    "progress": (
-        GObject.SignalFlags.RUN_LAST, None, []),  # percent complete
+    "completed": (GObject.SignalFlags.RUN_LAST, None, []),
+    "progress": (GObject.SignalFlags.RUN_LAST, None, []),  # percent complete
     "eos": (GObject.SignalFlags.RUN_LAST, None, ()),
-    "error": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
+    "error": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING),
+    ),
     "died": (GObject.SignalFlags.RUN_LAST, None, ()),
     "async-done": (GObject.SignalFlags.RUN_LAST, None, ()),
-    "state-change": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_INT, GObject.TYPE_INT)),
-    'playing-changed': (GObject.SignalFlags.RUN_FIRST, None, ()),
-    'playback-status-changed': (GObject.SignalFlags.RUN_FIRST, None, ()),
+    "state-change": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_INT, GObject.TYPE_INT),
+    ),
+    "playing-changed": (GObject.SignalFlags.RUN_FIRST, None, ()),
+    "playback-status-changed": (GObject.SignalFlags.RUN_FIRST, None, ()),
     # FIXME: AUDIT THE RETURN TYPES
-    "bitrate-changed": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_INT, GObject.TYPE_INT)),
-    "keyword-recgonized": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    "command-recgonized": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    "stt-failed": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    "listener-cancel": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    "listener-ready": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    "connected-to-server": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    "listener-message": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
-    'finished': (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_PYOBJECT,)),
-    'aborted': (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_PYOBJECT,))
+    "bitrate-changed": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_INT, GObject.TYPE_INT),
+    ),
+    "keyword-recgonized": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING),
+    ),
+    "command-recgonized": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING),
+    ),
+    "stt-failed": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING),
+    ),
+    "listener-cancel": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING),
+    ),
+    "listener-ready": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING),
+    ),
+    "connected-to-server": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING),
+    ),
+    "listener-message": (
+        GObject.SignalFlags.RUN_LAST,
+        None,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING),
+    ),
+    "finished": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_PYOBJECT,)),
+    "aborted": (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_PYOBJECT,)),
 }
 
 
@@ -133,8 +177,10 @@ def get_loop_thread():
             _shared_loop_thread.start()
         return _shared_loop_thread
 
+
 # NOTE: doc updated via
 # https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
+
 
 class MainLoopThread(threading.Thread):
     """
@@ -155,10 +201,10 @@ class MainLoopThread(threading.Thread):
         try:
             self.__loop.run()
         except KeyboardInterrupt:
-            print('MainLoopThread recieved a Ctrl-C. Exiting gracefully...')
+            print("MainLoopThread recieved a Ctrl-C. Exiting gracefully...")
             self.__loop.quit()
             # self.join(timeout=1)
-            print('MainLoopThread finished ...')
+            print("MainLoopThread finished ...")
             return
 
     def get_loop(self):
@@ -176,7 +222,9 @@ class SuspendableMainLoopThread(SuspendableThread):
 
     # DISABLED 5/15/2017 # def __init__(self, stop_event):
     def __init__(self):
-        super(SuspendableMainLoopThread, self).__init__(name="SuspendableMainLoopThread")
+        super(SuspendableMainLoopThread, self).__init__(
+            name="SuspendableMainLoopThread"
+        )
         #####################
         # NOTE: A thread can be flagged as a "daemon thread".
         # The significance of this flag is that the entire
@@ -230,15 +278,17 @@ class SuspendableMainLoopThread(SuspendableThread):
                 # Return True if events are pending.
                 if not context.pending():
                     time.sleep(.1)
-                    self.emit('progress', -1, 'SuspendableMainLoopThread working interminably')
+                    self.emit(
+                        "progress", -1, "SuspendableMainLoopThread working interminably"
+                    )
                     self.check_for_sleep()
         except (KeyboardInterrupt, SystemExit):
-            print('MainLoopThread recieved a Ctrl-C. Exiting gracefully...')
+            print("MainLoopThread recieved a Ctrl-C. Exiting gracefully...")
             self.__active = False
             # 5/15/2017: do we need this below???
             # self.emit('stopped')
             self.__loop.quit()
-            print('MainLoopThread finished ...')
+            print("MainLoopThread finished ...")
             ##############################################################################################
             # https://stackoverflow.com/questions/15300550/python-return-return-none-and-no-return-at-all#
             # Using return.
@@ -269,6 +319,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     Cancellable thread which uses gobject signals to return information
     to the GUI.
     """
+
     __gsignals__ = SCARLETT_LISTENER_I_SIGNALS
 
     device = PS_DEVICE
@@ -308,11 +359,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.elements_stack = []
         self.gst_bus_stack = []
 
-        self._message = 'This is the ScarlettListenerI'
+        self._message = "This is the ScarlettListenerI"
         # TODO: When we're ready to unit test, config this back in!!!!!
         # self.config = scarlett_config.Config()
         self.config = None
-        self.override_parse = ''
+        self.override_parse = ""
         self.failed = 0
         self.kw_found = 0
         self.debug = False
@@ -346,11 +397,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if self.debug:
             # NOTE: For testing puposes, mainly when in public
             # so you dont have to keep yelling scarlett in front of strangers
-            self.kw_to_find = ['yo', 'hello', 'man', 'children']
+            self.kw_to_find = ["yo", "hello", "man", "children"]
         else:
             # NOTE: Before we start worrying about the config class, lets hardcode what we care about
             # ADD ME BACK IN WHEN WE REALLY START UNIT TESTING # self.kw_to_find = self.config.get('scarlett', 'keywords')
-            self.kw_to_find = ['scarlett', 'SCARLETT']
+            self.kw_to_find = ["scarlett", "SCARLETT"]
 
         if self.read_exc:
             # An error occurred before the stream became ready.
@@ -440,26 +491,27 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         else:
             # TODO: Add audio levels, see the following
             # SOURCE: http://stackoverflow.com/questions/5686424/detecting-blowing-on-a-microphone-with-gstreamer-or-another-library
-            _gst_launch = ['alsasrc device=' +
-                           ScarlettListenerI.device,
-                           # source: https://github.com/walterbender/story/blob/master/grecord.py
-                           # without a buffer here, gstreamer struggles at the start of the
-                           # recording and then the A/V sync is bad for the whole video
-                           # (possibly a gstreamer/ALSA bug -- even if it gets caught up, it
-                           # should be able to resync without problem)
-                           # 'progressreport name=progressreport update-freq=1',  # NOTE: comment this in when you want performance information
-                           'queue name=capsfilter_queue silent=false leaky=2 max-size-buffers=0 max-size-time=0 max-size-bytes=0',
-                           'capsfilter name=capsfilter caps=audio/x-raw,format=S16LE,channels=1,layout=interleaved',
-                           'audioconvert name=audioconvert',
-                           'audioresample name=audioresample',
-                           'identity name=ident',
-                           'pocketsphinx name=asr',
-                           'tee name=tee',
-                           'queue name=appsink_queue silent=false leaky=2 max-size-buffers=0 max-size-time=0 max-size-bytes=0',
-                           #  caps=audio/x-raw,format=(string)S16LE,rate=(int)16000,channels=(int)1,layout=(string)interleaved   # NOQA
-                           'appsink name=appsink drop=false max-buffers=10 sync=false emit-signals=true tee.',
-                           'queue leaky=2 name=fakesink_queue',
-                           'fakesink']
+            _gst_launch = [
+                "alsasrc device=" + ScarlettListenerI.device,
+                # source: https://github.com/walterbender/story/blob/master/grecord.py
+                # without a buffer here, gstreamer struggles at the start of the
+                # recording and then the A/V sync is bad for the whole video
+                # (possibly a gstreamer/ALSA bug -- even if it gets caught up, it
+                # should be able to resync without problem)
+                # 'progressreport name=progressreport update-freq=1',  # NOTE: comment this in when you want performance information
+                "queue name=capsfilter_queue silent=false leaky=2 max-size-buffers=0 max-size-time=0 max-size-bytes=0",
+                "capsfilter name=capsfilter caps=audio/x-raw,format=S16LE,channels=1,layout=interleaved",
+                "audioconvert name=audioconvert",
+                "audioresample name=audioresample",
+                "identity name=ident",
+                "pocketsphinx name=asr",
+                "tee name=tee",
+                "queue name=appsink_queue silent=false leaky=2 max-size-buffers=0 max-size-time=0 max-size-bytes=0",
+                #  caps=audio/x-raw,format=(string)S16LE,rate=(int)16000,channels=(int)1,layout=(string)interleaved   # NOQA
+                "appsink name=appsink drop=false max-buffers=10 sync=false emit-signals=true tee.",
+                "queue leaky=2 name=fakesink_queue",
+                "fakesink",
+            ]
 
         return _gst_launch
 
@@ -481,31 +533,37 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.init_gst()
         print("Running {}".format(str(self)))
         self.play()
-        self.emit('playback-status-changed')
-        self.emit('playing-changed')
+        self.emit("playback-status-changed")
+        self.emit("playing-changed")
         # FIXME: is this needed? # self.mainloop.run()
 
     def _connect_to_dbus(self):
         self.bus = SessionBus()
-        self.dbus_proxy = self.bus.get("org.scarlett", object_path='/org/scarlett/Listener')  # NOQA
-        self.dbus_proxy.emitConnectedToListener('ScarlettListener')
+        self.dbus_proxy = self.bus.get(
+            "org.scarlett", object_path="/org/scarlett/Listener"
+        )  # NOQA
+        self.dbus_proxy.emitConnectedToListener("ScarlettListener")
         time.sleep(2)
-        logger.info('_connect_to_dbus')
+        logger.info("_connect_to_dbus")
         # TODO: Add a ss_cancel_signal.disconnect() function later
-        ss_cancel_signal = self.bus.subscribe(sender=None,
-                                              iface="org.scarlett.Listener",
-                                              signal="ListenerCancelSignal",
-                                              object="/org/scarlett/Listener",
-                                              arg0=None,
-                                              flags=0,
-                                              signal_fired=self.on_cancel_listening)
+        ss_cancel_signal = self.bus.subscribe(
+            sender=None,
+            iface="org.scarlett.Listener",
+            signal="ListenerCancelSignal",
+            object="/org/scarlett/Listener",
+            arg0=None,
+            flags=0,
+            signal_fired=self.on_cancel_listening,
+        )
 
     # NOTE: This function generates the dot file, checks that graphviz in installed and
     # then finally generates a png file, which it then displays
     def on_debug_activate(self):
         # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
         # FIXME: STATIC PATH 7/3/2018
-        dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener.dot"
+        dotfile = (
+            "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener.dot"
+        )
         pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener-pipeline.png"  # NOQA
         if os.access(dotfile, os.F_OK):
             os.remove(dotfile)
@@ -514,11 +572,13 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
 
         # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
         # FIXME: STATIC PATH 7/3/2018
-        Gst.debug_bin_to_dot_file(self.pipelines_stack[0],
-                                  Gst.DebugGraphDetails.ALL,
-                                  "generator-listener")
+        Gst.debug_bin_to_dot_file(
+            self.pipelines_stack[0], Gst.DebugGraphDetails.ALL, "generator-listener"
+        )
 
-        cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(pngfile=pngfile, dotfile=dotfile)
+        cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
+            pngfile=pngfile, dotfile=dotfile
+        )
         os.system(cmd)
 
     def result(self, final_hyp):
@@ -527,7 +587,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         logger.debug("final_hyp: {}".format(final_hyp))
         pp.pprint(final_hyp)
         logger.debug("kw_to_find: {}".format(self.kw_to_find))
-        if final_hyp in self.kw_to_find and final_hyp != '':
+        if final_hyp in self.kw_to_find and final_hyp != "":
             logger.debug("HYP-IS-SOMETHING: {}\n\n\n".format(final_hyp))
             self.failed = 0
             self.kw_found = 1
@@ -545,7 +605,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         logger.debug("Inside run_cmd function")
         logger.debug("KEYWORD IDENTIFIED BABY")
         logger.debug("self.kw_found = {}".format(int(self.kw_found)))
-        if final_hyp == 'CANCEL':
+        if final_hyp == "CANCEL":
             self.dbus_proxy.emitListenerCancelSignal()  # CHANGEME
             self.on_cancel_listening()
         else:
@@ -558,7 +618,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     def init_gst(self):
         logger.debug("Inside init_gst")
         self.start_time = time.time()
-        pipeline = Gst.parse_launch(' ! '.join(self.get_pocketsphinx_definition()))
+        pipeline = Gst.parse_launch(" ! ".join(self.get_pocketsphinx_definition()))
         logger.debug("After get_pocketsphinx_definition")
         # Add pipeline obj to stack we can pull from later
         self.pipelines_stack.append(pipeline)
@@ -566,26 +626,36 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         gst_bus = pipeline.get_bus()
         # gst_bus = pipeline.get_gst_bus()
         gst_bus.add_signal_watch()
-        self.bus_message_element_handler_id = gst_bus.connect("message::element", self._on_message)
-        self.bus_message_eos_handler_id = gst_bus.connect("message::eos", self._on_message)
-        self.bus_message_error_handler_id = gst_bus.connect("message::error", self._on_message)
-        self.bus_message_state_changed_handler_id = gst_bus.connect("message::state-changed", self._on_state_changed)
+        self.bus_message_element_handler_id = gst_bus.connect(
+            "message::element", self._on_message
+        )
+        self.bus_message_eos_handler_id = gst_bus.connect(
+            "message::eos", self._on_message
+        )
+        self.bus_message_error_handler_id = gst_bus.connect(
+            "message::error", self._on_message
+        )
+        self.bus_message_state_changed_handler_id = gst_bus.connect(
+            "message::state-changed", self._on_state_changed
+        )
 
         # Add bus obj to stack we can pull from later
         self.gst_bus_stack.append(gst_bus)
 
-        appsink = pipeline.get_by_name('appsink')
+        appsink = pipeline.get_by_name("appsink")
         appsink.set_property(
-            'caps',
-            Gst.Caps.from_string('audio/x-raw,format=(string)S16LE,rate=(int)16000,channels=(int)1,layout=(string)interleaved'),
+            "caps",
+            Gst.Caps.from_string(
+                "audio/x-raw,format=(string)S16LE,rate=(int)16000,channels=(int)1,layout=(string)interleaved"
+            ),
         )
 
-        appsink.set_property('drop', False)
-        appsink.set_property('max-buffers', BUFFER_SIZE)
-        appsink.set_property('sync', False)
+        appsink.set_property("drop", False)
+        appsink.set_property("max-buffers", BUFFER_SIZE)
+        appsink.set_property("sync", False)
 
         # The callback to receive decoded data.
-        appsink.set_property('emit-signals', True)
+        appsink.set_property("emit-signals", True)
         appsink.connect("new-sample", self._new_sample)
 
         self.caps_handler = appsink.get_static_pad("sink").connect(
@@ -595,32 +665,44 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.elements_stack.append(appsink)
 
         # get gst pipeline element pocketsphinx and set properties
-        pocketsphinx = pipeline.get_by_name('asr')
+        pocketsphinx = pipeline.get_by_name("asr")
         if ScarlettListenerI.hmm:
-            pocketsphinx.set_property('hmm', ScarlettListenerI.hmm)
+            pocketsphinx.set_property("hmm", ScarlettListenerI.hmm)
         if ScarlettListenerI.lm:
-            pocketsphinx.set_property('lm', ScarlettListenerI.lm)
+            pocketsphinx.set_property("lm", ScarlettListenerI.lm)
         if ScarlettListenerI.dic:
-            pocketsphinx.set_property('dict', ScarlettListenerI.dic)
+            pocketsphinx.set_property("dict", ScarlettListenerI.dic)
 
-        pocketsphinx.set_property('fwdflat', True)  # Enable Flat Lexicon Search | Default: true
-        pocketsphinx.set_property('bestpath', True)  # Enable Graph Search | Boolean. Default: true
-        pocketsphinx.set_property('dsratio', 1)  # Evaluate acoustic model every N frames |  Integer. Range: 1 - 10 Default: 1
-        pocketsphinx.set_property('maxhmmpf', 3000)  # Maximum number of HMMs searched per frame | Integer. Range: 1 - 100000 Default: 30000
-        pocketsphinx.set_property('bestpath', True)  # Enable Graph Search | Boolean. Default: true
+        pocketsphinx.set_property(
+            "fwdflat", True
+        )  # Enable Flat Lexicon Search | Default: true
+        pocketsphinx.set_property(
+            "bestpath", True
+        )  # Enable Graph Search | Boolean. Default: true
+        pocketsphinx.set_property(
+            "dsratio", 1
+        )  # Evaluate acoustic model every N frames |  Integer. Range: 1 - 10 Default: 1
+        pocketsphinx.set_property(
+            "maxhmmpf", 3000
+        )  # Maximum number of HMMs searched per frame | Integer. Range: 1 - 100000 Default: 30000
+        pocketsphinx.set_property(
+            "bestpath", True
+        )  # Enable Graph Search | Boolean. Default: true
         # pocketsphinx.set_property('maxwpf', -1)  #
         # pocketsphinx.set_property('maxwpf', 20)  # Maximum number of words
         # searched per frame | Range: 1 - 100000 Default: -1
 
         self.elements_stack.append(pocketsphinx)
 
-        capsfilter_queue = pipeline.get_by_name('capsfilter_queue')
-        capsfilter_queue.set_property('leaky', True)  # prefer fresh data
-        capsfilter_queue.set_property('silent', False)
-        capsfilter_queue.set_property('max-size-time', 0)  # 0 seconds
-        capsfilter_queue.set_property('max-size-buffers', 0)
-        capsfilter_queue.set_property('max-size-bytes', 0)
-        self.capsfilter_queue_overrun_handler_id = capsfilter_queue.connect('overrun', self._log_queue_overrun)
+        capsfilter_queue = pipeline.get_by_name("capsfilter_queue")
+        capsfilter_queue.set_property("leaky", True)  # prefer fresh data
+        capsfilter_queue.set_property("silent", False)
+        capsfilter_queue.set_property("max-size-time", 0)  # 0 seconds
+        capsfilter_queue.set_property("max-size-buffers", 0)
+        capsfilter_queue.set_property("max-size-bytes", 0)
+        self.capsfilter_queue_overrun_handler_id = capsfilter_queue.connect(
+            "overrun", self._log_queue_overrun
+        )
 
         # capsfilter_queue.connect('overrun', self._on_overrun)
         # capsfilter_queue.connect('underrun', self._on_underrun)
@@ -629,7 +711,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
 
         self.elements_stack.append(capsfilter_queue)
 
-        ident = pipeline.get_by_name('ident')
+        ident = pipeline.get_by_name("ident")
         # ident.connect('handoff', self._on_handoff)
 
         self.elements_stack.append(ident)
@@ -660,22 +742,22 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     #             logger.debug('on_handoff: missing caps')
     #             pass
 
-        # raw = str(buf)
-        #
-        # # print 'len(raw) =', len(raw)
-        #
-        # sm = 0
-        # for i in range(0, len(raw)):
-        #     sm += ord(raw[i])
-        # # print sm
-        # FIXEME: Add somthing like analyse.py
-        # SOURCE: https://github.com/jcupitt/huebert/blob/master/huebert/audio.py
+    # raw = str(buf)
+    #
+    # # print 'len(raw) =', len(raw)
+    #
+    # sm = 0
+    # for i in range(0, len(raw)):
+    #     sm += ord(raw[i])
+    # # print sm
+    # FIXEME: Add somthing like analyse.py
+    # SOURCE: https://github.com/jcupitt/huebert/blob/master/huebert/audio.py
 
     def _on_state_changed(self, bus, msg):
         states = msg.parse_state_changed()
         # To state is PLAYING
         if msg.src.get_name() == "pipeline0" and states[1] == 4:
-            logger.info('Inside pipeline0 on _on_state_changed')
+            logger.info("Inside pipeline0 on _on_state_changed")
             logger.info("State: {}".format(states[1]))
             self.ready_sem.release()
             return False
@@ -684,16 +766,16 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             logger.info("State: {}".format(states[1]))
 
     def _on_overrun(self, element):
-        logging.debug('on_overrun')
+        logging.debug("on_overrun")
 
     def _on_underrun(self, element):
-        logging.debug('on_underrun')
+        logging.debug("on_underrun")
 
     def _on_running(self, element):
-        logging.debug('on_running')
+        logging.debug("on_running")
 
     def _on_pushing(self, element):
-        logging.debug('on_pushing')
+        logging.debug("on_pushing")
 
     def _notify_caps(self, pad, args):
         """The callback for the sinkpad's "notify::caps" signal.
@@ -709,9 +791,9 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     _got_a_pad = False
 
     def _log_queue_overrun(self, queue):
-        cbuffers = queue.get_property('current-level-buffers')
-        cbytes = queue.get_property('current-level-bytes')
-        ctime = queue.get_property('current-level-time')
+        cbuffers = queue.get_property("current-level-buffers")
+        cbytes = queue.get_property("current-level-bytes")
+        ctime = queue.get_property("current-level-time")
 
     def _new_sample(self, sink):
         """The callback for appsink's "new-sample" signal.
@@ -719,7 +801,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if self.running:
             # New data is available from the pipeline! Dump it into our
             # queue (or possibly block if we're full).
-            buf = sink.emit('pull-sample').get_buffer()
+            buf = sink.emit("pull-sample").get_buffer()
             # IMPORTANT!!!!!
             # NOTE: I think this is causing a deadlock
             self.queue.put(buf.extract_dup(0, buf.get_size()))
@@ -738,34 +820,37 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                 self.queue.put(SENTINEL)
                 if not self.got_caps:
                     logger.error(
-                        "If the stream ends before _notify_caps was called, this is an invalid stream.")
+                        "If the stream ends before _notify_caps was called, this is an invalid stream."
+                    )
                     # If the stream ends before _notify_caps was called, this
                     # is an invalid file.
                     self.read_exc = NoStreamError()
                     self.ready_sem.release()
-            elif struct and struct.get_name() == 'pocketsphinx':
-                if struct['final']:
-                    logger.info(struct['hypothesis'])
+            elif struct and struct.get_name() == "pocketsphinx":
+                if struct["final"]:
+                    logger.info(struct["hypothesis"])
                     if self.kw_found == 1:
                         # If keyword is set AND qualifier
                         # then perform action
-                        self.run_cmd(struct['hypothesis'])
+                        self.run_cmd(struct["hypothesis"])
                     else:
                         # If it's the main keyword,
                         # set values wait for qualifier
-                        self.result(struct['hypothesis'])
+                        self.result(struct["hypothesis"])
             elif message.type == Gst.MessageType.ERROR:
                 gerror, debug = message.parse_error()
                 pp.pprint(("gerror,debug:", gerror, debug))
-                if 'not-linked' in debug:
-                    logger.error('not-linked')
+                if "not-linked" in debug:
+                    logger.error("not-linked")
                     self.read_exc = NoStreamError()
-                elif 'No such device' in debug:
-                    logger.error('No such device')
+                elif "No such device" in debug:
+                    logger.error("No such device")
                     self.read_exc = NoStreamError()
                 else:
                     logger.info("FileReadError")
-                    pp.pprint(("SOME FileReadError", bus, message, struct, struct.get_name()))
+                    pp.pprint(
+                        ("SOME FileReadError", bus, message, struct, struct.get_name())
+                    )
                     self.read_exc = FileReadError(debug)
                 self.ready_sem.release()
 
@@ -804,10 +889,10 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             # Unregister for signals, which we registered for above with
             # `add_signal_watch`. (Without this, GStreamer leaks file
             # descriptors.)
-            logger.debug('BEFORE p = self.pipelines_stack[0]')
+            logger.debug("BEFORE p = self.pipelines_stack[0]")
             p = self.pipelines_stack[0]
             p.get_bus().remove_signal_watch()
-            logger.debug('AFTER p.get_bus().remove_signal_watch()')
+            logger.debug("AFTER p.get_bus().remove_signal_watch()")
 
             # Block spurious signals.
             appsink = self.elements_stack[0]
@@ -861,7 +946,8 @@ class ListenerDemo:
             self.thread_finished,  # completedCb
             self.thread_progress,  # progressCb
             ScarlettListenerI,  # threadclass
-            name)  # args[1] <- verify that this is value is correct
+            name,
+        )  # args[1] <- verify that this is value is correct
 
     def thread_finished(self, thread):
         logger.debug("thread_finished.")
@@ -869,16 +955,21 @@ class ListenerDemo:
     def thread_progress(self, thread):
         logger.debug("thread_progress.")
 
-if __name__ == '__main__':
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+
+if __name__ == "__main__":
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         import faulthandler
+
         faulthandler.register(signal.SIGUSR2, all_threads=True)
         faulthandler.enable(file=sys.stderr, all_threads=True)
-        print('Installed SIGUSR1 handler to print stack traces: pkill -USR1 -f scarlett_os.listener')
+        print(
+            "Installed SIGUSR1 handler to print stack traces: pkill -USR1 -f scarlett_os.listener"
+        )
 
         from scarlett_os.internal.debugger import init_debugger
         from scarlett_os.internal.debugger import set_gst_grapviz_tracing
         from scarlett_os.internal.debugger import enable_remote_debugging
+
         enable_remote_debugging()
 
         init_debugger()
@@ -886,6 +977,7 @@ if __name__ == '__main__':
         # Example of how to use it
 
     from scarlett_os.logger import setup_logger
+
     setup_logger()
 
     loop = GObject.MainLoop()
@@ -899,15 +991,17 @@ if __name__ == '__main__':
 
     _INSTANCE = demo = ListenerDemo()
 
-    if os.environ.get('TRAVIS_CI'):
+    if os.environ.get("TRAVIS_CI"):
         try:
             loop.run()
         except KeyboardInterrupt:
-            logger.warning('***********************************************')
+            logger.warning("***********************************************")
             logger.warning('Note: Added an exception "pass" for KeyboardInterrupt')
-            logger.warning('It is very possible that this might mask other errors happening with the application.')
-            logger.warning('Remove this while testing manually')
-            logger.warning('***********************************************')
+            logger.warning(
+                "It is very possible that this might mask other errors happening with the application."
+            )
+            logger.warning("Remove this while testing manually")
+            logger.warning("***********************************************")
             # NOTE: fixme, we still have a leak in the gst pipeline, it doesn't actually stop.
             demo.quit(1)
             loop.quit()
@@ -940,11 +1034,11 @@ if __name__ == '__main__':
         loop.quit()
 
     # quit cleanly if we're in CI
-    if os.environ.get('TRAVIS_CI'):
-        print('registering sigint_handler = sigint_handler_exit')
+    if os.environ.get("TRAVIS_CI"):
+        print("registering sigint_handler = sigint_handler_exit")
         sigint_handler = sigint_handler_exit
     else:
-        print('registering sigint_handler = sigint_handler_to_pdb')
+        print("registering sigint_handler = sigint_handler_to_pdb")
         sigint_handler = sigint_handler_to_pdb
 
     signal.signal(signal.SIGINT, sigint_handler)

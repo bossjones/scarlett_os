@@ -69,6 +69,7 @@ def setup():
 
     return res
 
+
 # TODO: Comment this in after we figure out best way to get some of this working
 # if not setup():
 #     raise ImportError("Could not setup testsuite")

@@ -58,26 +58,30 @@ def listener_monkeyfunc(request):
     yield mpatch
     mpatch.undo()
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def listener_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
-    print('Called [setup]: mocker.stopall()')
+    print("Called [setup]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(threadmanager)')
+    print("Called [setup]: imp.reload(threadmanager)")
     imp.reload(listener)
     yield mocker
-    print('Called [teardown]: mocker.stopall()')
+    print("Called [teardown]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(threadmanager)')
+    print("Called [setup]: imp.reload(threadmanager)")
     imp.reload(listener)
+
 
 # source: test_signal.py in pygobject
 
 
 class C(GObject.GObject):
     """Test class for verifying callbacks."""
-    __gsignals__ = {'my_signal': (GObject.SignalFlags.RUN_FIRST, None,
-                                  (GObject.TYPE_INT,))}
+
+    __gsignals__ = {
+        "my_signal": (GObject.SignalFlags.RUN_FIRST, None, (GObject.TYPE_INT,))
+    }
 
     def do_my_signal(self, arg):
         self.arg = arg
@@ -88,9 +92,9 @@ class C(GObject.GObject):
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyintgr
 class TestSuspendableMainLoopThread(object):
-
-    def test_SuspendableMainLoopThread(self, listener_mocker_stopall, listener_monkeyfunc):
-
+    def test_SuspendableMainLoopThread(
+        self, listener_mocker_stopall, listener_monkeyfunc
+    ):
         def my_signal_handler_cb(*args):
             assert len(args) == 5
             assert isinstance(args[0], C)
@@ -102,11 +106,15 @@ class TestSuspendableMainLoopThread(object):
             assert args[2:] == (1, 2, 3)
 
         def quit(*args):
-            print('timeout reached, lets close out SuspendableMainLoopThread in [test_SuspendableMainLoopThread]')
+            print(
+                "timeout reached, lets close out SuspendableMainLoopThread in [test_SuspendableMainLoopThread]"
+            )
             with _loop_thread_lock:
                 time.sleep(0.5)
-                print('SuspendableMainLoopThread attempting to terminate in [test_SuspendableMainLoopThread]')
-                print('running: _shared_loop_thread.terminate()')
+                print(
+                    "SuspendableMainLoopThread attempting to terminate in [test_SuspendableMainLoopThread]"
+                )
+                print("running: _shared_loop_thread.terminate()")
                 _shared_loop_thread.terminate()
                 # print('running: stop_event.set()')
                 # stop_event.set()
@@ -118,28 +126,36 @@ class TestSuspendableMainLoopThread(object):
         # stop_event = threading.Event()
 
         with _loop_thread_lock:
-            print('SuspendableMainLoopThread _loop_thread_lock acquired in [test_SuspendableMainLoopThread]')
+            print(
+                "SuspendableMainLoopThread _loop_thread_lock acquired in [test_SuspendableMainLoopThread]"
+            )
             if not _shared_loop_thread:
-                print('SuspendableMainLoopThread if not _shared_loop_thread in [test_SuspendableMainLoopThread]')
+                print(
+                    "SuspendableMainLoopThread if not _shared_loop_thread in [test_SuspendableMainLoopThread]"
+                )
                 # Start a new thread.
-                print('[start] new listener.SuspendableMainLoopThread()')
+                print("[start] new listener.SuspendableMainLoopThread()")
                 # _shared_loop_thread = listener.SuspendableMainLoopThread(stop_event)
                 _shared_loop_thread = listener.SuspendableMainLoopThread()
                 # get MainLoop
-                print('[start] _shared_loop_thread.get_loop()')
+                print("[start] _shared_loop_thread.get_loop()")
                 _ = _shared_loop_thread.get_loop()
                 # disable daemon thread for testing
                 # that way thread dies after .terminate() is called
                 # instead of during garbage collection during exit() of python interperter
-                print("[start] listener_monkeyfunc.setattr(__name__ + '.listener.SuspendableMainLoopThread.daemon', False)")
-                listener_monkeyfunc.setattr(__name__ + '.listener.SuspendableMainLoopThread.daemon', False)
+                print(
+                    "[start] listener_monkeyfunc.setattr(__name__ + '.listener.SuspendableMainLoopThread.daemon', False)"
+                )
+                listener_monkeyfunc.setattr(
+                    __name__ + ".listener.SuspendableMainLoopThread.daemon", False
+                )
                 # validate monkeypatch worked
                 assert _shared_loop_thread.daemon is False
                 # start thread
-                print('[start] _shared_loop_thread.start()')
+                print("[start] _shared_loop_thread.start()")
                 _shared_loop_thread.start()
                 # this should simply return
-                print('[start] _shared_loop_thread.do_run()')
+                print("[start] _shared_loop_thread.do_run()")
                 _shared_loop_thread.do_run()
                 # FIXME: This is still returning a Mock
                 # assert str(type(_shared_loop_thread.get_loop())) == "<class 'gi.overrides.GLib.MainLoop'>"
@@ -197,10 +213,9 @@ class TestSuspendableMainLoopThread(object):
 
 
 class TestScarlettListener(object):
-
     def test_ScarlettListenerI_init(self, listener_mocker_stopall):
 
-        sl = listener.ScarlettListenerI('scarlett_listener')
+        sl = listener.ScarlettListenerI("scarlett_listener")
 
         assert sl.running is False
         assert sl.finished is False
@@ -208,10 +223,10 @@ class TestScarlettListener(object):
         assert sl.dot_exc is None
         assert sl.running is False
         assert sl.cancelled is False
-        assert sl.name == 'scarlett_listener'
-        assert sl._message == 'This is the ScarlettListenerI'
+        assert sl.name == "scarlett_listener"
+        assert sl._message == "This is the ScarlettListenerI"
         assert sl.config is None
-        assert sl.override_parse == ''
+        assert sl.override_parse == ""
         assert sl.failed == 0
         assert sl.kw_found == 0
         assert sl.debug is False
@@ -234,4 +249,4 @@ class TestScarlettListener(object):
         assert sl.state == "stopped"
         assert sl.buffer_count == 0
         assert sl.byte_count == 0
-        assert sl.kw_to_find == ['scarlett', 'SCARLETT']
+        assert sl.kw_to_find == ["scarlett", "SCARLETT"]

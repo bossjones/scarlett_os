@@ -6,29 +6,42 @@ import warnings
 # How to deal w/ lazy imports and mocks? Move the import into a function, then mock it!
 # NOTE: https://stackoverflow.com/questions/41873928/how-can-i-mock-a-module-that-is-imported-from-a-function-and-not-present-in-sys?rq=1
 
+
 def get_gi_module():
     import gi
+
     return gi
+
 
 def get_os_module():
     import os
+
     return os
+
 
 def get_sys_module():
     import sys
+
     return sys
+
 
 def get_distutils_sysconfig_function_get_python_lib():
     from distutils.sysconfig import get_python_lib
+
     return get_python_lib
+
 
 def get_itertools_module():
     import itertools
+
     return itertools
+
 
 def get_subprocess_module():
     import subprocess
+
     return subprocess
+
 
 def check_gi():
     try:
@@ -36,8 +49,7 @@ def check_gi():
         # SOURCE: https://stackoverflow.com/questions/128478/should-import-statements-always-be-at-the-top-of-a-module
         gi = get_gi_module()
     except ImportError:
-        warnings.warn('PyGI library is not available', ImportWarning,
-                      stacklevel=2)
+        warnings.warn("PyGI library is not available", ImportWarning, stacklevel=2)
         add_gi_packages()
 
 
@@ -59,7 +71,7 @@ def add_gi_packages():
 
     dest_dir = get_python_lib()
 
-    packages = ['gi']
+    packages = ["gi"]
 
     # >>> sys.version
     # '3.6.5 (default, Apr 25 2018, 14:22:56) \n[GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.42.1)]'
@@ -118,35 +130,35 @@ def add_gi_packages():
     # python3
     # ['', '/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python36.zip', '/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6', '/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload', '/usr/local/lib/python3.6/site-packages']
 
-    global_path_system = os.path.join('/usr/lib', 'python' + python_version)
+    global_path_system = os.path.join("/usr/lib", "python" + python_version)
 
-    if os.environ.get('PYTHONPATH'):
+    if os.environ.get("PYTHONPATH"):
         # INFO: PYTHONPATH=/usr/local/share/jhbuild/sitecustomize
         # FIXME: This looks prone to error, we should have it default to something sane if PYTHONPATH isn't set 7/3/2018
-        py_path = os.environ.get('PYTHONPATH')
-        py_paths = py_path.split(':')
+        py_path = os.environ.get("PYTHONPATH")
+        py_paths = py_path.split(":")
     else:
         # else create an empty list
         py_paths = list()
 
     flatpak_site_packages = get_flatpak_site_packages()
     global_sitepackages = [
-                           os.path.join(global_path_system, 'dist-packages'),  # for Debian-based
-                           os.path.join(global_path_system, 'site-packages'),  # for others
-                          ]
+        os.path.join(global_path_system, "dist-packages"),  # for Debian-based
+        os.path.join(global_path_system, "site-packages"),  # for others
+    ]
 
     all_package_paths = [flatpak_site_packages, py_paths, global_sitepackages]
     package_list_with_dups = create_list_with_dups(all_package_paths)
     uniq_package_list = get_uniq_list(package_list_with_dups)
 
-    print('dest_dir', dest_dir)
-    print('packages', packages)
-    print('python_version', python_version)
-    print('global_path_system', global_path_system)
-    print('global_sitepackages', global_sitepackages)
-    print('all_package_paths', all_package_paths)
-    print('package_list_with_dups', package_list_with_dups)
-    print('uniq_package_list', uniq_package_list)
+    print("dest_dir", dest_dir)
+    print("packages", packages)
+    print("python_version", python_version)
+    print("global_path_system", global_path_system)
+    print("global_sitepackages", global_sitepackages)
+    print("all_package_paths", all_package_paths)
+    print("package_list_with_dups", package_list_with_dups)
+    print("uniq_package_list", uniq_package_list)
     ##########################################################
     # Example Output
     ##########################################################
@@ -179,6 +191,7 @@ def add_gi_packages():
     #             print('symlink made')
     create_package_symlinks(packages, uniq_package_list, dest_dir)
 
+
 def create_package_symlinks(packages, uniq_package_list, dest_dir):
     os = get_os_module()
 
@@ -186,46 +199,49 @@ def create_package_symlinks(packages, uniq_package_list, dest_dir):
         for pack_dir in uniq_package_list:
             src = os.path.join(pack_dir, package)
             dest = os.path.join(dest_dir, package)
-            print('src', src)
-            print('dest', dest)
+            print("src", src)
+            print("dest", dest)
             if not os.path.exists(dest) and os.path.exists(src):
                 os.symlink(src, dest)
-                print('symlink made')
+                print("symlink made")
+
 
 def create_list_with_dups(all_package_paths):
     itertools = get_itertools_module()
 
     return list(itertools.chain.from_iterable(all_package_paths))
 
+
 def get_flatpak_site_packages():
     os = get_os_module()
     sys = get_sys_module()
-    if os.environ.get('SCARLETT_OS_FLATPAK_PYTHON_LIBDIR_PATH'):
-        return [os.environ.get('SCARLETT_OS_FLATPAK_PYTHON_LIBDIR_PATH')]
+    if os.environ.get("SCARLETT_OS_FLATPAK_PYTHON_LIBDIR_PATH"):
+        return [os.environ.get("SCARLETT_OS_FLATPAK_PYTHON_LIBDIR_PATH")]
     else:
         return [os.path.join("/app/lib/", "python" + sys.version[:3], "site-packages")]
+
 
 def create_gi_symlinks():
     os = get_os_module()
     sys = get_sys_module()
     verbose = 1
-    if not sys.executable.startswith('/usr/bin/python'):
+    if not sys.executable.startswith("/usr/bin/python"):
         try:
             gi = get_gi_module()
         except ImportError:
             if verbose > 0:
-                print('--------------')
+                print("--------------")
             subprocess = get_subprocess_module()
-            dirs = ['gi', ]
-            imp = 'import os, gi; print(os.path.dirname(os.path.dirname(' \
-                'gi.__file__)))'
+            dirs = ["gi"]
+            imp = "import os, gi; print(os.path.dirname(os.path.dirname(" "gi.__file__)))"
 
             python_bin = "{}".format(sys.executable)
 
-            src_dir = subprocess.check_output([python_bin,
-                                               '-c',
-                                               imp,
-                                              ]).strip().decode('unicode_escape')
+            src_dir = (
+                subprocess.check_output([python_bin, "-c", imp])
+                .strip()
+                .decode("unicode_escape")
+            )
             # NOTE: This is the old implementation
             # 7/3/2018
             # src_dir = subprocess.check_output(['/usr/bin/{}'.format(os.path.basename(sys.executable)),
@@ -234,17 +250,17 @@ def create_gi_symlinks():
             #                                    ]).strip().decode('unicode_escape')
             for dst_base in sys.path:
                 if dst_base.strip():
-                    print('dst_base', dst_base)
+                    print("dst_base", dst_base)
                     break
             if verbose > 0:
-                print('src_dir', src_dir)
+                print("src_dir", src_dir)
             for d in dirs:
                 src = os.path.join(src_dir, d)
                 dst = os.path.join(dst_base, d)
                 if verbose > 1:
-                    print('src', src)
-                    print('dst', dst)
+                    print("src", src)
+                    print("dst", dst)
                 if os.path.exists(src) and not os.path.exists(dst):
                     if verbose > 0:
-                        print('linking', d, 'to', dst_base)
+                        print("linking", d, "to", dst_base)
                     os.symlink(src, dst)

@@ -7,6 +7,7 @@ from collections import OrderedDict
 from typing import Union, List, Dict
 
 import yaml
+
 try:
     import keyring
 except ImportError:
@@ -15,8 +16,8 @@ except ImportError:
 from scarlett_os.exceptions import ScarlettError
 
 logger = logging.getLogger(__name__)
-_SECRET_NAMESPACE = 'scarlett_os'
-_SECRET_YAML = 'secrets.yaml'
+_SECRET_NAMESPACE = "scarlett_os"
+_SECRET_YAML = "secrets.yaml"
 __SECRET_CACHE = {}  # type: Dict
 
 
@@ -27,8 +28,9 @@ class SafeLineLoader(yaml.SafeLoader):
     def compose_node(self, parent: yaml.nodes.Node, index) -> yaml.nodes.Node:
         """Annotate a node with the first line it was seen."""
         last_line = self.line  # type: int
-        node = super(SafeLineLoader,
-                     self).compose_node(parent, index)  # type: yaml.nodes.Node
+        node = super(SafeLineLoader, self).compose_node(
+            parent, index
+        )  # type: yaml.nodes.Node
         node.__line__ = last_line + 1
         return node
 
@@ -36,7 +38,7 @@ class SafeLineLoader(yaml.SafeLoader):
 def load_yaml(fname: str) -> Union[List, Dict]:
     """Load a YAML file."""
     try:
-        with open(fname, encoding='utf-8') as conf_file:
+        with open(fname, encoding="utf-8") as conf_file:
             # If configuration file is empty YAML returns None
             # We convert that to an empty dict
             return yaml.load(conf_file, Loader=SafeLineLoader) or {}
@@ -44,7 +46,7 @@ def load_yaml(fname: str) -> Union[List, Dict]:
         logger.error(exc)
         raise ScarlettError(exc)
     except UnicodeDecodeError as exc:
-        logger.error('Unable to read file %s: %s', fname, exc)
+        logger.error("Unable to read file %s: %s", fname, exc)
         raise ScarlettError(exc)
 
 
@@ -56,8 +58,7 @@ def load_yaml(fname: str) -> Union[List, Dict]:
 #     __SECRET_CACHE.clear()
 
 
-def _include_yaml(loader: SafeLineLoader,
-                  node: yaml.nodes.Node) -> Union[List, Dict]:
+def _include_yaml(loader: SafeLineLoader, node: yaml.nodes.Node) -> Union[List, Dict]:
     """Load another YAML file and embeds it using the !include tag.
 
     Example:
@@ -69,7 +70,7 @@ def _include_yaml(loader: SafeLineLoader,
 
 def _is_file_valid(name: str) -> bool:
     """Decide if a file is valid."""
-    return not name.startswith('.')
+    return not name.startswith(".")
 
 
 def _find_files(directory: str, pattern: str):
@@ -82,23 +83,25 @@ def _find_files(directory: str, pattern: str):
                 yield filename
 
 
-def _include_dir_named_yaml(loader: SafeLineLoader,
-                            node: yaml.nodes.Node) -> OrderedDict:
+def _include_dir_named_yaml(
+    loader: SafeLineLoader, node: yaml.nodes.Node
+) -> OrderedDict:
     """Load multiple files from directory as a dictionary."""
     mapping = OrderedDict()  # type: OrderedDict
     loc = os.path.join(os.path.dirname(loader.name), node.value)
-    for fname in _find_files(loc, '*.yaml'):
+    for fname in _find_files(loc, "*.yaml"):
         filename = os.path.splitext(os.path.basename(fname))[0]
         mapping[filename] = load_yaml(fname)
     return mapping
 
 
-def _include_dir_merge_named_yaml(loader: SafeLineLoader,
-                                  node: yaml.nodes.Node) -> OrderedDict:
+def _include_dir_merge_named_yaml(
+    loader: SafeLineLoader, node: yaml.nodes.Node
+) -> OrderedDict:
     """Load multiple files from directory as a merged dictionary."""
     mapping = OrderedDict()  # type: OrderedDict
     loc = os.path.join(os.path.dirname(loader.name), node.value)
-    for fname in _find_files(loc, '*.yaml'):
+    for fname in _find_files(loc, "*.yaml"):
         if os.path.basename(fname) == _SECRET_YAML:
             continue
         loaded_yaml = load_yaml(fname)
@@ -107,21 +110,21 @@ def _include_dir_merge_named_yaml(loader: SafeLineLoader,
     return mapping
 
 
-def _include_dir_list_yaml(loader: SafeLineLoader,
-                           node: yaml.nodes.Node):
+def _include_dir_list_yaml(loader: SafeLineLoader, node: yaml.nodes.Node):
     """Load multiple files from directory as a list."""
     loc = os.path.join(os.path.dirname(loader.name), node.value)
-    return [load_yaml(f) for f in _find_files(loc, '*.yaml')
-            if os.path.basename(f) != _SECRET_YAML]
+    return [
+        load_yaml(f)
+        for f in _find_files(loc, "*.yaml")
+        if os.path.basename(f) != _SECRET_YAML
+    ]
 
 
-def _include_dir_merge_list_yaml(loader: SafeLineLoader,
-                                 node: yaml.nodes.Node):
+def _include_dir_merge_list_yaml(loader: SafeLineLoader, node: yaml.nodes.Node):
     """Load multiple files from directory as a merged list."""
-    loc = os.path.join(os.path.dirname(loader.name),
-                       node.value)  # type: str
+    loc = os.path.join(os.path.dirname(loader.name), node.value)  # type: str
     merged_list = []  # type: List
-    for fname in _find_files(loc, '*.yaml'):
+    for fname in _find_files(loc, "*.yaml"):
         if os.path.basename(fname) == _SECRET_YAML:
             continue
         loaded_yaml = load_yaml(fname)
@@ -130,8 +133,7 @@ def _include_dir_merge_list_yaml(loader: SafeLineLoader,
     return merged_list
 
 
-def _ordered_dict(loader: SafeLineLoader,
-                  node: yaml.nodes.MappingNode) -> OrderedDict:
+def _ordered_dict(loader: SafeLineLoader, node: yaml.nodes.MappingNode) -> OrderedDict:
     """Load YAML mappings into an ordered dictionary to preserve key order."""
     loader.flatten_mapping(node)
     nodes = loader.construct_pairs(node)
@@ -143,25 +145,26 @@ def _ordered_dict(loader: SafeLineLoader,
         try:
             hash(key)
         except TypeError:
-            fname = getattr(loader.stream, 'name', '')
+            fname = getattr(loader.stream, "name", "")
             raise yaml.MarkedYAMLError(
-                context="invalid key: \"{}\"".format(key),
-                context_mark=yaml.Mark(fname, 0, line, -1, None, None)
+                context='invalid key: "{}"'.format(key),
+                context_mark=yaml.Mark(fname, 0, line, -1, None, None),
             )
 
         if key in seen:
-            fname = getattr(loader.stream, 'name', '')
+            fname = getattr(loader.stream, "name", "")
             first_mark = yaml.Mark(fname, 0, seen[key], -1, None, None)
             second_mark = yaml.Mark(fname, 0, line, -1, None, None)
             raise yaml.MarkedYAMLError(
-                context="duplicate key: \"{}\"".format(key),
-                context_mark=first_mark, problem_mark=second_mark,
+                context='duplicate key: "{}"'.format(key),
+                context_mark=first_mark,
+                problem_mark=second_mark,
             )
         seen[key] = line
 
     processed = OrderedDict(nodes)
-    setattr(processed, '__config_file__', loader.name)
-    setattr(processed, '__line__', node.start_mark.line)
+    setattr(processed, "__config_file__", loader.name)
+    setattr(processed, "__line__", node.start_mark.line)
     return processed
 
 
@@ -175,19 +178,19 @@ def _construct_seq(loader: SafeLineLoader, node: yaml.nodes.Node):
         pass
 
     processed = NodeClass(obj)
-    setattr(processed, '__config_file__', loader.name)
-    setattr(processed, '__line__', node.start_mark.line)
+    setattr(processed, "__config_file__", loader.name)
+    setattr(processed, "__line__", node.start_mark.line)
     return processed
 
 
-def _env_var_yaml(loader: SafeLineLoader,
-                  node: yaml.nodes.Node):
+def _env_var_yaml(loader: SafeLineLoader, node: yaml.nodes.Node):
     """Load environment variables and embed it into the configuration YAML."""
     if node.value in os.environ:
         return os.environ[node.value]
     else:
         logger.error("Environment variable %s not defined.", node.value)
         raise ScarlettError(node.value)
+
 
 # pylint: disable=no-member
 def _load_secret_yaml(secret_path: str) -> Dict:
@@ -197,17 +200,19 @@ def _load_secret_yaml(secret_path: str) -> Dict:
         return __SECRET_CACHE[secret_path]
 
     # FIXME: Getting the error message below which doesn't make sense to me?
-    logger.debug('Loading %s', secret_path)  # pylint: disable=used-before-assignment
+    logger.debug("Loading %s", secret_path)  # pylint: disable=used-before-assignment
     try:
         secrets = load_yaml(secret_path)
-        if 'logger' in secrets:
-            logger = str(secrets['logger']).lower()
-            if logger == 'debug':
+        if "logger" in secrets:
+            logger = str(secrets["logger"]).lower()
+            if logger == "debug":
                 logger.setLevel(logging.DEBUG)  # pylint: disable=no-member
             else:
-                logger.error("secrets.yaml: 'logger: debug' expected,"
-                              " but 'logger: %s' found", logger)  # pylint: disable=no-member
-            del secrets['logger']
+                logger.error(
+                    "secrets.yaml: 'logger: debug' expected," " but 'logger: %s' found",
+                    logger,
+                )  # pylint: disable=no-member
+            del secrets["logger"]
     except FileNotFoundError:
         secrets = {}
     __SECRET_CACHE[secret_path] = secrets
@@ -215,16 +220,18 @@ def _load_secret_yaml(secret_path: str) -> Dict:
 
 
 # pylint: disable=protected-access
-def _secret_yaml(loader: SafeLineLoader,
-                 node: yaml.nodes.Node):
+def _secret_yaml(loader: SafeLineLoader, node: yaml.nodes.Node):
     """Load secrets and embed it into the configuration YAML."""
     secret_path = os.path.dirname(loader.name)
     while True:
         secrets = _load_secret_yaml(secret_path)
 
         if node.value in secrets:
-            logger.debug('Secret %s retrieved from secrets.yaml in '
-                          'folder %s', node.value, secret_path)
+            logger.debug(
+                "Secret %s retrieved from secrets.yaml in " "folder %s",
+                node.value,
+                secret_path,
+            )
             return secrets[node.value]
 
         if secret_path == os.path.dirname(sys.path[0]):
@@ -238,22 +245,25 @@ def _secret_yaml(loader: SafeLineLoader,
         # do some keyring stuff
         pwd = keyring.get_password(_SECRET_NAMESPACE, node.value)
         if pwd:
-            logger.debug('Secret %s retrieved from keyring.', node.value)
+            logger.debug("Secret %s retrieved from keyring.", node.value)
             return pwd
 
-    logger.error('Secret %s not defined.', node.value)
+    logger.error("Secret %s not defined.", node.value)
     raise ScarlettError(node.value)
 
-yaml.SafeLoader.add_constructor('!include', _include_yaml)
-yaml.SafeLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-                                _ordered_dict)
+
+yaml.SafeLoader.add_constructor("!include", _include_yaml)
 yaml.SafeLoader.add_constructor(
-    yaml.resolver.BaseResolver.DEFAULT_SEQUENCE_TAG, _construct_seq)
-yaml.SafeLoader.add_constructor('!env_var', _env_var_yaml)
-yaml.SafeLoader.add_constructor('!secret', _secret_yaml)
-yaml.SafeLoader.add_constructor('!include_dir_list', _include_dir_list_yaml)
-yaml.SafeLoader.add_constructor('!include_dir_merge_list',
-                                _include_dir_merge_list_yaml)
-yaml.SafeLoader.add_constructor('!include_dir_named', _include_dir_named_yaml)
-yaml.SafeLoader.add_constructor('!include_dir_merge_named',
-                                _include_dir_merge_named_yaml)
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _ordered_dict
+)
+yaml.SafeLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_SEQUENCE_TAG, _construct_seq
+)
+yaml.SafeLoader.add_constructor("!env_var", _env_var_yaml)
+yaml.SafeLoader.add_constructor("!secret", _secret_yaml)
+yaml.SafeLoader.add_constructor("!include_dir_list", _include_dir_list_yaml)
+yaml.SafeLoader.add_constructor("!include_dir_merge_list", _include_dir_merge_list_yaml)
+yaml.SafeLoader.add_constructor("!include_dir_named", _include_dir_named_yaml)
+yaml.SafeLoader.add_constructor(
+    "!include_dir_merge_named", _include_dir_merge_named_yaml
+)

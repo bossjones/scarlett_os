@@ -61,8 +61,8 @@ def attach_readfd(iochannel, context):
     # as I am getting an int back in the handler
     # if isinstance(iochannel, int):
     #    iochannel = GLib.IOChannel(iochannel)
-    #source = GLib.io_create_watch(iochannel, GLib.IOCondition(GLib.IO_IN | GLib.IO_PRI))
-    #source.set_callback(_glib_signal_cb, context)
+    # source = GLib.io_create_watch(iochannel, GLib.IOCondition(GLib.IO_IN | GLib.IO_PRI))
+    # source.set_callback(_glib_signal_cb, context)
     # source.set_priority(GLib.PRIORITY_HIGH)
     # source.attach(context)
     GLib.io_add_watch(iochannel, GLib.IO_IN | GLib.IO_PRI, _glib_signal_cb, context)
@@ -79,11 +79,11 @@ orig_excepthook = sys.excepthook
 def excepthook(type, value, tb):
     frame = tb.tb_frame
     code = frame.f_code
-    if code.co_name == '_glib_signal_cb':
+    if code.co_name == "_glib_signal_cb":
         # We have some known parameters
-        iochannel = frame.f_locals['iochannel']
-        #condition = frame.f_locals['condition']
-        context = frame.f_locals['context']
+        iochannel = frame.f_locals["iochannel"]
+        # condition = frame.f_locals['condition']
+        context = frame.f_locals["context"]
 
         # Reaad the event because the exception means that
         # it will be removed.
@@ -104,13 +104,23 @@ def excepthook(type, value, tb):
 
     return orig_excepthook(type, value, tb)
 
+
 sys.excepthook = excepthook
 
 # Create FDs for communication, and make them non-blocking
 signal_notify_fd, signal_wakeup_fd = os.pipe()
 import fcntl
-fcntl.fcntl(signal_wakeup_fd, fcntl.F_SETFL, fcntl.fcntl(signal_wakeup_fd, fcntl.F_GETFL) | os.O_NONBLOCK)
-fcntl.fcntl(signal_notify_fd, fcntl.F_SETFL, fcntl.fcntl(signal_notify_fd, fcntl.F_GETFL) | os.O_NONBLOCK)
+
+fcntl.fcntl(
+    signal_wakeup_fd,
+    fcntl.F_SETFL,
+    fcntl.fcntl(signal_wakeup_fd, fcntl.F_GETFL) | os.O_NONBLOCK,
+)
+fcntl.fcntl(
+    signal_notify_fd,
+    fcntl.F_SETFL,
+    fcntl.fcntl(signal_notify_fd, fcntl.F_GETFL) | os.O_NONBLOCK,
+)
 
 signal.set_wakeup_fd(signal_wakeup_fd)
 
@@ -154,6 +164,7 @@ def decorate_gtk_mainfunc(function):
 
     return decorated_function
 
+
 # We could override Gtk.main_iteration and Gtk.main_iteration_do too,
 # but that does not seem to be necessary (because they don't dispatch
 # our event handler, but instead return; this means that the exception
@@ -166,15 +177,17 @@ def long_running_code():
     # removed from the mainloop
     try:
         import time
-        print "sleeping"
+
+        print("sleeping")
         time.sleep(1)
     finally:
-        print "done sleeping, in mainloop now"
+        print("done sleeping, in mainloop now")
         return True
+
 
 GLib.timeout_add(2000, long_running_code)
 
 try:
     Gtk.main()
 finally:
-    print "mainloop was quit"
+    print("mainloop was quit")

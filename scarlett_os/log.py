@@ -23,7 +23,7 @@ LOG_LEVELS = {
 
 # Custom log level which has even lower priority than DEBUG
 TRACE_LOG_LEVEL = 5
-logging.addLevelName(TRACE_LOG_LEVEL, 'TRACE')
+logging.addLevelName(TRACE_LOG_LEVEL, "TRACE")
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,6 @@ logger = logging.getLogger(__name__)
 
 
 class DelayedHandler(logging.Handler):
-
     def __init__(self):
         logging.Handler.__init__(self)
         self._released = False
@@ -48,7 +47,7 @@ class DelayedHandler(logging.Handler):
 
     def release(self):
         self._released = True
-        root = logging.getLogger('')
+        root = logging.getLogger("")
         while self._buffer:
             root.handle(self._buffer.pop(0))
 
@@ -57,7 +56,7 @@ _delayed_handler = DelayedHandler()
 
 
 def bootstrap_delayed_logging():
-    root = logging.getLogger('')
+    root = logging.getLogger("")
     root.setLevel(logging.NOTSET)
     root.addHandler(_delayed_handler)
 
@@ -78,7 +77,7 @@ def setup_logging(verbosity_level, save_debug_log):
 
     setup_console_logging(verbosity_level)
     if save_debug_log:
-        print('Here we would call setup_debug_logging_to_file(config)')
+        print("Here we would call setup_debug_logging_to_file(config)")
         # setup_debug_logging_to_file(config)
 
     _delayed_handler.release()
@@ -92,8 +91,7 @@ def setup_console_logging(verbosity_level):
 
     # loglevels = config.get('loglevels', {})
     loglevels = {}
-    has_debug_loglevels = any([
-        level < logging.INFO for level in loglevels.values()])
+    has_debug_loglevels = any([level < logging.INFO for level in loglevels.values()])
 
     verbosity_filter = VerbosityFilter(verbosity_level, loglevels)
 
@@ -114,7 +112,7 @@ def setup_console_logging(verbosity_level):
     handler.addFilter(verbosity_filter)
     handler.setFormatter(formatter)
 
-    logging.getLogger('').addHandler(handler)
+    logging.getLogger("").addHandler(handler)
 
 
 # def setup_debug_logging_to_file(config):
@@ -127,26 +125,24 @@ def setup_console_logging(verbosity_level):
 
 
 class VerbosityFilter(logging.Filter):
-
     def __init__(self, verbosity_level, loglevels):
         self.verbosity_level = verbosity_level
         self.loglevels = loglevels
 
     def filter(self, record):
         for name, required_log_level in listitems(self.loglevels):
-            if record.name == name or record.name.startswith(name + '.'):
+            if record.name == name or record.name.startswith(name + "."):
                 return record.levelno >= required_log_level
 
-        if record.name.startswith('scarlett_os'):
-            required_log_level = LOG_LEVELS[self.verbosity_level]['scarlett_os']
+        if record.name.startswith("scarlett_os"):
+            required_log_level = LOG_LEVELS[self.verbosity_level]["scarlett_os"]
         else:
-            required_log_level = LOG_LEVELS[self.verbosity_level]['root']
+            required_log_level = LOG_LEVELS[self.verbosity_level]["root"]
         return record.levelno >= required_log_level
 
 
 #: Available log colors.
-COLORS = [b'black', b'red', b'green', b'yellow', b'blue', b'magenta', b'cyan',
-          b'white']
+COLORS = [b"black", b"red", b"green", b"yellow", b"blue", b"magenta", b"cyan", b"white"]
 
 
 class ColorizingStreamHandler(logging.StreamHandler):  # noqa
@@ -165,20 +161,20 @@ class ColorizingStreamHandler(logging.StreamHandler):  # noqa
 
     # Map logging levels to (background, foreground, bold/intense)
     level_map = {
-        TRACE_LOG_LEVEL: (None, 'blue', False),
-        logging.DEBUG: (None, 'blue', False),
-        logging.INFO: (None, 'white', False),
-        logging.WARNING: (None, 'yellow', False),
-        logging.ERROR: (None, 'red', False),
-        logging.CRITICAL: ('red', 'white', True),
+        TRACE_LOG_LEVEL: (None, "blue", False),
+        logging.DEBUG: (None, "blue", False),
+        logging.INFO: (None, "white", False),
+        logging.WARNING: (None, "yellow", False),
+        logging.ERROR: (None, "red", False),
+        logging.CRITICAL: ("red", "white", True),
     }
     # Map logger name to foreground colors
     logger_map = {}
 
-    csi = '\x1b['
-    reset = '\x1b[0m'
+    csi = "\x1b["
+    reset = "\x1b[0m"
 
-    is_windows = platform.system() == 'Windows'
+    is_windows = platform.system() == "Windows"
 
     def __init__(self, logger_colors):
         super(ColorizingStreamHandler, self).__init__()
@@ -186,7 +182,7 @@ class ColorizingStreamHandler(logging.StreamHandler):  # noqa
 
     @property
     def is_tty(self):
-        isatty = getattr(self.stream, 'isatty', None)
+        isatty = getattr(self.stream, "isatty", None)
         # NOTE: error = not-callable
         return isatty and isatty()  # pylint: disable=E1102
 
@@ -194,7 +190,7 @@ class ColorizingStreamHandler(logging.StreamHandler):  # noqa
         try:
             message = self.format(record)
             self.stream.write(message)
-            self.stream.write(getattr(self, 'terminator', '\n'))
+            self.stream.write(getattr(self, "terminator", "\n"))
             self.flush()
         except Exception:
             self.handleError(record)
@@ -218,8 +214,7 @@ class ColorizingStreamHandler(logging.StreamHandler):  # noqa
         if fg in COLORS:
             params.append(str(COLORS.index(fg) + 30))
         if bold:
-            params.append('1')
+            params.append("1")
         if params:
-            message = ''.join((
-                self.csi, ';'.join(params), 'm', message, self.reset))
+            message = "".join((self.csi, ";".join(params), "m", message, self.reset))
         return message

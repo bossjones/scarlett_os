@@ -38,6 +38,7 @@ from scarlett_os.internal.gi import GLib
 from scarlett_os import tasker
 from scarlett_os.tasker import on_signal_recieved
 
+
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyintgr
 class TestScarlettTasker(IntegrationTestbaseMainloop):
@@ -45,7 +46,9 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
     """
 
     @pytest.mark.flaky(reruns=5)
-    def test_signal_ready(self, request, service_on_outside, get_environment, monkeypatch, get_bus):
+    def test_signal_ready(
+        self, request, service_on_outside, get_environment, monkeypatch, get_bus
+    ):
         """Create a Controller object, call on_new_mode_online method and
         check that the callback fires initially when the sources are set up
         """
@@ -81,13 +84,15 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         time.sleep(2)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='ready')
+        run_emitter_signal(request, get_environment, sig_name="ready")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener is ready', 'pi-listening')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener is ready', 'pi-listening')"
+        )
         self.run_mainloop(timeout=3)
 
-        assert recieved_signals[0] == ('  ScarlettListener is ready', 'pi-listening')
+        assert recieved_signals[0] == ("  ScarlettListener is ready", "pi-listening")
 
     def test_signal_failed(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
@@ -123,13 +128,18 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         # time.sleep(1)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='failed')
+        run_emitter_signal(request, get_environment, sig_name="failed")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener hit Max STT failures', 'pi-response2')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener hit Max STT failures', 'pi-response2')"
+        )
         self.run_mainloop(timeout=3)
 
-        assert recieved_signals[0] == ('  ScarlettListener hit Max STT failures', 'pi-response2')
+        assert recieved_signals[0] == (
+            "  ScarlettListener hit Max STT failures",
+            "pi-response2",
+        )
 
     def test_signal_kw_rec(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
@@ -166,13 +176,18 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         # time.sleep(1)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='kw-rec')
+        run_emitter_signal(request, get_environment, sig_name="kw-rec")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener caught a keyword match', 'pi-listening')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener caught a keyword match', 'pi-listening')"
+        )
         self.run_mainloop(timeout=3)
 
-        assert recieved_signals[0] == ('  ScarlettListener caught a keyword match', 'pi-listening')
+        assert recieved_signals[0] == (
+            "  ScarlettListener caught a keyword match",
+            "pi-listening",
+        )
 
     def test_signal_command(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
@@ -208,13 +223,19 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         # time.sleep(1)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='cmd-rec')
+        run_emitter_signal(request, get_environment, sig_name="cmd-rec")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener caught a command match', 'pi-response', 'what time is it')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener caught a command match', 'pi-response', 'what time is it')"
+        )
         self.run_mainloop(timeout=3)
 
-        assert recieved_signals[0] == ('  ScarlettListener caught a command match', 'pi-response', 'what time is it')
+        assert recieved_signals[0] == (
+            "  ScarlettListener caught a command match",
+            "pi-response",
+            "what time is it",
+        )
 
     def test_signal_cancel(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
@@ -250,13 +271,18 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         # time.sleep(1)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='cancel')
+        run_emitter_signal(request, get_environment, sig_name="cancel")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener cancel speech Recognition', 'pi-cancel')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener cancel speech Recognition', 'pi-cancel')"
+        )
         self.run_mainloop(timeout=3)
 
-        assert recieved_signals[0] == ('  ScarlettListener cancel speech Recognition', 'pi-cancel')
+        assert recieved_signals[0] == (
+            "  ScarlettListener cancel speech Recognition",
+            "pi-cancel",
+        )
 
     def test_signal_connect(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
@@ -290,13 +316,12 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         self.tasker.prepare(catchall_handler, catchall_handler, catchall_handler)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='connect')
+        run_emitter_signal(request, get_environment, sig_name="connect")
 
-        self.log.info("waiting for initial callback with"
-                      "('ScarlettEmitter',)")
+        self.log.info("waiting for initial callback with" "('ScarlettEmitter',)")
         self.run_mainloop(timeout=3)
 
-        assert recieved_signals[0] == ('ScarlettEmitter',)
+        assert recieved_signals[0] == ("ScarlettEmitter",)
 
     def test_real_signal_ready(self, request, get_environment, monkeypatch, get_bus):
         """Create a Controller object, call on_new_mode_online method and
@@ -304,7 +329,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         """
         recieved_signals = []
 
-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, "DEFAULT_SINK", "fakesink")
 
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
@@ -334,10 +359,12 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         # time.sleep(1)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='ready')
+        run_emitter_signal(request, get_environment, sig_name="ready")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener is ready', 'pi-listening')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener is ready', 'pi-listening')"
+        )
         self.run_mainloop(timeout=3)
 
         # At this point is should have played the ready sound
@@ -349,7 +376,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         """
         recieved_signals = []
 
-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, "DEFAULT_SINK", "fakesink")
 
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
@@ -377,10 +404,12 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='failed')
+        run_emitter_signal(request, get_environment, sig_name="failed")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener hit Max STT failures', 'pi-response2')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener hit Max STT failures', 'pi-response2')"
+        )
         self.run_mainloop(timeout=3)
 
     def test_real_signal_kw_rec(self, request, get_environment, monkeypatch, get_bus):
@@ -390,7 +419,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
 
         recieved_signals = []
 
-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, "DEFAULT_SINK", "fakesink")
 
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
@@ -418,10 +447,12 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='kw-rec')
+        run_emitter_signal(request, get_environment, sig_name="kw-rec")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener caught a keyword match', 'pi-listening')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener caught a keyword match', 'pi-listening')"
+        )
         self.run_mainloop(timeout=3)
 
     def test_real_signal_command(self, request, get_environment, monkeypatch, get_bus):
@@ -430,7 +461,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         """
         recieved_signals = []
 
-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, "DEFAULT_SINK", "fakesink")
 
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
@@ -458,10 +489,12 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='cmd-rec')
+        run_emitter_signal(request, get_environment, sig_name="cmd-rec")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener caught a command match', 'pi-response', 'what time is it')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener caught a command match', 'pi-response', 'what time is it')"
+        )
         self.run_mainloop(timeout=3)
 
     def test_real_signal_cancel(self, request, get_environment, monkeypatch, get_bus):
@@ -470,7 +503,7 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         """
         recieved_signals = []
 
-        monkeypatch.setattr(tasker.player.ScarlettPlayer, 'DEFAULT_SINK', 'fakesink')
+        monkeypatch.setattr(tasker.player.ScarlettPlayer, "DEFAULT_SINK", "fakesink")
 
         # Append tuple to recieved_signals
         def catchall_handler(*args, **kwargs):  # pragma: no cover
@@ -498,8 +531,10 @@ class TestScarlettTasker(IntegrationTestbaseMainloop):
         self.tasker.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
         self.tasker.configure()
 
-        run_emitter_signal(request, get_environment, sig_name='cancel')
+        run_emitter_signal(request, get_environment, sig_name="cancel")
 
-        self.log.info("waiting for initial callback with"
-                      "('  ScarlettListener cancel speech Recognition', 'pi-cancel')")
+        self.log.info(
+            "waiting for initial callback with"
+            "('  ScarlettListener cancel speech Recognition', 'pi-cancel')"
+        )
         self.run_mainloop(timeout=3)

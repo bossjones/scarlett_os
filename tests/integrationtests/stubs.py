@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-'''Utility functions and classes used for integration testing'''
+"""Utility functions and classes used for integration testing"""
 
 import os
 import sys

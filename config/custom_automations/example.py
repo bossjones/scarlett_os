@@ -29,8 +29,7 @@ import logging
 
 from scarlett_os.const import STATE_HOME, STATE_NOT_HOME, STATE_ON, STATE_OFF
 from scarlett_os.helpers import validate_config
-from scarlett_os.helpers.event_decorators import \
-    track_state_change, track_time_change
+from scarlett_os.helpers.event_decorators import track_state_change, track_time_change
 from scarlett_os.helpers.service import service
 import scarlett_os.automations as core
 from scarlett_os.automations import device_tracker
@@ -42,16 +41,16 @@ DOMAIN = "example"
 # List of component names (string) your component depends upon.
 # We depend on group because group will be loaded after all the automations that
 # initialize devices have been setup.
-DEPENDENCIES = ['group', 'device_tracker', 'light']
+DEPENDENCIES = ["group", "device_tracker", "light"]
 
 # Configuration key for the entity id we are targeting.
-CONF_TARGET = 'target'
+CONF_TARGET = "target"
 
 # Variable for storing configuration parameters.
 TARGET_ID = None
 
 # Name of the service that we expose.
-SERVICE_FLASH = 'flash'
+SERVICE_FLASH = "flash"
 
 # Shortcut for the logger
 logger = logging.getLogger(__name__)
@@ -69,8 +68,7 @@ def setup(ss, config):
 
     # Validate that the target entity id exists.
     if ss.states.get(TARGET_ID) is None:
-        logger.error("Target entity id %s does not exist",
-                      TARGET_ID)
+        logger.error("Target entity id %s does not exist", TARGET_ID)
 
         # Tell the bootstrapper that we failed to initialize and clear the
         # stored target id so our functions don't run.
@@ -110,7 +108,7 @@ def wake_up(ss, now):
         return
 
     if device_tracker.is_on(ss) and not core.is_on(ss, TARGET_ID):
-        logger.info('People home at 7AM, turning it on')
+        logger.info("People home at 7AM, turning it on")
         core.turn_on(ss, TARGET_ID)
 
 
@@ -121,7 +119,7 @@ def all_lights_off(ss, entity_id, old_state, new_state):
         return
 
     if core.is_on(ss, TARGET_ID):
-        logger.info('All lights have been turned off, turning it off')
+        logger.info("All lights have been turned off, turning it off")
         core.turn_off(ss, TARGET_ID)
 
 

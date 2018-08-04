@@ -5,7 +5,7 @@ import unittest
 
 import scarlett_os.utility.dt as dt_util
 
-TEST_TIME_ZONE = 'America/Los_Angeles'
+TEST_TIME_ZONE = "America/Los_Angeles"
 
 # FIXME: Convert to pytest
 # FIXME: 5/10/2017
@@ -47,7 +47,8 @@ class TestDateUtil(unittest.TestCase):
         self.assertAlmostEqual(
             dt_util.utcnow().replace(tzinfo=None),
             datetime.utcnow(),
-            delta=timedelta(seconds=1))
+            delta=timedelta(seconds=1),
+        )
 
     def test_now(self):
         """Test the now method."""
@@ -56,14 +57,14 @@ class TestDateUtil(unittest.TestCase):
         self.assertAlmostEqual(
             dt_util.as_utc(dt_util.now()).replace(tzinfo=None),
             datetime.utcnow(),
-            delta=timedelta(seconds=1))
+            delta=timedelta(seconds=1),
+        )
 
     def test_as_utc_with_naive_object(self):
         """Test the now method."""
         utcnow = datetime.utcnow()
 
-        self.assertEqual(utcnow,
-                         dt_util.as_utc(utcnow).replace(tzinfo=None))
+        self.assertEqual(utcnow, dt_util.as_utc(utcnow).replace(tzinfo=None))
 
     def test_as_utc_with_utc_object(self):
         """Test UTC time with UTC object."""
@@ -84,8 +85,8 @@ class TestDateUtil(unittest.TestCase):
         """Test local time with native object."""
         now = dt_util.now()
         self.assertAlmostEqual(
-            now, dt_util.as_local(datetime.utcnow()),
-            delta=timedelta(seconds=1))
+            now, dt_util.as_local(datetime.utcnow()), delta=timedelta(seconds=1)
+        )
 
     def test_as_local_with_local_object(self):
         """Test local with local object."""
@@ -106,7 +107,8 @@ class TestDateUtil(unittest.TestCase):
         """Test utc_from_timestamp method."""
         self.assertEqual(
             datetime(1986, 7, 9, tzinfo=dt_util.UTC),
-            dt_util.utc_from_timestamp(521251200))
+            dt_util.utc_from_timestamp(521251200),
+        )
 
     def test_as_timestamp(self):
         """Test as_timestamp method."""
@@ -123,9 +125,9 @@ class TestDateUtil(unittest.TestCase):
 
     def test_parse_datetime_converts_correctly(self):
         """Test parse_datetime converts strings."""
-        assert \
-            datetime(1986, 7, 9, 12, 0, 0, tzinfo=dt_util.UTC) == \
-            dt_util.parse_datetime("1986-07-09T12:00:00Z")
+        assert datetime(
+            1986, 7, 9, 12, 0, 0, tzinfo=dt_util.UTC
+        ) == dt_util.parse_datetime("1986-07-09T12:00:00Z")
 
         utcnow = dt_util.utcnow()
 
@@ -158,11 +160,11 @@ class TestDateUtil(unittest.TestCase):
         diff = dt_util.now() - timedelta(minutes=320)
         self.assertEqual(dt_util.get_age(diff), "5 hours")
 
-        diff = dt_util.now() - timedelta(minutes=2*60*24)
+        diff = dt_util.now() - timedelta(minutes=2 * 60 * 24)
         self.assertEqual(dt_util.get_age(diff), "2 days")
 
-        diff = dt_util.now() - timedelta(minutes=32*60*24)
+        diff = dt_util.now() - timedelta(minutes=32 * 60 * 24)
         self.assertEqual(dt_util.get_age(diff), "1 month")
 
-        diff = dt_util.now() - timedelta(minutes=365*60*24)
+        diff = dt_util.now() - timedelta(minutes=365 * 60 * 24)
         self.assertEqual(dt_util.get_age(diff), "1 year")

@@ -1,6 +1,7 @@
 from pdb import DefaultConfig
 
+
 class Config(DefaultConfig):
-    prompt = 'pdb> '
+    prompt = "pdb> "
     sticky_by_default = True
-    editor = 'vim'
+    editor = "vim"

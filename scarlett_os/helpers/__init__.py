@@ -14,8 +14,7 @@ if False:
 ConfigType = Dict[str, Any]
 
 
-def config_per_platform(config: ConfigType,
-                        domain: str) -> Iterable[Tuple[Any, Any]]:
+def config_per_platform(config: ConfigType, domain: str) -> Iterable[Tuple[Any, Any]]:
     """Generator to break a component config into different platforms.
 
     For example, will find 'switch', 'switch 2', 'switch 3', .. etc
@@ -39,5 +38,5 @@ def config_per_platform(config: ConfigType,
 
 def extract_domain_configs(config: ConfigType, domain: str) -> Sequence[str]:
     """Extract keys from config for given domain name."""
-    pattern = re.compile(r'^{}(| .+)$'.format(domain))
+    pattern = re.compile(r"^{}(| .+)$".format(domain))
     return [key for key in config.keys() if pattern.match(key)]

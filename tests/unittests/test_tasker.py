@@ -30,17 +30,17 @@ from scarlett_os.utility import gnome  # Module with the decorator we need to re
 
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def tasker_unit_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
-    print('Called [setup]: mocker.stopall()')
+    print("Called [setup]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(tasker)')
+    print("Called [setup]: imp.reload(tasker)")
     imp.reload(tasker)
     yield mocker
-    print('Called [teardown]: mocker.stopall()')
+    print("Called [teardown]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(tasker)')
+    print("Called [setup]: imp.reload(tasker)")
     imp.reload(tasker)
 
 
@@ -55,38 +55,61 @@ def tasker_unit_mocker_stopall(mocker):
 @pytest.mark.unittest
 @pytest.mark.scarlettonlyunittest
 class TestScarlettTasker(object):
-
     def test_tasker_init(self, tasker_unit_mocker_stopall):
         "Replace job of old setUp function in unittest"
         temp_mocker = tasker_unit_mocker_stopall
         #####################################################################################################################
         # TODO: Turn this block into a fixture
         #####################################################################################################################
-        temp_mocker.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x)
+        temp_mocker.patch("scarlett_os.utility.gnome.abort_on_exception", lambda x: x)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.gi', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.gi", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GLib', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GLib", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GObject', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GObject", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.Gio', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.Gio", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('pydbus.SessionBus', spec=True, create=True)
+        temp_mocker.patch("pydbus.SessionBus", spec=True, create=True)
         #####################################################################################################################
 
-        temp_mocker.patch('scarlett_os.utility.dbus_runner.DBusRunner', autospec=True, name='mock_dbusrunner')
-        temp_mocker.patch('scarlett_os.tasker.TaskSignalHandler', spec=scarlett_os.tasker.TaskSignalHandler, name='mock_task_signal_handler')
-        temp_mocker.patch('scarlett_os.tasker.time.sleep', name='mock_time_sleep')
-        temp_mocker.patch('scarlett_os.tasker.logging.Logger.debug', name='mock_logger_debug')
-        temp_mocker.patch('scarlett_os.tasker._IdleObject', name='mock_idle_obj')
-        temp_mocker.patch('scarlett_os.utility.thread.time_logger', name='mock_time_logger')
-        temp_mocker.patch('scarlett_os.tasker.speaker', name='mock_scarlett_speaker')
-        temp_mocker.patch('scarlett_os.tasker.player', name='mock_scarlett_player')
-        temp_mocker.patch('scarlett_os.tasker.commands', name='mock_scarlett_commands')
-        temp_mocker.patch('scarlett_os.tasker.threading.RLock', spec=scarlett_os.tasker.threading.RLock, name='mock_threading_rlock')
-        temp_mocker.patch('scarlett_os.tasker.threading.Event', spec=scarlett_os.tasker.threading.Event, name='mock_threading_event')
-        temp_mocker.patch('scarlett_os.tasker.threading.Thread', spec=scarlett_os.tasker.threading.Thread, name='mock_thread_class')
+        temp_mocker.patch(
+            "scarlett_os.utility.dbus_runner.DBusRunner",
+            autospec=True,
+            name="mock_dbusrunner",
+        )
+        temp_mocker.patch(
+            "scarlett_os.tasker.TaskSignalHandler",
+            spec=scarlett_os.tasker.TaskSignalHandler,
+            name="mock_task_signal_handler",
+        )
+        temp_mocker.patch("scarlett_os.tasker.time.sleep", name="mock_time_sleep")
+        temp_mocker.patch(
+            "scarlett_os.tasker.logging.Logger.debug", name="mock_logger_debug"
+        )
+        temp_mocker.patch("scarlett_os.tasker._IdleObject", name="mock_idle_obj")
+        temp_mocker.patch(
+            "scarlett_os.utility.thread.time_logger", name="mock_time_logger"
+        )
+        temp_mocker.patch("scarlett_os.tasker.speaker", name="mock_scarlett_speaker")
+        temp_mocker.patch("scarlett_os.tasker.player", name="mock_scarlett_player")
+        temp_mocker.patch("scarlett_os.tasker.commands", name="mock_scarlett_commands")
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.RLock",
+            spec=scarlett_os.tasker.threading.RLock,
+            name="mock_threading_rlock",
+        )
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.Event",
+            spec=scarlett_os.tasker.threading.Event,
+            name="mock_threading_event",
+        )
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.Thread",
+            spec=scarlett_os.tasker.threading.Thread,
+            name="mock_thread_class",
+        )
 
         tskr = tasker.ScarlettTasker()
 
@@ -95,31 +118,55 @@ class TestScarlettTasker(object):
         #####################################################################################################################
         # TODO: Turn this block into a fixture
         #####################################################################################################################
-        temp_mocker.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x)
+        temp_mocker.patch("scarlett_os.utility.gnome.abort_on_exception", lambda x: x)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.gi', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.gi", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GLib', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GLib", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GObject', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GObject", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.Gio', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.Gio", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('pydbus.SessionBus', spec=True, create=True)
+        temp_mocker.patch("pydbus.SessionBus", spec=True, create=True)
         #####################################################################################################################
 
-        mock_dbusrunner = temp_mocker.patch('scarlett_os.utility.dbus_runner.DBusRunner', autospec=True, name='mock_dbusrunner')
-        mock_task_signal_handler = temp_mocker.patch('scarlett_os.tasker.TaskSignalHandler', spec=scarlett_os.tasker.TaskSignalHandler, name='mock_task_signal_handler')
-        temp_mocker.patch('scarlett_os.tasker.time.sleep', name='mock_time_sleep')
-        temp_mocker.patch('scarlett_os.tasker.logging.Logger.debug', name='mock_logger_debug')
-        temp_mocker.patch('scarlett_os.tasker._IdleObject', name='mock_idle_obj')
-        temp_mocker.patch('scarlett_os.utility.thread.time_logger', name='mock_time_logger')
-        temp_mocker.patch('scarlett_os.tasker.speaker', name='mock_scarlett_speaker')
-        temp_mocker.patch('scarlett_os.tasker.player', name='mock_scarlett_player')
-        temp_mocker.patch('scarlett_os.tasker.commands', name='mock_scarlett_commands')
-        temp_mocker.patch('scarlett_os.tasker.threading.RLock', spec=scarlett_os.tasker.threading.RLock, name='mock_threading_rlock')
-        temp_mocker.patch('scarlett_os.tasker.threading.Event', spec=scarlett_os.tasker.threading.Event, name='mock_threading_event')
-        temp_mocker.patch('scarlett_os.tasker.threading.Thread', spec=scarlett_os.tasker.threading.Thread, name='mock_thread_class')
+        mock_dbusrunner = temp_mocker.patch(
+            "scarlett_os.utility.dbus_runner.DBusRunner",
+            autospec=True,
+            name="mock_dbusrunner",
+        )
+        mock_task_signal_handler = temp_mocker.patch(
+            "scarlett_os.tasker.TaskSignalHandler",
+            spec=scarlett_os.tasker.TaskSignalHandler,
+            name="mock_task_signal_handler",
+        )
+        temp_mocker.patch("scarlett_os.tasker.time.sleep", name="mock_time_sleep")
+        temp_mocker.patch(
+            "scarlett_os.tasker.logging.Logger.debug", name="mock_logger_debug"
+        )
+        temp_mocker.patch("scarlett_os.tasker._IdleObject", name="mock_idle_obj")
+        temp_mocker.patch(
+            "scarlett_os.utility.thread.time_logger", name="mock_time_logger"
+        )
+        temp_mocker.patch("scarlett_os.tasker.speaker", name="mock_scarlett_speaker")
+        temp_mocker.patch("scarlett_os.tasker.player", name="mock_scarlett_player")
+        temp_mocker.patch("scarlett_os.tasker.commands", name="mock_scarlett_commands")
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.RLock",
+            spec=scarlett_os.tasker.threading.RLock,
+            name="mock_threading_rlock",
+        )
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.Event",
+            spec=scarlett_os.tasker.threading.Event,
+            name="mock_threading_event",
+        )
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.Thread",
+            spec=scarlett_os.tasker.threading.Thread,
+            name="mock_thread_class",
+        )
 
         # dbus mocks
         _dr = mock_dbusrunner.get_instance()
@@ -144,31 +191,55 @@ class TestScarlettTasker(object):
         #####################################################################################################################
         # TODO: Turn this block into a fixture
         #####################################################################################################################
-        temp_mocker.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x)
+        temp_mocker.patch("scarlett_os.utility.gnome.abort_on_exception", lambda x: x)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.gi', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.gi", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GLib', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GLib", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GObject', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GObject", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.Gio', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.Gio", spec=True, create=True)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('pydbus.SessionBus', spec=True, create=True)
+        temp_mocker.patch("pydbus.SessionBus", spec=True, create=True)
         #####################################################################################################################
 
-        mock_dbusrunner = temp_mocker.patch('scarlett_os.utility.dbus_runner.DBusRunner', autospec=True, name='mock_dbusrunner')
-        mock_task_signal_handler = temp_mocker.patch('scarlett_os.tasker.TaskSignalHandler', spec=scarlett_os.tasker.TaskSignalHandler, name='mock_task_signal_handler')
-        temp_mocker.patch('scarlett_os.tasker.time.sleep', name='mock_time_sleep')
-        temp_mocker.patch('scarlett_os.tasker.logging.Logger.debug', name='mock_logger_debug')
-        temp_mocker.patch('scarlett_os.tasker._IdleObject', name='mock_idle_obj')
-        temp_mocker.patch('scarlett_os.utility.thread.time_logger', name='mock_time_logger')
-        temp_mocker.patch('scarlett_os.tasker.speaker', name='mock_scarlett_speaker')
-        temp_mocker.patch('scarlett_os.tasker.player', name='mock_scarlett_player')
-        temp_mocker.patch('scarlett_os.tasker.commands', name='mock_scarlett_commands')
-        temp_mocker.patch('scarlett_os.tasker.threading.RLock', spec=scarlett_os.tasker.threading.RLock, name='mock_threading_rlock')
-        temp_mocker.patch('scarlett_os.tasker.threading.Event', spec=scarlett_os.tasker.threading.Event, name='mock_threading_event')
-        temp_mocker.patch('scarlett_os.tasker.threading.Thread', spec=scarlett_os.tasker.threading.Thread, name='mock_thread_class')
+        mock_dbusrunner = temp_mocker.patch(
+            "scarlett_os.utility.dbus_runner.DBusRunner",
+            autospec=True,
+            name="mock_dbusrunner",
+        )
+        mock_task_signal_handler = temp_mocker.patch(
+            "scarlett_os.tasker.TaskSignalHandler",
+            spec=scarlett_os.tasker.TaskSignalHandler,
+            name="mock_task_signal_handler",
+        )
+        temp_mocker.patch("scarlett_os.tasker.time.sleep", name="mock_time_sleep")
+        temp_mocker.patch(
+            "scarlett_os.tasker.logging.Logger.debug", name="mock_logger_debug"
+        )
+        temp_mocker.patch("scarlett_os.tasker._IdleObject", name="mock_idle_obj")
+        temp_mocker.patch(
+            "scarlett_os.utility.thread.time_logger", name="mock_time_logger"
+        )
+        temp_mocker.patch("scarlett_os.tasker.speaker", name="mock_scarlett_speaker")
+        temp_mocker.patch("scarlett_os.tasker.player", name="mock_scarlett_player")
+        temp_mocker.patch("scarlett_os.tasker.commands", name="mock_scarlett_commands")
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.RLock",
+            spec=scarlett_os.tasker.threading.RLock,
+            name="mock_threading_rlock",
+        )
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.Event",
+            spec=scarlett_os.tasker.threading.Event,
+            name="mock_threading_event",
+        )
+        temp_mocker.patch(
+            "scarlett_os.tasker.threading.Thread",
+            spec=scarlett_os.tasker.threading.Thread,
+            name="mock_thread_class",
+        )
 
         # dbus mocks
         _dr = mock_dbusrunner.get_instance()
@@ -179,10 +250,10 @@ class TestScarlettTasker(object):
         tskr = tasker.ScarlettTasker()
 
         def on_signal_recieved(*args, **kwargs):
-            print('on_signal_recieved')
+            print("on_signal_recieved")
 
         def connected_to_listener_cb(*args, **kwargs):
-            print('connected_to_listener_cb')
+            print("connected_to_listener_cb")
 
         tskr.prepare(on_signal_recieved, on_signal_recieved, on_signal_recieved)
 
@@ -197,20 +268,26 @@ class TestScarlettTasker(object):
 
 @pytest.mark.unittest
 class TestSoundType(object):
-
     def test_soundtype_get_path(self):
-        path_to_sound = '/home/pi/dev/bossjones-github/scarlett_os/static/sounds'
+        path_to_sound = "/home/pi/dev/bossjones-github/scarlett_os/static/sounds"
         assert tasker.STATIC_SOUNDS_PATH == path_to_sound
-        assert type(tasker.SoundType.get_path('pi-cancel')) == list
-        assert tasker.SoundType.get_path('pi-cancel') == ["{}/pi-cancel.wav".format(path_to_sound)]
-        assert tasker.SoundType.get_path('pi-listening') == ["{}/pi-listening.wav".format(path_to_sound)]
-        assert tasker.SoundType.get_path('pi-response') == ["{}/pi-response.wav".format(path_to_sound)]
-        assert tasker.SoundType.get_path('pi-response2') == ["{}/pi-response2.wav".format(path_to_sound)]
+        assert type(tasker.SoundType.get_path("pi-cancel")) == list
+        assert tasker.SoundType.get_path("pi-cancel") == [
+            "{}/pi-cancel.wav".format(path_to_sound)
+        ]
+        assert tasker.SoundType.get_path("pi-listening") == [
+            "{}/pi-listening.wav".format(path_to_sound)
+        ]
+        assert tasker.SoundType.get_path("pi-response") == [
+            "{}/pi-response.wav".format(path_to_sound)
+        ]
+        assert tasker.SoundType.get_path("pi-response2") == [
+            "{}/pi-response2.wav".format(path_to_sound)
+        ]
 
 
 @pytest.mark.unittest
 class TestTaskSignalHandler(object):
-
     def test_connect_then_disconnect(self, tasker_unit_mocker_stopall):
         temp_mocker = tasker_unit_mocker_stopall
         ###################################################################################################################
@@ -218,43 +295,48 @@ class TestTaskSignalHandler(object):
         _old_glib_exception_error = GLib.GError
         # Now patch the decorator where the decorator is being imported from
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x)
+        temp_mocker.patch("scarlett_os.utility.gnome.abort_on_exception", lambda x: x)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.gi', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.gi", spec=True, create=True)
 
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GLib', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GLib", spec=True, create=True)
 
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GObject', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GObject", spec=True, create=True)
 
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.Gio', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.Gio", spec=True, create=True)
 
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('pydbus.SessionBus', spec=True, create=True)
+        temp_mocker.patch("pydbus.SessionBus", spec=True, create=True)
         ###################################################################################################################
-        mock_dbusrunner = temp_mocker.patch('scarlett_os.utility.dbus_runner.DBusRunner', autospec=True, name='mock_dbusrunner')
-
+        mock_dbusrunner = temp_mocker.patch(
+            "scarlett_os.utility.dbus_runner.DBusRunner",
+            autospec=True,
+            name="mock_dbusrunner",
+        )
 
         _dr = mock_dbusrunner.get_instance()
         bus = _dr.get_session_bus()
 
         def test_cb():
-            print('test_cb')
+            print("test_cb")
 
         _handler.connect(bus, "SttFailedSignal", test_cb)
 
         # assertions
         assert len(_handler._ids) == 1
 
-        bus.subscribe.assert_called_once_with(sender=None,
-                                              iface="org.scarlett.Listener",
-                                              signal="SttFailedSignal",
-                                              object="/org/scarlett/Listener",
-                                              arg0=None,
-                                              flags=0,
-                                              signal_fired=test_cb)
+        bus.subscribe.assert_called_once_with(
+            sender=None,
+            iface="org.scarlett.Listener",
+            signal="SttFailedSignal",
+            object="/org/scarlett/Listener",
+            arg0=None,
+            flags=0,
+            signal_fired=test_cb,
+        )
 
         # Disconnect then test again
         _handler.disconnect(bus, "SttFailedSignal")
@@ -267,29 +349,33 @@ class TestTaskSignalHandler(object):
         _handler = tasker.TaskSignalHandler()
         # Now patch the decorator where the decorator is being imported from
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.utility.gnome.abort_on_exception', lambda x: x)
+        temp_mocker.patch("scarlett_os.utility.gnome.abort_on_exception", lambda x: x)
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.gi', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.gi", spec=True, create=True)
 
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GLib', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GLib", spec=True, create=True)
 
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.GObject', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.GObject", spec=True, create=True)
 
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('scarlett_os.internal.gi.Gio', spec=True, create=True)
+        temp_mocker.patch("scarlett_os.internal.gi.Gio", spec=True, create=True)
 
         # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()
-        temp_mocker.patch('pydbus.SessionBus', spec=True, create=True)
+        temp_mocker.patch("pydbus.SessionBus", spec=True, create=True)
         ###################################################################################################################
-        mock_dbusrunner = temp_mocker.patch('scarlett_os.utility.dbus_runner.DBusRunner', autospec=True, name='mock_dbusrunner')
+        mock_dbusrunner = temp_mocker.patch(
+            "scarlett_os.utility.dbus_runner.DBusRunner",
+            autospec=True,
+            name="mock_dbusrunner",
+        )
 
         _dr = mock_dbusrunner.get_instance()
         bus = _dr.get_session_bus()
 
         def test_cb():
-            print('test_cb')
+            print("test_cb")
 
         _handler.connect(bus, "SttFailedSignal", test_cb)
 
@@ -301,7 +387,8 @@ class TestTaskSignalHandler(object):
 
 @pytest.mark.unittest
 class TestSpeakerType(object):
-
     def test_speakertype_speaker_to_array(self):
-        assert type(tasker.SpeakerType.speaker_to_array('It is now, 05:34 PM')) == list
-        assert tasker.SpeakerType.speaker_to_array('It is now, 05:34 PM') == ['It is now, 05:34 PM']
+        assert type(tasker.SpeakerType.speaker_to_array("It is now, 05:34 PM")) == list
+        assert tasker.SpeakerType.speaker_to_array("It is now, 05:34 PM") == [
+            "It is now, 05:34 PM"
+        ]

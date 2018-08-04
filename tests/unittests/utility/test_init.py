@@ -25,8 +25,7 @@ class TestUtil(unittest.TestCase):
         """Test sanitize_path."""
         self.assertEqual("test/path", utility.sanitize_path("test/path"))
         self.assertEqual("test/path", utility.sanitize_path("~test/path"))
-        self.assertEqual("//test/path",
-                         utility.sanitize_path("~/../test/path"))
+        self.assertEqual("//test/path", utility.sanitize_path("~/../test/path"))
 
     def test_slugify(self):
         """Test slugify."""
@@ -39,10 +38,11 @@ class TestUtil(unittest.TestCase):
         self.assertEqual("A", utility.repr_helper("A"))
         self.assertEqual("5", utility.repr_helper(5))
         self.assertEqual("True", utility.repr_helper(True))
-        self.assertEqual("test=1",
-                         utility.repr_helper({"test": 1}))
-        self.assertEqual("1986-07-09T12:00:00+00:00",
-                         utility.repr_helper(datetime(1986, 7, 9, 12, 0, 0)))
+        self.assertEqual("test=1", utility.repr_helper({"test": 1}))
+        self.assertEqual(
+            "1986-07-09T12:00:00+00:00",
+            utility.repr_helper(datetime(1986, 7, 9, 12, 0, 0)),
+        )
 
     def test_convert(self):
         """Test convert."""
@@ -56,14 +56,13 @@ class TestUtil(unittest.TestCase):
     def test_ensure_unique_string(self):
         """Test ensure_unique_string."""
         self.assertEqual(
-            "Beer_3",
-            utility.ensure_unique_string("Beer", ["Beer", "Beer_2"]))
-        self.assertEqual(
-            "Beer",
-            utility.ensure_unique_string("Beer", ["Wine", "Soda"]))
+            "Beer_3", utility.ensure_unique_string("Beer", ["Beer", "Beer_2"])
+        )
+        self.assertEqual("Beer", utility.ensure_unique_string("Beer", ["Wine", "Soda"]))
 
     def test_ordered_enum(self):
         """Test the ordered enum class."""
+
         class TestEnum(utility.OrderedEnum):
             """Test enum that can be ordered."""
 
@@ -89,17 +88,13 @@ class TestUtil(unittest.TestCase):
 
         # Python will raise a TypeError if the <, <=, >, >= methods
         # raise a NotImplemented error.
-        self.assertRaises(TypeError,
-                          lambda x, y: x < y, TestEnum.FIRST, 1)
+        self.assertRaises(TypeError, lambda x, y: x < y, TestEnum.FIRST, 1)
 
-        self.assertRaises(TypeError,
-                          lambda x, y: x <= y, TestEnum.FIRST, 1)
+        self.assertRaises(TypeError, lambda x, y: x <= y, TestEnum.FIRST, 1)
 
-        self.assertRaises(TypeError,
-                          lambda x, y: x > y, TestEnum.FIRST, 1)
+        self.assertRaises(TypeError, lambda x, y: x > y, TestEnum.FIRST, 1)
 
-        self.assertRaises(TypeError,
-                          lambda x, y: x >= y, TestEnum.FIRST, 1)
+        self.assertRaises(TypeError, lambda x, y: x >= y, TestEnum.FIRST, 1)
 
     def test_ordered_set(self):
         """Test ordering of set."""
@@ -140,8 +135,8 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(4, set1.pop())
         self.assertEqual([2, 3], list(set1))
 
-        self.assertEqual('OrderedSet()', str(utility.OrderedSet()))
-        self.assertEqual('OrderedSet([2, 3])', str(set1))
+        self.assertEqual("OrderedSet()", str(utility.OrderedSet()))
+        self.assertEqual("OrderedSet([2, 3])", str(set1))
 
         self.assertEqual(set1, utility.OrderedSet([2, 3]))
         self.assertNotEqual(set1, utility.OrderedSet([3, 2]))
@@ -200,14 +195,14 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(2, len(calls1))
         self.assertEqual(1, len(calls2))
 
-        with patch('scarlett_os.utility.utcnow', return_value=plus3):
+        with patch("scarlett_os.utility.utcnow", return_value=plus3):
             test_throttle1()
             test_throttle2()
 
         self.assertEqual(2, len(calls1))
         self.assertEqual(1, len(calls2))
 
-        with patch('scarlett_os.utility.utcnow', return_value=plus5):
+        with patch("scarlett_os.utility.utcnow", return_value=plus5):
             test_throttle1()
             test_throttle2()
 
@@ -216,6 +211,7 @@ class TestUtil(unittest.TestCase):
 
     def test_throttle_per_instance(self):
         """Test that the throttle method is done per instance of a class."""
+
         class Tester(object):
             """A tester class for the throttle."""
 
@@ -229,6 +225,7 @@ class TestUtil(unittest.TestCase):
 
     def test_throttle_on_method(self):
         """Test that throttle works when wrapping a method."""
+
         class Tester(object):
             """A tester class for the throttle."""
 
@@ -244,6 +241,7 @@ class TestUtil(unittest.TestCase):
 
     def test_throttle_on_two_method(self):
         """Test that throttle works when wrapping two methods."""
+
         class Tester(object):
             """A test class for the throttle."""
 

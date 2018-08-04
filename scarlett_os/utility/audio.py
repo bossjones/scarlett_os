@@ -6,20 +6,23 @@ from __future__ import with_statement, division
 
 from scarlett_os.internal.gi import Gst
 from scarlett_os.internal.gi import _gst_available
+
 # from scarlett_os import subprocess
 # import json
 
 from gettext import gettext as _
 import re
 import logging
+
 logger = logging.getLogger(__name__)
 
 QUEUE_SIZE = 10
 BUFFER_SIZE = 10
-SENTINEL = '__GSTDEC_SENTINEL__'
+SENTINEL = "__GSTDEC_SENTINEL__"
 
 CARD_MATCH = re.compile(
-    r'card (?P<card>\d+)[:].*?[[](?P<description>.*?)[]], device (?P<device>\d+)[:].*?[[](?P<device_description>.*?)[]]')
+    r"card (?P<card>\d+)[:].*?[[](?P<description>.*?)[]], device (?P<device>\d+)[:].*?[[](?P<device_description>.*?)[]]"
+)
 
 
 # subprocess.Subprocess(
