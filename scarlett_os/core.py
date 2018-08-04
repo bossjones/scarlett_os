@@ -22,14 +22,26 @@ import voluptuous as vol
 from voluptuous.humanize import humanize_error
 
 from scarlett_os.const import (
-    ATTR_DOMAIN, ATTR_FRIENDLY_NAME, ATTR_NOW, ATTR_SERVICE,
-    ATTR_SERVICE_CALL_ID, ATTR_SERVICE_DATA, EVENT_CALL_SERVICE,
-    EVENT_SCARLETT_OS_START, EVENT_SCARLETT_OS_STOP,
-    EVENT_SERVICE_EXECUTED, EVENT_SERVICE_REGISTERED, EVENT_STATE_CHANGED,
-    EVENT_TIME_CHANGED, MATCH_ALL, RESTART_EXIT_CODE,
-    SERVICE_SCARLETT_OS_RESTART, SERVICE_SCARLETT_OS_STOP, __version__)
-from scarlett_os.exceptions import (
-    ScarlettError, InvalidEntityFormatError)
+    ATTR_DOMAIN,
+    ATTR_FRIENDLY_NAME,
+    ATTR_NOW,
+    ATTR_SERVICE,
+    ATTR_SERVICE_CALL_ID,
+    ATTR_SERVICE_DATA,
+    EVENT_CALL_SERVICE,
+    EVENT_SCARLETT_OS_START,
+    EVENT_SCARLETT_OS_STOP,
+    EVENT_SERVICE_EXECUTED,
+    EVENT_SERVICE_REGISTERED,
+    EVENT_STATE_CHANGED,
+    EVENT_TIME_CHANGED,
+    MATCH_ALL,
+    RESTART_EXIT_CODE,
+    SERVICE_SCARLETT_OS_RESTART,
+    SERVICE_SCARLETT_OS_STOP,
+    __version__,
+)
+from scarlett_os.exceptions import ScarlettError, InvalidEntityFormatError
 import scarlett_os.utility as utility
 import scarlett_os.utility.dt as dt_utility
 import scarlett_os.utility.location as location

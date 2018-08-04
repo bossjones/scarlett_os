@@ -13,8 +13,9 @@ class _TextTestResult(unittest.TestResult):
 
     Used by TextTestRunner.
     """
-    separator1 = '=' * 70
-    separator2 = '-' * 70
+
+    separator1 = "=" * 70
+    separator2 = "-" * 70
 
     def __init__(self, stream, descriptions, verbosity):
         unittest.TestResult.__init__(self)
@@ -45,42 +46,42 @@ class _TextTestResult(unittest.TestResult):
         if self.showAll:
             self.stream.writeln("ok")
         elif self.dots:
-            self.stream.write('.')
+            self.stream.write(".")
 
     def addError(self, test, err):
         unittest.TestResult.addError(self, test, err)
         if self.showAll:
             self.stream.writeln("ERROR")
         elif self.dots:
-            self.stream.write('E')
+            self.stream.write("E")
 
     def addFailure(self, test, err):
         unittest.TestResult.addFailure(self, test, err)
         if self.showAll:
             self.stream.writeln("FAIL")
         elif self.dots:
-            self.stream.write('F')
+            self.stream.write("F")
 
     def addSkip(self, test, reason):
         unittest.TestResult.addSkip(self, test, reason)
         if self.showAll:
             self.stream.writeln("SKIP : " + reason)
         elif self.dots:
-            self.stream.write('S')
+            self.stream.write("S")
 
     def printErrors(self):
         if self.dots or self.showAll:
             self.stream.writeln()
-        self.printErrorList('ERROR', self.errors)
-        self.printErrorList('FAIL', self.failures)
+        self.printErrorList("ERROR", self.errors)
+        self.printErrorList("FAIL", self.failures)
 
     def printErrorList(self, flavour, errors):
         for test, err in errors:
             self.stream.writeln(self.separator1)
-            self.stream.writeln("%s: [%s] --> %s "
-                                % (flavour,
-                                   test.__class__.__name__,
-                                   self.getDescription(test)))
+            self.stream.writeln(
+                "%s: [%s] --> %s "
+                % (flavour, test.__class__.__name__, self.getDescription(test))
+            )
             self.stream.writeln(self.separator2)
             self.stream.writeln("%s" % err)
 
@@ -97,7 +98,7 @@ class _WritelnDecorator:
     def writeln(self, arg=None):
         if arg:
             self.write(arg)
-        self.write('\n')  # text-mode streams translate to \r\n if needed
+        self.write("\n")  # text-mode streams translate to \r\n if needed
 
 
 class TestRunner:
@@ -125,8 +126,9 @@ class TestRunner:
         result.printErrors()
         self.stream.writeln(result.separator2)
         run = result.testsRun
-        self.stream.writeln("Ran %d test%s in %.3fs" %
-                            (run, run != 1 and "s" or "", timeTaken))
+        self.stream.writeln(
+            "Ran %d test%s in %.3fs" % (run, run != 1 and "s" or "", timeTaken)
+        )
         self.stream.writeln()
         if not result.wasSuccessful():
             self.stream.write("FAILED (")
@@ -152,7 +154,7 @@ def run_test_module(test_modules_list=None, test_prefix=None):
         test_modules_list = []
     elif not isinstance(test_modules_list, list):
         test_modules_list = [test_modules_list]
-    test_modules_list.append('__main__')
+    test_modules_list.append("__main__")
     for test in test_modules_list:
         # Doctest
         suite.addTest(doctest.DocTestSuite(test, test_finder=finder))

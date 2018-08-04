@@ -40,33 +40,36 @@ def player_monkeyfunc(request):
     mpatch.undo()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def player_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
-    print('Called [setup]: mocker.stopall()')
+    print("Called [setup]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(threadmanager)')
+    print("Called [setup]: imp.reload(threadmanager)")
     imp.reload(player)
     yield mocker
-    print('Called [teardown]: mocker.stopall()')
+    print("Called [teardown]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(threadmanager)')
+    print("Called [setup]: imp.reload(threadmanager)")
     imp.reload(player)
 
 
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyintgr
 class TestScarlettPlayer(object):
-
     def test_ScarlettPlayer_listening(self, player_monkeyfunc, player_mocker_stopall):
         # we want to use pulsesink by default but in docker we might
         # not have a pulseaudio server running
         # test using fakesink in this usecase
-        player_monkeyfunc.setattr(__name__ + '.player.ScarlettPlayer.DEFAULT_SINK', 'fakesink')
+        player_monkeyfunc.setattr(
+            __name__ + ".player.ScarlettPlayer.DEFAULT_SINK", "fakesink"
+        )
 
         player_data = []
 
-        pi_listening_wav = os.path.join(get_user_project_base_path() + "/static/sounds", "pi-listening.wav")
+        pi_listening_wav = os.path.join(
+            get_user_project_base_path() + "/static/sounds", "pi-listening.wav"
+        )
         # Run player
         wavefile = [pi_listening_wav]
         for path in wavefile:
@@ -84,7 +87,9 @@ class TestScarlettPlayer(object):
         assert str(type(player_data[0].queueA)) == "<class '__gi__.GstQueue'>"
         assert str(type(player_data[0].queueB)) == "<class '__gi__.GstQueue'>"
         assert str(type(player_data[0].appsink)) == "<class '__gi__.GstAppSink'>"
-        assert str(type(player_data[0].audioconvert)) == "<class '__gi__.GstAudioConvert'>"
+        assert (
+            str(type(player_data[0].audioconvert)) == "<class '__gi__.GstAudioConvert'>"
+        )
         assert str(type(player_data[0].splitter)) == "<class '__gi__.GstTee'>"
         assert str(type(player_data[0].pulsesink)) == "<class '__gi__.GstFakeSink'>"
 

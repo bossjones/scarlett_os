@@ -21,7 +21,7 @@ DEPENDENCIES = []
 def setup(ss, config):
     """Setup our skeleton component."""
     # States are in the format DOMAIN.OBJECT_ID.
-    ss.states.set('hello_world.Hello_World', 'Works!')
+    ss.states.set("hello_world.Hello_World", "Works!")
 
     # Return boolean to indicate that initialization was successfully.
     return True

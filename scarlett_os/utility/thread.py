@@ -57,11 +57,12 @@ logger = logging.getLogger(__name__)
 # Constants
 QUEUE_SIZE = 10
 BUFFER_SIZE = 10
-SENTINEL = '__GSTDEC_SENTINEL__'
+SENTINEL = "__GSTDEC_SENTINEL__"
 
 
 class Priority(IntEnum):
     """Priority constants that map to values in PyGObject."""
+
     HIGH = 0
     BACKGROUND = 1
     TIMEOUT = 2
@@ -73,7 +74,8 @@ def time_logger(name, level=logging.DEBUG):
     """Time logger context manager. Shows how long it takes to run a particular method"""
     start = time.time()
     yield
-    logger.log(level, '%s took %dms', name, (time.time() - start) * 1000)
+    logger.log(level, "%s took %dms", name, (time.time() - start) * 1000)
+
 
 #############################################################
 # NOTE: borrowed from quodlibet.util.thread module
@@ -148,9 +150,7 @@ def time_logger(name, level=logging.DEBUG):
 class Thread(threading.Thread, _IdleObject):
     """Event-powered thread."""
 
-    __gsignals__ = {
-        "done": (GObject.SIGNAL_RUN_LAST, None, ()),
-    }
+    __gsignals__ = {"done": (GObject.SIGNAL_RUN_LAST, None, ())}
 
     def __init__(self):
         threading.Thread.__init__(self)
@@ -199,10 +199,14 @@ class ThreadManager:
         Decrements the count of concurrent threads and starts any
         pending threads if there is space
         """
-        del(self.fooThreads[args])
+        del (self.fooThreads[args])
         running = len(self.fooThreads) - len(self.pendingFooThreadArgs)
 
-        print("{} completed. {} running, {} pending".format(thread, running, len(self.pendingFooThreadArgs)))
+        print(
+            "{} completed. {} running, {} pending".format(
+                thread, running, len(self.pendingFooThreadArgs)
+            )
+        )
 
         if running < self.maxConcurrentThreads:
             try:
@@ -251,7 +255,7 @@ class ThreadManager:
         for thread in self.fooThreads.values():
             thread.cancel()
             thread.close(True)
-            print('stop_all_threads: forced close')
+            print("stop_all_threads: forced close")
             if block:
                 if thread.isAlive():
                     thread.join(timeout=timeout)

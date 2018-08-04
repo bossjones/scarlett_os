@@ -9,11 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_pid(name):
-    '''Get pid of process by name if it exists.'''
+    """Get pid of process by name if it exists."""
     try:
-      pid = check_output(["pidof", name])
+        pid = check_output(["pidof", name])
     except:
-      logger.error('Process of that name does not exist.')
-      return False
+        logger.error("Process of that name does not exist.")
+        return False
 
-    return bytesting_to_string(pid).rstrip('\n')
+    return bytesting_to_string(pid).rstrip("\n")

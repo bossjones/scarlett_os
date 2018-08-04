@@ -9,10 +9,19 @@ from typing import Any, Optional, Dict
 import voluptuous as vol
 
 from scarlett_os.const import (
-    CONF_LATITUDE, CONF_LONGITUDE, CONF_NAME, CONF_UNIT_SYSTEM,
-    CONF_TIME_ZONE, CONF_CUSTOMIZE, CONF_ELEVATION, CONF_UNIT_SYSTEM_METRIC,
-    CONF_UNIT_SYSTEM_IMPERIAL, CONF_TEMPERATURE_UNIT, TEMP_CELSIUS,
-    __version__)
+    CONF_LATITUDE,
+    CONF_LONGITUDE,
+    CONF_NAME,
+    CONF_UNIT_SYSTEM,
+    CONF_TIME_ZONE,
+    CONF_CUSTOMIZE,
+    CONF_ELEVATION,
+    CONF_UNIT_SYSTEM_METRIC,
+    CONF_UNIT_SYSTEM_IMPERIAL,
+    CONF_TEMPERATURE_UNIT,
+    TEMP_CELSIUS,
+    __version__,
+)
 
 import scarlett_os.core as core
 from scarlett_os.exceptions import ScarlettError
@@ -66,14 +75,15 @@ logger = logging.getLogger(__name__)
 
 
 # create new scarlett system from config dict
-def from_config_dict(config: Dict[str, Any],
-                     scarlett_system: Optional[core.ScarlettSystem]=None,
-                     config_dir: Optional[str]=None,
-                     enable_log: bool=True,
-                     verbose: bool=False,
-                     skip_pip: bool=False,
-                     log_rotate_days: Any=None) \
-                     -> Optional[core.ScarlettSystem]:  # pragma: no cover
+def from_config_dict(
+    config: Dict[str, Any],
+    scarlett_system: Optional[core.ScarlettSystem] = None,
+    config_dir: Optional[str] = None,
+    enable_log: bool = True,
+    verbose: bool = False,
+    skip_pip: bool = False,
+    log_rotate_days: Any = None,
+) -> Optional[core.ScarlettSystem]:  # pragma: no cover
     """Try to configure ScarlettOS from a config dict.
 
     Dynamically loads required components and its dependencies.
@@ -99,12 +109,15 @@ def from_config_dict(config: Dict[str, Any],
 
     return scarlett_system
 
+
 # Create new scarlett system object from config file
-def from_config_file(config_path: str,
-                     scarlett_system: Optional[core.ScarlettSystem]=None,
-                     verbose: bool=False,
-                     skip_pip: bool=True,
-                     log_rotate_days: Any=None):  # pragma: no cover
+def from_config_file(
+    config_path: str,
+    scarlett_system: Optional[core.ScarlettSystem] = None,
+    verbose: bool = False,
+    skip_pip: bool = True,
+    log_rotate_days: Any = None,
+):  # pragma: no cover
     """Read the configuration file and try to start all the functionality.
 
     Will add functionality to 'scarlett_system' parameter if given,

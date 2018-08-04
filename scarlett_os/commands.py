@@ -5,6 +5,7 @@
 from __future__ import with_statement, division, absolute_import
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 import datetime
@@ -18,7 +19,7 @@ CMD_MASTER_LIST_HEX = {
         "menu": "1,77E1BA09,32",
         "pause": "1,77E12009,32",
         "play": "1,77E17A09,32",
-        "circle button": "1,77E1BA09,32"  # this too 77E12009
+        "circle button": "1,77E1BA09,32",  # this too 77E12009
     },
     "appletv": {
         "up": "1,77E1D030,32",
@@ -28,7 +29,7 @@ CMD_MASTER_LIST_HEX = {
         "menu": "1,77E14030,32",
         "pause": "1,77E17A30,32",
         "play": "1,77E17A30,32",
-        "circle button": "1,77E1BA30,32"
+        "circle button": "1,77E1BA30,32",
     },
     "toshiba": {
         "channel up": "1,2FDD827,32",
@@ -53,8 +54,8 @@ CMD_MASTER_LIST_HEX = {
         "eight": "1,2FD10EF,32",
         "nine": "1,2FD906F,32",
         "zero": "1,2FD00FF,32",
-        "power": "1,2FD48B7,32"
-    }
+        "power": "1,2FD48B7,32",
+    },
 }
 
 SPOTIFY_CMDS = {
@@ -81,7 +82,6 @@ LIGHT_CMDS = {
     "TURN LIGHTS WHITE": "hue lights all white",
     "LIGHTS WHITE": "hue lights all white",
     "CHANGE LIGHTS WHITE": "hue lights all white",
-
     # TODO: CHANGE THIS BULLSHIT TO USE PROPER PYTHON MODULE
     "TURN LIGHTS BRIGHTER": "echo '{\"bri\": 240}' | hue lights 3 state",
     "LIGHTS BRIGHTER": "echo '{\"bri\": 240}' | hue lights 3 state",
@@ -94,7 +94,7 @@ LIGHT_CMDS = {
 TIME_CMDS = {
     "WHAT TIME IS IT": "what time is it",
     "TIME IS IT": "what time is it",
-    "TIME IT IS": "what time is it"
+    "TIME IT IS": "what time is it",
 }
 
 TV_CMDS = {
@@ -119,12 +119,10 @@ TV_CMDS = {
     "APPLE TV MENU": CMD_MASTER_LIST_HEX["appletv"]["menu"].lower(),
     "APPLE TV MENU BUTTON": CMD_MASTER_LIST_HEX["appletv"]["menu"].lower(),
     "APPLE TV ENTER": CMD_MASTER_LIST_HEX["appletv"]["circle button"].lower(),
-    "APPLE TV ENTER BUTTON": CMD_MASTER_LIST_HEX["appletv"]["circle button"].lower()
+    "APPLE TV ENTER BUTTON": CMD_MASTER_LIST_HEX["appletv"]["circle button"].lower(),
 }
 
-GENERAL_CMDS = {
-    "CANCEL": "cancel",
-}
+GENERAL_CMDS = {"CANCEL": "cancel"}
 
 FORECAST_CMDS = {
     "WHAT IS THE FORECAST": "weather",
@@ -135,7 +133,7 @@ FORECAST_CMDS = {
     "WHATS THE TEMPATURE": "weather",
 }
 
-NO_OP = '__SCARLETT_NO_OP__'
+NO_OP = "__SCARLETT_NO_OP__"
 
 ######################################################################################################################
 # NOTE: In the future time will be its own plugin class etc, for now we're just going to add arbitrary functions here:
@@ -144,7 +142,6 @@ NO_OP = '__SCARLETT_NO_OP__'
 
 
 class TimeCommand(object):
-
     @staticmethod
     def get_current_time():
         now = datetime.datetime.now()
@@ -155,12 +152,12 @@ class TimeCommand(object):
         now = datetime.datetime.now()
         return now.strftime("Today's date is, %A, %B %d, %Y")
 
+
 ######################################################################################################################
 ######################################################################################################################
 
 
 class Command(object):
-
     @staticmethod
     def check_cmd(command_tuple=None):
         logger.error("Value of command_tuple: {}".format(command_tuple))
@@ -174,16 +171,38 @@ class Command(object):
         msg, scarlett_sound, command = command_tuple
 
         if command in SPOTIFY_CMDS.keys():
-            logger.debug("** received {}, sending 'spotify {}'".format(command, SPOTIFY_CMDS[command]))
+            logger.debug(
+                "** received {}, sending 'spotify {}'".format(
+                    command, SPOTIFY_CMDS[command]
+                )
+            )
         elif command in LIGHT_CMDS.keys():
-            logger.debug("** received {}, sending 'light {}'".format(command, LIGHT_CMDS[command]))
+            logger.debug(
+                "** received {}, sending 'light {}'".format(
+                    command, LIGHT_CMDS[command]
+                )
+            )
         elif command in TIME_CMDS.keys():
-            logger.debug("** received {}, sending 'time {}'".format(command, TIME_CMDS[command]))
+            logger.debug(
+                "** received {}, sending 'time {}'".format(command, TIME_CMDS[command])
+            )
             return TimeCommand.get_current_time()
 
         elif command in GENERAL_CMDS.keys():
-            logger.debug("** received {}, sending 'general command: {}'".format(command, GENERAL_CMDS[command]))
+            logger.debug(
+                "** received {}, sending 'general command: {}'".format(
+                    command, GENERAL_CMDS[command]
+                )
+            )
         elif command in FORECAST_CMDS.keys():
-            logger.debug("** received {}, sending 'forecast command: {}'".format(command, FORECAST_CMDS[command]))
+            logger.debug(
+                "** received {}, sending 'forecast command: {}'".format(
+                    command, FORECAST_CMDS[command]
+                )
+            )
         elif command in TV_CMDS.keys():
-            logger.debug("** received {}, sending 'tv command: {}'".format(command, TV_CMDS[command]))
+            logger.debug(
+                "** received {}, sending 'tv command: {}'".format(
+                    command, TV_CMDS[command]
+                )
+            )

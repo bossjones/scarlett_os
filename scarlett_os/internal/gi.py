@@ -16,8 +16,9 @@ import textwrap
 
 try:
     import gi
-    gi.require_version('GLib', '2.0')
-    gi.require_version('Gst', '1.0')
+
+    gi.require_version("GLib", "2.0")
+    gi.require_version("Gst", "1.0")
     from gi.repository import GLib
     from gi.repository import GObject
     from gi.repository import Gst
@@ -64,7 +65,9 @@ try:
     Gst.debug_set_active(True)
     Gst.debug_set_default_threshold(1)
 except ImportError:
-    print(textwrap.dedent("""
+    print(
+        textwrap.dedent(
+            """
         ERROR: A GObject Python package was not found.
 
         Mopidy requires GStreamer to work. GStreamer is a C library with a
@@ -73,11 +76,13 @@ except ImportError:
 
         Please see http://docs.mopidy.com/en/latest/installation/ for
         instructions on how to install the required dependencies.
-    """))
+    """
+        )
+    )
     raise
 else:
     Gst.init([])
-    gi.require_version('GstPbutils', '1.0')
+    gi.require_version("GstPbutils", "1.0")
     from gi.repository import GstPbutils
 
 # SOURCE: https://github.com/mopidy/mopidy/blob/6e9cb3b9cafd5909e8271a44b8dd04a8441e638d/mopidy/internal/gi.py
@@ -88,8 +93,9 @@ REQUIRED_GST_VERSION = (1, 2, 3)
 
 if Gst.version() < REQUIRED_GST_VERSION:
     sys.exit(
-        'ERROR: ScarlettOS requires GStreamer >= %s, but found %s.' % (
-            '.'.join(map(str, REQUIRED_GST_VERSION)), Gst.version_string()))
+        "ERROR: ScarlettOS requires GStreamer >= %s, but found %s."
+        % (".".join(map(str, REQUIRED_GST_VERSION)), Gst.version_string())
+    )
 
 
 def _gst_available():
@@ -102,7 +108,7 @@ def _gst_available():
         return False
 
     try:
-        gi.require_version('Gst', '1.0')
+        gi.require_version("Gst", "1.0")
     except (ValueError, AttributeError):
         return False
 
@@ -115,11 +121,4 @@ def _gst_available():
     return True
 
 
-__all__ = [
-    'GLib',
-    'GObject',
-    'Gst',
-    'GstPbutils',
-    'gi',
-    'Gio'
-]
+__all__ = ["GLib", "GObject", "Gst", "GstPbutils", "gi", "Gio"]

@@ -76,7 +76,6 @@ logger = logging.getLogger(__name__)
 
 
 class Terminated(Exception):
-
     def __init__(self, value):
         self.value = value
 
@@ -98,16 +97,29 @@ class SuspendableThread(threading.Thread, _IdleObject):
     """
 
     __gsignals__ = {
-        'completed': (GObject.SignalFlags.RUN_LAST, None, ()),
-        'progress': (GObject.SignalFlags.RUN_LAST, None, [float, str]),  # percent complete, progress bar text
-        'error': (GObject.SignalFlags.RUN_LAST, None, [int,  # error number
-                                                       str,  # error name
-                                                       str   # stack trace
-                                                       ]),
-        'stopped': (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when we are stopped
-        'pause': (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when we pause
-        'resume': (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when we resume
-        'done': (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when/however we finish
+        "completed": (GObject.SignalFlags.RUN_LAST, None, ()),
+        "progress": (
+            GObject.SignalFlags.RUN_LAST,
+            None,
+            [float, str],
+        ),  # percent complete, progress bar text
+        "error": (
+            GObject.SignalFlags.RUN_LAST,
+            None,
+            [int, str, str],  # error number  # error name  # stack trace
+        ),
+        "stopped": (
+            GObject.SignalFlags.RUN_LAST,
+            None,
+            [],
+        ),  # emitted when we are stopped
+        "pause": (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when we pause
+        "resume": (GObject.SignalFlags.RUN_LAST, None, []),  # emitted when we resume
+        "done": (
+            GObject.SignalFlags.RUN_LAST,
+            None,
+            [],
+        ),  # emitted when/however we finish
     }
 
     # Flag to determine if thread is suspendable
@@ -129,25 +141,27 @@ class SuspendableThread(threading.Thread, _IdleObject):
     def connect_subthread(self, subthread):
         """For subthread subthread, connect to error and pause signals and
         and emit as if they were our own."""
-        subthread.connect('error', lambda st, enum, ename, strace: self.emit('error', enum, ename, strace))
-        subthread.connect('stopped', lambda st: self.emit('stopped'))
-        subthread.connect('pause', lambda st: self.emit('pause'))
-        subthread.connect('resume', lambda st: self.emit('resume'))
+        subthread.connect(
+            "error",
+            lambda st, enum, ename, strace: self.emit("error", enum, ename, strace),
+        )
+        subthread.connect("stopped", lambda st: self.emit("stopped"))
+        subthread.connect("pause", lambda st: self.emit("pause"))
+        subthread.connect("resume", lambda st: self.emit("resume"))
 
     def run(self):
         try:
             self.do_run()
         except Terminated:
-            self.emit('stopped')
+            self.emit("stopped")
         except:
             import traceback
-            self.emit('error', 1,
-                      'Error during %s' % self.name,
-                      traceback.format_exc())
+
+            self.emit("error", 1, "Error during %s" % self.name, traceback.format_exc())
         else:
-            self.emit('completed')
+            self.emit("completed")
         self.done = True
-        self.emit('done')
+        self.emit("done")
 
     def do_run(self):
         # Note that sub-classes need to call check_for_sleep
@@ -165,7 +179,7 @@ class SuspendableThread(threading.Thread, _IdleObject):
     def terminate(self):
         print("[{}]:{}".format(__name__, self.name))
         self.terminated = True
-        self.emit('stopped')
+        self.emit("stopped")
 
     def check_for_sleep(self):
         """Check whether we have been suspended or terminated.
@@ -173,16 +187,16 @@ class SuspendableThread(threading.Thread, _IdleObject):
         paused_emitted = False
         emit_resume = False
         if self.terminated:
-            raise Terminated('%s terminated' % self.name)
+            raise Terminated("%s terminated" % self.name)
         if self.suspended:
-            self.emit('pause')
+            self.emit("pause")
             emit_resume = True
         while self.suspended:
             if self.terminated:
-                raise Terminated('%s terminated' % self.name)
+                raise Terminated("%s terminated" % self.name)
             time.sleep(1)
         if emit_resume:
-            self.emit('resume')
+            self.emit("resume")
 
     def __repr__(self):
         try:
@@ -190,7 +204,8 @@ class SuspendableThread(threading.Thread, _IdleObject):
         # The goal of an AssertionError in Python is to inform developers about unrecoverable errors in a program.
         # except AssertionError:
         except TypeError:
-            return '<SuspendableThread %s - uninitialized>' % self.name
+            return "<SuspendableThread %s - uninitialized>" % self.name
+
     #
     # @GObject.Property(type=int)
     # def tasks_finished(self):
@@ -231,28 +246,28 @@ class ThreadManager:
         # Don’t use Python’s hasattr() unless you’re writing Python 3-only code and understand how it works.
         # has_check_for_sleep = getattr(thread, 'check_for_sleep', None)
         try:
-            getattr(thread, '_suspendable')
+            getattr(thread, "_suspendable")
             # assert("scarlett_os.utility.threadmanager.SuspendableThread" in str(type(thread)))
             print(
-                'YAY Class {thread_class} of type {thread_type} is a SuspendableThread'.format(
-                    thread_class=repr(thread),
-                    thread_type=type(thread)
-                ))
+                "YAY Class {thread_class} of type {thread_type} is a SuspendableThread".format(
+                    thread_class=repr(thread), thread_type=type(thread)
+                )
+            )
         except:
             raise NotASuspendableThreadExc(
-                'Class {thread_class} of type {thread_type} is not a SuspendableThread'.format(
-                    thread_class=repr(thread),
-                    thread_type=type(thread))
+                "Class {thread_class} of type {thread_type} is not a SuspendableThread".format(
+                    thread_class=repr(thread), thread_type=type(thread)
+                )
             )
 
         # assert("scarlett_os.utility.threadmanager.NotThreadSafe" in str(type(thread)))
-        threadsafe = getattr(thread, '_is_thread_safe', True)
+        threadsafe = getattr(thread, "_is_thread_safe", True)
 
         if not threadsafe:
             raise NotThreadSafeExc(
-                'Class {thread_class} of type {thread_type} is not Thread Safe'.format(
-                    thread_class=repr(thread),
-                    thread_type=type(thread))
+                "Class {thread_class} of type {thread_type} is not Thread Safe".format(
+                    thread_class=repr(thread), thread_type=type(thread)
+                )
             )
 
         # try:
@@ -272,9 +287,9 @@ class ThreadManager:
         # if isinstance(thread, NotThreadSafe):
         #     raise TypeError("Thread %s is NotThreadSafe" % thread)
         self.threads.append(thread)
-        thread.connect('pause', self.register_thread_paused)
-        thread.connect('resume', self.register_thread_resume)
-        thread.connect('done', self.register_thread_done)
+        thread.connect("pause", self.register_thread_paused)
+        thread.connect("resume", self.register_thread_resume)
+        thread.connect("done", self.register_thread_done)
         if self.active_count < self.max_concurrent_threads:
             self.active_count += 1
             thread.initialize_thread()
@@ -319,7 +334,9 @@ class ThreadManager:
         ``Return:`` :class:`scarlett_os.internal.dbus_runner.DBusRunner`
         """
         if not ThreadManager.__instance:
-            ThreadManager.__instance = ThreadManager(max_concurrent_threads=max_concurrent_threads)
+            ThreadManager.__instance = ThreadManager(
+                max_concurrent_threads=max_concurrent_threads
+            )
         return ThreadManager.__instance
 
 
@@ -332,17 +349,21 @@ class ThreadManager:
 
 if __name__ == "__main__":
     # Smoke Tests
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         import faulthandler
+
         faulthandler.register(signal.SIGUSR2, all_threads=True)
 
         from scarlett_os.internal.debugger import init_debugger
+
         init_debugger()
 
         from scarlett_os.internal.debugger import enable_remote_debugging
+
         enable_remote_debugging()
 
     from scarlett_os.logger import setup_logger
+
     setup_logger()
 
     loop = GLib.MainLoop()
@@ -350,50 +371,55 @@ if __name__ == "__main__":
     to_complete = 2
 
     class TestThread(SuspendableThread):
-
         def do_run(self):
             for n in range(1000):
                 time.sleep(0.01)
-                self.emit('progress', n / 1000.0, '%s of 1000' % n)
+                self.emit("progress", n / 1000.0, "%s of 1000" % n)
                 self.check_for_sleep()
 
     class TestError(SuspendableThread):
-
         def do_run(self):
             for n in range(1000):
                 time.sleep(0.01)
                 if n == 100:
                     raise AttributeError("This is a phony error")
-                self.emit('progress', n / 1000.0, '%s of 1000' % n)
+                self.emit("progress", n / 1000.0, "%s of 1000" % n)
                 self.check_for_sleep()
 
     # run forever, we'll want this for listener thread in scarlett
     class TestInterminable(SuspendableThread):
-
         def do_run(self):
             while 1:
                 time.sleep(0.1)
-                self.emit('progress', -1, 'Working interminably')
+                self.emit("progress", -1, "Working interminably")
                 self.check_for_sleep()
 
     tm = ThreadManager.get_instance(2)
     for desc, thread in [
-        ('Interminable 1', TestInterminable()),
-        ('Linear 1', TestThread()),
-        ('Linear 2', TestThread()),
-        ('Interminable 2', TestInterminable()),
-        ('Error 3', TestError())
+        ("Interminable 1", TestInterminable()),
+        ("Linear 1", TestThread()),
+        ("Linear 2", TestThread()),
+        ("Interminable 2", TestInterminable()),
+        ("Error 3", TestError()),
     ]:
         tm.add_thread(thread)
 
     def get_tm_active_count(*args):  # pylint: disable=C0111
         time.sleep(3)
         if tm.completed_threads < to_complete:
-            print("tm.completed_threads < to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
+            print(
+                "tm.completed_threads < to_complete: {} < {} friends.".format(
+                    tm.completed_threads, to_complete
+                )
+            )
             # NOTE: keep running callback
             return True
         else:
-            print("tm.completed_threads <= to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
+            print(
+                "tm.completed_threads <= to_complete: {} < {} friends.".format(
+                    tm.completed_threads, to_complete
+                )
+            )
 
             # Return a list of all Thread objects currently alive. The list includes daemonic threads,
             # dummy thread objects created by current_thread(), and the main thread.
@@ -417,12 +443,16 @@ if __name__ == "__main__":
 
             if quit_anyway:
                 for t_quit_anyway in threads:
-                    if t_quit_anyway.getName() != 'MainThread':
+                    if t_quit_anyway.getName() != "MainThread":
                         try:
                             t_quit_anyway.terminate()
                         except BaseException as t_quit_anyway_exec:  # pylint: disable=C0103
                             print("Unable to terminate thread %s" % t_quit_anyway)
-                            print("[t_quit_anyway.terminate()] Recieved: {}".format(str(t_quit_anyway_exec)))
+                            print(
+                                "[t_quit_anyway.terminate()] Recieved: {}".format(
+                                    str(t_quit_anyway_exec)
+                                )
+                            )
                             # try not to lose data if this is going to
                             # end up in a force quit
                             return True

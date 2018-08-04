@@ -27,15 +27,14 @@ class TemplateError(ScarlettError):
 
     def __init__(self, exception):
         """Initalize the error."""
-        super().__init__('{}: {}'.format(exception.__class__.__name__,
-                                         exception))
+        super().__init__("{}: {}".format(exception.__class__.__name__, exception))
 
 
 class FindError(ScarlettError):
-
     def __init__(self, message, errno=None):
         super(FindError, self).__init__(message, errno)
         self.errno = errno
+
 
 class DecodeError(Exception):
     """The base exception class for all decoding errors raised by this package."""
@@ -47,6 +46,7 @@ class NoBackendError(DecodeError):
 
 class GStreamerError(DecodeError):
     """Something went terribly wrong with Gstreamer."""
+
     pass
 
 
@@ -54,14 +54,13 @@ class UnknownTypeError(GStreamerError):
     """Raised when Gstreamer can't decode the given file type."""
 
     def __init__(self, streaminfo):
-        super(UnknownTypeError, self).__init__(
-            "can't decode stream: " + streaminfo
-        )
+        super(UnknownTypeError, self).__init__("can't decode stream: " + streaminfo)
         self.streaminfo = streaminfo
 
 
 class FileReadError(GStreamerError):
     """Raised when the file can't be read at all."""
+
     pass
 
 
@@ -71,13 +70,14 @@ class NoStreamError(GStreamerError):
     """
 
     def __init__(self):
-        super(NoStreamError, self).__init__('no audio streams found')
+        super(NoStreamError, self).__init__("no audio streams found")
 
 
 class MetadataMissingError(GStreamerError):
     """Raised when GStreamer fails to report stream metadata (duration,
     channels, or sample rate).
     """
+
     pass
 
 
@@ -87,9 +87,7 @@ class IncompleteGStreamerError(GStreamerError):
     """
 
     def __init__(self):
-        super(IncompleteGStreamerError, self).__init__(
-            'missing GStreamer base plugins'
-        )
+        super(IncompleteGStreamerError, self).__init__("missing GStreamer base plugins")
 
 
 class InvalidUri(GStreamerError):
@@ -98,7 +96,7 @@ class InvalidUri(GStreamerError):
     """
 
     def __init__(self):
-        super(InvalidUri, self).__init__('Invalid uri provided for audio source')
+        super(InvalidUri, self).__init__("Invalid uri provided for audio source")
 
 
 class UriDoesNotExist(GStreamerError):
@@ -106,7 +104,7 @@ class UriDoesNotExist(GStreamerError):
     """
 
     def __init__(self):
-        super(UriDoesNotExist, self).__init__('Uri does not exist on file system')
+        super(UriDoesNotExist, self).__init__("Uri does not exist on file system")
 
 
 class UriReadError(GStreamerError):
@@ -114,7 +112,7 @@ class UriReadError(GStreamerError):
     """
 
     def __init__(self):
-        super(UriReadError, self).__init__('Uri can not be read from file system')
+        super(UriReadError, self).__init__("Uri can not be read from file system")
 
 
 class MainRunnerError(Exception):

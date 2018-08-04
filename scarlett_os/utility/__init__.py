@@ -16,12 +16,12 @@ from typing import Any, Optional, TypeVar, Callable, Sequence, KeysView, Union
 
 from .dt import as_local, utcnow
 
-T = TypeVar('T')
-U = TypeVar('U')
+T = TypeVar("T")
+U = TypeVar("U")
 
-RE_SANITIZE_FILENAME = re.compile(r'(~|\.\.|/|\\)')
-RE_SANITIZE_PATH = re.compile(r'(~|\.(\.)+)')
-RE_SLUGIFY = re.compile(r'[^a-z0-9_]+')
+RE_SANITIZE_FILENAME = re.compile(r"(~|\.\.|/|\\)")
+RE_SANITIZE_PATH = re.compile(r"(~|\.(\.)+)")
+RE_SLUGIFY = re.compile(r"[^a-z0-9_]+")
 
 
 def sanitize_filename(filename: str) -> str:
@@ -45,16 +45,17 @@ def repr_helper(inp: Any) -> str:
     """Help creating a more readable string representation of objects."""
     if isinstance(inp, (dict, MappingProxyType)):
         return ", ".join(
-            repr_helper(key)+"="+repr_helper(item) for key, item
-            in inp.items())
+            repr_helper(key) + "=" + repr_helper(item) for key, item in inp.items()
+        )
     elif isinstance(inp, datetime):
         return as_local(inp).isoformat()
     else:
         return str(inp)
 
 
-def convert(value: T, to_type: Callable[[T], U],
-            default: Optional[U]=None) -> Optional[U]:
+def convert(
+    value: T, to_type: Callable[[T], U], default: Optional[U] = None
+) -> Optional[U]:
     """Convert value to to_type, returns default if fails."""
     try:
         return default if value is None else to_type(value)
@@ -63,8 +64,9 @@ def convert(value: T, to_type: Callable[[T], U],
         return default
 
 
-def ensure_unique_string(preferred_string: str, current_strings:
-                         Union[Sequence[str], KeysView[str]]) -> str:
+def ensure_unique_string(
+    preferred_string: str, current_strings: Union[Sequence[str], KeysView[str]]
+) -> str:
     """Return a string that is not present in current_strings.
 
     If preferred string exists will append _2, _3, ..
@@ -88,7 +90,7 @@ def get_local_ip():
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         # Use Google Public DNS server to determine own IP
-        sock.connect(('8.8.8.8', 80))
+        sock.connect(("8.8.8.8", 80))
 
         return sock.getsockname()[0]
     except socket.error:
@@ -103,7 +105,7 @@ def get_random_string(length=10):
     generator = random.SystemRandom()
     source_chars = string.ascii_letters + string.digits
 
-    return ''.join(generator.choice(source_chars) for _ in range(length))
+    return "".join(generator.choice(source_chars) for _ in range(length))
 
 
 class OrderedEnum(enum.Enum):
@@ -141,8 +143,8 @@ class OrderedSet(MutableSet):
     def __init__(self, iterable=None):
         """Initialize the set."""
         self.end = end = []
-        end += [None, end, end]         # sentinel node for doubly linked list
-        self.map = {}                   # key --> [key, prev, next]
+        end += [None, end, end]  # sentinel node for doubly linked list
+        self.map = {}  # key --> [key, prev, next]
         if iterable is not None:
             self |= iterable
 
@@ -199,7 +201,7 @@ class OrderedSet(MutableSet):
         Set last=False to pop from the beginning.
         """
         if not self:
-            raise KeyError('set is empty')
+            raise KeyError("set is empty")
         key = self.end[1][0] if last else self.end[2][0]
         self.discard(key)
         return key
@@ -212,8 +214,8 @@ class OrderedSet(MutableSet):
     def __repr__(self):
         """Return the representation."""
         if not self:
-            return '%s()' % (self.__class__.__name__,)
-        return '%s(%r)' % (self.__class__.__name__, list(self))
+            return "%s()" % (self.__class__.__name__,)
+        return "%s(%r)" % (self.__class__.__name__, list(self))
 
     def __eq__(self, other):
         """Return the comparision."""
@@ -261,8 +263,10 @@ class Throttle(object):
         # All methods have the classname in their qualname seperated by a '.'
         # Functions have a '.' in their qualname if defined inline, but will
         # be prefixed by '.<locals>.' so we strip that out.
-        is_func = (not hasattr(method, '__self__') and
-                   '.' not in method.__qualname__.split('.<locals>.')[-1])
+        is_func = (
+            not hasattr(method, "__self__")
+            and "." not in method.__qualname__.split(".<locals>.")[-1]
+        )
 
         @wraps(method)
         def wrapper(*args, **kwargs):
@@ -271,14 +275,14 @@ class Throttle(object):
             If we cannot acquire the lock, it is running so return None.
             """
             # pylint: disable=protected-access
-            if hasattr(method, '__self__'):
+            if hasattr(method, "__self__"):
                 host = method.__self__
             elif is_func:
                 host = wrapper
             else:
                 host = args[0] if args else wrapper
 
-            if not hasattr(host, '_throttle'):
+            if not hasattr(host, "_throttle"):
                 host._throttle = {}
 
             if id(self) not in host._throttle:
@@ -289,7 +293,7 @@ class Throttle(object):
                 return None
 
             # Check if method is never called or no_throttle is given
-            force = not throttle[1] or kwargs.pop('no_throttle', False)
+            force = not throttle[1] or kwargs.pop("no_throttle", False)
 
             try:
                 if force or utcnow() - throttle[1] > self.min_time:
@@ -340,8 +344,10 @@ class ThreadPool(object):
             raise RuntimeError("ThreadPool not running")
 
         threading.Thread(
-            target=self._worker, daemon=True,
-            name='ThreadPool Worker {}'.format(self.worker_count)).start()
+            target=self._worker,
+            daemon=True,
+            name="ThreadPool Worker {}".format(self.worker_count),
+        ).start()
 
         self.worker_count += 1
 

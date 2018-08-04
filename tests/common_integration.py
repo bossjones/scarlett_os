@@ -15,8 +15,16 @@ from unittest.mock import patch
 from scarlett_os import core as s
 from scarlett_os import loader
 from scarlett_os.const import (
-    ATTR_DISCOVERED, ATTR_SERVICE, DEVICE_DEFAULT_NAME, EVENT_PLATFORM_DISCOVERED, EVENT_STATE_CHANGED, EVENT_TIME_CHANGED, SERVER_PORT,
-    STATE_OFF, STATE_ON)
+    ATTR_DISCOVERED,
+    ATTR_SERVICE,
+    DEVICE_DEFAULT_NAME,
+    EVENT_PLATFORM_DISCOVERED,
+    EVENT_STATE_CHANGED,
+    EVENT_TIME_CHANGED,
+    SERVER_PORT,
+    STATE_OFF,
+    STATE_ON,
+)
 from scarlett_os.internal.gi import Gio, GLib, GObject, Gst
 import scarlett_os.utility.dt as date_utility
 from scarlett_os.utility.unit_system import METRIC_SYSTEM

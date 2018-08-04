@@ -31,10 +31,10 @@ from scarlett_os.internal.gi import GLib
 
 xfail = pytest.mark.xfail
 
+
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyintgr
 class TestScarlettEndToEnd(object):
-
     def test_setup_mpris(self, service_on_outside):
         pass
 

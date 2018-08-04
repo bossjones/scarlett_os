@@ -26,79 +26,67 @@ def read_config(cfg):
     rv = {}
     for section in parser.sections():
         for key, value in parser.items(section):
-            rv['{0}.{1}'.format(section, key)] = value
+            rv["{0}.{1}".format(section, key)] = value
     return rv
 
 
-@with_plugins(
-    ep for ep in list(iter_entry_points('scarlett_os.scarlett_os_commands')))
+@with_plugins(ep for ep in list(iter_entry_points("scarlett_os.scarlett_os_commands")))
 @click.group()
-@click.version_option(
-    version=scarlett_os.__version__,
-    message='%(version)s'
-)
+@click.version_option(version=scarlett_os.__version__, message="%(version)s")
 @click.option(
     "--name",
     "-n",
     help="Name ScarlettOS process explicitly.",
     metavar="NAME",
-    default="scarlett_system"
+    default="scarlett_system",
 )
 @click.option(
     "--daemon",
     "-d",
     is_flag=True,
     help="Daemon mode, background process.",
-    default=False
+    default=False,
 )
 @click.option(
-    '--mode',
-    '-m',
-    type=click.Choice(['dbus_server', 'listener', 'tasker', 'check_all_services']),
+    "--mode",
+    "-m",
+    type=click.Choice(["dbus_server", "listener", "tasker", "check_all_services"]),
     help="ScarlettOS type",
-    default='check_all_services'
+    default="check_all_services",
 )
 @click.option(
     "--master",
     "-m",
     is_flag=True,
     help="Run ScarlettOS process as a Master",
-    default=False
+    default=False,
 )
 @click.option(
     "--slave",
     "-s",
     is_flag=True,
     help="Run ScarlettOS process as a Slave",
-    default=False
+    default=False,
 )
-@click.option(
-    '--etcd-host',
-    help="Etcd Host for distributed mode.",
-    default=False
-)
+@click.option("--etcd-host", help="Etcd Host for distributed mode.", default=False)
 @click.option(
     "--quiet",
     "-q",
     is_flag=True,
     help="Limit output to errors and warnings.",
-    default=False
+    default=False,
 )
+@click.option("--verbose", "-V", is_flag=True, help="Be verbose.", default=False)
 @click.option(
-    "--verbose",
-    "-V",
-    is_flag=True,
-    help="Be verbose.",
-    default=False
-)
-@click.option(
-    '--config',
-    '-c',
+    "--config",
+    "-c",
     type=click.Path(exists=True, resolve_path=True),
-    help="Config file"
+    help="Config file",
 )
 @click.pass_context
-def main_group(ctx, name, daemon, mode, master, slave, etcd_host, quiet, verbose, config):
+def main_group(
+    ctx, name, daemon, mode, master, slave, etcd_host, quiet, verbose, config
+):
     """This is the command line interface to ScarlettOS.
     """
     # NOTE: ctx
@@ -114,18 +102,21 @@ def main_group(ctx, name, daemon, mode, master, slave, etcd_host, quiet, verbose
     # for this.
 
     ctx.obj = {}
-    config = config or os.path.join(click.get_app_dir('scarlett_os'), 'scarlett_os.ini')
+    config = config or os.path.join(click.get_app_dir("scarlett_os"), "scarlett_os.ini")
     cfg = read_config(config)
     if cfg:
-        ctx.obj['config_file'] = config
-    ctx.obj['cfg'] = cfg
+        ctx.obj["config_file"] = config
+    ctx.obj["cfg"] = cfg
     ctx.default_map = cfg
 
-    verbosity = (os.environ.get('SCARLETTOS_VERBOSE') or
-                 ctx.lookup_default('scarlett_os.verbosity') or 0)
+    verbosity = (
+        os.environ.get("SCARLETTOS_VERBOSE")
+        or ctx.lookup_default("scarlett_os.verbosity")
+        or 0
+    )
     if verbose or quiet:
         verbosity = verbose - quiet
     verbosity = int(verbosity)
     configure_logging(verbosity)
 
-    ctx.obj['verbosity'] = verbosity
+    ctx.obj["verbosity"] = verbosity

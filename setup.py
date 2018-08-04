@@ -21,6 +21,7 @@ import platform
 import re
 import warnings
 import pprint
+
 pp = pprint.PrettyPrinter(indent=4)
 
 
@@ -30,6 +31,7 @@ try:
     from setuptools import setup
 except ImportError:
     from ez_setup import use_setuptools
+
     use_setuptools()
     from setuptools import setup
 
@@ -50,23 +52,22 @@ from scarlett_os.const import PROJECT_AUTHOR
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
-DOWNLOAD_URL = ('{}/archive/'
-                '{}.zip'.format(GITHUB_URL, __version__))
+DOWNLOAD_URL = "{}/archive/" "{}.zip".format(GITHUB_URL, __version__)
 
 # PACKAGES = find_packages(exclude=['tests', 'tests.*'])
 PACKAGE_NAME = PROJECT_PACKAGE_NAME
 
-print('Current Python Version, B: {}'.format(sys.version_info))
+print("Current Python Version, B: {}".format(sys.version_info))
 
-with open('README.rst') as readme_file:
+with open("README.rst") as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
+with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
 static = {}
 
-for root, dirs, files in os.walk('static'):
+for root, dirs, files in os.walk("static"):
     for filename in files:
         filepath = os.path.join(root, filename)
 
@@ -89,59 +90,58 @@ def read_requirements(name):
         with open(name) as req_file:
             for line in req_file:
                 # source: http://www.diveintopython.net/native_data_types/lists.html
-                if '#' in line:
-                    line = line[:line.index('#')]
+                if "#" in line:
+                    line = line[: line.index("#")]
                 line = line.strip()
-                if line.startswith('-r'):
+                if line.startswith("-r"):
                     requirements.extend(read_requirements(line[2:].strip()))
-                elif not line.startswith('-'):
-                    if line is '':
-                      continue
+                elif not line.startswith("-"):
+                    if line is "":
+                        continue
                     requirements.append(line)
     except IOError:
         pass
 
     return requirements
 
-requirements = read_requirements('requirements.txt')
-requirements_dev = read_requirements('requirements_dev.txt')
-requirements_test = read_requirements('requirements_test.txt')
-requirements_test_experimental = read_requirements('requirements_test_experimental.txt')
+
+requirements = read_requirements("requirements.txt")
+requirements_dev = read_requirements("requirements_dev.txt")
+requirements_test = read_requirements("requirements_test.txt")
+requirements_test_experimental = read_requirements("requirements_test_experimental.txt")
 
 # source: http://stackoverflow.com/questions/14399534/how-can-i-reference-requirements-txt-for-the-install-requires-kwarg-in-setuptool
 
 # Pytest
 class PyTest(TestCommand):
-
     def initialize_options(self):
         TestCommand.initialize_options(self)
         self.pytest_args = []
 
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = ['tests', '--ignore', 'tests/sandbox', '--verbose']
+        self.test_args = ["tests", "--ignore", "tests/sandbox", "--verbose"]
         self.test_suite = True
 
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
         import pytest
+
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
+
 
 setup(
     name=PROJECT_PACKAGE_NAME,
     version=__version__,
     description=PROJECT_DESCRIPTION,
-    long_description=readme + '\n\n' + history,
+    long_description=readme + "\n\n" + history,
     author=PROJECT_AUTHOR,
     author_email=PROJECT_EMAIL,
     url=PROJECT_URL,
     download_url=DOWNLOAD_URL,
-    packages=[
-        'scarlett_os',
-    ],
-    package_dir={'scarlett_os':
-                 'scarlett_os'},
+    packages=["scarlett_os"],
+    package_dir={"scarlett_os": "scarlett_os"},
     #              ,
     # entry_points={
     #     'console_scripts': [
@@ -170,19 +170,19 @@ setup(
     # surface=mapboxcli.scripts.surface:surface
     # dataset=mapboxcli.scripts.datasets:datasets
     extras_require={
-        'test': requirements_test,
-        'experimental': requirements_test_experimental,
-        'dev': requirements_dev,
+        "test": requirements_test,
+        "experimental": requirements_test_experimental,
+        "dev": requirements_dev,
     },
     include_package_data=True,
     # data_files= [('data/sounds', ['data/sounds/*.wav'])],
     install_requires=requirements,
     license=PROJECT_LICENSE,
     zip_safe=False,
-    keywords='scarlett_os',
+    keywords="scarlett_os",
     classifiers=PROJECT_CLASSIFIERS,
-    test_suite='tests',
+    test_suite="tests",
     tests_require=requirements_test,
     # dependency_links = ['https://github.com/mverteuil/pytest-ipdb/tarball/master#egg=pytest-ipdb-0.1.dev2'],
-    cmdclass={'test': PyTest}
+    cmdclass={"test": PyTest},
 )

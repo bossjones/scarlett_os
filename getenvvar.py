@@ -5,4 +5,4 @@ import sys
 
 # SOURCE: https://github.com/GNOME/pitivi/blob/b8b22123966cff0ba513300ef2b4fd3dec624c5a/getenvvar.py
 
-print(os.environ.get(sys.argv[1], ''))
+print(os.environ.get(sys.argv[1], ""))

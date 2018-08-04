@@ -35,13 +35,14 @@ from scarlett_os.internal.gi import GObject  # noqa
 from scarlett_os.internal.gi import GLib
 
 from scarlett_os import tasker
+
 # classic xunit-style setup
 # source: http://doc.pytest.org/en/latest/xunit_setup.html
 
 # from scarlett_os.utility.dbus_runner import DBusRunner
 
 
-def run_emitter_signal(request, get_environment, sig_name='ready'):
+def run_emitter_signal(request, get_environment, sig_name="ready"):
     print("Setting up emitter")
     print("[Emit]: {}".format(sig_name))
 
@@ -50,27 +51,28 @@ def run_emitter_signal(request, get_environment, sig_name='ready'):
         """
         Set return code for emitter shell script.
         """
-        print('status code: {}'.format(status))
+        print("status code: {}".format(status))
 
     # Send [ready] signal to dbus service
     # FIXME: THIS IS THE CULPRIT
-    argv = [sys.executable, '-m', 'scarlett_os.emitter', '-s', sig_name]
+    argv = [sys.executable, "-m", "scarlett_os.emitter", "-s", sig_name]
 
     # convert environment dict -> list of strings
-    env_dict_to_str = ['{}={}'.format(k, v) for k, v in get_environment.items()]
+    env_dict_to_str = ["{}={}".format(k, v) for k, v in get_environment.items()]
 
     # Async background call. Send a signal to running process.
     pid, stdin, stdout, stderr = GLib.spawn_async(
         argv,
         envp=env_dict_to_str,
         working_directory=PROJECT_ROOT,
-        flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD)
+        flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+    )
 
-    print('run_emitter_signal: stdout')
+    print("run_emitter_signal: stdout")
     print(stdout)
-    print('run_emitter_signal: stderr')
+    print("run_emitter_signal: stderr")
     print(stderr)
-    print('run_emitter_signal: stdin')
+    print("run_emitter_signal: stdin")
     print(stdin)
 
     # Close file descriptor when finished running scarlett emitter
@@ -83,6 +85,7 @@ def run_emitter_signal(request, get_environment, sig_name='ready'):
 # @pytest.mark.usefixtures("service_on_outside", "get_environment", "get_bus")
 class IntegrationTestbase(object):
     """Base class for integration tests."""
+
     # Tests are not allowed to have an __init__ method
     # Python shells, the underscore (_) means the result of the last evaluated expression in the shell:
     # source: http://stackoverflow.com/questions/5787277/python-underscore-as-a-function-parameter
@@ -92,7 +95,8 @@ class IntegrationTestbase(object):
         self.log = logging.getLogger()
         self.log.setLevel(logging.DEBUG)
         logging.basicConfig(
-            format="%(filename)s:%(lineno)d (%(funcName)s): %(message)s")
+            format="%(filename)s:%(lineno)d (%(funcName)s): %(message)s"
+        )
 
         # self.recieved_signals = []
         self.status = None
@@ -100,7 +104,9 @@ class IntegrationTestbase(object):
 
     def setup_tasker(self, monkeypatch, get_bus):
         """Create ScarlettTasker object and call setup_controller."""
-        monkeypatch.setattr("scarlett_os.utility.dbus_runner.SessionBus", lambda: get_bus)
+        monkeypatch.setattr(
+            "scarlett_os.utility.dbus_runner.SessionBus", lambda: get_bus
+        )
         self.log.info("setting up Controller")
         self.tasker = tasker.ScarlettTasker()
 

@@ -32,13 +32,17 @@ from scarlett_os.internal.gi import Gio
 from scarlett_os.utility import threadmanager
 from scarlett_os.utility.threadmanager import NotThreadSafe, SuspendableThread
 from tests import PROJECT_ROOT
-from tests.integrationtests.baseclass import IntegrationTestbaseMainloop, run_emitter_signal
+from tests.integrationtests.baseclass import (
+    IntegrationTestbaseMainloop,
+    run_emitter_signal,
+)
 from tests.integrationtests.stubs import create_main_loop
 
 # import hunter
 # hunter.trace(module='threadmanager', action=hunter.CallPrinter)
 
 done = 0
+
 
 @pytest.fixture
 def tmanager():
@@ -48,10 +52,10 @@ def tmanager():
     # yield it to calling function/test
     yield tmanager
     # when we get control again after test finishes, nuke tmanager.__instance
-    print('\n[teardown] tmanager.__instance = None ...')
+    print("\n[teardown] tmanager.__instance = None ...")
     tmanager.__instance = None
     # when we get control again after test finishes, print this
-    print('\n[teardown] del tmanager ...')
+    print("\n[teardown] del tmanager ...")
     # then nuke object
     del tmanager
 
@@ -60,16 +64,13 @@ class TThread(SuspendableThread):
     """Short for Test Thread. Suspendable"""
 
     def __init__(self):
-        SuspendableThread.__init__(
-            self,
-            name=_('TThread')
-        )
+        SuspendableThread.__init__(self, name=_("TThread"))
 
     def do_run(self):
         for n in range(1000):  # pylint: disable=C0103
             time.sleep(0.01)
-            self.emit('progress', n / 1000.0, '%s of 1000' % n)
-            print('progress', n / 1000.0, '%s of 1000' % n)
+            self.emit("progress", n / 1000.0, "%s of 1000" % n)
+            print("progress", n / 1000.0, "%s of 1000" % n)
             self.check_for_sleep()
 
 
@@ -81,7 +82,7 @@ class TError(SuspendableThread):
             time.sleep(0.01)
             if n == 100:
                 raise AttributeError("This is a phony error")
-            self.emit('progress', n / 1000.0, '%s of 1000' % n)
+            self.emit("progress", n / 1000.0, "%s of 1000" % n)
             self.check_for_sleep()
 
 
@@ -92,7 +93,7 @@ class TInterminable(SuspendableThread):
     def do_run(self):
         while 1:
             time.sleep(0.1)
-            self.emit('progress', -1, 'Working interminably')
+            self.emit("progress", -1, "Working interminably")
             self.check_for_sleep()
 
 
@@ -100,17 +101,14 @@ class NTsafeThread(SuspendableThread, NotThreadSafe):
     """Non Thread Safe test thread"""
 
     def __init__(self):
-        SuspendableThread.__init__(
-            self,
-            name=_('NTsafeThread')
-        )
+        SuspendableThread.__init__(self, name=_("NTsafeThread"))
         # NotThreadSafe.__init__()
 
     def do_run(self):
         """Contents of this doesn't matter, just need one defined."""
         while 1:
             time.sleep(0.1)
-            self.emit('progress', -1, 'Working interminably')
+            self.emit("progress", -1, "Working interminably")
             self.check_for_sleep()
 
 
@@ -123,8 +121,20 @@ class TestThreadManager(object):
     # pylint: disable=C0111
     # pylint: disable=C0103
     def test_ThreadManager_TThread(self, tmanager):
-        blacklist_threads = ['MainThread', 'HistorySavingThread', 'IPythonHistorySavingThread', 'Dummy', 'Thread']
-        whitelist_threads = ['SuspendableMainLoopThread', 'NTsafeThread', 'TInterminable', 'TError', 'TThread']
+        blacklist_threads = [
+            "MainThread",
+            "HistorySavingThread",
+            "IPythonHistorySavingThread",
+            "Dummy",
+            "Thread",
+        ]
+        whitelist_threads = [
+            "SuspendableMainLoopThread",
+            "NTsafeThread",
+            "TInterminable",
+            "TError",
+            "TThread",
+        ]
         # MainThread
         # IPythonHistorySavingThread
         # SuspendableMainLoopThread
@@ -134,7 +144,9 @@ class TestThreadManager(object):
 
         tm = tmanager
 
-        assert str(type(tm)) == "<class 'scarlett_os.utility.threadmanager.ThreadManager'>"
+        assert (
+            str(type(tm)) == "<class 'scarlett_os.utility.threadmanager.ThreadManager'>"
+        )
 
         assert tm.active_count == 0
         assert tm.completed_threads == 0
@@ -150,23 +162,28 @@ class TestThreadManager(object):
 
         to_complete = 2
 
-        for desc, thread in [
-            ('Linear 1', TThread()),
-            ('Linear 2', TThread())
-        ]:
+        for desc, thread in [("Linear 1", TThread()), ("Linear 2", TThread())]:
             tm.add_thread(thread)
 
         # import pdb;pdb.set_trace()
 
         def get_tm_active_count(*args):
-            print('time.sleep(3)')
+            print("time.sleep(3)")
             time.sleep(3)
             if int(tm.completed_threads) < to_complete:
-                print("tm.completed_threads < to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
+                print(
+                    "tm.completed_threads < to_complete: {} < {} friends.".format(
+                        tm.completed_threads, to_complete
+                    )
+                )
                 # NOTE: keep running callback
                 return True
             else:
-                print("tm.completed_threads <= to_complete: {} < {} friends.".format(tm.completed_threads, to_complete))
+                print(
+                    "tm.completed_threads <= to_complete: {} < {} friends.".format(
+                        tm.completed_threads, to_complete
+                    )
+                )
 
                 # tm.completed_threads < to_complete: 0 < 2 friends.
                 # tm.completed_threads <= to_complete: 2 < 2 friends.
@@ -185,18 +202,24 @@ class TestThreadManager(object):
                 #########################################################################################
                 threads = threading.enumerate()
                 # source: http://www.diveintopython.net/power_of_introspection/filtering_lists.html
-                filtered_threads = [elem for elem in threads if elem.getName() in whitelist_threads]
+                filtered_threads = [
+                    elem for elem in threads if elem.getName() in whitelist_threads
+                ]
                 print("threads = threading.enumerate(): {}".format(filtered_threads))
                 for t_print in filtered_threads:
-                    print('****************************')
+                    print("****************************")
                     print(t_print)
                     print(t_print.getName())
-                    print('****************************')
+                    print("****************************")
 
                 if len(filtered_threads) > 1:
                     msg = "Another process is in progress"
                     for t_in_progress_intgr in filtered_threads:
-                        print("Current Thread via t_in_progress_intgr.getName(): [{}]".format(t_in_progress_intgr.getName()))
+                        print(
+                            "Current Thread via t_in_progress_intgr.getName(): [{}]".format(
+                                t_in_progress_intgr.getName()
+                            )
+                        )
                         if "SuspendableMainLoopThread" in t_in_progress_intgr.getName():
                             msg = _("An SuspendableMainLoopThread is in progress.")
                         if "export" in t_in_progress_intgr.getName():
@@ -212,31 +235,46 @@ class TestThreadManager(object):
                 quit_anyway = True
 
                 if quit_anyway:
-                    for t_quit_anyway_intgr in filtered_threads:  # pylint: disable=C0103
+                    for (
+                        t_quit_anyway_intgr
+                    ) in filtered_threads:  # pylint: disable=C0103
                         if t_quit_anyway_intgr.getName() in whitelist_threads:
                             try:
-                                print("QUIT ANYWAY t_in_progress_intgr.getName(): [{}]".format(t_quit_anyway_intgr.getName()))
+                                print(
+                                    "QUIT ANYWAY t_in_progress_intgr.getName(): [{}]".format(
+                                        t_quit_anyway_intgr.getName()
+                                    )
+                                )
                                 t_quit_anyway_intgr.terminate()
                             except BaseException as t_quit_anyway_intgr_exec:  # pylint: disable=C0103
-                                print("Unable to terminate thread %s" % t_quit_anyway_intgr)
-                                print("[t_quit_anyway_intgr.terminate()] Recieved: {}".format(str(t_quit_anyway_intgr_exec)))
+                                print(
+                                    "Unable to terminate thread %s"
+                                    % t_quit_anyway_intgr
+                                )
+                                print(
+                                    "[t_quit_anyway_intgr.terminate()] Recieved: {}".format(
+                                        str(t_quit_anyway_intgr_exec)
+                                    )
+                                )
                                 # try not to lose data if this is going to
                                 # end up in a force quit
                                 return True
                         else:
-                            print('t_quit_anyway_intgr.getName() in whitelist_threads == FALSE, continue callback')
+                            print(
+                                "t_quit_anyway_intgr.getName() in whitelist_threads == FALSE, continue callback"
+                            )
                             # thread is not part of the whitelist threads list, continue callback
                             return True
                         # end - if t_quit_anyway_intgr.getName() in whitelist_threads:
                 else:
-                    print('quit_anyway set to false. continue callback')
+                    print("quit_anyway set to false. continue callback")
                     # continue callback
                     return True
 
-                print(__name__ + '.loop.quit()')
+                print(__name__ + ".loop.quit()")
                 loop.quit()
                 # remove callback
-                print(__name__ + ': remove callback')
+                print(__name__ + ": remove callback")
                 return False
 
         GLib.timeout_add_seconds(10, get_tm_active_count)

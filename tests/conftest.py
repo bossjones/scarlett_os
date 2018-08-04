@@ -38,20 +38,23 @@ def monkeysession(request):
     yield mpatch
     mpatch.undo()
 
-# source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
-@pytest.fixture(scope='function')
-def mockersession(mocker):
-    '''Stop previous mocks, yield mocker plugin obj, then stopall mocks again'''
-    print('Called [setup]: mocker.stopall()')
-    mocker.stopall()
-    yield mocker
-    print('Called [teardown]: mocker.stopall()')
-    mocker.stopall()
 
 # source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
+def mockersession(mocker):
+    """Stop previous mocks, yield mocker plugin obj, then stopall mocks again"""
+    print("Called [setup]: mocker.stopall()")
+    mocker.stopall()
+    yield mocker
+    print("Called [teardown]: mocker.stopall()")
+    mocker.stopall()
+
+
+# source: https://github.com/YosaiProject/yosai/blob/master/test/isolated_tests/core/conf/conftest.py
+@pytest.fixture(scope="function")
 def empty():
     return object()
+
 
 # source: https://github.com/wmanley/pulsevideo/blob/d8259f2ce2f3951e380e319c80b9d124b47efdf2/tests/integration_test.py
 
@@ -65,18 +68,19 @@ def wait_until(f, timeout_secs=10):
         if time.time() > expiry_time:
             return val  # falsy
 
+
 # source: https://stackoverflow.com/questions/25072126/why-does-python-lint-want-me-to-use-different-local-variable-name-than-a-global
 
 
 def setup_environment():
     # source: http://stackoverflow.com/questions/17278650/python-3-script-using-libnotify-fails-as-cron-job  # noqa
-    if 'TRAVIS_CI' in os.environ:
-        if 'DISPLAY' not in os.environ:
+    if "TRAVIS_CI" in os.environ:
+        if "DISPLAY" not in os.environ:
             # TODO: Should this be on :99 ?
-            os.environ['DISPLAY'] = ':0'
+            os.environ["DISPLAY"] = ":0"
 
-    if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
-        print('NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!')
+    if "DBUS_SESSION_BUS_ADDRESS" not in os.environ:
+        print("NOTE: DBUS_SESSION_BUS_ADDRESS environment var not found!")
 
     # Setup an environment for the fixtures to share so the bus address is the same for all  # noqa
     environment = environ.copy()
@@ -84,13 +88,16 @@ def setup_environment():
     # Setup an environment for the fixtures to share so the bus address is the same for all
     environment["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + OUTSIDE_SOCKET
 
-    print("[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"]))
+    print(
+        "[DBUS_SESSION_BUS_ADDRESS]: {}".format(environment["DBUS_SESSION_BUS_ADDRESS"])
+    )
     return environment
 
 
 @pytest.fixture(scope="session")
 def get_environment():
     yield setup_environment()
+
 
 ########################################################################
 # NOTE: unix sockets, abstract ( eg 'unix:abstract=' )
@@ -175,10 +182,10 @@ def create_dummy_session_dbus(request):
     """
     # TODO: Parametrize the socket path.
 
-    if 'TRAVIS_CI' in os.environ:
-        if 'DISPLAY' not in os.environ:
+    if "TRAVIS_CI" in os.environ:
+        if "DISPLAY" not in os.environ:
             # TODO: Should this be on :99 ?
-            os.environ['DISPLAY'] = ':0'
+            os.environ["DISPLAY"] = ":0"
 
     m_dbus = None
     # The 'exec' part is a workaround to make the whole process group be killed
@@ -189,7 +196,7 @@ def create_dummy_session_dbus(request):
         "dbus-daemon",
         "--session",
         "--nofork",
-        "--print-address"
+        "--print-address",
     ]
     try:
         # For some reason shell needs to be set to True,
@@ -200,13 +207,13 @@ def create_dummy_session_dbus(request):
         # import pdb;pdb.set_trace()
         # get and store address
         bus_address = m_dbus.stdout.readline().strip()
-        print('[m_dbus.stdout.readline().strip()]')
+        print("[m_dbus.stdout.readline().strip()]")
         print(bus_address)
-        print(bus_address.decode('utf-8'))
+        print(bus_address.decode("utf-8"))
         print(type(bus_address))
-        print(type(bus_address.decode('utf-8')))
-        os.environ["SOFTWARE_CENTER_APTD_FAKE"] = bus_address.decode('utf-8')
-        print('\n[setup] create_session_bus, dbus-daemon running ...')
+        print(type(bus_address.decode("utf-8")))
+        os.environ["SOFTWARE_CENTER_APTD_FAKE"] = bus_address.decode("utf-8")
+        print("\n[setup] create_session_bus, dbus-daemon running ...")
         # Allow time for the bus daemon to start
         sleep(0.5)
     except OSError as e:
@@ -214,7 +221,7 @@ def create_dummy_session_dbus(request):
         sys.exit(1)
 
     def teardown():
-        print('\n[teardown] create_session_bus, killing dbus-daemon ...')
+        print("\n[teardown] create_session_bus, killing dbus-daemon ...")
         m_dbus.terminate()
         m_dbus.wait()
         m_dbus.kill()
@@ -226,7 +233,6 @@ def create_dummy_session_dbus(request):
     # If you’ve used parameterized fixtures,
     # the finalizer is called between instances of the parameterized fixture changes.
     request.addfinalizer(teardown)
-
 
 
 @pytest.fixture(scope="module")
@@ -248,7 +254,7 @@ def create_session_bus(request, get_environment):
         " dbus-daemon",
         " --session",
         " --nofork",
-        " --address=" + "unix:path=" + OUTSIDE_SOCKET
+        " --address=" + "unix:path=" + OUTSIDE_SOCKET,
     ]
     try:
         # For some reason shell needs to be set to True,
@@ -259,8 +265,9 @@ def create_session_bus(request, get_environment):
             "".join(start_dbus_daemon_command),
             env=get_environment,
             shell=True,
-            stdout=sys.stdout)
-        print('\n[setup] create_session_bus, dbus-daemon running ...')
+            stdout=sys.stdout,
+        )
+        print("\n[setup] create_session_bus, dbus-daemon running ...")
         # Allow time for the bus daemon to start
         sleep(0.3)
     except OSError as e:
@@ -268,7 +275,7 @@ def create_session_bus(request, get_environment):
         sys.exit(1)
 
     def teardown():
-        print('\n[teardown] create_session_bus, killing dbus-daemon ...')
+        print("\n[teardown] create_session_bus, killing dbus-daemon ...")
         dbus_daemon.kill()
         os.remove(OUTSIDE_SOCKET)
 
@@ -295,24 +302,21 @@ def service_on_outside(request, get_environment, create_session_bus):
 
     try:
         outside_service = Popen(
-            [
-                "python3",
-                "-m",
-                "scarlett_os.mpris"
-            ],
+            ["python3", "-m", "scarlett_os.mpris"],
             env=get_environment,
             stdout=sys.stdout,
-            cwd=scarlett_root)
+            cwd=scarlett_root,
+        )
         # Allow time for the service to show up on the bus
         # before consuming tests can try to use it.
-        print('\n[setup] service_on_outside, mpris running')
+        print("\n[setup] service_on_outside, mpris running")
         sleep(0.3)
     except OSError as e:
         print("Error starting service on outside: {}".format(str(e)))
         sys.exit(1)
 
     def teardown():
-        print('\n[teardown] service_on_outside finalizer, disconnect from dbus mpris')
+        print("\n[teardown] service_on_outside finalizer, disconnect from dbus mpris")
         outside_service.kill()
 
     # The finalizer is called after all of the tests that use the fixture.
@@ -335,14 +339,11 @@ def service_tasker(request, get_environment):
 
     try:
         tasker_service = Popen(
-            [
-                "python3",
-                "-m",
-                "scarlett_os.tasker"
-            ],
+            ["python3", "-m", "scarlett_os.tasker"],
             env=get_environment,
             stdout=sys.stdout,
-            cwd=scarlett_root)
+            cwd=scarlett_root,
+        )
         # Allow time for the service to show up on the bus
         # before consuming tests can try to use it.
         sleep(0.3)
@@ -359,7 +360,7 @@ def service_tasker(request, get_environment):
     request.addfinalizer(teardown)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def get_bus(request, get_environment, create_session_bus):
     """
     Provide the session bus instance.
@@ -373,14 +374,14 @@ def get_bus(request, get_environment, create_session_bus):
     # all the code after the yield
     # statement serves as the teardown code.:
     # if os.environ.get('DBUS_SESSION_BUS_ADDRESS'):
-    if get_environment['DBUS_SESSION_BUS_ADDRESS']:
+    if get_environment["DBUS_SESSION_BUS_ADDRESS"]:
         print("[get_bus] inside if environment['DBUS_SESSION_BUS_ADDRESS']")
         bus = connect(get_environment["DBUS_SESSION_BUS_ADDRESS"])
         # yield bus
         # print("teardown new session bus")
         # return dbus.bus.BusConnection(os.environ['DBUS_SESSION_BUS_ADDRESS'])
     else:
-        print('\n[get_bus] default SessionBus')
+        print("\n[get_bus] default SessionBus")
         bus = SessionBus()
 
     def teardown():
@@ -533,6 +534,7 @@ def get_bus(request, get_environment, create_session_bus):
 #     request.addfinalizer(fin)
 #     return process
 
+
 @pytest.fixture(scope="module")
 def scarlett_os_interface(request, get_environment, get_bus):
     # ORIG # def scarlett_os_interface(request, session_bus, hamster_service3):  # noqa
@@ -542,7 +544,7 @@ def scarlett_os_interface(request, get_environment, get_bus):
     # sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
     # ORIG # return session_bus.get_object('org.gnome.hamster_dbus', '/org/gnome/hamster_dbus')  # noqa
     print("[get_bus] in [scarlett_os_interface]: {}".format(get_bus))
-    get_bus.request_name(name='org.scarlett')
+    get_bus.request_name(name="org.scarlett")
     return get_bus
 
 
@@ -555,8 +557,10 @@ def get_dbus_proxy_obj_helper(request, get_environment, get_bus):
     ProxyObject implementing all the Interfaces exposed by the remote object.
     """
     time.sleep(2)
-    print("[get_dbus_proxy_obj_helper] ('org.scarlett','/org/scarlett/Listener')")  # noqa
-    return get_bus.get("org.scarlett", object_path='/org/scarlett/Listener')
+    print(
+        "[get_dbus_proxy_obj_helper] ('org.scarlett','/org/scarlett/Listener')"
+    )  # noqa
+    return get_bus.get("org.scarlett", object_path="/org/scarlett/Listener")
 
 
 # pylint: disable=C0103
@@ -575,9 +579,10 @@ def dict_compare(d1, d2):
     intersect_keys = d1_keys.intersection(d2_keys)
     added = d1_keys - d2_keys
     removed = d2_keys - d1_keys
-    modified = {o : (d1[o], d2[o]) for o in intersect_keys if d1[o] != d2[o]}
+    modified = {o: (d1[o], d2[o]) for o in intersect_keys if d1[o] != d2[o]}
     same = set(o for o in intersect_keys if d1[o] == d2[o])
     return added, removed, modified, same
+
 
 # TODO: Think about implementing this, it allows you to create one DBusRunner per test session
 # source: https://github.com/peuter/gosa/blob/master/client/conftest.py
@@ -611,6 +616,7 @@ def dict_compare(d1, d2):
 
 #     request.addfinalizer(shutdown)
 
+
 @pytest.fixture
 def service_receiver(request, get_environment):
     """
@@ -621,11 +627,7 @@ def service_receiver(request, get_environment):
 
     receiver_service = None
 
-    receiver_cmd = [
-        "python3",
-        "-m",
-        "scarlett_os.receiver"
-    ]
+    receiver_cmd = ["python3", "-m", "scarlett_os.receiver"]
 
     try:
         receiver_service = ProcessMonitor(receiver_cmd, environment=get_environment)
@@ -639,6 +641,7 @@ def service_receiver(request, get_environment):
     def teardown():
         receiver_service.terminate()
         print("ran: receiver_service.terminate()")
+
     request.addfinalizer(teardown)
 
     return receiver_service
@@ -648,30 +651,35 @@ def service_receiver(request, get_environment):
 class BaseError(Exception):
 
     """docstring for BaseError"""
+
     pass
 
 
 class PathError(BaseError):
 
     """docstring for PathError"""
+
     pass
 
 
 class ServerProcessError(BaseError):
 
     """docstring for ServerProcessError"""
+
     pass
 
 
 class MatchTimeoutError(BaseError):
 
     """Timeout during ProcessMonitor.wait_for_output"""
+
     pass
 
 
 class MatchEofError(BaseError):
 
     """Process died during ProcessMonitor.wait_for_output"""
+
     pass
 
 
@@ -679,6 +687,7 @@ class SelectError(BaseError):
 
     """select.select returned with an unknown Error
        during ProcessMonitor.wait_for_output"""
+
     pass
 
 
@@ -690,7 +699,7 @@ class ProcessMonitor(subprocess.Popen):
     """
 
     def __init__(self, cmd, cmd_output_target=sys.stderr, environment=None):
-        self.log = logging.getLogger('server-output-monitor')
+        self.log = logging.getLogger("server-output-monitor")
 
         # Logfile to write to
         self._cmd_output_target = cmd_output_target
@@ -709,7 +718,8 @@ class ProcessMonitor(subprocess.Popen):
                 stderr=subprocess.STDOUT,
                 bufsize=4096,
                 env=environment,
-                cwd=scarlett_root)
+                cwd=scarlett_root,
+            )
         except Exception as err:
             raise ServerProcessError(err)
 
@@ -744,14 +754,12 @@ class ProcessMonitor(subprocess.Popen):
             # os.read -in contrast to self.stdout.read- is non-blocking,
             # if at least 1 character is readable.
             self.log.debug("reading data from subprocess")
-            chunk = os.read(self.stdout.fileno(), 2000).decode('utf-8')
+            chunk = os.read(self.stdout.fileno(), 2000).decode("utf-8")
 
             if len(chunk) == 0:
                 break
 
-            self.log.debug(
-                "read %d bytes, appending to cmd_output_target",
-                len(chunk))
+            self.log.debug("read %d bytes, appending to cmd_output_target", len(chunk))
             self._cmd_output_target.write(chunk)
 
         # TODO: In python3 I'd add a timeout here but because of the forced
@@ -776,8 +784,11 @@ class ProcessMonitor(subprocess.Popen):
         endtime = time.time() + timeout
         while True:
             timeout = endtime - time.time()
-            self.log.debug("waiting for data output by subprocess"
-                           "(remaining time to timeout = %fs)", timeout)
+            self.log.debug(
+                "waiting for data output by subprocess"
+                "(remaining time to timeout = %fs)",
+                timeout,
+            )
 
             # select takes three lists of file-descriptors to be monitored:
             #   readable, writeable and exceptional
@@ -796,11 +807,13 @@ class ProcessMonitor(subprocess.Popen):
                         "Timeout while waiting for match "
                         "'%s' %dx in the subprocess output.\n"
                         "re-run tests with -x and look at "
-                        "server.log to investigate further"
-                        % (match, count,))
+                        "server.log to investigate further" % (match, count)
+                    )
 
-                raise SelectError("select returned without stdout being"
-                                  " readable, assuming an exception")
+                raise SelectError(
+                    "select returned without stdout being"
+                    " readable, assuming an exception"
+                )
 
             # read as many bytes as possible, up to 2000,
             # from the process. os.read does not wait until exactly 2000
@@ -811,24 +824,24 @@ class ProcessMonitor(subprocess.Popen):
             # os.read -in contrast to self.stdout.read- is non-blocking,
             # if at least 1 character is readable.
             self.log.debug("reading data from subprocess")
-            chunk = os.read(self.stdout.fileno(), 2000).decode('utf-8')
+            chunk = os.read(self.stdout.fileno(), 2000).decode("utf-8")
 
             if len(chunk) == 0:
-                raise MatchEofError("Subprocess died while waiting for match "
-                                    "'%s' %dx in the subprocess output."
-                                    % (match, count,))
+                raise MatchEofError(
+                    "Subprocess died while waiting for match "
+                    "'%s' %dx in the subprocess output." % (match, count)
+                )
 
             self.log.debug("read %d bytes, appending to buffer", len(chunk))
             self._buffer += chunk
             self._cmd_output_target.write(chunk)
 
-            self.log.debug("testing again for %dx '%s' in buffer",
-                           count, match)
+            self.log.debug("testing again for %dx '%s' in buffer", count, match)
             if self._buffer.count(match) >= count:
                 self.log.debug("match found, returning")
                 return
 
 
 if __name__ == "__main__":
-    print('testing_create_session_bus')
-    print('testing_create_session_bus_end')
+    print("testing_create_session_bus")
+    print("testing_create_session_bus_end")

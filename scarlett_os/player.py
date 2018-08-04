@@ -75,7 +75,7 @@ logger = logging.getLogger(__name__)
 # Constants
 QUEUE_SIZE = 10
 BUFFER_SIZE = 10
-SENTINEL = '__GSTDEC_SENTINEL__'
+SENTINEL = "__GSTDEC_SENTINEL__"
 SEMAPHORE_NUM = 0
 
 
@@ -95,6 +95,7 @@ def get_loop_thread():
             _shared_loop_thread = MainLoopThread()
             _shared_loop_thread.start()
         return _shared_loop_thread
+
 
 # NOTE: doc updated via
 # https://github.com/Faham/emophiz/blob/15612aaf13401201100d67a57dbe3ed9ace5589a/emotion_engine/dependencies/src/sensor_lib/SensorLib.Tobii/Software/tobiisdk-3.0.2-Win32/Win32/Python26/Modules/tobii/sdk/mainloop.py
@@ -122,9 +123,9 @@ class ScarlettPlayer(_IdleObject):
     # :handler_error: (callable)
     # :callback: (callable)
 
-    DEFAULT_SRC = 'uridecodebin'
+    DEFAULT_SRC = "uridecodebin"
 
-    DEFAULT_SINK = 'pulsesink'
+    DEFAULT_SINK = "pulsesink"
 
     def __init__(self, path, handle_error, callback):
         self.running = False
@@ -137,7 +138,7 @@ class ScarlettPlayer(_IdleObject):
         # Set up the Gstreamer pipeline.
         # NOTE: Need to add .new for some reason to pass tests ...
         # source: https://github.com/hadware/gstreamer-python-player/issues/1
-        self.pipeline = Gst.Pipeline.new('main-pipeline')
+        self.pipeline = Gst.Pipeline.new("main-pipeline")
         self.ready_sem = threading.Semaphore(SEMAPHORE_NUM)
 
         # Register for bus signals.
@@ -148,33 +149,32 @@ class ScarlettPlayer(_IdleObject):
         bus.connect("message::state-changed", self._on_state_changed)
 
         # 1. Create pipeline's elements
-        self.source = Gst.ElementFactory.make("uridecodebin", 'input_stream')
-        self.audioconvert = Gst.ElementFactory.make('audioconvert', None)
-        self.splitter = Gst.ElementFactory.make("tee", 'splitter')
+        self.source = Gst.ElementFactory.make("uridecodebin", "input_stream")
+        self.audioconvert = Gst.ElementFactory.make("audioconvert", None)
+        self.splitter = Gst.ElementFactory.make("tee", "splitter")
 
-        if (not self.source or not self.audioconvert or not self.splitter):
+        if not self.source or not self.audioconvert or not self.splitter:
             logger.error("ERROR: Not all elements could be created.")
             raise IncompleteGStreamerError()
 
         # TODO: Add a test to check for False / None type before moving forward. Throw AttributeError.
 
         # 2. Set properties
-        uri = 'file://' + quote(os.path.abspath(path))
+        uri = "file://" + quote(os.path.abspath(path))
 
         # Make sure GST likes the uri
         if not uri_is_valid(uri):
-            logger.error("Error: "
-                         "Something is wrong with uri "
-                         "provided. uri: {}".format(uri))
+            logger.error(
+                "Error: " "Something is wrong with uri " "provided. uri: {}".format(uri)
+            )
             raise InvalidUri()
 
         # Make sure we can actually read the uri
         if not isReadable(path_from_uri(uri)):
-            logger.error("Error: Can't read uri:"
-                         " {}".format(path_from_uri(uri)))
+            logger.error("Error: Can't read uri:" " {}".format(path_from_uri(uri)))
             raise UriReadError()
 
-        self.source.set_property('uri', uri)
+        self.source.set_property("uri", uri)
 
         # 3. Add them to the pipeline
         self.pipeline.add(self.source)
@@ -183,23 +183,22 @@ class ScarlettPlayer(_IdleObject):
 
         self.audioconvert.link(self.splitter)
 
-        self.source.connect('source-setup', self._source_setup_cb)
+        self.source.connect("source-setup", self._source_setup_cb)
 
         # 4.a. uridecodebin has a "sometimes" pad (created after prerolling)
-        self.source.connect('pad-added', self._decode_src_created)
-        self.source.connect('no-more-pads', self._no_more_pads)
+        self.source.connect("pad-added", self._decode_src_created)
+        self.source.connect("no-more-pads", self._no_more_pads)
         self.source.connect("unknown-type", self._unknown_type)
 
         #######################################################################
         # QUEUE A
         #######################################################################
-        self.queueA = Gst.ElementFactory.make('queue', None)
+        self.queueA = Gst.ElementFactory.make("queue", None)
         # BOSSJONESTEMP # self.audioconvert =
         # Gst.ElementFactory.make('audioconvert', None)
-        self.appsink = Gst.ElementFactory.make('appsink', None)
+        self.appsink = Gst.ElementFactory.make("appsink", None)
         self.appsink.set_property(
-            'caps',
-            Gst.Caps.from_string('audio/x-raw, format=(string)S16LE'),
+            "caps", Gst.Caps.from_string("audio/x-raw, format=(string)S16LE")
         )
         # TODO set endianness?
         # Set up the characteristics of the output. We don't want to
@@ -208,18 +207,18 @@ class ScarlettPlayer(_IdleObject):
         # importantly, setting "sync" to False disables the default
         # behavior in which you consume buffers in real time. This way,
         # we get data as soon as it's decoded.
-        self.appsink.set_property('drop', False)
-        self.appsink.set_property('max-buffers', BUFFER_SIZE)
-        self.appsink.set_property('sync', False)
+        self.appsink.set_property("drop", False)
+        self.appsink.set_property("max-buffers", BUFFER_SIZE)
+        self.appsink.set_property("sync", False)
 
         # The callback to receive decoded data.
-        self.appsink.set_property('emit-signals', True)
+        self.appsink.set_property("emit-signals", True)
         self.appsink.connect("new-sample", self._new_sample)
 
         self.caps_handler = self.appsink.get_static_pad("sink").connect(
             "notify::caps", self._notify_caps
         )
-        print('caps_handler: {}'.format(self.caps_handler))
+        print("caps_handler: {}".format(self.caps_handler))
 
         self.pipeline.add(self.queueA)
         self.pipeline.add(self.appsink)
@@ -227,20 +226,26 @@ class ScarlettPlayer(_IdleObject):
         self.queueA.link(self.appsink)
 
         # link tee to queueA
-        tee_src_pad_to_appsink_bin = self.splitter.get_request_pad('src_%u')
-        logger.debug("Obtained request pad "
-                     "Name({}) Type({}) for audio branch.".format(
-                         self.splitter.name, self.splitter))
-        queueAsinkPad = self.queueA.get_static_pad('sink')
+        tee_src_pad_to_appsink_bin = self.splitter.get_request_pad("src_%u")
         logger.debug(
-            "Obtained sink pad for element ({}) for tee -> queueA.".format(queueAsinkPad))
+            "Obtained request pad "
+            "Name({}) Type({}) for audio branch.".format(
+                self.splitter.name, self.splitter
+            )
+        )
+        queueAsinkPad = self.queueA.get_static_pad("sink")
+        logger.debug(
+            "Obtained sink pad for element ({}) for tee -> queueA.".format(
+                queueAsinkPad
+            )
+        )
         tee_src_pad_to_appsink_bin.link(queueAsinkPad)
 
         #######################################################################
         # QUEUE B
         #######################################################################
 
-        self.queueB = Gst.ElementFactory.make('queue', None)
+        self.queueB = Gst.ElementFactory.make("queue", None)
         self.pulsesink = Gst.ElementFactory.make(ScarlettPlayer.DEFAULT_SINK, None)
 
         self.pipeline.add(self.queueB)
@@ -248,15 +253,21 @@ class ScarlettPlayer(_IdleObject):
 
         self.queueB.link(self.pulsesink)
 
-        self.queueB_sink_pad = self.queueB.get_static_pad('sink')
+        self.queueB_sink_pad = self.queueB.get_static_pad("sink")
 
         # link tee to queueB
-        tee_src_pad_to_appsink_bin = self.splitter.get_request_pad('src_%u')
-        logger.debug("Obtained request pad Name({}) Type({}) for audio branch.".format(
-            self.splitter.name, self.splitter))
-        queueAsinkPad = self.queueB.get_static_pad('sink')
+        tee_src_pad_to_appsink_bin = self.splitter.get_request_pad("src_%u")
         logger.debug(
-            "Obtained sink pad for element ({}) for tee -> queueB.".format(queueAsinkPad))
+            "Obtained request pad Name({}) Type({}) for audio branch.".format(
+                self.splitter.name, self.splitter
+            )
+        )
+        queueAsinkPad = self.queueB.get_static_pad("sink")
+        logger.debug(
+            "Obtained sink pad for element ({}) for tee -> queueB.".format(
+                queueAsinkPad
+            )
+        )
         tee_src_pad_to_appsink_bin.link(queueAsinkPad)
 
         # recursively print elements
@@ -310,7 +321,9 @@ class ScarlettPlayer(_IdleObject):
             # TODO: Modify the creation of this path, it should be programatically created
             # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
             # FIXME: STATIC PATH 7/3/2018
-            dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
+            dotfile = (
+                "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
+            )
             pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
 
             parent_dir = get_parent_dir(dotfile)
@@ -330,8 +343,10 @@ class ScarlettPlayer(_IdleObject):
 
             # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
             # FIXME: STATIC PATH 7/3/2018
-            Gst.debug_bin_to_dot_file(msg.src, Gst.DebugGraphDetails.ALL, "generator-player")
-            os.system('/usr/bin/dot' + " -Tpng -o " + pngfile + " " + dotfile)
+            Gst.debug_bin_to_dot_file(
+                msg.src, Gst.DebugGraphDetails.ALL, "generator-player"
+            )
+            os.system("/usr/bin/dot" + " -Tpng -o " + pngfile + " " + dotfile)
             print("pipeline dot file created in " + os.getenv("GST_DEBUG_DUMP_DOT_DIR"))
 
     def _listElements(self, bin, level=0):
@@ -342,7 +357,7 @@ class ScarlettPlayer(_IdleObject):
                 elem = iterator.next()
                 if elem[1] is None:
                     break
-                logger.debug(level * '** ' + str(elem[1]))
+                logger.debug(level * "** " + str(elem[1]))
                 # uncomment to print pads of element
                 self._iteratePads(elem[1])
                 # call recursively
@@ -357,7 +372,7 @@ class ScarlettPlayer(_IdleObject):
                 pad = iterator.next()
                 if pad[1] is None:
                     break
-                logger.debug('pad: ' + str(pad[1]))
+                logger.debug("pad: " + str(pad[1]))
         except AttributeError:
             pass
 
@@ -365,7 +380,9 @@ class ScarlettPlayer(_IdleObject):
     # then finally generates a png file, which it then displays
     def on_debug_activate(self):
         # FIXME: STATIC PATH 7/3/2018
-        dotfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
+        dotfile = (
+            "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
+        )
         pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
 
         parent_dir = get_parent_dir(dotfile)
@@ -385,8 +402,10 @@ class ScarlettPlayer(_IdleObject):
 
         # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
         # FIXME: STATIC PATH 7/3/2018
-        Gst.debug_bin_to_dot_file(self.pipeline, Gst.DebugGraphDetails.ALL, "generator-player")
-        os.system('/usr/bin/dot' + " -Tpng -o " + pngfile + " " + dotfile)
+        Gst.debug_bin_to_dot_file(
+            self.pipeline, Gst.DebugGraphDetails.ALL, "generator-player"
+        )
+        os.system("/usr/bin/dot" + " -Tpng -o " + pngfile + " " + dotfile)
 
     # Gstreamer callbacks.
 
@@ -397,15 +416,14 @@ class ScarlettPlayer(_IdleObject):
         # This also is our opportunity to read information about the
         # stream.
         logger.debug("pad: {}".format(pad))
-        logger.debug("pad name: {} parent: {}".format(
-            pad.name, pad.get_parent()))
+        logger.debug("pad name: {} parent: {}".format(pad.name, pad.get_parent()))
         logger.debug("args: {}".format(args))
         self.got_caps = True
         info = pad.get_current_caps().get_structure(0)
 
         # Stream attributes.
-        self.channels = info.get_int('channels')[1]
-        self.samplerate = info.get_int('rate')[1]
+        self.channels = info.get_int("channels")[1]
+        self.samplerate = info.get_int("rate")[1]
 
         # Query duration.
         success, length = pad.get_peer().query_duration(Gst.Format.TIME)
@@ -413,7 +431,7 @@ class ScarlettPlayer(_IdleObject):
             self.duration = length / 1000000000
             logger.debug("FILE DURATION: {}".format(self.duration))
         else:
-            self.read_exc = MetadataMissingError('duration not available')
+            self.read_exc = MetadataMissingError("duration not available")
 
         # Allow constructor to complete.
         self.ready_sem.release()
@@ -426,10 +444,9 @@ class ScarlettPlayer(_IdleObject):
         # Decoded data is ready. Connect up the decoder, finally.
         name = pad.query_caps(None).to_string()
         logger.debug("pad: {}".format(pad))
-        logger.debug("pad name: {} parent: {}".format(
-            pad.name, pad.get_parent()))
-        if name.startswith('audio/x-raw'):
-            nextpad = self.audioconvert.get_static_pad('sink')
+        logger.debug("pad name: {} parent: {}".format(pad.name, pad.get_parent()))
+        if name.startswith("audio/x-raw"):
+            nextpad = self.audioconvert.get_static_pad("sink")
             if not nextpad.is_linked():
                 self._got_a_pad = True
                 pad.link(nextpad)
@@ -442,7 +459,8 @@ class ScarlettPlayer(_IdleObject):
         # decodable stream, raise an exception.
         if not self._got_a_pad:
             logger.error(
-                "If we haven't gotten at least one decodable stream, raise an exception.")
+                "If we haven't gotten at least one decodable stream, raise an exception."
+            )
             self.read_exc = NoStreamError()
             self.ready_sem.release()  # No effect if we've already started.
 
@@ -454,7 +472,7 @@ class ScarlettPlayer(_IdleObject):
             # FIXME: logger.debug("sink name: {} parent: {}".format(sink.name, sink.get_parent()))
             # New data is available from the pipeline! Dump it into our
             # queue (or possibly block if we're full).
-            buf = sink.emit('pull-sample').get_buffer()
+            buf = sink.emit("pull-sample").get_buffer()
             self.queue.put(buf.extract_dup(0, buf.get_size()))
         return Gst.FlowReturn.OK
 
@@ -464,7 +482,7 @@ class ScarlettPlayer(_IdleObject):
         # This is called *before* the stream becomes ready when the
         # file can't be read.
         streaminfo = caps.to_string()
-        if not streaminfo.startswith('audio/'):
+        if not streaminfo.startswith("audio/"):
             # Ignore non-audio (e.g., video) decode errors.
             return
         logger.error("Ignore non-audio (e.g., video) decode errors.")
@@ -482,7 +500,8 @@ class ScarlettPlayer(_IdleObject):
                 self.queue.put(SENTINEL)
                 if not self.got_caps:
                     logger.error(
-                        "If the stream ends before _notify_caps was called, this is an invalid file.")
+                        "If the stream ends before _notify_caps was called, this is an invalid file."
+                    )
                     # If the stream ends before _notify_caps was called, this
                     # is an invalid file.
                     self.read_exc = NoStreamError()
@@ -490,11 +509,11 @@ class ScarlettPlayer(_IdleObject):
 
             elif message.type == Gst.MessageType.ERROR:
                 gerror, debug = message.parse_error()
-                if 'not-linked' in debug:
-                    logger.error('not-linked')
+                if "not-linked" in debug:
+                    logger.error("not-linked")
                     self.read_exc = NoStreamError()
-                elif 'No such file' in debug:
-                    self.read_exc = IOError('resource not found')
+                elif "No such file" in debug:
+                    self.read_exc = IOError("resource not found")
                 else:
                     self.read_exc = FileReadError(debug)
                 self.ready_sem.release()
@@ -543,11 +562,11 @@ class ScarlettPlayer(_IdleObject):
             self.source.set_property("uri", None)
             # Block spurious signals.
             if self.caps_handler:
-                print('self.caps_handler = {}'.format(self.caps_handler))
+                print("self.caps_handler = {}".format(self.caps_handler))
                 self.appsink.get_static_pad("sink").disconnect(self.caps_handler)
                 self.caps_handler = None
             else:
-                print('self.caps_handler = None ... doing nothing')
+                print("self.caps_handler = None ... doing nothing")
 
             # Make space in the output queue to let the decoder thread
             # finish. (Otherwise, the thread blocks on its enqueue and
@@ -558,19 +577,21 @@ class ScarlettPlayer(_IdleObject):
                 pass
 
             # Halt the pipeline (closing file).
-            if hasattr(self, 'pipeline'):
-                print('Halt the self.pipeline (closing file).')
+            if hasattr(self, "pipeline"):
+                print("Halt the self.pipeline (closing file).")
                 self.pipeline.set_state(Gst.State.NULL)
             else:
-                print('self.pipeline already halted, don\'t set_state ... doing nothing')
+                print("self.pipeline already halted, don't set_state ... doing nothing")
 
-            if hasattr(self, 'pipeline'):
-                print('Delete the pipeline object. This seems to be necessary on Python '
-                      '2, but not Python 3 for some reason: on 3.5, at least, the '
-                      'pipeline gets dereferenced automatically.')
+            if hasattr(self, "pipeline"):
+                print(
+                    "Delete the pipeline object. This seems to be necessary on Python "
+                    "2, but not Python 3 for some reason: on 3.5, at least, the "
+                    "pipeline gets dereferenced automatically."
+                )
                 del self.pipeline
             else:
-                print('self.pipeline already deleted... doing nothing')
+                print("self.pipeline already deleted... doing nothing")
 
     def __del__(self):
         logger.info("delete time")
@@ -588,22 +609,26 @@ class ScarlettPlayer(_IdleObject):
 
 
 # Smoke test.
-if __name__ == '__main__':
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+if __name__ == "__main__":
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         import faulthandler
+
         faulthandler.register(signal.SIGUSR2, all_threads=True)
 
         from scarlett_os.internal.debugger import init_debugger
         from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+
         init_debugger()
         set_gst_grapviz_tracing()
         # Example of how to use it
 
     from scarlett_os.logger import setup_logger
+
     setup_logger()
 
     wavefile = [
-        '/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav']
+        "/home/pi/dev/bossjones-github/scarlett_os/static/sounds/pi-listening.wav"
+    ]
     # ORIG # for path in sys.argv[1:]:
     for path in wavefile:
         path = os.path.abspath(os.path.expanduser(path))

@@ -89,6 +89,7 @@ class DBusRunner(object):
     bus. Interested instances can obtain the system bus from the
     runner.
     """
+
     __bus = None
     __active = False
     __instance = None
@@ -96,7 +97,7 @@ class DBusRunner(object):
     __timeout = 30
     __attempts = 0
     __bus_name = "org.scarlett"
-    __object_path = '/org/scarlett/Listener'
+    __object_path = "/org/scarlett/Listener"
     __default_interface = "org.scarlett.Listener"
     __scarlett_dbus = None
 
@@ -121,17 +122,23 @@ class DBusRunner(object):
                 break
             except Exception as e:
                 attempts += 1
-                logger.error("Error getting Session Bus %d: %s" % (e.args[0], e.args[1]))
+                logger.error(
+                    "Error getting Session Bus %d: %s" % (e.args[0], e.args[1])
+                )
 
     def configure_dbus_proxy(self, attempts=0):
         while attempts < 5:
             try:
-                self.__scarlett_dbus = self.__bus.get("org.scarlett", '/org/scarlett/Listener')
+                self.__scarlett_dbus = self.__bus.get(
+                    "org.scarlett", "/org/scarlett/Listener"
+                )
                 time.sleep(0.3)
                 break
             except Exception as e:
                 attempts += 1
-                logger.error("Scarlett DBusRunner Error %d: %s" % (e.args[0], e.args[1]))
+                logger.error(
+                    "Scarlett DBusRunner Error %d: %s" % (e.args[0], e.args[1])
+                )
 
     @property
     def bus(self):
@@ -173,7 +180,9 @@ class DBusRunner(object):
             if callable(proxy_obj.Introspect):
                 self.__scarlett_dbus = s_dbus
             else:
-                raise ValueError("proxy_obj.Introspect '{0} is not callable. Something wrong with proxy object!'")
+                raise ValueError(
+                    "proxy_obj.Introspect '{0} is not callable. Something wrong with proxy object!'"
+                )
 
     @property
     def bus_name(self):
@@ -209,14 +218,17 @@ class DBusRunner(object):
             raise ValueError("object_path '{0} cannot be blank'")
         else:
             obj = str(object_path)
-            if obj[0] == '/':
+            if obj[0] == "/":
                 self._object_path = obj
             else:
-                raise ValueError("object_path must follow specifications"
-                                 " mentioned at "
-                                 "http://dbus.freedesktop.org/doc/"
-                                 "dbus-specification.html"
-                                 "#message-protocol-marshaling-object-path""")
+                raise ValueError(
+                    "object_path must follow specifications"
+                    " mentioned at "
+                    "http://dbus.freedesktop.org/doc/"
+                    "dbus-specification.html"
+                    "#message-protocol-marshaling-object-path"
+                    ""
+                )
 
     @property
     def default_interface(self):
@@ -233,14 +245,16 @@ class DBusRunner(object):
             raise ValueError("default_interface '{0} cannot be blank'")
         else:
             intr = str(default_interface)
-            if intr.count('.') > 1:
+            if intr.count(".") > 1:
                 self._default_interface = intr
             else:
-                raise ValueError("default_interface must follow "
-                                 "specifications mentioned at "
-                                 "http://dbus.freedesktop.org/"
-                                 "doc/dbus-specification.html"
-                                 "#message-protocol-names-interface")
+                raise ValueError(
+                    "default_interface must follow "
+                    "specifications mentioned at "
+                    "http://dbus.freedesktop.org/"
+                    "doc/dbus-specification.html"
+                    "#message-protocol-names-interface"
+                )
 
     # def wait_for_bus_object(self, dest, path):
     #     # we check whether the name is owned first, to avoid race conditions

@@ -28,12 +28,10 @@ ubuntu_version = verify.get_current_os()
 pp = pprint.PrettyPrinter(indent=4)
 
 
-
 @pytest.mark.unittest
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyunittest
 class TestScarlett_os(object):
-
     def test_imports_something(self):
         assert importlib.util.find_spec("platform") is not None
         assert importlib.util.find_spec("scarlett_os.logger") is not None
@@ -53,7 +51,11 @@ class TestScarlett_os(object):
         # docker says:
         # ['Linux', '4.4.17', 'boot2docker', 'x86_64', 'with', 'debian', 'stretch', 'sid']
 
-        if 'trusty' in ubuntu_version or 'jessie' in ubuntu_version or 'stretch' in ubuntu_version:
+        if (
+            "trusty" in ubuntu_version
+            or "jessie" in ubuntu_version
+            or "stretch" in ubuntu_version
+        ):
             # assert GObject.pygobject_version == (3, 22, 0)
             assert GObject.pygobject_version[0] == 3
             assert GObject.pygobject_version[1] >= 22
@@ -66,7 +68,7 @@ class TestScarlett_os(object):
 
         # Verify Gstremaer 1.8.2 or 1.8.3
         gst_version_string = Gst.version_string()
-        m = re.search('(GStreamer 1.8.2|GStreamer 1.8.3)', gst_version_string)
+        m = re.search("(GStreamer 1.8.2|GStreamer 1.8.3)", gst_version_string)
         # If we get a string match on either of these versions then we have
         # 1.8.2/1.8.3, else None
         assert m

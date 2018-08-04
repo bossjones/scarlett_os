@@ -84,7 +84,7 @@ loop = GObject.MainLoop()
 
 class Server(object):  # noqa
     def __repr__(self):
-        return '<Server>'
+        return "<Server>"
 
     def __init__(self, bus, path, dbus_xml=None):
         super(Server, self).__init__()
@@ -99,28 +99,36 @@ class Server(object):  # noqa
         for interface in Gio.DBusNodeInfo.new_for_xml(__xml).interfaces:
 
             for method in interface.methods:
-                method_outargs[method.name] = '(' + ''.join([arg.signature for arg in method.out_args]) + ')'
-                method_inargs[method.name] = tuple(arg.signature for arg in method.in_args)
+                method_outargs[method.name] = (
+                    "(" + "".join([arg.signature for arg in method.out_args]) + ")"
+                )
+                method_inargs[method.name] = tuple(
+                    arg.signature for arg in method.in_args
+                )
 
-            bus.register_object(object_path=path,
-                                interface_info=interface,
-                                method_call_closure=self.on_method_call)
+            bus.register_object(
+                object_path=path,
+                interface_info=interface,
+                method_call_closure=self.on_method_call,
+            )
 
         self.method_inargs = method_inargs
         self.method_outargs = method_outargs
 
-    def on_method_call(self,
-                       connection,
-                       sender,
-                       object_path,
-                       interface_name,
-                       method_name,
-                       parameters,
-                       invocation):
+    def on_method_call(
+        self,
+        connection,
+        sender,
+        object_path,
+        interface_name,
+        method_name,
+        parameters,
+        invocation,
+    ):
 
         args = list(parameters.unpack())
         for i, sig in enumerate(self.method_inargs[method_name]):
-            if sig is 'h':
+            if sig is "h":
                 msg = invocation.get_message()
                 fd_list = msg.get_unix_fd_list()
                 args[i] = fd_list.get(args[i])
@@ -132,7 +140,7 @@ class Server(object):  # noqa
         result = (result,)
 
         out_args = self.method_outargs[method_name]
-        if out_args != '()':
+        if out_args != "()":
             variant = GLib.Variant(out_args, result)
             invocation.return_value(variant)
         else:
@@ -140,7 +148,7 @@ class Server(object):  # noqa
 
 
 class ScarlettListener(_IdleObject, Server):  # noqa
-    '''
+    """
     <!DOCTYPE node PUBLIC '-//freedesktop//DTD D-BUS Object Introspection 1.0//EN'
     'http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd'>
     <node>
@@ -216,13 +224,13 @@ class ScarlettListener(_IdleObject, Server):  # noqa
         </signal>
       </interface>
     </node>
-    '''
+    """
 
-    LISTENER_IFACE = 'org.scarlett.Listener'
-    LISTENER_PLAYER_IFACE = 'org.scarlett.Listener.Player'
-    LISTENER_TRACKLIST_IFACE = 'org.scarlett.Listener.TrackList'
-    LISTENER_PLAYLISTS_IFACE = 'org.scarlett.Listener.Playlists'
-    LISTENER_EVENTS_IFACE = 'org.scarlett.Listener.event'
+    LISTENER_IFACE = "org.scarlett.Listener"
+    LISTENER_PLAYER_IFACE = "org.scarlett.Listener.Player"
+    LISTENER_TRACKLIST_IFACE = "org.scarlett.Listener.TrackList"
+    LISTENER_PLAYLISTS_IFACE = "org.scarlett.Listener.Playlists"
+    LISTENER_EVENTS_IFACE = "org.scarlett.Listener.event"
 
     def __repr__(self):  # noqa
         return "<ScarlettListener({}, {})>".format(str(self.address), str(self.path))
@@ -235,22 +243,20 @@ class ScarlettListener(_IdleObject, Server):  # noqa
         self.con = Gio.bus_get_sync(Gio.BusType.SESSION, None)
         self.bus_conn = bus
         self.path = path
-        self.address = 'org.scarlett'
+        self.address = "org.scarlett"
 
         # Starts acquiring name on the bus specified by bus_type and calls name_acquired_handler and name_lost_handler when the name is acquired respectively lost.
         # Callbacks will be invoked in the thread-default main loop of the thread you are calling this function from.
-        Gio.bus_own_name_on_connection(self.con,
-                                       'org.scarlett',
-                                       Gio.BusNameOwnerFlags.NONE,
-                                       None,
-                                       None)
+        Gio.bus_own_name_on_connection(
+            self.con, "org.scarlett", Gio.BusNameOwnerFlags.NONE, None, None
+        )
 
         Server.__init__(self, bus, path)
 
         super(ScarlettListener, self).__init__()
 
         self.dbus_stack = []
-        self._message = 'This is the DBusServer'
+        self._message = "This is the DBusServer"
         self._status_ready = "  ScarlettListener is ready"
         self._status_kw_match = "  ScarlettListener caught a keyword match"
         self._status_cmd_match = "  ScarlettListener caught a command match"
@@ -275,57 +281,65 @@ class ScarlettListener(_IdleObject, Server):  # noqa
         pp.pprint(bus)
         # (ss) - struct/tuple containing 2 strings.
         kw_rec_status = GLib.Variant("(ss)", (message, scarlett_sound))
-        bus.emit_signal(None,
-                        '/org/scarlett/Listener',
-                        'org.scarlett.Listener',
-                        'KeywordRecognizedSignal',
-                        kw_rec_status)
+        bus.emit_signal(
+            None,
+            "/org/scarlett/Listener",
+            "org.scarlett.Listener",
+            "KeywordRecognizedSignal",
+            kw_rec_status,
+        )
 
     def CommandRecognizedSignal(self, message, scarlett_sound, scarlett_cmd):
         logger.debug(" sending message: {}".format(message))
         bus = self.dbus_stack[0]
         # (sss) - struct/tuple containing 3 strings.
-        cmd_rec_status = GLib.Variant(
-            "(sss)", (message, scarlett_sound, scarlett_cmd))
-        bus.emit_signal(None,
-                        '/org/scarlett/Listener',
-                        'org.scarlett.Listener',
-                        'CommandRecognizedSignal',
-                        cmd_rec_status)
+        cmd_rec_status = GLib.Variant("(sss)", (message, scarlett_sound, scarlett_cmd))
+        bus.emit_signal(
+            None,
+            "/org/scarlett/Listener",
+            "org.scarlett.Listener",
+            "CommandRecognizedSignal",
+            cmd_rec_status,
+        )
 
     def SttFailedSignal(self, message, scarlett_sound):
         logger.debug(" sending message: {}".format(message))
         bus = self.dbus_stack[0]
         # (ss) - struct/tuple containing 2 strings.
         stt_failed_status = GLib.Variant("(ss)", (message, scarlett_sound))
-        bus.emit_signal(None,
-                        '/org/scarlett/Listener',
-                        'org.scarlett.Listener',
-                        'SttFailedSignal',
-                        stt_failed_status)
+        bus.emit_signal(
+            None,
+            "/org/scarlett/Listener",
+            "org.scarlett.Listener",
+            "SttFailedSignal",
+            stt_failed_status,
+        )
 
     def ListenerCancelSignal(self, message, scarlett_sound):
         logger.debug(" sending message: {}".format(message))
         bus = self.dbus_stack[0]
         # (ss) - struct/tuple containing 2 strings.
-        listener_cancel_status = GLib.Variant(
-            "(ss)", (message, scarlett_sound))
-        bus.emit_signal(None,
-                        '/org/scarlett/Listener',
-                        'org.scarlett.Listener',
-                        'ListenerCancelSignal',
-                        listener_cancel_status)
+        listener_cancel_status = GLib.Variant("(ss)", (message, scarlett_sound))
+        bus.emit_signal(
+            None,
+            "/org/scarlett/Listener",
+            "org.scarlett.Listener",
+            "ListenerCancelSignal",
+            listener_cancel_status,
+        )
 
     def ListenerReadySignal(self, message, scarlett_sound):
         logger.debug(" sending message: {}".format(message))
         bus = self.dbus_stack[0]
         # (ss) - struct/tuple containing 2 strings.
         listener_rdy_status = GLib.Variant("(ss)", (message, scarlett_sound))
-        bus.emit_signal(None,
-                        '/org/scarlett/Listener',
-                        'org.scarlett.Listener',
-                        'ListenerReadySignal',
-                        listener_rdy_status)
+        bus.emit_signal(
+            None,
+            "/org/scarlett/Listener",
+            "org.scarlett.Listener",
+            "ListenerReadySignal",
+            listener_rdy_status,
+        )
 
     def ConnectedToListener(self, scarlett_plugin):
         logger.debug(" Client Connected: {}".format(scarlett_plugin))
@@ -335,11 +349,13 @@ class ScarlettListener(_IdleObject, Server):  # noqa
         # GLib-GIO-CRITICAL fix s -> (s)
         # source: http://stackoverflow.com/questions/28949009/glib-gio-critical-error-while-invoking-a-method-on-dbus-interface
         conn_to_lis_status = GLib.Variant("(s)", (scarlett_plugin,))
-        bus.emit_signal(None,
-                        '/org/scarlett/Listener',
-                        'org.scarlett.Listener',
-                        'ConnectedToListener',
-                        conn_to_lis_status)
+        bus.emit_signal(
+            None,
+            "/org/scarlett/Listener",
+            "org.scarlett.Listener",
+            "ConnectedToListener",
+            conn_to_lis_status,
+        )
 
     #########################################################
     # Scarlett dbus methods in = func args, out = return values
@@ -353,9 +369,7 @@ class ScarlettListener(_IdleObject, Server):  # noqa
 
     def emitCommandRecognizedSignal(self, command):
         global SCARLETT_RESPONSE
-        self.CommandRecognizedSignal(self._status_cmd_match,
-                                     SCARLETT_RESPONSE,
-                                     command)
+        self.CommandRecognizedSignal(self._status_cmd_match, SCARLETT_RESPONSE, command)
         return SCARLETT_RESPONSE
 
     def emitSttFailedSignal(self):
@@ -396,41 +410,46 @@ class ScarlettListener(_IdleObject, Server):  # noqa
     def GetAll(self, interface_name):
         if interface_name == ScarlettListener.LISTENER_IFACE:
             return {
-                'CanQuit': GLib.Variant('b', True),
-                'Fullscreen': GLib.Variant('b', False),
-                'HasTrackList': GLib.Variant('b', True),
-                'Identity': GLib.Variant('s', 'Scarlett'),
-                'DesktopEntry': GLib.Variant('s', 'scarlett-listener')
+                "CanQuit": GLib.Variant("b", True),
+                "Fullscreen": GLib.Variant("b", False),
+                "HasTrackList": GLib.Variant("b", True),
+                "Identity": GLib.Variant("s", "Scarlett"),
+                "DesktopEntry": GLib.Variant("s", "scarlett-listener"),
             }
-        elif interface_name == 'org.freedesktop.DBus.Properties':
+        elif interface_name == "org.freedesktop.DBus.Properties":
             return {}
-        elif interface_name == 'org.freedesktop.DBus.Introspectable':
+        elif interface_name == "org.freedesktop.DBus.Introspectable":
             return {}
         else:
             raise Exception(
-                'org.scarlett.ScarlettListener1',
-                'This object does not implement the %s interface'
-                % interface_name)
+                "org.scarlett.ScarlettListener1",
+                "This object does not implement the %s interface" % interface_name,
+            )
 
     def Set(self, interface_name, property_name, new_value):
         if interface_name == ScarlettListener.LISTENER_IFACE:
-            if property_name == 'Fullscreen':
+            if property_name == "Fullscreen":
                 pass
         else:
             raise Exception(
-                'org.scarlett.ScarlettListener1',
-                'This object does not implement the %s interface'
-                % interface_name)
+                "org.scarlett.ScarlettListener1",
+                "This object does not implement the %s interface" % interface_name,
+            )
 
-    def PropertiesChanged(self, interface_name, changed_properties,
-                          invalidated_properties):
-        self.con.emit_signal(None,
-                             '/org/scarlett/Listener',
-                             'org.freedesktop.DBus.Properties',
-                             'PropertiesChanged',
-                             GLib.Variant.new_tuple(GLib.Variant('s', interface_name),
-                                                    GLib.Variant('a{sv}', changed_properties),
-                                                    GLib.Variant('as', invalidated_properties)))
+    def PropertiesChanged(
+        self, interface_name, changed_properties, invalidated_properties
+    ):
+        self.con.emit_signal(
+            None,
+            "/org/scarlett/Listener",
+            "org.freedesktop.DBus.Properties",
+            "PropertiesChanged",
+            GLib.Variant.new_tuple(
+                GLib.Variant("s", interface_name),
+                GLib.Variant("a{sv}", changed_properties),
+                GLib.Variant("as", invalidated_properties),
+            ),
+        )
 
     def Introspect(self):
         return self.__doc__
@@ -441,22 +460,25 @@ class ScarlettListener(_IdleObject, Server):  # noqa
 
 
 # smoke test
-if __name__ == '__main__':
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+if __name__ == "__main__":
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         import faulthandler
+
         faulthandler.register(signal.SIGUSR2, all_threads=True)
 
         from scarlett_os.internal.debugger import init_debugger
         from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+
         init_debugger()
         set_gst_grapviz_tracing()
         # Example of how to use it
 
     from pydbus import SessionBus
+
     bus = SessionBus()
     # TODO: own_name() is deprecated, use request_name() instead.
-    bus.own_name(name='org.scarlett')
-    sl = ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
+    bus.own_name(name="org.scarlett")
+    sl = ScarlettListener(bus=bus.con, path="/org/scarlett/Listener")
     loop.run()
 
     def sigint_handler(*args):

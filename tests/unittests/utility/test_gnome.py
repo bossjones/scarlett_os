@@ -12,8 +12,6 @@ from scarlett_os.utility.gnome import escape, gdecode, unescape
 
 
 class TestScarlettUtilityGnome(object):
-
-
     def test_gdecode(self):
         if PY2:
             assert isinstance(gdecode(b"foo"), text_type)

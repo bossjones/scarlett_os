@@ -1042,3 +1042,14 @@ pull-gnome-builder:
 #
 pip-compile:
 	pip-compile --output-file requirements_all.txt requirements.txt
+
+
+
+# sensible pylint ( Lots of press over this during pycon 2018 )
+.PHONY: run-black-check
+run-black-check:
+	black --check --verbose .
+
+.PHONY: run-black
+run-black:
+	black --verbose .

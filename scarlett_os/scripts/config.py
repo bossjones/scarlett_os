@@ -12,7 +12,7 @@ def config(ctx):
     command line, as environment variables, and in mapbox.ini config
     files.
     """
-    ctx.default_map = ctx.obj['cfg']
+    ctx.default_map = ctx.obj["cfg"]
     click.echo("CLI:")
     # click.echo("access-token = {0}".format(ctx.obj['access_token']))
     # click.echo("verbosity = {0}".format(ctx.obj['verbosity']))
@@ -30,8 +30,8 @@ def config(ctx):
     #         os.environ['MAPBOX_VERBOSE']))
     click.echo("")
 
-    if 'config_file' in ctx.obj:
-        click.echo("Config file {0}:".format(ctx.obj['config_file']))
+    if "config_file" in ctx.obj:
+        click.echo("Config file {0}:".format(ctx.obj["config_file"]))
         for key, value in ctx.default_map.items():
             click.echo("{0} = {1}".format(key, value))
         click.echo("")

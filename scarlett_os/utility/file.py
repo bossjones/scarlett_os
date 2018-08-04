@@ -39,6 +39,7 @@ def mkdir(dir_, *args):  # noqa
         if e.errno != errno.EEXIST or not os.path.isdir(dir_):
             raise
 
+
 def iscommand(s):  # noqa
     """True if an executable file `s` exists in the user's path, or is a
     fully qualified and existing executable file."""
@@ -47,7 +48,7 @@ def iscommand(s):  # noqa
         return os.path.isfile(s) and os.access(s, os.X_OK)
     else:
         s = s.split()[0]
-        path = environ.get('PATH', '') or os.defpath
+        path = environ.get("PATH", "") or os.defpath
         for p in path.split(os.path.pathsep):
             p2 = os.path.join(p, s)
             if os.path.isfile(p2) and os.access(p2, os.X_OK):
@@ -64,7 +65,7 @@ def is_fsnative(path):
 def fsnative(path=u""):
     """File system native"""
     assert isinstance(path, text_type)
-    return path.encode(_FSCODING, 'replace')
+    return path.encode(_FSCODING, "replace")
 
 
 def listdir(path, hidden=False):
@@ -83,9 +84,11 @@ def listdir(path, hidden=False):
         join = "".join
     else:
         join = os.sep.join
-    return [join([path, basename])
-            for basename in sorted(os.listdir(path))
-            if filt(basename)]
+    return [
+        join([path, basename])
+        for basename in sorted(os.listdir(path))
+        if filt(basename)
+    ]
 
 
 def mtime(filename):

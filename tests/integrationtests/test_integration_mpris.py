@@ -26,45 +26,47 @@ import time
 
 done = 0
 
+
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyintgr
 class TestScarlettSpeaker(object):
-
 
     # @xfail(reason="Still getting 'assert None == 0' instead of 'assert self.status == 0'")
     @pytest.mark.flaky(reruns=5)
     def test_mpris_methods_exist(self, service_on_outside, get_bus):  # noqa
         # NOTE: Technically these are both methods and signals
-        look_for_methods_list = ['CanQuit',
-                                 'CanRaise',
-                                 'CommandRecognizedSignal',
-                                 'ConnectedToListener',
-                                 'DesktopEntry',
-                                 'Fullscreen',
-                                 'Get',
-                                 'GetAll',
-                                 'HasTrackList',
-                                 'Identity',
-                                 'Introspect',
-                                 'KeywordRecognizedSignal',
-                                 'ListenerCancelSignal',
-                                 'ListenerReadySignal',
-                                 'Quit',
-                                 'Set',
-                                 'SttFailedSignal',
-                                 'emitCommandRecognizedSignal',
-                                 'emitConnectedToListener',
-                                 'emitKeywordRecognizedSignal',
-                                 'emitListenerCancelSignal',
-                                 'emitListenerMessage',
-                                 'emitListenerReadySignal',
-                                 'emitSttFailedSignal',
-                                 'onCommandRecognizedSignal',
-                                 'onConnectedToListener',
-                                 'onKeywordRecognizedSignal',
-                                 'onListenerCancelSignal',
-                                 'onListenerReadySignal',
-                                 'onSttFailedSignal']
+        look_for_methods_list = [
+            "CanQuit",
+            "CanRaise",
+            "CommandRecognizedSignal",
+            "ConnectedToListener",
+            "DesktopEntry",
+            "Fullscreen",
+            "Get",
+            "GetAll",
+            "HasTrackList",
+            "Identity",
+            "Introspect",
+            "KeywordRecognizedSignal",
+            "ListenerCancelSignal",
+            "ListenerReadySignal",
+            "Quit",
+            "Set",
+            "SttFailedSignal",
+            "emitCommandRecognizedSignal",
+            "emitConnectedToListener",
+            "emitKeywordRecognizedSignal",
+            "emitListenerCancelSignal",
+            "emitListenerMessage",
+            "emitListenerReadySignal",
+            "emitSttFailedSignal",
+            "onCommandRecognizedSignal",
+            "onConnectedToListener",
+            "onKeywordRecognizedSignal",
+            "onListenerCancelSignal",
+            "onListenerReadySignal",
+            "onSttFailedSignal",
+        ]
 
         # Return dbus obj
         bus = get_bus
@@ -73,7 +75,9 @@ class TestScarlettSpeaker(object):
         time.sleep(1)
 
         # Return dbus proxy object
-        scarlett_speaker_proxy = bus.get("org.scarlett", object_path='/org/scarlett/Listener')
+        scarlett_speaker_proxy = bus.get(
+            "org.scarlett", object_path="/org/scarlett/Listener"
+        )
 
         # wait till we get proxy object
         time.sleep(0.5)
@@ -84,33 +88,34 @@ class TestScarlettSpeaker(object):
         for _method in look_for_methods_list:
             assert _method in proxy_methods_list
 
+    # class PathWalkerTest(unittest.TestCase):
+    #     """Tests for the `PathWalker` class."""
 
-# class PathWalkerTest(unittest.TestCase):
-#     """Tests for the `PathWalker` class."""
+    #     def _scan(self, uris):
+    #         """Uses the PathWalker to scan URIs."""
+    #         mainloop = create_main_loop()
+    #         received_uris = []
 
-#     def _scan(self, uris):
-#         """Uses the PathWalker to scan URIs."""
-#         mainloop = create_main_loop()
-#         received_uris = []
+    #         def done_cb(uris):  # pylint: disable=missing-docstring
+    #             received_uris.extend(uris)
+    #             mainloop.quit()
+    #         walker = PathWalker(uris, done_cb)
+    #         walker.run()
+    #         mainloop.run()
+    #         return received_uris
 
-#         def done_cb(uris):  # pylint: disable=missing-docstring
-#             received_uris.extend(uris)
-#             mainloop.quit()
-#         walker = PathWalker(uris, done_cb)
-#         walker.run()
-#         mainloop.run()
-#         return received_uris
+    #     def test_scanning(self):
+    #         """Checks the scanning of the URIs."""
+    #         valid_uri = get_sample_uri("tears_of_steel.webm")
+    #         uris = self._scan([valid_uri,
+    #                            get_sample_uri("missing.webm"),
+    #                            "http://pitivi.org/very_real.webm"])
+    #         self.assertEqual(len(uris), 1, uris)
+    #         self.assertIn(valid_uri, uris)
 
-#     def test_scanning(self):
-#         """Checks the scanning of the URIs."""
-#         valid_uri = get_sample_uri("tears_of_steel.webm")
-#         uris = self._scan([valid_uri,
-#                            get_sample_uri("missing.webm"),
-#                            "http://pitivi.org/very_real.webm"])
-#         self.assertEqual(len(uris), 1, uris)
-#         self.assertIn(valid_uri, uris)
-
-    def test_mpris_catchall_signal(self, service_on_outside, get_dbus_proxy_obj_helper):  # noqa
+    def test_mpris_catchall_signal(
+        self, service_on_outside, get_dbus_proxy_obj_helper
+    ):  # noqa
         # source: https://github.com/stylesuxx/python-dbus-examples/blob/master/receiver.py
 
         recieved_signals = []
@@ -247,10 +252,10 @@ class TestScarlettSpeaker(object):
 
 # class TestScarlettSpeaker(unittest.TestCase):
 
-    # def __load_dbus_service(self):
+# def __load_dbus_service(self):
 
-    #   bus = get_session_bus()
+#   bus = get_session_bus()
 
-    #   sl = mpris.ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
+#   sl = mpris.ScarlettListener(bus=bus.con, path='/org/scarlett/Listener')
 
-    #   pass
+#   pass

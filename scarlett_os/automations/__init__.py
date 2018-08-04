@@ -11,11 +11,16 @@ import itertools as it
 import logging
 
 import scarlett_os.core as s
+
 # from scarlett_os.helpers.service import extract_entity_ids
 # from scarlett_os.loader import get_component
 from scarlett_os.const import (
-    ATTR_ENTITY_ID, SERVICE_TURN_ON, SERVICE_TURN_OFF, SERVICE_TOGGLE)
+    ATTR_ENTITY_ID,
+    SERVICE_TURN_ON,
+    SERVICE_TURN_OFF,
+    SERVICE_TOGGLE,
+)
 
 logger = logging.getLogger(__name__)
 
-SERVICE_RELOAD_CORE_CONFIG = 'reload_core_config'
+SERVICE_RELOAD_CORE_CONFIG = "reload_core_config"

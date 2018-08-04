@@ -10,9 +10,7 @@ from pygments.token import Token
 
 from ptpython.layout import CompletionVisualisation
 
-__all__ = (
-    'configure',
-)
+__all__ = ("configure",)
 
 
 def configure(repl):
@@ -66,7 +64,7 @@ def configure(repl):
     repl.paste_mode = False
 
     # Use the classic prompt. (Display '>>>' instead of 'In [1]'.)
-    repl.prompt_style = 'classic'  # 'classic' or 'ipython'
+    repl.prompt_style = "classic"  # 'classic' or 'ipython'
 
     # Don't insert a blank line after the output.
     repl.insert_blank_line_after_output = False
@@ -99,7 +97,7 @@ def configure(repl):
     repl.enable_input_validation = True
 
     # Use this colorscheme for the code.
-    repl.use_code_colorscheme('pastie')
+    repl.use_code_colorscheme("pastie")
 
     # Enable 24bit True color. (Not all terminals support this. -- maybe check
     # $TERM before changing.)
@@ -115,7 +113,7 @@ def configure(repl):
     @repl.add_key_binding(Keys.ControlB)
     def _(event):
         ' Pressing Control-B will insert "pdb.set_trace()" '
-        event.cli.current_buffer.insert_text('\nimport pdb; pdb.set_trace()\n')
+        event.cli.current_buffer.insert_text("\nimport pdb; pdb.set_trace()\n")
 
     # Typing ControlE twice should also execute the current command.
     # (Alternative for Meta-Enter.)
@@ -125,10 +123,9 @@ def configure(repl):
         if b.accept_action.is_returnable:
             b.accept_action.validate_and_handle(event.cli, b)
 
-
     # Typing 'jj' in Vi Insert mode, should send escape. (Go back to navigation
     # mode.)
-    @repl.add_key_binding('j', 'j', filter=ViInsertMode())
+    @repl.add_key_binding("j", "j", filter=ViInsertMode())
     def _(event):
         " Map 'jj' to Escape. "
         event.cli.input_processor.feed(KeyPress(Keys.Escape))
@@ -156,8 +153,7 @@ def configure(repl):
 # `ptpython/style.py` for all possible tokens.
 _custom_ui_colorscheme = {
     # Blue prompt.
-    Token.Layout.Prompt:                          'bg:#eeeeff #000000 bold',
-
+    Token.Layout.Prompt: "bg:#eeeeff #000000 bold",
     # Make the status toolbar red.
-    Token.Toolbar.Status:                         'bg:#ff0000 #000000',
+    Token.Toolbar.Status: "bg:#ff0000 #000000",
 }

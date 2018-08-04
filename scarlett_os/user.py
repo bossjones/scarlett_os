@@ -23,6 +23,7 @@ def get_user_name(override=None):
     else:
         return getpass.getuser()
 
+
 def get_user_home(override=None):
     """Return user home directory, eg. '/home/pi'
 
@@ -36,6 +37,7 @@ def get_user_home(override=None):
         return override
     else:
         return os.path.expanduser("~")
+
 
 def get_user_project_root_path(override=None):
     """Return path to where all git packages go on your system, eg. /home/pi/dev
@@ -51,6 +53,7 @@ def get_user_project_root_path(override=None):
     else:
         return os.path.join(get_user_home(), "dev")
 
+
 def get_user_project_base_path(override=None):
     """Return path to where scarlet_os folder is located, eg /home/pi/dev/bossjones-github/scarlett_os
 
@@ -63,4 +66,6 @@ def get_user_project_base_path(override=None):
     if override:
         return override
     else:
-        return os.path.join(get_user_project_root_path() + "/bossjones-github", "scarlett_os")
+        return os.path.join(
+            get_user_project_root_path() + "/bossjones-github", "scarlett_os"
+        )

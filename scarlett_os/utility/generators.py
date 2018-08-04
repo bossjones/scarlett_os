@@ -61,7 +61,7 @@ class GIdleThread(object):
     """
 
     def __init__(self, generator, queue=None):
-        assert hasattr(generator, '__next__'), 'The generator should be an iterator'
+        assert hasattr(generator, "__next__"), "The generator should be an iterator"
         self._generator = generator
         self._queue = queue
         self._idle_id = 0
@@ -71,8 +71,7 @@ class GIdleThread(object):
         """Start the generator. Default priority is low, so screen updates
         will be allowed to happen.
         """
-        idle_id = GObject.idle_add(self.__generator_executer,
-                                   priority=priority)
+        idle_id = GObject.idle_add(self.__generator_executer, priority=priority)
         self._idle_id = idle_id
         return idle_id
 
@@ -100,9 +99,11 @@ class GIdleThread(object):
         """
         return self._idle_id != 0
 
-    error = property(lambda self: self._error,
-                     doc="Return a possible exception that had occured "
-                         "during execution of the generator")
+    error = property(
+        lambda self: self._error,
+        doc="Return a possible exception that had occured "
+        "during execution of the generator",
+    )
 
     def __generator_executer(self):
         try:
@@ -129,6 +130,7 @@ class QueueEmpty(Exception):
     """Exception raised whenever the queue is empty and someone tries to fetch
     a value.
     """
+
     pass
 
 
@@ -136,6 +138,7 @@ class QueueFull(Exception):
     """Exception raised when the queue is full and the oldest item may not be
     disposed.
     """
+
     pass
 
 
@@ -172,12 +175,14 @@ class Queue(object):
 
 # smoke tests
 if __name__ == "__main__":
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         import faulthandler
+
         faulthandler.register(signal.SIGUSR2, all_threads=True)
 
         from scarlett_os.internal.debugger import init_debugger
         from scarlett_os.internal.debugger import set_gst_grapviz_tracing
+
         init_debugger()
         set_gst_grapviz_tracing()
 
@@ -190,12 +195,12 @@ if __name__ == "__main__":
         while True:
             try:
                 cnt = queue.get()
-                print('cnt =', cnt)
+                print("cnt =", cnt)
             except QueueEmpty:
                 pass
             yield None
 
-    print('Test 1: (should print range 0..22)')
+    print("Test 1: (should print range 0..22)")
     queue = Queue()
     c = GIdleThread(counter(23), queue)
     s = GIdleThread(shower(queue))
@@ -205,7 +210,7 @@ if __name__ == "__main__":
     s.start()
     s.wait(2)
 
-    print('Test 2: (should only print 22)')
+    print("Test 2: (should only print 22)")
     queue = Queue(size=1)
     c = GIdleThread(counter(23), queue)
     s = GIdleThread(shower(queue))

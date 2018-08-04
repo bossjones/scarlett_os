@@ -26,33 +26,62 @@ elif PY3:
     import itertools
 
     # python2 uses from itertools import imap, else just imap=map
-    map = itertools.imap if sys.version_info < (3,) else map  # pylint: disable=no-member
+    map = (
+        itertools.imap if sys.version_info < (3,) else map
+    )  # pylint: disable=no-member
 
     import errno
     from os import environ as environ
     import pprint
+
     pp = pprint.PrettyPrinter(indent=4)
 
     import builtins
+
     builtins
     import urllib  # noqa
-    from urllib.parse import urlparse, urlunparse, quote_plus, unquote_plus, \
-        urlsplit, parse_qs, urlencode, quote, unquote, urljoin, urldefrag, urlunsplit
-    urlparse, quote_plus, unquote_plus, urlunparse, urlsplit, parse_qs, \
-        urlencode, quote, unquote, urljoin, urldefrag, urlunsplit
-    from urllib.request import pathname2url, url2pathname, parse_http_list, getproxies, proxy_bypass
+    from urllib.parse import (
+        urlparse,
+        urlunparse,
+        quote_plus,
+        unquote_plus,
+        urlsplit,
+        parse_qs,
+        urlencode,
+        quote,
+        unquote,
+        urljoin,
+        urldefrag,
+        urlunsplit,
+    )
+
+    urlparse, quote_plus, unquote_plus, urlunparse, urlsplit, parse_qs, urlencode, quote, unquote, urljoin, urldefrag, urlunsplit
+    from urllib.request import (
+        pathname2url,
+        url2pathname,
+        parse_http_list,
+        getproxies,
+        proxy_bypass,
+    )
+
     pathname2url, url2pathname, parse_http_list, getproxies, proxy_bypass
     from urllib.request import urlopen, build_opener
+
     urlopen, build_opener
     from io import BytesIO as cBytesIO
+
     cBytesIO
     from io import StringIO
+
     StringIO = StringIO
     from functools import reduce, wraps
+
     reduce
     from operator import floordiv
+
     floordiv
     from itertools import zip_longest as izip_longest
+
     izip_longest
     import codecs
 
@@ -62,6 +91,7 @@ elif PY3:
     import contextlib
     import time
     import textwrap  # noqa
+
     # import logging
     # from functools import reduce, wraps
     import traceback
@@ -70,6 +100,7 @@ elif PY3:
 
     # reduce
     from operator import floordiv
+
     floordiv
 
     xrange = range
@@ -78,7 +109,7 @@ elif PY3:
     cmp = lambda a, b: (a > b) - (a < b)
     izip = zip
 
-    getbyte = lambda b, i: b[i:i + 1]
+    getbyte = lambda b, i: b[i : i + 1]
     iterbytes = lambda b: (bytes([v]) for v in b)
 
     text_type = str
@@ -112,6 +143,7 @@ elif PY3:
     #     return iter(dct.values(**kwargs))
 
     import builtins
+
     exec_ = getattr(builtins, "exec")
 
     def reraise(tp, value, tb):
@@ -131,17 +163,17 @@ def add_metaclass(metaclass):
 
     def wrapper(cls):
         orig_vars = cls.__dict__.copy()
-        slots = orig_vars.get('__slots__')
+        slots = orig_vars.get("__slots__")
         if slots is not None:
             if isinstance(slots, str):
                 slots = [slots]
             for slots_var in slots:
                 orig_vars.pop(slots_var)
-        orig_vars.pop('__dict__', None)
-        orig_vars.pop('__weakref__', None)
+        orig_vars.pop("__dict__", None)
+        orig_vars.pop("__weakref__", None)
         return metaclass(cls.__name__, cls.__bases__, orig_vars)
-    return wrapper
 
+    return wrapper
 
     # from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, quote, unquote, quote_plus, unquote_plus, urldefrag
     #     from urllib.request import parse_http_list, getproxies, proxy_bypass
@@ -156,7 +188,6 @@ def add_metaclass(metaclass):
     #     basestring = (str, bytes)
     #     numeric_types = (int, float)
     #     integer_types = (int,)
-
 
 
 # NOTE: Think about enabling EVERYTHING below 5/27/2017

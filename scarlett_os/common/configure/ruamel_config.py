@@ -57,16 +57,25 @@ from voluptuous.humanize import humanize_error
 
 # from scarlett_os import SCARLETT_ROOT_DIR
 import scarlett_os.helpers.config_validation as cv
-from scarlett_os.compat import (basestring, bytes, integer_types, string_types,
-                                text_type)
-from scarlett_os.const import (CONF_CUSTOMIZE, CONF_CUSTOMIZE_DOMAIN,
-                               CONF_CUSTOMIZE_GLOB, CONF_ELEVATION,
-                               CONF_LATITUDE, CONF_LONGITUDE, CONF_NAME,
-                               CONF_OWNERS_NAME, CONF_PACKAGES,
-                               CONF_TEMPERATURE_UNIT, CONF_TIME_ZONE,
-                               CONF_UNIT_SYSTEM, CONF_UNIT_SYSTEM_IMPERIAL,
-                               CONF_UNIT_SYSTEM_METRIC, TEMP_CELSIUS,
-                               __version__)
+from scarlett_os.compat import basestring, bytes, integer_types, string_types, text_type
+from scarlett_os.const import (
+    CONF_CUSTOMIZE,
+    CONF_CUSTOMIZE_DOMAIN,
+    CONF_CUSTOMIZE_GLOB,
+    CONF_ELEVATION,
+    CONF_LATITUDE,
+    CONF_LONGITUDE,
+    CONF_NAME,
+    CONF_OWNERS_NAME,
+    CONF_PACKAGES,
+    CONF_TEMPERATURE_UNIT,
+    CONF_TIME_ZONE,
+    CONF_UNIT_SYSTEM,
+    CONF_UNIT_SYSTEM_IMPERIAL,
+    CONF_UNIT_SYSTEM_METRIC,
+    TEMP_CELSIUS,
+    __version__,
+)
 from scarlett_os.internal import path as path_internal
 from scarlett_os.internal.path import mkdir_if_does_not_exist, ensure_dir_exists
 from scarlett_os.internal.rename import rename_over_existing
@@ -92,6 +101,7 @@ class MyYAML(YAML):  # pragma: no cover
         if inefficient:
             return stream.getvalue()
 
+
 logger = logging.getLogger(__name__)
 
 # NOTE: (bytes, int, str, str)
@@ -100,7 +110,7 @@ SCALARS = (bytes,) + integer_types + string_types + (text_type,)
 # yaml = YAML()
 # TODO: Do we want to use this or not? See ruamel section "Output of dump() as a string"
 # TODO: #
-yaml = MyYAML() # or typ='safe'/'unsafe' etc
+yaml = MyYAML()  # or typ='safe'/'unsafe' etc
 yaml.explicit_start = True
 yaml.indent = 4
 yaml.block_seq_indent = 2
@@ -116,27 +126,48 @@ RE_ASCII = re.compile(r"\033\[[^m]*m")  # source: home-assistant
 # NOTEL Shamelesssly borrowed from udiskie
 # source: https://github.com/coldfix/udiskie/blob/master/udiskie/config.py
 
-YAML_CONFIG_FILE = 'config.yaml'
-CONFIG_DIR_NAME = 'scarlett'
-VERSION_FILE = '.SCARLETT_VERSION'
+YAML_CONFIG_FILE = "config.yaml"
+CONFIG_DIR_NAME = "scarlett"
+VERSION_FILE = ".SCARLETT_VERSION"
 
-CoordinatesTuple = collections.namedtuple(
-    'Coordinates', ['latitude', 'longitude'])
+CoordinatesTuple = collections.namedtuple("Coordinates", ["latitude", "longitude"])
 
 DEFAULT_CORE_CONFIG = (
     # Tuples (attribute, default, auto detect property, description)
-    (CONF_NAME, 'Scarlett Home', None, 'Name of the location where Scarlett System is '
-     'running'),
-    (CONF_LATITUDE, 0, 'latitude', 'Location required to calculate the time'
-     ' the sun rises and sets'),
-    (CONF_LONGITUDE, 0, 'longitude', None),
-    (CONF_ELEVATION, 0, None, 'Impacts weather/sunrise data'
-                              ' (altitude above sea level in meters)'),
-    (CONF_UNIT_SYSTEM, CONF_UNIT_SYSTEM_METRIC, None,
-     '{} for Metric, {} for Imperial'.format(CONF_UNIT_SYSTEM_METRIC,
-                                             CONF_UNIT_SYSTEM_IMPERIAL)),
-    (CONF_TIME_ZONE, 'UTC', 'time_zone', 'Pick yours from here: http://en.wiki'
-     'pedia.org/wiki/List_of_tz_database_time_zones'),
+    (
+        CONF_NAME,
+        "Scarlett Home",
+        None,
+        "Name of the location where Scarlett System is " "running",
+    ),
+    (
+        CONF_LATITUDE,
+        0,
+        "latitude",
+        "Location required to calculate the time" " the sun rises and sets",
+    ),
+    (CONF_LONGITUDE, 0, "longitude", None),
+    (
+        CONF_ELEVATION,
+        0,
+        None,
+        "Impacts weather/sunrise data" " (altitude above sea level in meters)",
+    ),
+    (
+        CONF_UNIT_SYSTEM,
+        CONF_UNIT_SYSTEM_METRIC,
+        None,
+        "{} for Metric, {} for Imperial".format(
+            CONF_UNIT_SYSTEM_METRIC, CONF_UNIT_SYSTEM_IMPERIAL
+        ),
+    ),
+    (
+        CONF_TIME_ZONE,
+        "UTC",
+        "time_zone",
+        "Pick yours from here: http://en.wiki"
+        "pedia.org/wiki/List_of_tz_database_time_zones",
+    ),
 )  # type: Tuple[Tuple[str, Any, Any, str], ...]
 
 # NOTE: This is how you get a functions name automatically
@@ -246,7 +277,7 @@ def lower(a_string):
         return a_string
 
 
-def flatten(d, parent_key='', sep='/'):
+def flatten(d, parent_key="", sep="/"):
     # source: http://stackoverflow.com/a/6027615
     # source:
     # https://github.com/russellballestrini/yaml_consulate/blob/76d74ec7ffe5fd56ee057a619f12dcc8a862b046/yaml_consulate/yaml_consulate.py
@@ -267,6 +298,7 @@ def flatten(d, parent_key='', sep='/'):
         else:
             items.append((new_key, v))
     return dict(items)
+
 
 # FIXME: add valid docblock
 def mapping_string_access(self, s, delimiter=None, key_delim=None):  # pragma: no cover
@@ -304,12 +336,13 @@ def mapping_string_access(self, s, delimiter=None, key_delim=None):  # pragma: n
         except Exception:
             pass
         return v
-       # possible extend for primitives like float, datetime, booleans, etc.
+
+    # possible extend for primitives like float, datetime, booleans, etc.
 
     if delimiter is None:
-        delimiter = '.'
+        delimiter = "."
     if key_delim is None:
-        key_delim = ','
+        key_delim = ","
     try:
         key, rest = s.split(delimiter, 1)
     except ValueError:
@@ -321,6 +354,7 @@ def mapping_string_access(self, s, delimiter=None, key_delim=None):  # pragma: n
     if rest is None:
         return self[key]
     return self[key].string_access(rest, delimiter, key_delim)
+
 
 # monkeypatch CommentedMap.string_access function
 ruamel.yaml.comments.CommentedMap.string_access = mapping_string_access
@@ -344,7 +378,7 @@ def sequence_string_access(self, s, delimiter=None, key_delim=None):  # pragma: 
     # source:
     # https://stackoverflow.com/questions/39463936/python-accessing-yaml-values-using-dot-notation
     if delimiter is None:
-        delimiter = '.'
+        delimiter = "."
     try:
         key, rest = s.split(delimiter, 1)
     except ValueError:
@@ -353,6 +387,7 @@ def sequence_string_access(self, s, delimiter=None, key_delim=None):  # pragma: 
     if rest is None:
         return self[key]
     return self[key].string_access(rest, delimiter, key_delim)
+
 
 # monkeypatch CommentedSeq.string_access function
 ruamel.yaml.comments.CommentedSeq.string_access = sequence_string_access
@@ -373,10 +408,10 @@ def yaml_unicode_representer(self, data):  # pragma: no cover
 
     # source:
     # https://github.com/vmfarms/farmer/blob/e3f8b863b51b21dfa2d11d2453eac86ed0ab9bc9/farmer/commands/config.py
-    return self.represent_str(data.encode('utf-8'))
+    return self.represent_str(data.encode("utf-8"))
 
-ruamel.yaml.representer.Representer.add_representer(
-    text_type, yaml_unicode_representer)
+
+ruamel.yaml.representer.Representer.add_representer(text_type, yaml_unicode_representer)
 
 
 #########################################################
@@ -394,19 +429,27 @@ def get_xdg_config_dir_path(override=None):
     # Force location to value provided by kwarg override
     if override is not None:
         config_home = override
-        logger.debug('Ran {}| config_home={}'.format(sys._getframe().f_code.co_name, config_home))
+        logger.debug(
+            "Ran {}| config_home={}".format(sys._getframe().f_code.co_name, config_home)
+        )
         return config_home
 
     try:
         # from xdg.BaseDirectory import xdg_config_home as config_home
         from xdg import XDG_CONFIG_HOME as config_home
     except ImportError:
-        warnings.warn('Hey friend - python module xdg.XDG_CONFIG_HOME is not available', ImportWarning,
-                      stacklevel=2)
-        config_home = os.path.expanduser('~/.config')
+        warnings.warn(
+            "Hey friend - python module xdg.XDG_CONFIG_HOME is not available",
+            ImportWarning,
+            stacklevel=2,
+        )
+        config_home = os.path.expanduser("~/.config")
     # NOTE: Automatically get function name
-    logger.debug('Ran {}| config_home={}'.format(sys._getframe().f_code.co_name, config_home))
+    logger.debug(
+        "Ran {}| config_home={}".format(sys._getframe().f_code.co_name, config_home)
+    )
     return config_home
+
 
 # TODO: Allow us to override this value purely for testing purposes 2/25/2018
 def get_xdg_data_dir_path(override=None):
@@ -422,18 +465,21 @@ def get_xdg_data_dir_path(override=None):
     # Force location to value provided by kwarg override
     if override is not None:
         data_home = override
-        logger.debug('Ran {}| data_home={}'.format(
-        sys._getframe().f_code.co_name, data_home))
+        logger.debug(
+            "Ran {}| data_home={}".format(sys._getframe().f_code.co_name, data_home)
+        )
         return data_home
 
     try:
         from xdg import XDG_DATA_HOME as data_home
     except ImportError:
-        config_home = os.path.expanduser('~/.config')
+        config_home = os.path.expanduser("~/.config")
         data_home = os.path.join(config_home, ".local", "share")
-    logger.debug('Ran {}| data_home={}'.format(
-        sys._getframe().f_code.co_name, data_home))
+    logger.debug(
+        "Ran {}| data_home={}".format(sys._getframe().f_code.co_name, data_home)
+    )
     return data_home
+
 
 # TODO: Allow us to override this value purely for testing purposes 2/25/2018
 
@@ -450,17 +496,20 @@ def get_xdg_cache_dir_path(override=None):
     # Force location to value provided by kwarg override
     if override is not None:
         cache_home = override
-        logger.debug('Ran {}| cache_home={}'.format(
-            sys._getframe().f_code.co_name, cache_home))
+        logger.debug(
+            "Ran {}| cache_home={}".format(sys._getframe().f_code.co_name, cache_home)
+        )
         return cache_home
 
     try:
         from xdg import XDG_CACHE_HOME as cache_home
     except ImportError:
-        cache_home = os.path.expanduser('~/.cache')
-    logger.debug('Ran {}| cache_home={}'.format(
-        sys._getframe().f_code.co_name, cache_home))
+        cache_home = os.path.expanduser("~/.cache")
+    logger.debug(
+        "Ran {}| cache_home={}".format(sys._getframe().f_code.co_name, cache_home)
+    )
     return cache_home
+
 
 # TODO: Allow us to override this value purely for testing purposes 2/25/2018
 
@@ -476,13 +525,22 @@ def get_config_sub_dir_path(override=None):
     # Force location to value provided by kwarg override
     if override is not None:
         config_sub_dir = override
-        logger.debug('Ran {}| config_sub_dir={}'.format(sys._getframe().f_code.co_name, config_sub_dir))
+        logger.debug(
+            "Ran {}| config_sub_dir={}".format(
+                sys._getframe().f_code.co_name, config_sub_dir
+            )
+        )
         return config_sub_dir
 
     config_dir = get_xdg_config_dir_path()
     config_sub_dir = os.path.join(config_dir, CONFIG_DIR_NAME)
-    logger.debug('Ran {}| config_sub_dir={}'.format(sys._getframe().f_code.co_name, config_sub_dir))
+    logger.debug(
+        "Ran {}| config_sub_dir={}".format(
+            sys._getframe().f_code.co_name, config_sub_dir
+        )
+    )
     return config_sub_dir
+
 
 # TODO: Allow us to override this value purely for testing purposes 2/25/2018
 
@@ -498,15 +556,18 @@ def get_config_file_path(override=None):
     # Force location to value provided by kwarg override
     if override is not None:
         config_file = override
-        logger.debug('Ran {}| config_file={}'.format(
-            sys._getframe().f_code.co_name, config_file))
+        logger.debug(
+            "Ran {}| config_file={}".format(sys._getframe().f_code.co_name, config_file)
+        )
         return config_file
 
     config_sub_dir = get_config_sub_dir_path()
     config_file = os.path.join(config_sub_dir, YAML_CONFIG_FILE)
-    logger.debug('Ran {}| config_file={}'.format(
-        sys._getframe().f_code.co_name, config_file))
+    logger.debug(
+        "Ran {}| config_file={}".format(sys._getframe().f_code.co_name, config_file)
+    )
     return config_file
+
 
 # TODO: Allow us to override this value purely for testing purposes 2/25/2018
 
@@ -522,22 +583,29 @@ def get_version_file_path(override=None):
     # Force location to value provided by kwarg override
     if override is not None:
         version_file = override
-        logger.debug('Ran {}| version_file={}'.format(
-            sys._getframe().f_code.co_name, version_file))
+        logger.debug(
+            "Ran {}| version_file={}".format(
+                sys._getframe().f_code.co_name, version_file
+            )
+        )
         return version_file
 
     config_sub_dir = get_config_sub_dir_path()
     version_file = os.path.join(config_sub_dir, VERSION_FILE)
-    logger.debug('Ran {}| version_file={}'.format(
-        sys._getframe().f_code.co_name, version_file))
+    logger.debug(
+        "Ran {}| version_file={}".format(sys._getframe().f_code.co_name, version_file)
+    )
     return version_file
+
+
 #########################################################
+
 
 def _fake_config(override=None):
     """Create a temporary config file."""
     base = tempfile.mkdtemp()
     logger.debug("base tempfile: {}".format(base))
-    config_file = os.path.join(base, 'config.yaml')
+    config_file = os.path.join(base, "config.yaml")
 
     #############################################################
     # Example of config_file:
@@ -551,11 +619,11 @@ def _fake_config(override=None):
     #############################################################
 
     if override is not None:
-        with open(config_file, 'wt') as f:
+        with open(config_file, "wt") as f:
             f.write(override)
         return base, config_file
 
-    with open(config_file, 'wt') as f:
+    with open(config_file, "wt") as f:
         f.write(DEFAULT_CONFIG)
 
     return base, config_file
@@ -590,6 +658,7 @@ def load_config(yaml_filename):
 
     return source
 
+
 def save_config(config, path):
     """Save yaml configuration file to disk
 
@@ -597,8 +666,9 @@ def save_config(config, path):
         config {CommentedMap} -- Should be a Ruamel YAML CommentedMap object
         path {str} -- path to configuration file
     """
-    with open(path, 'w', encoding='utf-8') as fp:
+    with open(path, "w", encoding="utf-8") as fp:
         yaml.dump(config, fp)
+
 
 def tr(s):
     """[If you need to transform a string representation of the output provide a function that takes a string as input and returns one]
@@ -610,7 +680,8 @@ def tr(s):
         [str] -- [string that has had all new lines replaced]
     """
 
-    return s.replace('\n', '<\n') # such output is not valid YAML!
+    return s.replace("\n", "<\n")  # such output is not valid YAML!
+
 
 def _dump_in_memory_config_to_stdout_and_transform(data, stream=None):
     """[dump in memory config and use tr function to transform the data dynamically]
@@ -627,7 +698,11 @@ def _dump_in_memory_config_to_stdout_and_transform(data, stream=None):
         inefficient = False
         print(yaml.dump(data, transform=tr))
 
-    logger.debug('Ran {} | stream={} | inefficient={}'.format(sys._getframe().f_code.co_name, stream, inefficient))
+    logger.debug(
+        "Ran {} | stream={} | inefficient={}".format(
+            sys._getframe().f_code.co_name, stream, inefficient
+        )
+    )
 
 
 def dump_in_memory_config_to_var(data, stream=None):
@@ -645,15 +720,22 @@ def dump_in_memory_config_to_var(data, stream=None):
     if stream is None:
         inefficient = True
         output = yaml.dump(data, sys.stdout)
-        logger.debug('Ran {} | stream={} | inefficient={}'.format(
-            sys._getframe().f_code.co_name, stream, inefficient))
+        logger.debug(
+            "Ran {} | stream={} | inefficient={}".format(
+                sys._getframe().f_code.co_name, stream, inefficient
+            )
+        )
         return output
     else:
         inefficient = False
         output = yaml.dump(data)
-        logger.debug('Ran {} | stream={} | inefficient={}'.format(
-            sys._getframe().f_code.co_name, stream, inefficient))
+        logger.debug(
+            "Ran {} | stream={} | inefficient={}".format(
+                sys._getframe().f_code.co_name, stream, inefficient
+            )
+        )
         return yaml.dump(data)
+
 
 def _dump_in_memory_config_to_stdout(data, stream=None):
     """[dump in memory config]
@@ -674,7 +756,12 @@ def _dump_in_memory_config_to_stdout(data, stream=None):
         inefficient = False
         print(yaml.dump(data))
 
-    logger.debug('Ran {} | stream={} | inefficient={}'.format(sys._getframe().f_code.co_name, stream, inefficient))
+    logger.debug(
+        "Ran {} | stream={} | inefficient={}".format(
+            sys._getframe().f_code.co_name, stream, inefficient
+        )
+    )
+
 
 def _insert_key_to_commented_map(data, position, key_name, key_value, comment=None):
     # type: (Any, Any, Any, Optional[Any]) -> ruamel.yaml.comments.CommentedMap
@@ -704,6 +791,7 @@ def _insert_key_to_commented_map(data, position, key_name, key_value, comment=No
     # data.insert(1, 'last name', 'Vandelay', comment="new key")
     return data
 
+
 # INFO: ruamel: Indentation of block sequences
 # INFO: It is best to always have sequence >= offset + 2 but this is not
 # enforced. Depending on your structure, not following this advice might lead to invalid output.
@@ -732,6 +820,7 @@ def _insert_key_to_commented_map(data, position, key_name, key_value, comment=No
 # assert data.mlget(['a', 1, 'd', 'f'], list_ok=True) == 196
 ##########################################################################
 
+
 def get_config_key_position(data, key_name):
     """Return position value of a key in a ruamel CommentedMap
 
@@ -752,10 +841,15 @@ def get_config_key_position(data, key_name):
     try:
         pos = data.lc.key(key_name)
     except KeyError:
-        logger.error('Tried to find {} but failed! Setting position return value to None'.format(key_name))
+        logger.error(
+            "Tried to find {} but failed! Setting position return value to None".format(
+                key_name
+            )
+        )
         pos = None
 
     return pos
+
 
 def get_config_value_position(data, key_name):
     """Return position value of a key in a ruamel CommentedMap
@@ -777,10 +871,15 @@ def get_config_value_position(data, key_name):
     try:
         pos = data.lc.value(key_name)
     except KeyError:
-        logger.error('Tried to find {} but failed! Setting position return value to None'.format(key_name))
+        logger.error(
+            "Tried to find {} but failed! Setting position return value to None".format(
+                key_name
+            )
+        )
         pos = None
 
     return pos
+
 
 # FIXME: YANGNI
 # def get_config_item_position(data, item_pos):
@@ -816,13 +915,22 @@ def ensure_config_dir_path(config_dir: str) -> None:
     # Test if configuration directory exists
     if not os.path.isdir(config_dir):
         try:
-            print('Ran {}| os.mkdir(config_dir)={}'.format(sys._getframe().f_code.co_name, config_dir))
+            print(
+                "Ran {}| os.mkdir(config_dir)={}".format(
+                    sys._getframe().f_code.co_name, config_dir
+                )
+            )
             mkdir_if_does_not_exist(config_dir)
         except OSError:
-            print(('Fatal Error: Unable to create default configuration '
-                    'directory {} ').format(config_dir))
+            print(
+                (
+                    "Fatal Error: Unable to create default configuration "
+                    "directory {} "
+                ).format(config_dir)
+            )
             # FIXME: Do we want this to exit?
             sys.exit(1)
+
 
 # TODO: Figure out if this will be useful w/ ruamel yaml configs. The ability to set default config values to None
 # SOURCE: https://github.com/shipstation/schemasnap/blob/503e30c51fbcc7dada29f0b51851a5a7bf8b1a57/schemasnap/yaml_roundtrippable.py
@@ -852,19 +960,29 @@ def prep_default_config(homedir=None):
     # DEFAULT CONFIG SETUP - START
     # ----------------------------------------------
     # Step 1. loead
-    default_yaml = os.path.join(os.path.abspath(__file__), 'default.yaml')
+    default_yaml = os.path.join(os.path.abspath(__file__), "default.yaml")
     default_yaml_in_memory_config = load_config(default_yaml)
     # Step 2. Check environment variables, if they exist, override them
     if os.environ.get("SCARLETT_OS_CONFIG_LATITUDE"):
-        default_yaml_in_memory_config['latitude'] = os.environ.get("SCARLETT_OS_CONFIG_LATITUDE")
+        default_yaml_in_memory_config["latitude"] = os.environ.get(
+            "SCARLETT_OS_CONFIG_LATITUDE"
+        )
     if os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE"):
-        default_yaml_in_memory_config['longitude'] = os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE")
+        default_yaml_in_memory_config["longitude"] = os.environ.get(
+            "SCARLETT_OS_CONFIG_LONGITUDE"
+        )
     if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"):
-        default_yaml_in_memory_config['pocketsphinx']['hmm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM")
+        default_yaml_in_memory_config["pocketsphinx"]["hmm"] = os.environ.get(
+            "SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"
+        )
     if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM"):
-        default_yaml_in_memory_config['pocketsphinx']['lm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM")
+        default_yaml_in_memory_config["pocketsphinx"]["lm"] = os.environ.get(
+            "SCARLETT_OS_CONFIG_POCKETSPHINX_LM"
+        )
     if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"):
-        default_yaml_in_memory_config['pocketsphinx']['dict'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT")
+        default_yaml_in_memory_config["pocketsphinx"]["dict"] = os.environ.get(
+            "SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"
+        )
 
     # ----------------------------------------------
     # DEFAULT CONFIG SETUP - END
@@ -881,12 +999,12 @@ def prep_default_config(homedir=None):
     ensure_config_dir_path(home)
 
     # Step 3. Set location of config.yaml file
-    cfg = os.path.join(home, 'config.yaml')
+    cfg = os.path.join(home, "config.yaml")
 
     # Step 4. check if config file exists, if it doesnt, create a default config
     if not os.path.exists(cfg):
         # Write merged config
-        with open(cfg, 'wb') as f:
+        with open(cfg, "wb") as f:
             yaml.dump(default_yaml_in_memory_config, f)
 
     # Load the newly merged configure file
@@ -907,28 +1025,33 @@ class ConfigManager(object):
     def __init__(self):
         self._config = None
 
-
     def check_folder_structure(self):
         mkdir_if_does_not_exist(os.path.dirname(ConfigManager.CONFIG_PATH))
 
     def load(self, path_override=None):
         self.check_folder_structure()
         if path_override:
-          self._config = load_config(path_override)
+            self._config = load_config(path_override)
         else:
-           self._config = load_config(ConfigManager.CONFIG_PATH)
+            self._config = load_config(ConfigManager.CONFIG_PATH)
 
     def check_environment_overrides(self):
         if os.environ.get("SCARLETT_OS_CONFIG_LATITUDE"):
-            self._config['latitude'] = os.environ.get("SCARLETT_OS_CONFIG_LATITUDE")
+            self._config["latitude"] = os.environ.get("SCARLETT_OS_CONFIG_LATITUDE")
         if os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE"):
-            self._config['longitude'] = os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE")
+            self._config["longitude"] = os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE")
         if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"):
-            self._config['pocketsphinx']['hmm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM")
+            self._config["pocketsphinx"]["hmm"] = os.environ.get(
+                "SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"
+            )
         if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM"):
-            self._config['pocketsphinx']['lm'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM")
+            self._config["pocketsphinx"]["lm"] = os.environ.get(
+                "SCARLETT_OS_CONFIG_POCKETSPHINX_LM"
+            )
         if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"):
-            self._config['pocketsphinx']['dict'] = os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT")
+            self._config["pocketsphinx"]["dict"] = os.environ.get(
+                "SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"
+            )
 
     def prep_default_config(self):
         """setup config.yaml defaults."""
@@ -952,17 +1075,22 @@ class ConfigManager(object):
 
 if __name__ == "__main__":
     import signal
-    if os.environ.get('SCARLETT_DEBUG_MODE'):
+
+    if os.environ.get("SCARLETT_DEBUG_MODE"):
         import faulthandler
+
         faulthandler.register(signal.SIGUSR2, all_threads=True)
 
         from scarlett_os.internal.debugger import init_debugger
+
         init_debugger()
 
         from scarlett_os.internal.debugger import enable_remote_debugging
+
         enable_remote_debugging()
 
     from scarlett_os.logger import setup_logger
+
     setup_logger()
 
     import imp  # pylint: disable=W0611
@@ -973,12 +1101,15 @@ if __name__ == "__main__":
     import shutil
 
     import scarlett_os
+
     # from scarlett_os.common.configure import ruamel_config
 
     from scarlett_os.internal.debugger import dump  # pylint: disable=W0611
     from scarlett_os.internal.debugger import pprint_color  # pylint: disable=W0611
 
-    fake_config_file_path_base, fake_config_file_path = _fake_config(override=RUSSIAN_CONFIG)
+    fake_config_file_path_base, fake_config_file_path = _fake_config(
+        override=RUSSIAN_CONFIG
+    )
 
     in_memory_config = load_config(fake_config_file_path)
 

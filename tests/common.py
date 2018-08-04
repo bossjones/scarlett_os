@@ -15,8 +15,16 @@ from unittest.mock import patch
 from scarlett_os import core as s
 from scarlett_os import loader
 from scarlett_os.const import (
-    ATTR_DISCOVERED, ATTR_SERVICE, DEVICE_DEFAULT_NAME, EVENT_PLATFORM_DISCOVERED, EVENT_STATE_CHANGED, EVENT_TIME_CHANGED, SERVER_PORT,
-    STATE_OFF, STATE_ON)
+    ATTR_DISCOVERED,
+    ATTR_SERVICE,
+    DEVICE_DEFAULT_NAME,
+    EVENT_PLATFORM_DISCOVERED,
+    EVENT_STATE_CHANGED,
+    EVENT_TIME_CHANGED,
+    SERVER_PORT,
+    STATE_OFF,
+    STATE_ON,
+)
 from scarlett_os.internal.gi import Gio, GLib, GObject, Gst
 import scarlett_os.utility.dt as date_utility
 from scarlett_os.utility.unit_system import METRIC_SYSTEM
@@ -73,12 +81,12 @@ def async_test_scarlett_os(loop):
 
     ss = s.ScarlettSystem(loop)
 
-    ss.config.location_name = 'test scarlett'
+    ss.config.location_name = "test scarlett"
     ss.config.config_dir = get_test_config_dir()
     ss.config.latitude = 32.87336
     ss.config.longitude = -117.22743
     ss.config.elevation = 0
-    ss.config.time_zone = date_utility.get_time_zone('US/Pacific')
+    ss.config.time_zone = date_utility.get_time_zone("US/Pacific")
     ss.config.units = METRIC_SYSTEM
     ss.config.skip_pip = True
 
@@ -92,7 +100,7 @@ def async_test_scarlett_os(loop):
 
 def load_fixture(filename):
     """Helper to load a fixture."""
-    path = os.path.join(os.path.dirname(__file__), 'fixtures', filename)
+    path = os.path.join(os.path.dirname(__file__), "fixtures", filename)
     with open(path) as fptr:
         return fptr.read()
 
@@ -106,25 +114,25 @@ def patch_yaml_files(files_dict, endswith=True):
         """Mock open() in the yaml module, used by load_yaml."""
         # Return the mocked file on full match
         if fname in files_dict:
-            logger.debug('patch_yaml_files match %s', fname)
+            logger.debug("patch_yaml_files match %s", fname)
             res = StringIO(files_dict[fname])
-            setattr(res, 'name', fname)
+            setattr(res, "name", fname)
             return res
 
         # Match using endswith
         for ends in matchlist:
             if fname.endswith(ends):
-                logger.debug('patch_yaml_files end match %s: %s', ends, fname)
+                logger.debug("patch_yaml_files end match %s: %s", ends, fname)
                 res = StringIO(files_dict[ends])
-                setattr(res, 'name', fname)
+                setattr(res, "name", fname)
                 return res
 
         # Fallback for ss.automations (i.e. services.yaml)
-        if 'scarlett_os/automations' in fname:
-            logger.debug('patch_yaml_files using real file: %s', fname)
-            return open(fname, encoding='utf-8')
+        if "scarlett_os/automations" in fname:
+            logger.debug("patch_yaml_files using real file: %s", fname)
+            return open(fname, encoding="utf-8")
 
         # Not found
-        raise FileNotFoundError('File not found: {}'.format(fname))
+        raise FileNotFoundError("File not found: {}".format(fname))
 
-    return patch.object(yaml, 'open', mock_open_f, create=True)
+    return patch.object(yaml, "open", mock_open_f, create=True)

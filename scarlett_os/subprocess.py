@@ -38,9 +38,13 @@ class Subprocess(GObject.GObject):
     :type fork: `bool`
     """
 
-    __gtype_name__ = 'Subprocess'
+    __gtype_name__ = "Subprocess"
     __gsignals__ = {
-        'exited': (GObject.SignalFlags.RUN_LAST, None, (GObject.TYPE_INT, GObject.TYPE_INT))
+        "exited": (
+            GObject.SignalFlags.RUN_LAST,
+            None,
+            (GObject.TYPE_INT, GObject.TYPE_INT),
+        )
     }
 
     def __init__(self, command, name=None, fork=False, run_check_command=True):
@@ -96,9 +100,10 @@ class Subprocess(GObject.GObject):
         #                         )
         # DO_NOT_REAP_CHILD
         # Don't reap process automatically so it is possible to detect when it is closed.
-        return GLib.spawn_async(self.command,
-                                flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD
-                                )
+        return GLib.spawn_async(
+            self.command,
+            flags=GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+        )
 
     def map_type_to_command(self, command):
         """Return: Map after applying type to several objects in an array"""
@@ -114,14 +119,18 @@ class Subprocess(GObject.GObject):
         types = self.map_type_to_command(command)
 
         if type(types) is not list:
-            raise TypeError("Variable types should return a list in python3. Got: {}".format(types))
+            raise TypeError(
+                "Variable types should return a list in python3. Got: {}".format(types)
+            )
 
         # <map at 0x7f08918d74e0>
         # NOTE: str is a built-in function (actually a class) which converts its argument to a string. string is a module which provides common string operations.
         # source: http://stackoverflow.com/questions/2026038/relationship-between-string-module-and-str
         for t in types:
             if t is not str:
-                raise TypeError("Executables and arguments must be str objects. types: {}".format(t))
+                raise TypeError(
+                    "Executables and arguments must be str objects. types: {}".format(t)
+                )
 
         # if not (min(types) == max(types) == str):
         #     raise TypeError("Executables and arguments must be str objects. types: {}".format(types))
@@ -164,7 +173,7 @@ class Subprocess(GObject.GObject):
 
     def exited_cb(self, pid, condition):
         if not self.forked:
-            self.emit('exited', pid, condition)
+            self.emit("exited", pid, condition)
 
         # logging.info("Transmission exited with status %d, exiting.", condition)
         # GLib.spawn_close_pid(pid)
@@ -175,10 +184,10 @@ class Subprocess(GObject.GObject):
             # STEP: Create first fork
             pid = os.fork()
             if pid > 0:
-                logger.debug('pid greater than 0 first time')
+                logger.debug("pid greater than 0 first time")
                 sys.exit(0)
         except OSError as e:
-            logger.error('Error forking process first time')
+            logger.error("Error forking process first time")
             sys.exit(1)
 
         # Change the current working directory to path.
@@ -197,10 +206,10 @@ class Subprocess(GObject.GObject):
             # Create second fork
             pid = os.fork()
             if pid > 0:
-                logger.debug('pid greater than 0 second time')
+                logger.debug("pid greater than 0 second time")
                 sys.exit(0)
         except OSError as e:
-            logger.error('Error forking process second time')
+            logger.error("Error forking process second time")
             sys.exit(1)
 
         # TODO: This might be worth looking into
@@ -213,5 +222,3 @@ class Subprocess(GObject.GObject):
         # os.dup2(infd.fileno(), sys.stdin.fileno())
         # os.dup2(outfd.fileno(), sys.stdout.fileno())
         # os.dup2(outfd.fileno(), sys.stderr.fileno())
-
-

@@ -23,22 +23,22 @@ import tests
 import imp  # Library to help us reload our tasker module
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def path_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
-    print('Called [setup]: mocker.stopall()')
+    print("Called [setup]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(s_path)')
+    print("Called [setup]: imp.reload(s_path)")
     imp.reload(s_path)
     yield mocker
-    print('Called [teardown]: mocker.stopall()')
+    print("Called [teardown]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(s_path)')
+    print("Called [setup]: imp.reload(s_path)")
     imp.reload(s_path)
 
 
 def bad_read():
-    raise UnicodeDecodeError('utf-8', b'0x80', 0, 1, 'invalid start byte')
+    raise UnicodeDecodeError("utf-8", b"0x80", 0, 1, "invalid start byte")
 
 
 @pytest.mark.scarlettonly
@@ -46,14 +46,15 @@ def bad_read():
 @pytest.mark.scarlettonlyunittest
 @pytest.mark.pathtest
 class TestPathToFileURI(object):
-
     def test_get_parent_dir(self, path_mocker_stopall):
         # mock
         mock_logger_info = path_mocker_stopall.MagicMock(name="mock_logger_info")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'info', mock_logger_info)
+        path_mocker_stopall.patch.object(
+            scarlett_os.subprocess.logging.Logger, "info", mock_logger_info
+        )
 
-        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot'
+        path = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
 
         # run test
         result = s_path.get_parent_dir(path)
@@ -61,7 +62,7 @@ class TestPathToFileURI(object):
         assert mock_logger_info.call_count == 1
 
         mock_logger_info.assert_any_call("get_parent_dir: {}".format(path))
-        assert result == '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+        assert result == "/home/pi/dev/bossjones-github/scarlett_os/_debug"
 
     def test_mkdir_p(self, path_mocker_stopall):
         # mock
@@ -69,11 +70,15 @@ class TestPathToFileURI(object):
         mock_dir_exists = path_mocker_stopall.MagicMock(name="mock_dir_exists")
         mock_path = path_mocker_stopall.MagicMock(name="mock_path")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'info', mock_logger_info)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'dir_exists', mock_dir_exists)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+        path_mocker_stopall.patch.object(
+            scarlett_os.subprocess.logging.Logger, "info", mock_logger_info
+        )
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path, "dir_exists", mock_dir_exists
+        )
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, "Path", mock_path)
 
-        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+        path = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
 
         mock_dir_exists.return_value = True
 
@@ -85,17 +90,21 @@ class TestPathToFileURI(object):
         mock_path.assert_called_once_with(path)
         # from scarlett_os.internal.debugger import dump
         mock_path().mkdir.assert_any_call(parents=True, exist_ok=True)
-        mock_logger_info.assert_any_call("Verify mkdir_p ran: {}".format(mock_dir_exists.return_value))
+        mock_logger_info.assert_any_call(
+            "Verify mkdir_p ran: {}".format(mock_dir_exists.return_value)
+        )
 
     def test_dir_exists_false(self, path_mocker_stopall):
         # mock
         mock_logger_error = path_mocker_stopall.MagicMock(name="mock_logger_error")
         mock_path = path_mocker_stopall.MagicMock(name="mock_path")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logger_error)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+        path_mocker_stopall.patch.object(
+            scarlett_os.subprocess.logging.Logger, "error", mock_logger_error
+        )
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, "Path", mock_path)
 
-        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+        path = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
 
         mock_path_instance = mock_path()
 
@@ -114,10 +123,12 @@ class TestPathToFileURI(object):
         mock_logger_error = path_mocker_stopall.MagicMock(name="mock_logger_error")
         mock_path = path_mocker_stopall.MagicMock(name="mock_path")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logger_error)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+        path_mocker_stopall.patch.object(
+            scarlett_os.subprocess.logging.Logger, "error", mock_logger_error
+        )
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, "Path", mock_path)
 
-        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+        path = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
 
         mock_path_instance = mock_path()
         #
@@ -134,12 +145,18 @@ class TestPathToFileURI(object):
     def test_mkdir_if_does_not_exist_false(self, path_mocker_stopall):
         # mock
         mock_mkdir_p = path_mocker_stopall.MagicMock(name="mock_mkdir_p")
-        mock_dir_exists = path_mocker_stopall.MagicMock(name="mock_dir_exists", return_value=False)
+        mock_dir_exists = path_mocker_stopall.MagicMock(
+            name="mock_dir_exists", return_value=False
+        )
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'mkdir_p', mock_mkdir_p)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'dir_exists', mock_dir_exists)
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path, "mkdir_p", mock_mkdir_p
+        )
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path, "dir_exists", mock_dir_exists
+        )
 
-        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+        path = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
 
         # run test
         result = s_path.mkdir_if_does_not_exist(path)
@@ -152,12 +169,18 @@ class TestPathToFileURI(object):
     def test_mkdir_if_does_not_exist_true(self, path_mocker_stopall):
         # mock
         mock_mkdir_p = path_mocker_stopall.MagicMock(name="mock_mkdir_p")
-        mock_dir_exists = path_mocker_stopall.MagicMock(name="mock_dir_exists", return_value=True)
+        mock_dir_exists = path_mocker_stopall.MagicMock(
+            name="mock_dir_exists", return_value=True
+        )
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'mkdir_p', mock_mkdir_p)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'dir_exists', mock_dir_exists)
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path, "mkdir_p", mock_mkdir_p
+        )
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path, "dir_exists", mock_dir_exists
+        )
 
-        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug'
+        path = "/home/pi/dev/bossjones-github/scarlett_os/_debug"
 
         # run test
         result = s_path.mkdir_if_does_not_exist(path)
@@ -171,9 +194,9 @@ class TestPathToFileURI(object):
         # mock
         mock_path = path_mocker_stopall.MagicMock(name="mock_path")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, "Path", mock_path)
 
-        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot'
+        path = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot"
 
         mock_path_instance = mock_path()
 
@@ -190,9 +213,9 @@ class TestPathToFileURI(object):
         # mock
         mock_path = path_mocker_stopall.MagicMock(name="mock_path")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'Path', mock_path)
+        path_mocker_stopall.patch.object(scarlett_os.internal.path, "Path", mock_path)
 
-        path = '/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot'
+        path = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator.dot"
 
         mock_path_instance = mock_path()
 
@@ -211,10 +234,14 @@ class TestPathToFileURI(object):
         mock_os_access = path_mocker_stopall.MagicMock(name="mock_os_access")
         mock_os_path_isdir = path_mocker_stopall.MagicMock(name="mock_os_path_isdir")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.internal.path.os, 'access', mock_os_access)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path.os.path, 'isdir', mock_os_path_isdir)
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path.os, "access", mock_os_access
+        )
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path.os.path, "isdir", mock_os_path_isdir
+        )
 
-        path = 'file:///tmp'
+        path = "file:///tmp"
 
         # patch return values
         mock_os_path_isdir.return_value = True
@@ -224,8 +251,8 @@ class TestPathToFileURI(object):
         result = s_path.isWritable(path)
 
         # tests
-        mock_os_path_isdir.assert_called_once_with('file:///tmp')
-        mock_os_access.assert_called_once_with('file:///tmp', os.W_OK)
+        mock_os_path_isdir.assert_called_once_with("file:///tmp")
+        mock_os_access.assert_called_once_with("file:///tmp", os.W_OK)
         assert result == True
 
     def test_file_isWritable(self, path_mocker_stopall):
@@ -233,10 +260,14 @@ class TestPathToFileURI(object):
         mock_os_access = path_mocker_stopall.MagicMock(name="mock_os_access")
         mock_os_path_isdir = path_mocker_stopall.MagicMock(name="mock_os_path_isdir")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.internal.path.os, 'access', mock_os_access)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path.os.path, 'isdir', mock_os_path_isdir)
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path.os, "access", mock_os_access
+        )
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path.os.path, "isdir", mock_os_path_isdir
+        )
 
-        path = 'file:///tmp/fake_file'
+        path = "file:///tmp/fake_file"
 
         # patch return values
         mock_os_path_isdir.return_value = False
@@ -246,8 +277,8 @@ class TestPathToFileURI(object):
         result = s_path.isWritable(path)
 
         # tests
-        mock_os_path_isdir.assert_called_once_with('file:///tmp/fake_file')
-        mock_os_access.assert_called_once_with('file:///tmp', os.W_OK)
+        mock_os_path_isdir.assert_called_once_with("file:///tmp/fake_file")
+        mock_os_access.assert_called_once_with("file:///tmp", os.W_OK)
         assert result == True
 
     # TODO: Need to figure out how to throw a fake UnicodeDecodeError
@@ -267,7 +298,7 @@ class TestPathToFileURI(object):
     #
 
     def test_dir_isReadable(self):
-        tmpdir = tempfile.mkdtemp('.scarlett_os-tests')
+        tmpdir = tempfile.mkdtemp(".scarlett_os-tests")
 
         try:
             # run test
@@ -296,20 +327,29 @@ class TestPathToFileURI(object):
         # mock
         mock_os_path_isdir = path_mocker_stopall.MagicMock(name="mock_os_path_isdir")
         mock_os_access = path_mocker_stopall.MagicMock(name="mock_os_access")
-        mock_unicode_error_dialog = path_mocker_stopall.MagicMock(name="mock_unicode_error_dialog")
+        mock_unicode_error_dialog = path_mocker_stopall.MagicMock(
+            name="mock_unicode_error_dialog"
+        )
         mock_logger_error = path_mocker_stopall.MagicMock(name="mock_logger_error")
 
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.internal.path.os.path, 'isdir', mock_os_path_isdir)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path.os, 'access', mock_os_access)
-        path_mocker_stopall.patch.object(scarlett_os.internal.path, 'unicode_error_dialog', mock_unicode_error_dialog)
-        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logger_error)
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path.os.path, "isdir", mock_os_path_isdir
+        )
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path.os, "access", mock_os_access
+        )
+        path_mocker_stopall.patch.object(
+            scarlett_os.internal.path, "unicode_error_dialog", mock_unicode_error_dialog
+        )
+        path_mocker_stopall.patch.object(
+            scarlett_os.subprocess.logging.Logger, "error", mock_logger_error
+        )
 
-
-        path = b'file:///tmp/fake_file'
+        path = b"file:///tmp/fake_file"
 
         # patch return values
-        mock_os_path_isdir.side_effect = UnicodeDecodeError('', b'', 1, 0, '')
+        mock_os_path_isdir.side_effect = UnicodeDecodeError("", b"", 1, 0, "")
         s_path.isWritable(path)
 
         assert mock_unicode_error_dialog.call_count == 1
@@ -318,47 +358,51 @@ class TestPathToFileURI(object):
         # mock
         mock_logger_error = path_mocker_stopall.MagicMock(name="mock_logger_error")
         # patch
-        path_mocker_stopall.patch.object(scarlett_os.subprocess.logging.Logger, 'error', mock_logger_error)
+        path_mocker_stopall.patch.object(
+            scarlett_os.subprocess.logging.Logger, "error", mock_logger_error
+        )
 
         s_path.unicode_error_dialog()
 
         assert mock_logger_error.call_count == 1
 
-        _message = _("The system's locale that you are using is not UTF-8 capable. "
-                     "Unicode support is required for Python3 software like Pitivi. "
-                     "Please correct your system settings; if you try to use Pitivi "
-                     "with a broken locale, weird bugs will happen.")
+        _message = _(
+            "The system's locale that you are using is not UTF-8 capable. "
+            "Unicode support is required for Python3 software like Pitivi. "
+            "Please correct your system settings; if you try to use Pitivi "
+            "with a broken locale, weird bugs will happen."
+        )
 
         mock_logger_error.assert_any_call(_message)
 
     def test_path_to_uri(self):
-        result = s_path.path_to_uri('/etc/fstab')
-        assert result == b'file:///etc/fstab'
+        result = s_path.path_to_uri("/etc/fstab")
+        assert result == b"file:///etc/fstab"
         assert type(result) == compat.bytes
 
     def test_uri_is_valid_bytes(self):
-        uri = b'file:///etc/fstab'
+        uri = b"file:///etc/fstab"
         assert s_path.uri_is_valid(uri)
 
     def test_path_from_uri_bytes(self):
-        raw_uri = b'file:///etc/fstab'
+        raw_uri = b"file:///etc/fstab"
         result = s_path.path_from_uri(raw_uri)
-        assert result == '/etc/fstab'
+        assert result == "/etc/fstab"
 
     def test_filename_from_uri_bytes(self):
-        uri = b'file:///etc/fstab'
+        uri = b"file:///etc/fstab"
         result = s_path.filename_from_uri(uri)
-        assert result == 'fstab'
+        assert result == "fstab"
 
     def test_filename_from_uri_str(self):
-        uri = 'file:///etc/fstab'
+        uri = "file:///etc/fstab"
         result = s_path.filename_from_uri(uri)
-        assert result == 'fstab'
+        assert result == "fstab"
 
     def test_quote_uri_byte_to_str(self):
-        uri = b'file:///etc/fstab'
+        uri = b"file:///etc/fstab"
         result = s_path.quote_uri(uri)
-        assert result == 'file:///etc/fstab'
+        assert result == "file:///etc/fstab"
         assert type(result) == compat.text_type
 
     def test_quantize(self):
@@ -384,40 +428,41 @@ class TestPathToFileURI(object):
         assert s_path.binary_search([10, 20, 30], 40) == 2
 
     def test_uri_to_path_str(self):
-        uri = 'file:///etc/fstab'
+        uri = "file:///etc/fstab"
         result = s_path.uri_to_path(uri)
-        assert result == '/etc/fstab'
+        assert result == "/etc/fstab"
 
     def test_uri_to_path_bytes(self):
-        uri = b'file:///etc/fstab'
+        uri = b"file:///etc/fstab"
         result = s_path.uri_to_path(uri)
-        assert result == '/etc/fstab'
+        assert result == "/etc/fstab"
+
 
 ##################################################################################
 # Pitivi - BEGIN
 ##################################################################################
-    # def testMakeBackupUri(self):
-    #     uri = "file:///tmp/x.xges"
-    #     self.assertEqual(uri + "~", self.manager._makeBackupURI(uri))
-    #
-    # def testBackupProject(self):
-    #     self.manager.newBlankProject()
-    #
-    #     # Assign an uri to the project where it's saved by default.
-    #     unused, xges_path = tempfile.mkstemp(suffix=".xges")
-    #     uri = "file://" + os.path.abspath(xges_path)
-    #     self.manager.current_project.uri = uri
-    #     # This is where the automatic backup file is saved.
-    #     backup_uri = self.manager._makeBackupURI(uri)
-    #
-    #     # Save the backup
-    #     self.assertTrue(self.manager.saveProject(
-    #         self.manager.current_project, backup=True))
-    #     self.assertTrue(os.path.isfile(path_from_uri(backup_uri)))
-    #
-    #     self.manager.closeRunningProject()
-    #     self.assertFalse(os.path.isfile(path_from_uri(backup_uri)),
-    #                      "Backup file not deleted when project closed")
+# def testMakeBackupUri(self):
+#     uri = "file:///tmp/x.xges"
+#     self.assertEqual(uri + "~", self.manager._makeBackupURI(uri))
+#
+# def testBackupProject(self):
+#     self.manager.newBlankProject()
+#
+#     # Assign an uri to the project where it's saved by default.
+#     unused, xges_path = tempfile.mkstemp(suffix=".xges")
+#     uri = "file://" + os.path.abspath(xges_path)
+#     self.manager.current_project.uri = uri
+#     # This is where the automatic backup file is saved.
+#     backup_uri = self.manager._makeBackupURI(uri)
+#
+#     # Save the backup
+#     self.assertTrue(self.manager.saveProject(
+#         self.manager.current_project, backup=True))
+#     self.assertTrue(os.path.isfile(path_from_uri(backup_uri)))
+#
+#     self.manager.closeRunningProject()
+#     self.assertFalse(os.path.isfile(path_from_uri(backup_uri)),
+#                      "Backup file not deleted when project closed")
 ##################################################################################
 # Pitivi - BEGIN
 ##################################################################################

@@ -20,6 +20,7 @@ from gettext import gettext as _
 # import pathlib
 
 from pathlib import Path
+
 # from pathlib import PurePosixPath
 
 # p = PurePosixPath('/etc/passwd')
@@ -39,13 +40,12 @@ def ensure_dir_exists(directory):
     """
 
     if not os.path.exists(directory):
-        logger.info('Creating directory: %r', directory)
+        logger.info("Creating directory: %r", directory)
 
         try:
             os.makedirs(directory, 0o775)
         except os.error as e:
-            raise Exception(
-                'Cannot create directory [{}]: {}'.format(directory, e))
+            raise Exception("Cannot create directory [{}]: {}".format(directory, e))
 
 
 def ensure_file_exists(path):
@@ -59,11 +59,11 @@ def ensure_file_exists(path):
 
     if not os.path.exists(path):
         try:
-            open(path, 'w').close()
+            open(path, "w").close()
             os.chmod(path, 0o600)
         except IOError as e:
-            raise Exception(
-                'Cannot create file [{}]: {}'.format(path, e))
+            raise Exception("Cannot create file [{}]: {}".format(path, e))
+
 
 def enforce_file_permissions(path):
     # source: dcos-cli
@@ -75,16 +75,17 @@ def enforce_file_permissions(path):
     """
 
     if not os.path.isfile(path):
-        raise Exception('Path [{}] is not a file'.format(path))
+        raise Exception("Path [{}] is not a file".format(path))
 
     permissions = oct(stat.S_IMODE(os.stat(path).st_mode))
-    if permissions not in ['0o600', '0600', '0o400', '0400']:
+    if permissions not in ["0o600", "0600", "0o400", "0400"]:
         if os.path.realpath(path) != path:
-            path = '%s (pointed to by %s)' % (os.path.realpath(path), path)
+            path = "%s (pointed to by %s)" % (os.path.realpath(path), path)
         msg = (
             "Permissions '{}' for configuration file '{}' are too open. "
             "File must only be accessible by owner. "
-            "Aborting...".format(permissions, path))
+            "Aborting...".format(permissions, path)
+        )
         raise Exception(msg)
 
 
@@ -129,6 +130,7 @@ def touch_empty_file(path):
     p = Path(path)
     return p.touch()
 
+
 # NOTE: Borrowed from Pitivi
 # ------------------------------ URI helpers --------------------------------
 # SOURCE: https://raw.githubusercontent.com/GNOME/pitivi/b2bbe6eef6d1e6d0fa5471d60004c62f936b3146/pitivi/utils/misc.py
@@ -161,16 +163,18 @@ def isWritable(path):
 def isReadable(path):
     """Returns whether the file/path exists and is readable."""
     try:
-        return (os.path.exists(path) and os.access(path, os.R_OK))
+        return os.path.exists(path) and os.access(path, os.R_OK)
     except UnicodeDecodeError:
         unicode_error_dialog()
 
 
 def unicode_error_dialog():
-    message = _("The system's locale that you are using is not UTF-8 capable. "
-                "Unicode support is required for Python3 software like Pitivi. "
-                "Please correct your system settings; if you try to use Pitivi "
-                "with a broken locale, weird bugs will happen.")
+    message = _(
+        "The system's locale that you are using is not UTF-8 capable. "
+        "Unicode support is required for Python3 software like Pitivi. "
+        "Please correct your system settings; if you try to use Pitivi "
+        "with a broken locale, weird bugs will happen."
+    )
 
     logger.error(message)
 
@@ -189,11 +193,13 @@ def uri_is_valid(uri):
 
     # If we have a byte instead of a strng, decode to str type
     if isinstance(uri, compat.bytes):
-        uri = uri.decode('utf-8')
+        uri = uri.decode("utf-8")
 
-    return (Gst.uri_is_valid(uri) and
-            Gst.uri_get_protocol(uri) == "file" and
-            len(os.path.basename(Gst.uri_get_location(uri))) > 0)
+    return (
+        Gst.uri_is_valid(uri)
+        and Gst.uri_get_protocol(uri) == "file"
+        and len(os.path.basename(Gst.uri_get_location(uri))) > 0
+    )
 
 
 def path_from_uri(raw_uri):
@@ -208,7 +214,7 @@ def path_from_uri(raw_uri):
     # NOTE: bossjones added
     # If we have a byte instead of a strng, decode to str type
     if isinstance(raw_uri, compat.bytes):
-        raw_uri = raw_uri.decode('utf-8')
+        raw_uri = raw_uri.decode("utf-8")
 
     # assume: uri = b'file:///etc/fstab'
     uri = compat.urlparse(raw_uri)
@@ -250,7 +256,7 @@ def quote_uri(uri):
     # NOTE: bossjones added
     # If we have a byte instead of a strng, decode to str type
     if isinstance(uri, compat.bytes):
-        uri = uri.decode('utf-8')
+        uri = uri.decode("utf-8")
 
     # Split off the "file:///" part, if present.
     # In [34]: uri = 'file:///etc/fstab'
@@ -298,6 +304,7 @@ def binary_search(elements, value):
             closest_distance = distance
     return closest_index
 
+
 # ------------------------------ URI helpers --------------------------------
 
 
@@ -340,7 +347,7 @@ def path_to_uri(path):
     Returns a file:// URI as an unicode string.
     """
     if isinstance(path, compat.text_type):
-        path = path.encode('utf-8')  # str -> bytes
+        path = path.encode("utf-8")  # str -> bytes
     # path = compat.quote(path)
     # urlunsplit: Combine the elements of a tuple as returned by urlsplit() into a complete URL as a string.
     # The parts argument can be any five-item iterable. This may result in a slightly different,
@@ -353,7 +360,7 @@ def path_to_uri(path):
     # In [53]: compat.urlunsplit((b'file', b'', uri, b'', b''))
     # Out[53]: b'file:///etc/fstab'
 
-    return compat.urlunsplit((b'file', b'', path, b'', b''))
+    return compat.urlunsplit((b"file", b"", path, b"", b""))
 
 
 def uri_to_path(uri):
@@ -369,7 +376,7 @@ def uri_to_path(uri):
     """
     # convert str to byte
     if isinstance(uri, compat.text_type):
-        uri = uri.encode('utf-8')
+        uri = uri.encode("utf-8")
 
         # logger.debug('URI:')
         # logger.debug(uri)
@@ -380,7 +387,7 @@ def uri_to_path(uri):
     _path = compat.urlsplit(uri).path
 
     if isinstance(_path, compat.bytes):
-        _path = _path.decode('utf-8')
+        _path = _path.decode("utf-8")
 
     return compat.unquote(_path)
 
@@ -438,7 +445,7 @@ def _find_worker(relative, follow, done, work, results, errors):  # pragma: no c
                 st = os.lstat(entry)
 
             if (st.st_dev, st.st_ino) in parents:
-                errors[path] = exceptions.FindError('Sym/hardlink loop found.')
+                errors[path] = exceptions.FindError("Sym/hardlink loop found.")
                 continue
 
             parents = parents + [(st.st_dev, st.st_ino)]
@@ -448,13 +455,14 @@ def _find_worker(relative, follow, done, work, results, errors):  # pragma: no c
             elif stat.S_ISREG(st.st_mode):
                 results[path] = st
             elif stat.S_ISLNK(st.st_mode):
-                errors[path] = exceptions.FindError('Not following symlinks.')
+                errors[path] = exceptions.FindError("Not following symlinks.")
             else:
-                errors[path] = exceptions.FindError('Not a file or directory.')
+                errors[path] = exceptions.FindError("Not a file or directory.")
 
         except OSError as e:
             errors[path] = exceptions.FindError(
-                encoding.locale_decode(e.strerror), e.errno)
+                encoding.locale_decode(e.strerror), e.errno
+            )
         finally:
             work.task_done()
 
@@ -504,13 +512,12 @@ def find_mtimes(root, follow=False):  # pragma: no cover
 
 def is_path_inside_base_dir(path, base_path):  # pragma: no cover
     if not isinstance(path, bytes):
-        raise ValueError('path is not a bytestring')
+        raise ValueError("path is not a bytestring")
     if not isinstance(base_path, bytes):
-        raise ValueError('base_path is not a bytestring')
+        raise ValueError("base_path is not a bytestring")
 
     if path.endswith(os.sep):
-        raise ValueError('Path %s cannot end with a path separator'
-                         % path)
+        raise ValueError("Path %s cannot end with a path separator" % path)
     # Expand symlinks
     real_base_path = os.path.realpath(base_path)
     real_path = os.path.realpath(path)
@@ -528,7 +535,6 @@ def is_path_inside_base_dir(path, base_path):  # pragma: no cover
 
 # FIXME replace with mock usage in tests.
 class Mtime(object):  # pragma: no cover
-
     def __init__(self):
         self.fake = None
 
@@ -542,5 +548,6 @@ class Mtime(object):  # pragma: no cover
 
     def undo_fake(self):
         self.fake = None
+
 
 mtime = Mtime()

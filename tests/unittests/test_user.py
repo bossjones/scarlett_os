@@ -30,38 +30,41 @@ from scarlett_os import user  # Module with our thing to test
 # this fixture ensures that we isolate the patched object, stop mocks,
 # and literally re-import modules to set environment back to normal.
 # It's possible this will all get fixed when we upgrade to a later version of python past 3.5.2
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def user_unit_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
-    print('Called [setup]: mocker.stopall()')
+    print("Called [setup]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(user)')
+    print("Called [setup]: imp.reload(user)")
     imp.reload(user)
     yield mocker
-    print('Called [teardown]: mocker.stopall()')
+    print("Called [teardown]: mocker.stopall()")
     mocker.stopall()
-    print('Called [setup]: imp.reload(user)')
+    print("Called [setup]: imp.reload(user)")
     imp.reload(user)
+
 
 # SOURCE: https://github.com/ansible/ansible/blob/370a7ace4b3c8ffb6187900f37499990f1b976a2/test/units/module_utils/basic/test_atomic_move.py
 @pytest.fixture
 def user_mocks(user_unit_mocker_stopall):
     environ = dict()
     mocks = {
-        'environ': user_unit_mocker_stopall.patch('scarlett_os.user.os.environ', environ),
-        'getlogin': user_unit_mocker_stopall.patch('scarlett_os.user.os.getlogin'),
-        'getuid': user_unit_mocker_stopall.patch('scarlett_os.user.os.getuid'),
-        'getpass': user_unit_mocker_stopall.patch('scarlett_os.user.getpass')
+        "environ": user_unit_mocker_stopall.patch(
+            "scarlett_os.user.os.environ", environ
+        ),
+        "getlogin": user_unit_mocker_stopall.patch("scarlett_os.user.os.getlogin"),
+        "getuid": user_unit_mocker_stopall.patch("scarlett_os.user.os.getuid"),
+        "getpass": user_unit_mocker_stopall.patch("scarlett_os.user.getpass"),
     }
 
-    mocks['getlogin'].return_value = 'root'
-    mocks['getuid'].return_value = 0
-    mocks['getpass'].getuser.return_value = 'root'
+    mocks["getlogin"].return_value = "root"
+    mocks["getuid"].return_value = 0
+    mocks["getpass"].getuser.return_value = "root"
 
-    mocks['environ']['LOGNAME'] = 'root'
-    mocks['environ']['USERNAME'] = 'root'
-    mocks['environ']['USER'] = 'root'
-    mocks['environ']['LNAME'] = 'root'
+    mocks["environ"]["LOGNAME"] = "root"
+    mocks["environ"]["USERNAME"] = "root"
+    mocks["environ"]["USER"] = "root"
+    mocks["environ"]["LNAME"] = "root"
 
     yield mocks
 
@@ -82,7 +85,11 @@ class TestUser(object):
         assert scarlett_os.user.get_user_project_root_path() == "/root/dev"
 
     def test_get_user_project_base_path(self, user_mocks):
-        assert scarlett_os.user.get_user_project_base_path() == "/root/dev/bossjones-github/scarlett_os"
+        assert (
+            scarlett_os.user.get_user_project_base_path()
+            == "/root/dev/bossjones-github/scarlett_os"
+        )
+
 
 @pytest.mark.unittest
 @pytest.mark.scarlettonly
@@ -93,13 +100,23 @@ class TestUserOverrides(object):
     def test_get_user_name_override(self):
         assert scarlett_os.user.get_user_name("fake_user_name") == "fake_user_name"
 
-
     def test_get_user_home_override(self):
-        assert scarlett_os.user.get_user_home("/home/fake_user_name") == "/home/fake_user_name"
+        assert (
+            scarlett_os.user.get_user_home("/home/fake_user_name")
+            == "/home/fake_user_name"
+        )
 
     def test_get_user_project_root_path_override(self):
 
-        assert scarlett_os.user.get_user_project_root_path("/home/fake_user_name/dev") == "/home/fake_user_name/dev"
+        assert (
+            scarlett_os.user.get_user_project_root_path("/home/fake_user_name/dev")
+            == "/home/fake_user_name/dev"
+        )
 
     def test_get_user_project_base_path_override(self):
-        assert scarlett_os.user.get_user_project_base_path("/home/fake_user_name/dev/bossjones-github/scarlett_os") == "/home/fake_user_name/dev/bossjones-github/scarlett_os"
+        assert (
+            scarlett_os.user.get_user_project_base_path(
+                "/home/fake_user_name/dev/bossjones-github/scarlett_os"
+            )
+            == "/home/fake_user_name/dev/bossjones-github/scarlett_os"
+        )
