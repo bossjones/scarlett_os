@@ -58,3 +58,4 @@ yapf
 
 # Update packages in a requirements.txt file to latest versions.
 pur
+rope

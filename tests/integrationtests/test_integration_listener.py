@@ -41,6 +41,7 @@ from scarlett_os.internal.gi import GLib
 
 from scarlett_os import listener
 from scarlett_os.utility import threadmanager
+from scarlett_os.common.configure.ruamel_config import ConfigManager
 
 
 ###########################################
@@ -212,10 +213,18 @@ class TestSuspendableMainLoopThread(object):
     #     GLib.timeout_add_seconds(10, quit)
 
 
-class TestScarlettListener(object):
-    def test_ScarlettListenerI_init(self, listener_mocker_stopall):
+# fake_temp_data_pocketsphinx_dic
+# fake_temp_data_pocketsphinx_lm
 
-        sl = listener.ScarlettListenerI("scarlett_listener")
+
+class TestScarlettListener(object):
+    def test_ScarlettListenerI_init(
+        self, listener_mocker_stopall, mocked_config_file_path
+    ):
+        fake_config_manager = ConfigManager(config_path=mocked_config_file_path)
+        fake_config_manager.load()
+
+        sl = listener.ScarlettListenerI("scarlett_listener", fake_config_manager)
 
         assert sl.running is False
         assert sl.finished is False

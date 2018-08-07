@@ -227,9 +227,27 @@ pocketsphinx:
     hmm: /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
     lm: /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
     dict: /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
+    # Silence word transition probability
     silprob: 0.1
-    wip: 1e-4
-    bestpath: 0
+    # ********************************************************
+    # FIXME: ????? THIS IS THE ORIG VALUE, do we need too set it back? 8/5/2018 # wip: 1e-4
+    # Enable Graph Search | Boolean. Default: true
+    # ********************************************************
+    # Word insertion penalty
+    wip: 0.0001
+    device: plughw:CARD=Device,DEV=0
+    # ********************************************************
+    # FIXME: ????? THIS IS THE ORIG VALUE, do we need too set it back? 8/5/2018 # bestpath: 0
+    # Enable Graph Search | Boolean. Default: true
+    # ********************************************************
+    bestpath: True
+    # Enable Flat Lexicon Search | Default: true
+    fwdflat: True
+    # Evaluate acoustic model every N frames |  Integer. Range: 1 - 10 Default: 1
+    dsratio: 1
+    # Maximum number of HMMs searched per frame | Integer. Range: 1 - 100000 Default: 30000
+    maxhmmpf: 3000
+
 
 # Impacts weather/sunrise data
 elevation: 665
@@ -252,6 +270,8 @@ keywords_list:
 
 features:
 - time
+
+graphviz_debug_dir: /home/pi/dev/bossjones-github/scarlett_os/_debug
 """
 
 RUSSIAN_CONFIG = """
@@ -763,33 +783,34 @@ def _dump_in_memory_config_to_stdout(data, stream=None):
     )
 
 
-def _insert_key_to_commented_map(data, position, key_name, key_value, comment=None):
-    # type: (Any, Any, Any, Optional[Any]) -> ruamel.yaml.comments.CommentedMap
-    """[Insert a key into a CommentedMap at a particular position, while optionally adding a comment]
+# NOTE: YAGNI at the moment
+# def _insert_key_to_commented_map(data, position, key_name, key_value, comment=None):
+#     # type: (Any, Any, Any, Optional[Any]) -> ruamel.yaml.comments.CommentedMap
+#     """[Insert a key into a CommentedMap at a particular position, while optionally adding a comment]
 
-    Arguments:
-        data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
-        position {[int]} -- [int providing position where to insert value, eg 1]
-        key_name {[str]} -- [string value for key value, eg 'Full Name']
-        key_value {[str]} -- [string value for key value, eg 'Malcolm Jones']
+#     Arguments:
+#         data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
+#         position {[int]} -- [int providing position where to insert value, eg 1]
+#         key_name {[str]} -- [string value for key value, eg 'Full Name']
+#         key_value {[str]} -- [string value for key value, eg 'Malcolm Jones']
 
-    Keyword Arguments:
-        comment {[ANY,str]} -- [Optional inline comment] (default: {None})
+#     Keyword Arguments:
+#         comment {[ANY,str]} -- [Optional inline comment] (default: {None})
 
-    Returns:
-        [ruamel.yaml.comments.CommentedMap] -- [Modified ruamel.yaml.comments.CommentedMap]
-    """
+#     Returns:
+#         [ruamel.yaml.comments.CommentedMap] -- [Modified ruamel.yaml.comments.CommentedMap]
+#     """
 
-    # TODO: Validation
-    # 1. assert position is valid number
-    # 2. assert key_name in string format
-    # 3. assert key_value in string format
-    # 4. assert comment is kwarg with value in string format
-    data.insert(position, key_name, key_value, comment=comment)
+#     # TODO: Validation
+#     # 1. assert position is valid number
+#     # 2. assert key_name in string format
+#     # 3. assert key_value in string format
+#     # 4. assert comment is kwarg with value in string format
+#     data.insert(position, key_name, key_value, comment=comment)
 
-    # EXAMPLE: taken directly from ruamel docs
-    # data.insert(1, 'last name', 'Vandelay', comment="new key")
-    return data
+#     # EXAMPLE: taken directly from ruamel docs
+#     # data.insert(1, 'last name', 'Vandelay', comment="new key")
+#     return data
 
 
 # INFO: ruamel: Indentation of block sequences
@@ -820,65 +841,65 @@ def _insert_key_to_commented_map(data, position, key_name, key_value, comment=No
 # assert data.mlget(['a', 1, 'd', 'f'], list_ok=True) == 196
 ##########################################################################
 
+# NOTE: YAGNI for the moment
+# def get_config_key_position(data, key_name):
+#     """Return position value of a key in a ruamel CommentedMap
 
-def get_config_key_position(data, key_name):
-    """Return position value of a key in a ruamel CommentedMap
+#     Arguments:
+#         data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
+#         key_name {[str]} -- [string value for key value, eg 'Full Name']
 
-    Arguments:
-        data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
-        key_name {[str]} -- [string value for key value, eg 'Full Name']
+#     Returns:
+#         [ANY, tuple] -- [Return a tuple of where node object is located in yaml document or return None]
+#     """
 
-    Returns:
-        [ANY, tuple] -- [Return a tuple of where node object is located in yaml document or return None]
-    """
+#     # EXAMPLE: Output
+#     # pdb> in_memory_config.lc.key('pocketsphinx')
+#     # (9, 0)
+#     # pdb> in_memory_config.lc.key('pocketsphinxa')
+#     # *** KeyError: 'pocketsphinxa'
+#     # pdb>
+#     try:
+#         pos = data.lc.key(key_name)
+#     except KeyError:
+#         logger.error(
+#             "Tried to find {} but failed! Setting position return value to None".format(
+#                 key_name
+#             )
+#         )
+#         pos = None
 
-    # EXAMPLE: Output
-    # pdb> in_memory_config.lc.key('pocketsphinx')
-    # (9, 0)
-    # pdb> in_memory_config.lc.key('pocketsphinxa')
-    # *** KeyError: 'pocketsphinxa'
-    # pdb>
-    try:
-        pos = data.lc.key(key_name)
-    except KeyError:
-        logger.error(
-            "Tried to find {} but failed! Setting position return value to None".format(
-                key_name
-            )
-        )
-        pos = None
+#     return pos
 
-    return pos
+# NOTE: YAGNI ( for the moment )
+# def get_config_value_position(data, key_name):
+#     """Return position value of a key in a ruamel CommentedMap
 
+#     Arguments:
+#         data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
+#         key_name {[str]} -- [string value for key value, eg 'Full Name']
 
-def get_config_value_position(data, key_name):
-    """Return position value of a key in a ruamel CommentedMap
+#     Returns:
+#         [ANY, tuple] -- [Return a tuple of where node object is located in yaml document or return None]
+#     """
 
-    Arguments:
-        data {[ruamel.yaml.comments.CommentedMap]} -- [CommentedMap returned via a roundtrip load]
-        key_name {[str]} -- [string value for key value, eg 'Full Name']
+#     # EXAMPLE: Output
+#     # pdb> in_memory_config.lc.value('pocketsphinx')
+#     # (10, 4)
+#     # pdb> in_memory_config.lc.value('pocketsphinxa')
+#     # *** KeyError: 'pocketsphinxa'
+#     # pdb>
+#     try:
+#         pos = data.lc.value(key_name)
+#     except KeyError:
+#         logger.error(
+#             "Tried to find {} but failed! Setting position return value to None".format(
+#                 key_name
+#             )
+#         )
+#         pos = None
 
-    Returns:
-        [ANY, tuple] -- [Return a tuple of where node object is located in yaml document or return None]
-    """
-
-    # EXAMPLE: Output
-    # pdb> in_memory_config.lc.value('pocketsphinx')
-    # (10, 4)
-    # pdb> in_memory_config.lc.value('pocketsphinxa')
-    # *** KeyError: 'pocketsphinxa'
-    # pdb>
-    try:
-        pos = data.lc.value(key_name)
-    except KeyError:
-        logger.error(
-            "Tried to find {} but failed! Setting position return value to None".format(
-                key_name
-            )
-        )
-        pos = None
-
-    return pos
+#     return pos
 
 
 # FIXME: YANGNI
@@ -943,74 +964,75 @@ def ensure_config_dir_path(config_dir: str) -> None:
 # ruamel.yaml.representer.RoundTripRepresenter.add_representer(type(None), represent_none)
 # -------------------------------------------------------------
 
+# NOTE: YAGNI
 # source: chamberlain
-def prep_default_config(homedir=None):
-    """[setup config.yaml defaults]
+# def prep_default_config(homedir=None):
+#     """[setup config.yaml defaults]
 
-    Keyword Arguments:
-        homedir {[str]} -- [path to sub directory containing config.yaml file, eg $HOME/.config/scarlett/config.yaml] (default: {None})
+#     Keyword Arguments:
+#         homedir {[str]} -- [path to sub directory containing config.yaml file, eg $HOME/.config/scarlett/config.yaml] (default: {None})
 
 
-    Returns:
-        [str] -- [home, eg $HOME/.config/scarlett]
-        [str] -- [default_cfg, eg $HOME/.config/scarlett/config.yaml]
-    """
+#     Returns:
+#         [str] -- [home, eg $HOME/.config/scarlett]
+#         [str] -- [default_cfg, eg $HOME/.config/scarlett/config.yaml]
+#     """
 
-    # ----------------------------------------------
-    # DEFAULT CONFIG SETUP - START
-    # ----------------------------------------------
-    # Step 1. loead
-    default_yaml = os.path.join(os.path.abspath(__file__), "default.yaml")
-    default_yaml_in_memory_config = load_config(default_yaml)
-    # Step 2. Check environment variables, if they exist, override them
-    if os.environ.get("SCARLETT_OS_CONFIG_LATITUDE"):
-        default_yaml_in_memory_config["latitude"] = os.environ.get(
-            "SCARLETT_OS_CONFIG_LATITUDE"
-        )
-    if os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE"):
-        default_yaml_in_memory_config["longitude"] = os.environ.get(
-            "SCARLETT_OS_CONFIG_LONGITUDE"
-        )
-    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"):
-        default_yaml_in_memory_config["pocketsphinx"]["hmm"] = os.environ.get(
-            "SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"
-        )
-    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM"):
-        default_yaml_in_memory_config["pocketsphinx"]["lm"] = os.environ.get(
-            "SCARLETT_OS_CONFIG_POCKETSPHINX_LM"
-        )
-    if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"):
-        default_yaml_in_memory_config["pocketsphinx"]["dict"] = os.environ.get(
-            "SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"
-        )
+#     # ----------------------------------------------
+#     # DEFAULT CONFIG SETUP - START
+#     # ----------------------------------------------
+#     # Step 1. loead
+#     default_yaml = os.path.join(os.path.abspath(__file__), "default.yaml")
+#     default_yaml_in_memory_config = load_config(default_yaml)
+#     # Step 2. Check environment variables, if they exist, override them
+#     if os.environ.get("SCARLETT_OS_CONFIG_LATITUDE"):
+#         default_yaml_in_memory_config["latitude"] = os.environ.get(
+#             "SCARLETT_OS_CONFIG_LATITUDE"
+#         )
+#     if os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE"):
+#         default_yaml_in_memory_config["longitude"] = os.environ.get(
+#             "SCARLETT_OS_CONFIG_LONGITUDE"
+#         )
+#     if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"):
+#         default_yaml_in_memory_config["pocketsphinx"]["hmm"] = os.environ.get(
+#             "SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"
+#         )
+#     if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM"):
+#         default_yaml_in_memory_config["pocketsphinx"]["lm"] = os.environ.get(
+#             "SCARLETT_OS_CONFIG_POCKETSPHINX_LM"
+#         )
+#     if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"):
+#         default_yaml_in_memory_config["pocketsphinx"]["dict"] = os.environ.get(
+#             "SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"
+#         )
 
-    # ----------------------------------------------
-    # DEFAULT CONFIG SETUP - END
-    # ----------------------------------------------
+#     # ----------------------------------------------
+#     # DEFAULT CONFIG SETUP - END
+#     # ----------------------------------------------
 
-    # Step 1. Get sub directory path for config
-    if homedir is None:
-        home = get_config_sub_dir_path()
-    else:
-        # override for things like tests
-        home = homedir
+#     # Step 1. Get sub directory path for config
+#     if homedir is None:
+#         home = get_config_sub_dir_path()
+#     else:
+#         # override for things like tests
+#         home = homedir
 
-    # Step 2. ensure sub directory actually exists
-    ensure_config_dir_path(home)
+#     # Step 2. ensure sub directory actually exists
+#     ensure_config_dir_path(home)
 
-    # Step 3. Set location of config.yaml file
-    cfg = os.path.join(home, "config.yaml")
+#     # Step 3. Set location of config.yaml file
+#     cfg = os.path.join(home, "config.yaml")
 
-    # Step 4. check if config file exists, if it doesnt, create a default config
-    if not os.path.exists(cfg):
-        # Write merged config
-        with open(cfg, "wb") as f:
-            yaml.dump(default_yaml_in_memory_config, f)
+#     # Step 4. check if config file exists, if it doesnt, create a default config
+#     if not os.path.exists(cfg):
+#         # Write merged config
+#         with open(cfg, "wb") as f:
+#             yaml.dump(default_yaml_in_memory_config, f)
 
-    # Load the newly merged configure file
-    in_memory_cfg = load_config(cfg)
+#     # Load the newly merged configure file
+#     in_memory_cfg = load_config(cfg)
 
-    return home, cfg, in_memory_cfg
+#     return home, cfg, in_memory_cfg
 
 
 class ConfigManager(object):
@@ -1022,36 +1044,75 @@ class ConfigManager(object):
         os.path.dirname(os.path.abspath(__file__)), "default.yaml"
     )
 
-    def __init__(self):
-        self._config = None
+    def __init__(self, config_path=None):
+        self.cfg = None
+        self._config_path = config_path if config_path else ConfigManager.CONFIG_PATH
+        self._config_path_base = None
+        self._config_path_cache = None
+
+    @property
+    def config_path_base(self):
+        if self._config_path_base is None:
+            self._config_path_base = os.path.dirname(self._config_path)
+        return self._config_path_base
+
+    @config_path_base.setter
+    def config_path_base(self, config_path_base):
+        self._config_path_base = config_path_base
 
     def check_folder_structure(self):
-        mkdir_if_does_not_exist(os.path.dirname(ConfigManager.CONFIG_PATH))
+        mkdir_if_does_not_exist(os.path.dirname(self._config_path))
 
-    def load(self, path_override=None):
+    def load(self):
         self.check_folder_structure()
-        if path_override:
-            self._config = load_config(path_override)
-        else:
-            self._config = load_config(ConfigManager.CONFIG_PATH)
+        self.cfg = load_config(self._config_path)
+        self.check_environment_overrides()
 
     def check_environment_overrides(self):
         if os.environ.get("SCARLETT_OS_CONFIG_LATITUDE"):
-            self._config["latitude"] = os.environ.get("SCARLETT_OS_CONFIG_LATITUDE")
+            self.cfg["latitude"] = os.environ.get("SCARLETT_OS_CONFIG_LATITUDE")
         if os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE"):
-            self._config["longitude"] = os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE")
+            self.cfg["longitude"] = os.environ.get("SCARLETT_OS_CONFIG_LONGITUDE")
         if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"):
-            self._config["pocketsphinx"]["hmm"] = os.environ.get(
+            self.cfg["pocketsphinx"]["hmm"] = os.environ.get(
                 "SCARLETT_OS_CONFIG_POCKETSPHINX_HMM"
             )
         if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_LM"):
-            self._config["pocketsphinx"]["lm"] = os.environ.get(
+            self.cfg["pocketsphinx"]["lm"] = os.environ.get(
                 "SCARLETT_OS_CONFIG_POCKETSPHINX_LM"
             )
         if os.environ.get("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"):
-            self._config["pocketsphinx"]["dict"] = os.environ.get(
+            self.cfg["pocketsphinx"]["dict"] = os.environ.get(
                 "SCARLETT_OS_CONFIG_POCKETSPHINX_DICT"
             )
+        if os.environ.get("SCARLETT_OS_CONFIG_DEVICE"):
+            self.cfg["pocketsphinx"]["device"] = os.environ.get(
+                "SCARLETT_OS_CONFIG_DEVICE"
+            )
+
+    def as_dict(self):
+        """Return the attributes for this object as a dictionary.
+
+        This is equivalent to calling::
+
+            json.loads(obj.as_json())
+
+        :returns: this object's attributes serialized to a dictionary
+        :rtype: dict
+        """
+        return self.cfg
+
+    def as_yaml_str(self):
+        """Return the yaml data for this object.
+
+        This is equivalent to calling::
+
+            json.dumps(obj.as_dict())
+
+        :returns: this object's attributes as a JSON string
+        :rtype: str
+        """
+        return dump_in_memory_config_to_var(self.cfg)
 
     def prep_default_config(self):
         """setup config.yaml defaults."""

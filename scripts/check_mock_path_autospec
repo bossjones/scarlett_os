@@ -1,0 +1,15 @@
+#!/bin/sh
+# Run mock_patch_checker on test suite.
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+for pyfile in $(find `pwd`/tests -name "*.py" -type f -print); do
+	echo $pyfile
+	f=$(basename $pyfile)
+	echo $f
+    echo '[cmd] `pwd`/scripts/contrib/mock_patch_checker.py $pyfile'
+    `pwd`/scripts/contrib/mock_patch_checker.py $pyfile
+done

@@ -18,7 +18,10 @@ from pydbus import SessionBus, connect
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from tests import PROJECT_ROOT
+from tests import PROJECT_ROOT, TEST_LM_DATA, TEST_DIC_DATA, COMMON_MOCKED_CONFIG
+
+from ruamel.yaml import YAML
+import shutil
 
 """ Component test fixtures.
     This module makes the following assumptions:
@@ -99,6 +102,77 @@ def get_environment():
     yield setup_environment()
 
 
+@pytest.fixture(scope="function")
+def fake_temp_data_pocketsphinx_lm(tmpdir_factory):
+    """Create a temporary config file."""
+    lm_data = TEST_LM_DATA
+    # you should start with making a directory
+    # a_dir acts like the object returned from the tmpdir fixture
+    a_dir = tmpdir_factory.mktemp("fake_data_pocketsphinx_lm")
+
+    # base_temp will be the parent dir of 'mydir'
+    # you don't have to use getbasetemp()
+    # using it here just to show that it's available
+    base_temp = tmpdir_factory.getbasetemp()
+    print("base:", base_temp)
+    a_file = a_dir.join("fake.lm")
+    print("file:{}".format(str(a_file)))
+    with a_file.open("wt") as f:
+        f.write(lm_data)
+
+    return a_file
+
+
+@pytest.fixture(scope="function")
+def fake_temp_data_pocketsphinx_dic(tmpdir_factory):
+    """Create a temporary config file."""
+    dic_data = TEST_DIC_DATA
+    # you should start with making a directory
+    # a_dir acts like the object returned from the tmpdir fixture
+    a_dir = tmpdir_factory.mktemp("fake_data_pocketsphinx_dic")
+
+    # base_temp will be the parent dir of 'mydir'
+    # you don't have to use getbasetemp()
+    # using it here just to show that it's available
+    base_temp = tmpdir_factory.getbasetemp()
+    print("base:", base_temp)
+    a_file = a_dir.join("fake.dic")
+    print("file:{}".format(str(a_file)))
+    with a_file.open("wt") as f:
+        f.write(dic_data)
+
+    return a_file
+
+
+@pytest.fixture(scope="function")
+def mocked_config_file_path(
+    fake_temp_data_pocketsphinx_dic, fake_temp_data_pocketsphinx_lm, tmpdir_factory
+):
+    path_to_pocketsphix_dic = os.path.join(
+        str(fake_temp_data_pocketsphinx_dic), "fake.dic"
+    )
+    path_to_pocketsphix_lm = os.path.join(
+        str(fake_temp_data_pocketsphinx_lm), "fake.lm"
+    )
+    # config part
+    base = tempfile.mkdtemp()
+    config_file = os.path.join(base, "config.yaml")
+
+    yaml = YAML()
+
+    m_cfg = yaml.load(COMMON_MOCKED_CONFIG)
+    m_cfg["pocketsphinx"]["dic"] = path_to_pocketsphix_dic
+    m_cfg["pocketsphinx"]["lm"] = path_to_pocketsphix_lm
+
+    with open(config_file, "w", encoding="utf-8") as fp:
+        yaml.dump(m_cfg, fp)
+
+    yield config_file
+
+    shutil.rmtree(base)
+
+
+# TEST_DICT_DATA
 ########################################################################
 # NOTE: unix sockets, abstract ( eg 'unix:abstract=' )
 ########################################################################

@@ -29,15 +29,20 @@ logger = logging.getLogger(__name__)
 # NOTE:
 # enable path to dump dot files
 # this *must* be done before 'import Gst' because it reads the env var on startup. ( Double check if this is still true or not )
-def set_gst_grapviz_tracing(enabled=True):
+def set_gst_grapviz_tracing(enabled=True, path_to_dir=None):
     if enabled:
         # FIXME: If this breaks, you have to use a string explicitly for it to work.
-        os.environ[
-            "GST_DEBUG_DUMP_DOT_DIR"
-        ] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"  # noqa
-        os.putenv(
-            "GST_DEBUG_DUMP_DIR_DIR", "/home/pi/dev/bossjones-github/scarlett_os/_debug"
-        )
+        if path_to_dir:
+            os.environ["GST_DEBUG_DUMP_DOT_DIR"] = path_to_dir  # noqa
+            os.putenv("GST_DEBUG_DUMP_DIR_DIR", path_to_dir)
+        else:
+            os.environ[
+                "GST_DEBUG_DUMP_DOT_DIR"
+            ] = "/home/pi/dev/bossjones-github/scarlett_os/_debug"  # noqa
+            os.putenv(
+                "GST_DEBUG_DUMP_DIR_DIR",
+                "/home/pi/dev/bossjones-github/scarlett_os/_debug",
+            )
     else:
         if os.environ.get("GST_DEBUG_DUMP_DOT_DIR"):
             del os.environ["GST_DEBUG_DUMP_DOT_DIR"]
@@ -210,3 +215,6 @@ def pprint_color(obj):
     from pprint import pformat
 
     print(highlight(pformat(obj), PythonLexer(), Terminal256Formatter()))
+
+
+__all__ = ("pprint_color", "get_pprint", "dump_magic", "dump_color", "dump")

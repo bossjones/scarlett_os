@@ -330,7 +330,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     # __dr = None
     __instance = None
 
-    def __init__(self, name, *args):
+    def __init__(self, name, config_manager, *args):
         threading.Thread.__init__(self)
         _IdleObject.__init__(self)
 
@@ -338,6 +338,30 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         self.finished = False
         self.ready_sem = threading.Semaphore(SEMAPHORE_NUM)
         self.queue = queue.Queue(QUEUE_SIZE)
+
+        # Load in config object, and set default device information
+        self._config_manager = config_manager
+        self._graphviz_debug_dir = self._config_manager.cfg["graphviz_debug_dir"]
+
+        self._device = self._config_manager.cfg["pocketsphinx"]["device"]
+        self._hmm = self._config_manager.cfg["pocketsphinx"]["hmm"]
+        self._lm = self._config_manager.cfg["pocketsphinx"]["lm"]
+        self._dic = self._config_manager.cfg["pocketsphinx"]["dict"]
+        self._fwdflat = bool(self._config_manager.cfg["pocketsphinx"]["fwdflat"])
+        self._bestpath = bool(self._config_manager.cfg["pocketsphinx"]["bestpath"])
+        self._dsratio = int(self._config_manager.cfg["pocketsphinx"]["dsratio"])
+        self._maxhmmpf = int(self._config_manager.cfg["pocketsphinx"]["maxhmmpf"])
+        self._bestpath = bool(self._config_manager.cfg["pocketsphinx"]["bestpath"])
+        self._silprob = float(self._config_manager.cfg["pocketsphinx"]["silprob"])
+        self._wip = float(self._config_manager.cfg["pocketsphinx"]["wip"])
+
+        # dotfile setup
+        self._dotfile_listener = os.path.join(
+            self._graphviz_debug_dir, "generator-listener.dot"
+        )
+        self._pngfile_listener = os.path.join(
+            self._graphviz_debug_dir, "generator-listener-pipeline.png"
+        )
 
         # self._handler = DbusSignalHandler()
 
@@ -492,7 +516,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             # TODO: Add audio levels, see the following
             # SOURCE: http://stackoverflow.com/questions/5686424/detecting-blowing-on-a-microphone-with-gstreamer-or-another-library
             _gst_launch = [
-                "alsasrc device=" + ScarlettListenerI.device,
+                "alsasrc device=" + self.device,
                 # source: https://github.com/walterbender/story/blob/master/grecord.py
                 # without a buffer here, gstreamer struggles at the start of the
                 # recording and then the A/V sync is bad for the whole video
@@ -561,10 +585,13 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     def on_debug_activate(self):
         # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
         # FIXME: STATIC PATH 7/3/2018
-        dotfile = (
-            "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener.dot"
-        )
-        pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener-pipeline.png"  # NOQA
+        # dotfile = (
+        #     "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener.dot"
+        # )
+        # pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-listener-pipeline.png"  # NOQA
+        dotfile = self._dotfile_listener
+        pngfile = self._pngfile_listener
+
         if os.access(dotfile, os.F_OK):
             os.remove(dotfile)
         if os.access(pngfile, os.F_OK):
@@ -664,30 +691,57 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
 
         self.elements_stack.append(appsink)
 
-        # get gst pipeline element pocketsphinx and set properties
+        # ************************************************************
+        # get gst pipeline element pocketsphinx and set properties - BEGIN
+        # ************************************************************
         pocketsphinx = pipeline.get_by_name("asr")
-        if ScarlettListenerI.hmm:
-            pocketsphinx.set_property("hmm", ScarlettListenerI.hmm)
-        if ScarlettListenerI.lm:
-            pocketsphinx.set_property("lm", ScarlettListenerI.lm)
-        if ScarlettListenerI.dic:
-            pocketsphinx.set_property("dict", ScarlettListenerI.dic)
+        if self._hmm:
+            pocketsphinx.set_property("hmm", self._hmm)
+        if self._lm:
+            pocketsphinx.set_property("lm", self._lm)
+        if self._dic:
+            pocketsphinx.set_property("dict", self._dic)
 
-        pocketsphinx.set_property(
-            "fwdflat", True
-        )  # Enable Flat Lexicon Search | Default: true
-        pocketsphinx.set_property(
-            "bestpath", True
-        )  # Enable Graph Search | Boolean. Default: true
-        pocketsphinx.set_property(
-            "dsratio", 1
-        )  # Evaluate acoustic model every N frames |  Integer. Range: 1 - 10 Default: 1
-        pocketsphinx.set_property(
-            "maxhmmpf", 3000
-        )  # Maximum number of HMMs searched per frame | Integer. Range: 1 - 100000 Default: 30000
-        pocketsphinx.set_property(
-            "bestpath", True
-        )  # Enable Graph Search | Boolean. Default: true
+        if self._fwdflat:
+            pocketsphinx.set_property("fwdflat", self._fwdflat)
+
+        if self._bestpath:
+            pocketsphinx.set_property("bestpath", self._bestpath)
+
+        if self._dsratio:
+            pocketsphinx.set_property("dsratio", self._dsratio)
+
+        if self._maxhmmpf:
+            pocketsphinx.set_property("maxhmmpf", self._maxhmmpf)
+
+        if self._bestpath:
+            pocketsphinx.set_property("bestpath", self._bestpath)
+
+        if self._silprob:
+            pocketsphinx.set_property("silprob", self._silprob)
+
+        if self._wip:
+            pocketsphinx.set_property("wip", self._wip)
+        # ************************************************************
+        # get gst pipeline element pocketsphinx and set properties - END
+        # ************************************************************
+
+        # NOTE: Old way of setting pocketsphinx properties. 8/5/2018
+        # pocketsphinx.set_property(
+        #     "fwdflat", True
+        # )  # Enable Flat Lexicon Search | Default: true
+        # pocketsphinx.set_property(
+        #     "bestpath", True
+        # )  # Enable Graph Search | Boolean. Default: true
+        # pocketsphinx.set_property(
+        #     "dsratio", 1
+        # )  # Evaluate acoustic model every N frames |  Integer. Range: 1 - 10 Default: 1
+        # pocketsphinx.set_property(
+        #     "maxhmmpf", 3000
+        # )  # Maximum number of HMMs searched per frame | Integer. Range: 1 - 100000 Default: 30000
+        # pocketsphinx.set_property(
+        #     "bestpath", True
+        # )  # Enable Graph Search | Boolean. Default: true
         # pocketsphinx.set_property('maxwpf', -1)  #
         # pocketsphinx.set_property('maxwpf', 20)  # Maximum number of words
         # searched per frame | Range: 1 - 100000 Default: -1
@@ -941,12 +995,17 @@ class ListenerDemo:
     def add_thread(self):
         # NOTE: if we do this via a gobject connect we need def add_thread(self, sender):
         # make a thread and start it
+
+        # Load in config object, and set default device information
+        config_manager = ConfigManager()
+        config_manager.load()
         name = "Thread #{}".format(random.randint(0, 1000))
         self.manager.make_thread(
             self.thread_finished,  # completedCb
             self.thread_progress,  # progressCb
             ScarlettListenerI,  # threadclass
             name,
+            config_manager,
         )  # args[1] <- verify that this is value is correct
 
     def thread_finished(self, thread):
