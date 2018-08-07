@@ -6,14 +6,32 @@
 latitude: 40.7056308
 longitude: -73.9780034
 
+# pocketsphinx config options source: https://github.com/cmusphinx/pocketsphinx/blob/1fdc9ccb637836d45d40956e745477a2bd3b470a/doc/pocketsphinx_continuous.1
 pocketsphinx:
     hmm: /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
     lm: /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
     dict: /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
+    # Silence word transition probability
     silprob: 0.1
-    wip: 1e-4
-    bestpath: 0
+    # ********************************************************
+    # FIXME: ????? THIS IS THE ORIG VALUE, do we need too set it back? 8/5/2018 # wip: 1e-4
+    # Enable Graph Search | Boolean. Default: true
+    # ********************************************************
+    # Word insertion penalty
+    wip: 0.0001
     device: plughw:CARD=Device,DEV=0
+    # ********************************************************
+    # FIXME: ????? THIS IS THE ORIG VALUE, do we need too set it back? 8/5/2018 # bestpath: 0
+    # Enable Graph Search | Boolean. Default: true
+    # ********************************************************
+    bestpath: True
+    # Enable Flat Lexicon Search | Default: true
+    fwdflat: True
+    # Evaluate acoustic model every N frames |  Integer. Range: 1 - 10 Default: 1
+    dsratio: 1
+    # Maximum number of HMMs searched per frame | Integer. Range: 1 - 100000 Default: 30000
+    maxhmmpf: 3000
+
 
 # Impacts weather/sunrise data
 elevation: 665

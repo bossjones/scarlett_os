@@ -142,40 +142,17 @@ setup(
     download_url=DOWNLOAD_URL,
     packages=["scarlett_os"],
     package_dir={"scarlett_os": "scarlett_os"},
-    #              ,
-    # entry_points={
-    #     'console_scripts': [
-    #         'ss = scarlett_os.__main__:main'
-    #     ]
-    # },
-    # entry_points={
-    #     'console_scripts': [
-    #         'scarlett_os=scarlett_os.cli:main'
-    #     ]
-    # },
-    # source: mapbox-cli-py
     entry_points="""
     [console_scripts]
-    scarlett_os=scarlett_os.scripts.cli:main_group
-
-    [scarlett_os.scarlett_os_commands]
-    config=scarlett_os.scripts.config:config
+    scarlett-cli=scarlett_os.scripts.cli:main_group
     """,
     # geocoding=mapboxcli.scripts.geocoding:geocoding
-    # directions=mapboxcli.scripts.directions:directions
-    # distance=mapboxcli.scripts.distance:distance
-    # mapmatching=mapboxcli.scripts.mapmatching:match
-    # upload=mapboxcli.scripts.uploads:upload
-    # staticmap=mapboxcli.scripts.static:staticmap
-    # surface=mapboxcli.scripts.surface:surface
-    # dataset=mapboxcli.scripts.datasets:datasets
     extras_require={
         "test": requirements_test,
         "experimental": requirements_test_experimental,
         "dev": requirements_dev,
     },
     include_package_data=True,
-    # data_files= [('data/sounds', ['data/sounds/*.wav'])],
     install_requires=requirements,
     license=PROJECT_LICENSE,
     zip_safe=False,

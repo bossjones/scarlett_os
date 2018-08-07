@@ -1053,3 +1053,34 @@ run-black-check:
 .PHONY: run-black
 run-black:
 	black --verbose .
+
+
+.PHONY: reinstall-deps
+reinstall-deps:
+	pip install --force-reinstall -r requirements.txt
+
+.PHONY: install-deps-all
+reinstall-deps-all:
+	pip install --force-reinstall -r requirements.txt; \
+	pip install --force-reinstall -r requirements-dev.txt; \
+
+.PHONY: install-deps-osx
+install-deps-osx:
+	env ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install -r requirements.txt
+
+.PHONY: install-deps-all-osx
+install-deps-all-osx:
+	env ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install -r requirements.txt; \
+	env ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install -r requirements_dev.txt; \
+
+
+
+# NOTE: This assumes that all of your repos live in the same workspace!
+# link_roles:
+# 	# add aliases for dotfiles
+# 	@for file in $(shell find $(CURDIR)/.. -name "*ansible-role*" -type d -print); do \
+# 		echo $$file; \
+# 		f=$$(basename $$file); \
+# 		ln -sfn $$file $(CURDIR)/roles/$f; \
+# 	done; \
+# 	ls -lta $(CURDIR)/roles/; \
