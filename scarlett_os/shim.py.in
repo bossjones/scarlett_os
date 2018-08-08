@@ -32,7 +32,7 @@ def _get_root_dir():
 
 def in_devel():
     """Returns whether the app is run from a git checkout."""
-    return os.environ.get("PITIVI_DEVELOPMENT", "0") != "0"
+    return os.environ.get("SCARLETT_DEVELOPMENT", "0") != "0"
 
 LIBDIR = '@LIBDIR@'
 PKGDATADIR = '@DATADIR@/@PACKAGE@'

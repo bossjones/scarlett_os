@@ -27,7 +27,7 @@ from scarlett_os.const import (
 )
 from scarlett_os.core import valid_entity_id
 from scarlett_os.exceptions import ScarlettError
-from scarlett_os.utility.yaml import load_yaml
+# from scarlett_os.utility.yaml import load_yaml
 import scarlett_os.helpers.config_validation as cv
 from scarlett_os.helpers.entity import set_customize
 from scarlett_os.utility import dt as date_utility, location as loc_utility

@@ -26,9 +26,9 @@ elif PY3:
     import itertools
 
     # python2 uses from itertools import imap, else just imap=map
-    map = (
-        itertools.imap if sys.version_info < (3,) else map
-    )  # pylint: disable=no-member
+    # map = (
+    #     itertools.imap if sys.version_info < (3,) else map
+    # )  # pylint: disable=no-member
 
     import errno
     from os import environ as environ

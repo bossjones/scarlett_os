@@ -346,7 +346,11 @@ class ScarlettPlayer(_IdleObject):
             Gst.debug_bin_to_dot_file(
                 msg.src, Gst.DebugGraphDetails.ALL, "generator-player"
             )
-            os.system("/usr/bin/dot" + " -Tpng -o " + pngfile + " " + dotfile)
+
+            cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
+                pngfile=pngfile, dotfile=dotfile
+            )
+            os.system(cmd)
             print("pipeline dot file created in " + os.getenv("GST_DEBUG_DUMP_DOT_DIR"))
 
     def _listElements(self, bin, level=0):
@@ -372,7 +376,7 @@ class ScarlettPlayer(_IdleObject):
                 pad = iterator.next()
                 if pad[1] is None:
                     break
-                logger.debug("pad: " + str(pad[1]))
+                logger.debug("pad: {}".format(str(pad[1])))
         except AttributeError:
             pass
 
@@ -405,7 +409,10 @@ class ScarlettPlayer(_IdleObject):
         Gst.debug_bin_to_dot_file(
             self.pipeline, Gst.DebugGraphDetails.ALL, "generator-player"
         )
-        os.system("/usr/bin/dot" + " -Tpng -o " + pngfile + " " + dotfile)
+        cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
+            pngfile=pngfile, dotfile=dotfile
+        )
+        os.system(cmd)
 
     # Gstreamer callbacks.
 

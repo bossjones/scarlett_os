@@ -50,7 +50,7 @@ from scarlett_os.utility.gnome import _IdleObject
 from scarlett_os.utility import thread as s_thread
 from scarlett_os import subprocess
 from scarlett_os import player
-from scarlett_os.user import get_user_project_base_path
+from scarlett_os.sounds import STATIC_SOUNDS_PATH
 
 from scarlett_os.common.configure.ruamel_config import ConfigManager
 
@@ -164,6 +164,6 @@ if __name__ == "__main__":
     for scarlett_text in tts_list:
         with s_thread.time_logger("Scarlett Speaks"):
             path_to_espeak_tmp_wav = os.path.join(
-                get_user_project_base_path(), "espeak_tmp.wav"
+                STATIC_SOUNDS_PATH, "espeak_tmp.wav"
             )
             ScarlettSpeaker(text_to_speak=scarlett_text, wavpath=path_to_espeak_tmp_wav)

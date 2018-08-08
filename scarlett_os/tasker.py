@@ -43,7 +43,8 @@ from scarlett_os.internal.path import fname_exists
 
 from scarlett_os.utility.generators import GIdleThread
 
-from scarlett_os.user import get_user_project_base_path
+
+from scarlett_os.sounds import STATIC_SOUNDS_PATH
 
 #######################################
 # FIXME: Temporary, till we figure out best way to approach logging module
@@ -71,8 +72,6 @@ SCARLETT_DEBUG = True
 player_run = False
 command_run = False
 
-STATIC_SOUNDS_PATH = os.path.join(get_user_project_base_path() + "/static", "sounds")
-
 pause_in_seconds = 1
 
 
@@ -91,7 +90,7 @@ class SoundType:
     @staticmethod
     def get_speaker_path():
         path_to_espeak_tmp_wav = os.path.join(
-            get_user_project_base_path(), "espeak_tmp.wav"
+            STATIC_SOUNDS_PATH, "espeak_tmp.wav"
         )
         return [path_to_espeak_tmp_wav]
 
@@ -306,7 +305,7 @@ class ScarlettTasker(_IdleObject):
         self._cancel_signal_callback = player_cb
         self._connect_signal_callback = connected_to_listener_cb
         self._prep_tmp_espeak(
-            wavepath=os.path.join(get_user_project_base_path(), "espeak_tmp.wav")
+            wavepath=os.path.join(STATIC_SOUNDS_PATH, "espeak_tmp.wav")
         )
 
     def configure(self):
