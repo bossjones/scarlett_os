@@ -80,6 +80,8 @@ dbus1_dep = dependency('dbus-1')
 
 # NOTE: Same as pkg-config --variable datadir pocketsphinx
 ps_datadir = ps_dep.get_pkgconfig_variable('datadir')
+gst_libdir = gst_dep.get_pkgconfig_variable('libdir')
+gst_plugin_path = join_paths(gst_libdir, 'gstreamer-1.0')
 
 ps_model_dir = join_paths(ps_datadir, 'model')
 
@@ -126,8 +128,9 @@ geteenvvar = find_program('getenvvar.py')
 cdata = configuration_data()
 cdata.set('CONFIGURED_PYTHONPATH', run_command(geteenvvar, 'PYTHONPATH').stdout().strip())
 cdata.set('CONFIGURED_LD_LIBRARY_PATH', run_command(geteenvvar, 'LD_LIBRARY_PATH').stdout().strip())
-cdata.set('CONFIGURED_GST_PLUGIN_PATH', run_command(geteenvvar, 'GST_PLUGIN_PATH').stdout().strip())
-cdata.set('CONFIGURED_GST_PLUGIN_SYSTEM_PATH', run_command(geteenvvar, 'GST_PLUGIN_SYSTEM_PATH').stdout().strip())
+# cdata.set('CONFIGURED_GST_PLUGIN_PATH', run_command(geteenvvar, 'GST_PLUGIN_PATH').stdout().strip())
+# cdata.set('CONFIGURED_GST_PLUGIN_SYSTEM_PATH', run_command(geteenvvar, 'GST_PLUGIN_SYSTEM_PATH').stdout().strip())
+cdata.set('CONFIGURED_GST_PLUGIN_SYSTEM_PATH', gst_plugin_path)
 cdata.set('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
 cdata.set('DATADIR', join_paths(get_option('prefix'), get_option('datadir')))
 cdata.set('PACKAGE_NAME', 'ScarlettOS')
