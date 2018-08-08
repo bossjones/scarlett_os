@@ -70,7 +70,7 @@ dbus1_dep = dependency('dbus-1')
 #  dependency('gobject-2.0', fallback: ['glib', 'libgobject_dep'])]
 # gio_dep = dependency('gio-2.0', fallback: ['glib', 'libgio_dep'])
 
-pkgconfig = import('pkg-config')
+# pkgconfig = import('pkg-config')
 
 ps_datadir = run_command('pkg-config --variable datadir pocketsphinx')
 
