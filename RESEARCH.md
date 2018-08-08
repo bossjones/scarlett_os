@@ -2338,3 +2338,18 @@ Implementations based on this ^ :
  |2.4.2|    hyenatop in /usr/local/Cellar
 ○ → find . -name "*pkgconfig" -print
 ```
+
+
+# The most basic jhbuildrc( used on vagrant 16.04 instance )
+
+```
+import os
+prefix='/home/pi/jhbuild'
+checkoutroot='/home/pi/gnome'
+moduleset = 'gnome-world'
+interact = False
+makeargs = '-j4'
+os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
+os.environ['PYTHON'] = '/usr/bin/python3'
+os.environ['PROMPT_COMMAND'] = ''
+```

@@ -52,17 +52,36 @@ PKGLIB_DIR = join_paths(get_option('prefix'), get_option('libdir'), PROJECT_RDNN
 
 # Dependencies
 
-python_dep = dependency('python3', version : '>= 3.5')
-gst_dep = dependency('gstreamer-1.0', version : '>= 1.8.2')
+python_dep = dependency('python3')
+gst_dep = dependency('gstreamer-1.0')
 cairo_dep = dependency('cairo')
 pycairo_dep = dependency('py3cairo')
 
-dependency('gobject-introspection-1.0', version: '>= 1.35.0')
-dependency('gtk+-3.0', version: '>= 3.19.3')
-dependency('pygobject-3.0', version: '>= 3.21.1')
-dependency('py3cairo', version: '>= 1.14.0')
-dependency('sphinxbase')
-dependency('pocketsphinx')
+go_dep = dependency('gobject-introspection-1.0')
+# Dependency: What this declaration means is that first Meson tries to look up the dependency from the system (such as by using pkg-config). If it is not available, then it builds subproject named foo and from that extracts a variable foo_dep. That means that the return value of this function is either an external or an internal dependency object. Since they can be used interchangeably, the rest of the build definitions do not need to care which one it is. Meson will take care of all the work behind the scenes to make this work.
+# EXAMPLE: foo_dep = dependency('foo', fallback : ['foo', 'foo_dep'])
+
+gtk3_dep = dependency('gtk+-3.0')
+pygobject_dep = dependency('pygobject-3.0')
+sb_dep = dependency('sphinxbase', method : 'pkg-config')
+ps_dep = dependency('pocketsphinx', method : 'pkg-config')
+dbus1_dep = dependency('dbus-1')
+# glib_deps = [dependency('glib-2.0', version : glib_req, fallback: ['glib', 'libglib_dep']),
+             dependency('gobject-2.0', fallback: ['glib', 'libgobject_dep'])]
+# gio_dep = dependency('gio-2.0', fallback: ['glib', 'libgio_dep'])
+
+pkgconfig = import('pkg-config')
+
+ps_datadir = run_command('pkg-config --variable datadir pocketsphinx')
+
+ps_model_dir = join_paths(ps_datadir.stdout().strip(), 'model')
+
+# total 30536
+# drwxrwxr-x 4 pi pi     4096 Jul  5 23:54 ./
+# drwxrwxr-x 5 pi pi     4096 Jul  5 23:54 ../
+# drwxrwxr-x 3 pi pi     4096 Sep 11  2016 model/
+# -rw-rw-r-- 1 pi pi 31251191 Jul  5 23:54 model.tar.gz
+# drwxrwxr-x 2 pi pi     4096 Oct  1  2016 swig/
 
 # Subproject(): Takes the project specified in the positional argument and brings that
 # in the current build specification by returning a subproject object.
@@ -79,6 +98,18 @@ dependency('pocketsphinx')
 #         'pkgdatadir=' + PKGDATA_DIR,
 #         'pkglibdir=' + PKGLIB_DIR
 #    ])
+
+# Add a way to build all GStreamer as a ScarlettOS Subproject
+if get_option('build-gst')
+    subproject('gst-build', default_options: ['enable_python=true',
+        'disable_gstreamer_sharp=true', 'disable_rtsp_server=true',
+        'gst-devtools:disable_gtkdoc=true',
+        'gst-editing-services:disable_gtkdoc=true',
+        'gst-plugins-base:disable_gtkdoc=true',
+        'gstreamer:disable_gtkdoc=true',
+        ])
+    subproject('gst-transcoder')
+endif
 
 subdir('data')
 
@@ -100,7 +131,7 @@ cdata.set('BUILDDIR', meson.current_build_dir())
 
 scarlett_os_install_dir = get_option('libdir') + '/scarlett_os/python/'
 
-# run_command(python, '-m', 'compileall', meson.current_source_dir() + '/pitivi')
+run_command(python, '-m', 'compileall', meson.current_source_dir() + '/scarlett_os')
 install_subdir('scarlett_os', install_dir: scarlett_os_install_dir)
 
 # SOURCE: pitivi
@@ -113,6 +144,10 @@ install_data(configure_file, install_dir: scarlett_os_install_dir + 'scarlett_os
 
 # FIXME work around to get testsuite working
 run_command('cp', configure_file, meson.current_source_dir() + '/scarlett_os')
+
+# pocketsphinx model
+install_data(ps_model_dir, install_dir: scarlett_os_install_dir + 'scarlett_os')
+run_command('cp', '-a', ps_model_dir, meson.current_source_dir() + '/scarlett_os')
 
 subdir('bin')
 # if not get_option('disable-help')

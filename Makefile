@@ -1084,3 +1084,12 @@ install-deps-all-osx:
 # 		ln -sfn $$file $(CURDIR)/roles/$f; \
 # 	done; \
 # 	ls -lta $(CURDIR)/roles/; \
+
+meson-build:
+	meson mesonbuild/
+
+ninja-install:
+	ninja-build -C mesonbuild/
+
+meson-install: meson-build ninja-install
+

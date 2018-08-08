@@ -1,5 +1,6 @@
 # SOURCE: https://github.com/GNOME/pitivi/blob/0fcc448e098d430f226bc6a2912a3909c2429400/meson_options.txt
 option('disable-help', type : 'boolean', value : false)
+option('build-gst', type : 'boolean', value : false)
 
 # SOURCE: https://github.com/GNOME/gtk/blob/1b62d28cbb561c12f43f08819e1714c8bf068ef7/meson_options.txt
 # GDK backends
