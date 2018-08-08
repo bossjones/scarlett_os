@@ -269,7 +269,7 @@ class TestScarlettTasker(object):
 @pytest.mark.unittest
 class TestSoundType(object):
     def test_soundtype_get_path(self):
-        path_to_sound = "/home/pi/dev/bossjones-github/scarlett_os/data/sounds"
+        path_to_sound = "/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/data/sounds"
         assert tasker.STATIC_SOUNDS_PATH == path_to_sound
         assert type(tasker.SoundType.get_path("pi-cancel")) == list
         assert tasker.SoundType.get_path("pi-cancel") == [
