@@ -130,6 +130,7 @@ cdata.set('CONFIGURED_PYTHONPATH', run_command(geteenvvar, 'PYTHONPATH').stdout(
 cdata.set('CONFIGURED_LD_LIBRARY_PATH', run_command(geteenvvar, 'LD_LIBRARY_PATH').stdout().strip())
 # cdata.set('CONFIGURED_GST_PLUGIN_PATH', run_command(geteenvvar, 'GST_PLUGIN_PATH').stdout().strip())
 # cdata.set('CONFIGURED_GST_PLUGIN_SYSTEM_PATH', run_command(geteenvvar, 'GST_PLUGIN_SYSTEM_PATH').stdout().strip())
+cdata.set('SCARLETT_OS_CONFIG_POCKETSPHINX_HMM', ps_model_dir)
 cdata.set('CONFIGURED_GST_PLUGIN_SYSTEM_PATH', gst_plugin_path)
 cdata.set('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
 cdata.set('DATADIR', join_paths(get_option('prefix'), get_option('datadir')))
@@ -182,11 +183,11 @@ run_command('cp', configure_file, meson.current_source_dir() + '/scarlett_os')
 
 # install_subdir('gstpresets', install_dir: pkgdatadir)
 
-custom_target('pocketsphinx/model',
-    output : 'model',
-    input : ps_model_dir,
-    install : true,
-    install_dir : pkgdatadir)
+# custom_target('pocketsphinx/model',
+#     output : 'model',
+#     input : ps_model_dir,
+#     install : true,
+#     install_dir : pkgdatadir)
 
 subdir('bin')
 # if not get_option('disable-help')
