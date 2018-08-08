@@ -25,7 +25,7 @@ import scarlett_os.exceptions
 from tests.integrationtests.stubs import create_main_loop
 
 from scarlett_os import player
-from scarlett_os.user import get_user_project_base_path
+from scarlett_os.sounds import STATIC_SOUNDS_PATH
 
 import imp
 
@@ -68,7 +68,7 @@ class TestScarlettPlayer(object):
         player_data = []
 
         pi_listening_wav = os.path.join(
-            get_user_project_base_path() + "/static/sounds", "pi-listening.wav"
+            STATIC_SOUNDS_PATH + "/static/sounds", "pi-listening.wav"
         )
         # Run player
         wavefile = [pi_listening_wav]
