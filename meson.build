@@ -14,6 +14,8 @@ project('scarlett-os', ['c'], version: '0.1.0')
 # Imports the given extension module. Returns an opaque object that can be used to call the methods of the module. Here's an example for a hypothetical testmod module.
 gnome = import('gnome')
 python = import('python3')
+py3 = python.find_python()
+py3_dep = dependency('python3', required : false)
 
 # Make sure Python is installed and found
 if not python.find_python().found()
@@ -72,7 +74,8 @@ dbus1_dep = dependency('dbus-1')
 
 # pkgconfig = import('pkg-config')
 
-ps_datadir = run_command('pkg-config --variable datadir pocketsphinx')
+# NOTE: Same as pkg-config --variable datadir pocketsphinx
+ps_datadir = ps_dep.get_pkgconfig_variable('datadir')
 
 ps_model_dir = join_paths(ps_datadir.stdout().strip(), 'model')
 
@@ -128,6 +131,27 @@ cdata.set('PACKAGE', 'scarlett')
 cdata.set('GITVERSION', GITVERSION)
 cdata.set('VERSION', meson.project_version())
 cdata.set('BUILDDIR', meson.current_build_dir())
+
+# FIXME: probably need to set these guys too? 8/7/2018
+# os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
+# os.environ['PYTHON'] = 'python'
+# os.environ['GSTREAMER'] = '1.0'
+# os.environ['ENABLE_PYTHON3'] = 'yes'
+# os.environ['ENABLE_GTK'] = 'yes'
+# os.environ['PYTHON_VERSION'] = '3.5'
+# os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
+# os.environ['MAKEFLAGS'] = '-j4'
+# os.environ['PREFIX'] = '/home/pi/jhbuild'
+# os.environ['JHBUILD'] = '/home/pi/gnome'
+# os.environ['PATH'] = '/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/home/pi/jhbuild/bin:/home/pi/jhbuild/sbin:/home/pi/.pyenv/shims:~/.pyenv/bin/:~/.bin:/home/pi/.local/bin:/home/pi/.rbenv/shims:/home/pi/.rbenv/bin:/home/pi/.nvm/versions/node/v8.7.0/bin:/usr/lib64/ccache:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/pi/.rvm/bin:/home/pi/.go/bin:/home/pi/go/bin'
+# os.environ['LD_LIBRARY_PATH'] = '/home/pi/jhbuild/lib:/usr/lib'
+# os.environ['PYTHONPATH'] = '/home/pi/.pyenv/versions/3.5.2/lib/python3.5/site-packages:/home/pi/jhbuild/lib/python3.5/site-packages:/usr/lib/python3.5/site-packages'
+# os.environ['PKG_CONFIG_PATH'] = '/home/pi/.pyenv/versions/3.5.2/lib/pkgconfig:/home/pi/jhbuild/lib/pkgconfig:/home/pi/jhbuild/share/pkgconfig:/usr/lib/pkgconfig'
+# os.environ['XDG_DATA_DIRS'] = '/home/pi/jhbuild/share:/usr/share'
+# os.environ['XDG_CONFIG_DIRS'] = '/home/pi/jhbuild/etc/xdg'
+# os.environ['CC'] = 'gcc'
+# os.environ['PROJECT_HOME'] = '/home/pi/dev'
+# os.environ['PYTHONSTARTUP'] = '/home/pi/.pythonrc'
 
 scarlett_os_install_dir = get_option('libdir') + '/scarlett_os/python/'
 
