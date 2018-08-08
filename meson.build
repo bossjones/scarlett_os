@@ -16,6 +16,7 @@ gnome = import('gnome')
 python = import('python3')
 py3 = python.find_python()
 py3_dep = dependency('python3', required : false)
+pkg = import('pkgconfig')
 
 # Make sure Python is installed and found
 if not python.find_python().found()
@@ -72,11 +73,10 @@ pygobject_dep = dependency('pygobject-3.0')
 sb_dep = dependency('sphinxbase', method : 'pkg-config')
 ps_dep = dependency('pocketsphinx', method : 'pkg-config')
 dbus1_dep = dependency('dbus-1')
-# glib_deps = [dependency('glib-2.0', version : glib_req, fallback: ['glib', 'libglib_dep']),
-#  dependency('gobject-2.0', fallback: ['glib', 'libgobject_dep'])]
-# gio_dep = dependency('gio-2.0', fallback: ['glib', 'libgio_dep'])
 
-# pkgconfig = import('pkg-config')
+glib_dep = dependency ('glib-2.0', version: '>=2.32', required: true)
+gobject_dep = dependency ('gobject-2.0', required: true)
+gio_dep = dependency ('gio-2.0', required: true)
 
 # NOTE: Same as pkg-config --variable datadir pocketsphinx
 ps_datadir = ps_dep.get_pkgconfig_variable('datadir')
