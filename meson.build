@@ -177,8 +177,16 @@ install_data(configure_file, install_dir: scarlett_os_install_dir + 'scarlett_os
 run_command('cp', configure_file, meson.current_source_dir() + '/scarlett_os')
 
 # pocketsphinx model
-install_data(ps_model_dir, install_dir: scarlett_os_install_dir + 'scarlett_os')
-run_command('cp', '-a', ps_model_dir, meson.current_source_dir() + '/scarlett_os')
+# install_data(ps_model_dir, install_dir: scarlett_os_install_dir + 'scarlett_os')
+# run_command('cp', '-a', ps_model_dir, meson.current_source_dir() + '/scarlett_os')
+
+# install_subdir('gstpresets', install_dir: pkgdatadir)
+
+custom_target('pocketsphinx/model',
+    output : 'model',
+    input : ps_model_dir,
+    install : true,
+    install_dir : pkgdatadir)
 
 subdir('bin')
 # if not get_option('disable-help')
