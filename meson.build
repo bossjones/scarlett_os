@@ -162,7 +162,7 @@ cdata.set('BUILDDIR', meson.current_build_dir())
 
 scarlett_os_install_dir = get_option('libdir') + '/scarlett_os/python/'
 
-run_command(python, '-m', 'compileall', meson.current_source_dir() + '/scarlett_os')
+run_command(py3, '-m', 'compileall', meson.current_source_dir() + '/scarlett_os')
 install_subdir('scarlett_os', install_dir: scarlett_os_install_dir)
 
 # SOURCE: pitivi
