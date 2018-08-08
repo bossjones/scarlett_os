@@ -67,7 +67,7 @@ sb_dep = dependency('sphinxbase', method : 'pkg-config')
 ps_dep = dependency('pocketsphinx', method : 'pkg-config')
 dbus1_dep = dependency('dbus-1')
 # glib_deps = [dependency('glib-2.0', version : glib_req, fallback: ['glib', 'libglib_dep']),
-             dependency('gobject-2.0', fallback: ['glib', 'libgobject_dep'])]
+#  dependency('gobject-2.0', fallback: ['glib', 'libgobject_dep'])]
 # gio_dep = dependency('gio-2.0', fallback: ['glib', 'libgio_dep'])
 
 pkgconfig = import('pkg-config')
