@@ -77,7 +77,7 @@ dbus1_dep = dependency('dbus-1')
 # NOTE: Same as pkg-config --variable datadir pocketsphinx
 ps_datadir = ps_dep.get_pkgconfig_variable('datadir')
 
-ps_model_dir = join_paths(ps_datadir.stdout().strip(), 'model')
+ps_model_dir = join_paths(ps_datadir, 'model')
 
 # total 30536
 # drwxrwxr-x 4 pi pi     4096 Jul  5 23:54 ./
