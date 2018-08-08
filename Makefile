@@ -1088,15 +1088,22 @@ install-deps-all-osx:
 meson-build:
 	meson mesonbuild/
 
-ninja-install:
+ninja-build:
 	ninja-build -C mesonbuild/
+
+ninja-install:
+	ninja-build -C mesonbuild/ install
+
 
 meson-install: meson-build ninja-install
 
 meson-build-uninstalled:
 	meson mesonbuild/ --prefix=$$(pwd)/uninstalled --libdir=lib
 
-ninja-install-uninstalled:
+ninja-build-uninstalled:
 	ninja-build -C mesonbuild/
+
+ninja-install-uninstalled:
+	ninja-build -C mesonbuild/ install
 
 meson-install-uninstalled: meson-build-uninstalled ninja-install-uninstalled
