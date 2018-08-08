@@ -1,7 +1,7 @@
 subdir('icons')
 
-subdir('sounds')
-subdir('speech')
+# subdir('sounds')
+# subdir('speech')
 
 # FIXME: Re-enable these
 # # Validating the desktop file
