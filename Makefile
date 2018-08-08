@@ -1094,7 +1094,7 @@ ninja-install:
 meson-install: meson-build ninja-install
 
 meson-build-uninstalled:
-	meson mesonbuild/ --prefix=./uninstalled --libdir=lib
+	meson mesonbuild/ --prefix=$$(pwd)/uninstalled --libdir=lib
 
 ninja-install-uninstalled:
 	ninja-build -C mesonbuild/
