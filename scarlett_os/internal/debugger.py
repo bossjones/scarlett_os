@@ -127,15 +127,15 @@ def enable_thread_dump_signal(signum=signal.SIGUSR1, dump_file=sys.stderr):
     faulthandler.register(signum, file=dump_file, all_threads=True, chain=True)
 
 
-# def init_debugger():
-#     import sys
+def init_debugger():
+    import sys
 
-#     from IPython.core.debugger import Tracer  # noqa
-#     from IPython.core import ultratb
+    from IPython.core.debugger import Tracer  # noqa
+    from IPython.core import ultratb
 
-#     sys.excepthook = ultratb.FormattedTB(
-#         mode="Verbose", color_scheme="Linux", call_pdb=True, ostream=sys.__stdout__
-#     )
+    sys.excepthook = ultratb.FormattedTB(
+        mode="Verbose", color_scheme="Linux", call_pdb=True, ostream=sys.__stdout__
+    )
 
 
 # http://stackoverflow.com/questions/582056/getting-list-of-parameter-names-inside-python-function
