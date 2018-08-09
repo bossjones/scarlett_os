@@ -67,9 +67,7 @@ class TestScarlettPlayer(object):
 
         player_data = []
 
-        pi_listening_wav = os.path.join(
-            STATIC_SOUNDS_PATH, "pi-listening.wav"
-        )
+        pi_listening_wav = os.path.join(STATIC_SOUNDS_PATH, "pi-listening.wav")
         # Run player
         wavefile = [pi_listening_wav]
         for path in wavefile:

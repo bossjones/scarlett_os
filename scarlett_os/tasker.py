@@ -89,9 +89,7 @@ class SoundType:
 
     @staticmethod
     def get_speaker_path():
-        path_to_espeak_tmp_wav = os.path.join(
-            STATIC_SOUNDS_PATH, "espeak_tmp.wav"
-        )
+        path_to_espeak_tmp_wav = os.path.join(STATIC_SOUNDS_PATH, "espeak_tmp.wav")
         return [path_to_espeak_tmp_wav]
 
 

@@ -1086,6 +1086,26 @@
         },
 
         {
+            "name": "scarlettOS",
+            "buildsystem": "meson",
+            "builddir": true,
+            "config-opts": [
+                "--libdir=lib"
+            ],
+            "build-options": {
+                "build-args": [
+                    "--share=network"
+                ]
+            },
+            "sources": [
+                {
+                    "type": "dir",
+                    "url": "../../"
+                }
+            ]
+        },
+
+        {
         "name": "appdata_and_icons",
         "buildsystem": "simple",
         "build-commands": [
