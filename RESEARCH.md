@@ -2353,3 +2353,268 @@ os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
 os.environ['PYTHON'] = '/usr/bin/python3'
 os.environ['PROMPT_COMMAND'] = ''
 ```
+
+
+# GstPocketSphinx object. dump()
+
+```
+obj.__class__ = <class '__gi__.GstPocketSphinx'>
+obj.__copy__ = <built-in method __copy__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__deepcopy__ = <built-in method __deepcopy__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__delattr__ = <method-wrapper '__delattr__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__dict__ = {}
+obj.__dir__ = <built-in method __dir__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__doc__ = Object GstPocketSphinx
+
+Properties from GstPocketSphinx:
+  hmm -> gchararray: HMM Directory
+    Directory containing acoustic model parameters
+  lm -> gchararray: LM File
+    Language model file
+  lmctl -> gchararray: LM Control File
+    Language model control file (for class LMs)
+  dict -> gchararray: Dictionary File
+    Dictionary File
+  fsg -> gchararray: FSG File
+    Finite state grammar file
+  fwdflat -> gboolean: Flat Lexicon Search
+    Enable Flat Lexicon Search
+  bestpath -> gboolean: Graph Search
+    Enable Graph Search
+  maxhmmpf -> gint: Maximum HMMs per frame
+    Maximum number of HMMs searched per frame
+  maxwpf -> gint: Maximum words per frame
+    Maximum number of words searched per frame
+  beam -> gdouble: Beam width applied to every frame in Viterbi search
+    Beam width applied to every frame in Viterbi search
+  wbeam -> gdouble: Beam width applied to word exits
+    Beam width applied to phone transitions
+  pbeam -> gdouble: Beam width applied to phone transitions
+    Beam width applied to phone transitions
+  dsratio -> gint: Frame downsampling ratio
+    Evaluate acoustic model every N frames
+  latdir -> gchararray: Lattice Directory
+    Output Directory for Lattices
+  lmname -> gchararray: LM Name
+    Language model name (to select LMs from lmctl)
+  decoder -> PSDecoder: Decoder object
+    The underlying decoder
+
+Signals from GstElement:
+  pad-added (GstPad)
+  pad-removed (GstPad)
+  no-more-pads ()
+
+Signals from GstObject:
+  deep-notify (GstObject, GParam)
+
+Properties from GstObject:
+  name -> gchararray: Name
+    The name of the object
+  parent -> GstObject: Parent
+    The parent of the object
+
+Signals from GObject:
+  notify (GParam)
+
+
+obj.__eq__ = <method-wrapper '__eq__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__format__ = <built-in method __format__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__gdoc__ = Object GstPocketSphinx
+
+Properties from GstPocketSphinx:
+  hmm -> gchararray: HMM Directory
+    Directory containing acoustic model parameters
+  lm -> gchararray: LM File
+    Language model file
+  lmctl -> gchararray: LM Control File
+    Language model control file (for class LMs)
+  dict -> gchararray: Dictionary File
+    Dictionary File
+  fsg -> gchararray: FSG File
+    Finite state grammar file
+  fwdflat -> gboolean: Flat Lexicon Search
+    Enable Flat Lexicon Search
+  bestpath -> gboolean: Graph Search
+    Enable Graph Search
+  maxhmmpf -> gint: Maximum HMMs per frame
+    Maximum number of HMMs searched per frame
+  maxwpf -> gint: Maximum words per frame
+    Maximum number of words searched per frame
+  beam -> gdouble: Beam width applied to every frame in Viterbi search
+    Beam width applied to every frame in Viterbi search
+  wbeam -> gdouble: Beam width applied to word exits
+    Beam width applied to phone transitions
+  pbeam -> gdouble: Beam width applied to phone transitions
+    Beam width applied to phone transitions
+  dsratio -> gint: Frame downsampling ratio
+    Evaluate acoustic model every N frames
+  latdir -> gchararray: Lattice Directory
+    Output Directory for Lattices
+  lmname -> gchararray: LM Name
+    Language model name (to select LMs from lmctl)
+  decoder -> PSDecoder: Decoder object
+    The underlying decoder
+
+Signals from GstElement:
+  pad-added (GstPad)
+  pad-removed (GstPad)
+  no-more-pads ()
+
+Signals from GstObject:
+  deep-notify (GstObject, GParam)
+
+Properties from GstObject:
+  name -> gchararray: Name
+    The name of the object
+  parent -> GstObject: Parent
+    The parent of the object
+
+Signals from GObject:
+  notify (GParam)
+
+
+obj.__ge__ = <method-wrapper '__ge__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__getattribute__ = <method-wrapper '__getattribute__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__gpointer__ = <capsule object NULL at 0x7efe63156b70>
+obj.__grefcount__ = 2
+obj.__gsignals__ = {}
+obj.__gt__ = <method-wrapper '__gt__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__gtype__ = <GType GstPocketSphinx (139630796424528)>
+obj.__hash__ = <method-wrapper '__hash__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__info__ = ObjectInfo(Element)
+obj.__init__ = <method-wrapper '__init__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__le__ = <method-wrapper '__le__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__lt__ = <method-wrapper '__lt__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__module__ = __gi__
+obj.__ne__ = <method-wrapper '__ne__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__new__ = <built-in method __new__ of _GObjectMetaBase object at 0x7efe6f92a2a0>
+obj.__reduce__ = <built-in method __reduce__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__reduce_ex__ = <built-in method __reduce_ex__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__repr__ = <method-wrapper '__repr__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__setattr__ = <method-wrapper '__setattr__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__sizeof__ = <built-in method __sizeof__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__str__ = <method-wrapper '__str__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__subclasshook__ = <built-in method __subclasshook__ of GObjectMeta object at 0x7efe5406ca18>
+obj._force_floating = gi.FunctionInfo(force_floating)
+obj._gst_reserved = [0, 0, 0]
+obj._ref = gi.FunctionInfo(ref)
+obj._ref_sink = gi.FunctionInfo(ref_sink)
+obj._unref = gi.FunctionInfo(unref)
+obj._unsupported_data_method = <bound method Object._unsupported_data_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj._unsupported_method = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.abort_state = gi.FunctionInfo(abort_state)
+obj.add_control_binding = gi.FunctionInfo(add_control_binding)
+obj.add_metadata = <bound method add_metadata of <class '__gi__.GstPocketSphinx'>>
+obj.add_pad = gi.FunctionInfo(add_pad)
+obj.add_pad_template = <bound method add_pad_template of <class '__gi__.GstPocketSphinx'>>
+obj.add_static_metadata = <bound method add_static_metadata of <class '__gi__.GstPocketSphinx'>>
+obj.add_static_pad_template = <bound method add_static_pad_template of <class '__gi__.GstPocketSphinx'>>
+obj.base_time = 0
+obj.bind_property = <built-in method bind_property of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.bind_property_full = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.bus = <Gst.Bus object at 0x7efe628dd990 (GstBus at 0x7efe54016970)>
+obj.chain = <built-in method chain of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.change_state = gi.FunctionInfo(change_state)
+obj.check_uniqueness = gi.FunctionInfo(check_uniqueness)
+obj.clock = None
+obj.compat_control = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.connect = <built-in method connect of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.connect_after = <built-in method connect_after of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.connect_data = <bound method Object.connect_data of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.connect_object = <built-in method connect_object of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.connect_object_after = <built-in method connect_object_after of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.contexts = []
+obj.continue_state = gi.FunctionInfo(continue_state)
+obj.control_bindings = []
+obj.control_rate = 100000000
+obj.create_all_pads = gi.FunctionInfo(create_all_pads)
+obj.current_state = <enum GST_STATE_NULL of type Gst.State>
+obj.default_deep_notify = gi.FunctionInfo(default_deep_notify)
+obj.default_error = gi.FunctionInfo(default_error)
+obj.disconnect = <bound method _signalmethod.<locals>.meth of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.disconnect_by_func = <built-in method disconnect_by_func of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.do_change_state = gi.VFuncInfo(change_state)
+obj.do_deep_notify = gi.VFuncInfo(deep_notify)
+obj.do_get_state = gi.VFuncInfo(get_state)
+obj.do_no_more_pads = gi.VFuncInfo(no_more_pads)
+obj.do_pad_added = gi.VFuncInfo(pad_added)
+obj.do_pad_removed = gi.VFuncInfo(pad_removed)
+obj.do_post_message = gi.VFuncInfo(post_message)
+obj.do_provide_clock = gi.VFuncInfo(provide_clock)
+obj.do_query = gi.VFuncInfo(query)
+obj.do_release_pad = gi.VFuncInfo(release_pad)
+obj.do_request_new_pad = gi.VFuncInfo(request_new_pad)
+obj.do_send_event = gi.VFuncInfo(send_event)
+obj.do_set_bus = gi.VFuncInfo(set_bus)
+obj.do_set_clock = gi.VFuncInfo(set_clock)
+obj.do_set_context = gi.VFuncInfo(set_context)
+obj.do_set_state = gi.VFuncInfo(set_state)
+obj.do_state_changed = gi.VFuncInfo(state_changed)
+obj.emit = <built-in method emit of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.emit_stop_by_name = <bound method Object.stop_emission of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.find_property = <bound method find_property of <class '__gi__.GstPocketSphinx'>>
+obj.flags = 0
+obj.force_floating = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.freeze_notify = <bound method Object.freeze_notify of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.g_type_instance = <GObject.TypeInstance object at 0x7efe628de3b8 (void at 0x7efe54010150)>
+obj.get_base_time = gi.FunctionInfo(get_base_time)
+obj.get_bus = gi.FunctionInfo(get_bus)
+obj.get_clock = gi.FunctionInfo(get_clock)
+obj.get_compatible_pad = gi.FunctionInfo(get_compatible_pad)
+obj.get_compatible_pad_template = gi.FunctionInfo(get_compatible_pad_template)
+obj.get_context = gi.FunctionInfo(get_context)
+obj.get_context_unlocked = gi.FunctionInfo(get_context_unlocked)
+obj.get_contexts = gi.FunctionInfo(get_contexts)
+obj.get_control_binding = gi.FunctionInfo(get_control_binding)
+obj.get_control_rate = gi.FunctionInfo(get_control_rate)
+obj.get_data = <bound method Object._unsupported_data_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.get_factory = gi.FunctionInfo(get_factory)
+obj.get_g_value_array = gi.FunctionInfo(get_g_value_array)
+obj.get_metadata = <bound method get_metadata of <class '__gi__.GstPocketSphinx'>>
+obj.get_name = gi.FunctionInfo(get_name)
+obj.get_pad_template = <bound method get_pad_template of <class '__gi__.GstPocketSphinx'>>
+obj.get_pad_template_list = <bound method get_pad_template_list of <class '__gi__.GstPocketSphinx'>>
+obj.get_parent = gi.FunctionInfo(get_parent)
+obj.get_path_string = gi.FunctionInfo(get_path_string)
+obj.get_properties = <built-in method get_properties of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.get_property = <built-in method get_property of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.get_qdata = <bound method Object._unsupported_data_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.get_request_pad = gi.FunctionInfo(get_request_pad)
+obj.get_start_time = gi.FunctionInfo(get_start_time)
+obj.get_state = gi.FunctionInfo(get_state)
+obj.get_static_pad = gi.FunctionInfo(get_static_pad)
+obj.get_value = gi.FunctionInfo(get_value)
+obj.get_value_array = gi.FunctionInfo(get_value_array)
+obj.handler_block = <bound method signal_handler_block of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.handler_block_by_func = <built-in method handler_block_by_func of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.handler_disconnect = <bound method _signalmethod.<locals>.meth of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.handler_is_connected = <bound method _signalmethod.<locals>.meth of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.handler_unblock = <bound method _signalmethod.<locals>.meth of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.handler_unblock_by_func = <built-in method handler_unblock_by_func of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.has_active_control_bindings = gi.FunctionInfo(has_active_control_bindings)
+obj.has_ancestor = gi.FunctionInfo(has_ancestor)
+obj.has_as_ancestor = gi.FunctionInfo(has_as_ancestor)
+obj.has_as_parent = gi.FunctionInfo(has_as_parent)
+obj.install_properties = <bound method install_properties of <class '__gi__.GstPocketSphinx'>>
+obj.install_property = <bound method install_property of <class '__gi__.GstPocketSphinx'>>
+obj.interface_find_property = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.interface_install_property = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.interface_list_properties = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.is_floating = gi.FunctionInfo(is_floating)
+obj.is_locked_state = gi.FunctionInfo(is_locked_state)
+obj.iterate_pads = gi.FunctionInfo(iterate_pads)
+obj.iterate_sink_pads = gi.FunctionInfo(iterate_sink_pads)
+obj.iterate_src_pads = gi.FunctionInfo(iterate_src_pads)
+obj.last_return = <enum GST_STATE_CHANGE_SUCCESS of type Gst.StateChangeReturn>
+obj.last_sync = 18446744073709551615
+obj.link = gi.FunctionInfo(link)
+obj.link_filtered = gi.FunctionInfo(link_filtered)
+obj.link_pads = gi.FunctionInfo(link_pads)
+obj.link_pads_filtered = gi.FunctionInfo(link_pads_filtered)
+obj.link_pads_full = gi.FunctionInfo(link_pads_full)
+obj.list_properties = <bound method list_properties of <class '__gi__.GstPocketSphinx'>>
+2018-08-08 23:43:47,099 scarlett_os.utility.gnome (Thread #748) ERROR    (wrapper) Exception Thrown from [/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/internal/debugger.py] on line [162] via function [dump]
+2018-08-08 23:43:47,099 scarlett_os.utility.gnome (Thread #748) ERROR    (wrapper) Exception type NotImplementedError: getting an union is not supported yet
+emit ('aborted', (<class 'NotImplementedError'>, NotImplementedError('getting an union is not supported yet',), <traceback object at 0x7efe628df3c8>))
+```

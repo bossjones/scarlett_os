@@ -58,6 +58,7 @@ from scarlett_os.internal.path import fname_exists
 from scarlett_os.internal.path import touch_empty_file
 
 from scarlett_os.common.configure.ruamel_config import ConfigManager
+from scarlett_os.internal.debugger import dump
 
 # from scarlett_os.logger import setup_logger
 #
@@ -104,7 +105,9 @@ def get_loop_thread():
 class MainLoopThread(threading.Thread):
     """A daemon thread encapsulating a Gobject main loop.
 
-    A mainloop is used by all asynchronous objects to defer handlers and callbacks to. The function run() blocks until the function quit() has been called (and all queued handlers have been executed). The run() function will then execute all the handlers in order.
+    A mainloop is used by all asynchronous objects to defer handlers and callbacks to.
+    The function run() blocks until the function quit() has been called (and all queued handlers have been executed).
+    The run() function will then execute all the handlers in order.
     """
 
     def __init__(self):
@@ -300,7 +303,9 @@ class ScarlettPlayer(_IdleObject):
         #         return
 
         self.pipeline.set_state(Gst.State.PLAYING)
-        self.on_debug_activate()
+        # 8/8/2018 (Only enable this if we turn on debug mode)
+        if os.environ.get("SCARLETT_DEBUG_MODE"):
+            self.on_debug_activate()
         self.ready_sem.acquire()
 
         if self.read_exc:
@@ -316,45 +321,45 @@ class ScarlettPlayer(_IdleObject):
         logger.debug("Source object: ({})".format(source))
 
     def _on_state_changed(self, bus, msg):
-        states = msg.parse_state_changed()
-        # To state is PLAYING
-        if msg.src.get_name() == "pipeline" and states[1] == 4:
-            # NOTE: For right now, lets not try to write anything 8/8/2018
-            pass
-            # TODO: Modify the creation of this path, it should be programatically created
-            # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
-            # FIXME: STATIC PATH 7/3/2018
-            # dotfile = (
-            #     "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
-            # )
-            # pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
+        # states = msg.parse_state_changed()
+        # # To state is PLAYING
+        # if msg.src.get_name() == "pipeline" and states[1] == 4:
+        #     # NOTE: For right now, lets not try to write anything 8/8/2018
+        #     # TODO: Modify the creation of this path, it should be programatically created
+        #     # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+        #     # FIXME: STATIC PATH 7/3/2018
+        #     dotfile = (
+        #         "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
+        #     )
+        #     pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
 
-            # parent_dir = get_parent_dir(dotfile)
+        #     parent_dir = get_parent_dir(dotfile)
 
-            # mkdir_if_does_not_exist(parent_dir)
+        #     mkdir_if_does_not_exist(parent_dir)
 
-            # if os.access(dotfile, os.F_OK):
-            #     os.remove(dotfile)
-            # if os.access(pngfile, os.F_OK):
-            #     os.remove(pngfile)
+        #     if os.access(dotfile, os.F_OK):
+        #         os.remove(dotfile)
+        #     if os.access(pngfile, os.F_OK):
+        #         os.remove(pngfile)
 
-            # if not fname_exists(dotfile):
-            #     touch_empty_file(dotfile)
+        #     if not fname_exists(dotfile):
+        #         touch_empty_file(dotfile)
 
-            # if not fname_exists(pngfile):
-            #     touch_empty_file(pngfile)
+        #     if not fname_exists(pngfile):
+        #         touch_empty_file(pngfile)
 
-            # # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
-            # # FIXME: STATIC PATH 7/3/2018
-            # Gst.debug_bin_to_dot_file(
-            #     msg.src, Gst.DebugGraphDetails.ALL, "generator-player"
-            # )
+        #     # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+        #     # FIXME: STATIC PATH 7/3/2018
+        #     Gst.debug_bin_to_dot_file(
+        #         msg.src, Gst.DebugGraphDetails.ALL, "generator-player"
+        #     )
 
-            # cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
-            #     pngfile=pngfile, dotfile=dotfile
-            # )
-            # os.system(cmd)
-            # print("pipeline dot file created in " + os.getenv("GST_DEBUG_DUMP_DOT_DIR"))
+        #     cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
+        #         pngfile=pngfile, dotfile=dotfile
+        #     )
+        #     os.system(cmd)
+        #     print("pipeline dot file created in " + os.getenv("GST_DEBUG_DUMP_DOT_DIR"))
+        pass
 
     def _listElements(self, bin, level=0):
         try:
@@ -387,35 +392,36 @@ class ScarlettPlayer(_IdleObject):
     # then finally generates a png file, which it then displays
     def on_debug_activate(self):
         # FIXME: STATIC PATH 7/3/2018
-        dotfile = (
-            "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
-        )
-        pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
+        # dotfile = (
+        #     "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
+        # )
+        # pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
 
-        parent_dir = get_parent_dir(dotfile)
+        # parent_dir = get_parent_dir(dotfile)
 
-        mkdir_if_does_not_exist(parent_dir)
+        # mkdir_if_does_not_exist(parent_dir)
 
-        if os.access(dotfile, os.F_OK):
-            os.remove(dotfile)
-        if os.access(pngfile, os.F_OK):
-            os.remove(pngfile)
+        # if os.access(dotfile, os.F_OK):
+        #     os.remove(dotfile)
+        # if os.access(pngfile, os.F_OK):
+        #     os.remove(pngfile)
 
-        if not fname_exists(dotfile):
-            touch_empty_file(dotfile)
+        # if not fname_exists(dotfile):
+        #     touch_empty_file(dotfile)
 
-        if not fname_exists(pngfile):
-            touch_empty_file(pngfile)
+        # if not fname_exists(pngfile):
+        #     touch_empty_file(pngfile)
 
-        # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
-        # FIXME: STATIC PATH 7/3/2018
-        Gst.debug_bin_to_dot_file(
-            self.pipeline, Gst.DebugGraphDetails.ALL, "generator-player"
-        )
-        cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
-            pngfile=pngfile, dotfile=dotfile
-        )
-        os.system(cmd)
+        # # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+        # # FIXME: STATIC PATH 7/3/2018
+        # Gst.debug_bin_to_dot_file(
+        #     self.pipeline, Gst.DebugGraphDetails.ALL, "generator-player"
+        # )
+        # cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
+        #     pngfile=pngfile, dotfile=dotfile
+        # )
+        # os.system(cmd)
+        pass
 
     # Gstreamer callbacks.
 
@@ -566,6 +572,10 @@ class ScarlettPlayer(_IdleObject):
             #     File "/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/player.py", line 531, in close
             #       self.pipeline
             # AttributeError: 'ScarlettPlayer' object has no attribute 'pipeline'
+            print("[2018-debugging]: dump(self)  - BEGIN")
+            print(self)
+            # dump(self)
+            print("[2018-debugging]: dump(self)  - END")
             self.pipeline.get_bus().remove_signal_watch()
 
             # Stop reading the file.

@@ -460,7 +460,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         ret = p.set_state(Gst.State.PLAYING)
         if ret == Gst.StateChangeReturn.FAILURE:
             logger.error("ERROR: Unable to set the pipeline to the playing state")
-        self.on_debug_activate()
+
+        # 8/8/2018 (Only enable this if we turn on debug mode)
+        if os.environ.get("SCARLETT_DEBUG_MODE"):
+            self.on_debug_activate()
+
         logger.debug("BEFORE: self.ready_sem.acquire()")
         self.ready_sem.acquire()
         logger.debug("AFTER: self.ready_sem.acquire()")
@@ -597,8 +601,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if os.access(pngfile, os.F_OK):
             os.remove(pngfile)
 
-        # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
-        # FIXME: STATIC PATH 7/3/2018
         Gst.debug_bin_to_dot_file(
             self.pipelines_stack[0], Gst.DebugGraphDetails.ALL, "generator-listener"
         )
@@ -695,6 +697,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         # get gst pipeline element pocketsphinx and set properties - BEGIN
         # ************************************************************
         pocketsphinx = pipeline.get_by_name("asr")
+        # from scarlett_os.internal.debugger import dump
+        # print("debug-2018-pocketsphinx - BEGIN")
+        # dump(pocketsphinx)
+        # print("debug-2018-pocketsphinx - END")
+        # print(pocketsphinx.list_properties())
         if self._hmm:
             pocketsphinx.set_property("hmm", self._hmm)
         if self._lm:
@@ -717,11 +724,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if self._bestpath:
             pocketsphinx.set_property("bestpath", self._bestpath)
 
-        if self._silprob:
-            pocketsphinx.set_property("silprob", self._silprob)
+        # if self._silprob:
+        #     pocketsphinx.set_property("silprob", self._silprob)
 
-        if self._wip:
-            pocketsphinx.set_property("wip", self._wip)
+        # if self._wip:
+        #     pocketsphinx.set_property("wip", self._wip)
         # ************************************************************
         # get gst pipeline element pocketsphinx and set properties - END
         # ************************************************************

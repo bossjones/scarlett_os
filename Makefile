@@ -912,6 +912,10 @@ run-pylint-error:
 jhbuild-run-pylint-error:
 	jhbuild run -- pylint -E scarlett_os
 
+.PHONY: jhbuild-install
+jhbuild-install:
+	jhbuild run python setup.py install
+
 .PHONY: jhbuild-run-pylint-warning-stacktrace
 jhbuild-run-pylint-warning-stacktrace:
 	jhbuild run -- python -W error -m pylint -E scarlett_os
