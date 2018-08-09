@@ -353,7 +353,7 @@ def print_keyword_args(**kwargs):
 
 
 def print_args(args):  # pragma: no cover
-    for i, v in enumerate(args):
+    for _, v in enumerate(args):
         print("another arg through *arg : {}".format(v))
 
 
@@ -570,6 +570,12 @@ if __name__ == "__main__":
 
         enable_remote_debugging()
 
+    if os.environ.get("SCARLETT_PROFILE_MODE"):
+        import cProfile
+
+        pr = cProfile.Profile()
+        pr.enable()
+
     from scarlett_os.logger import setup_logger
 
     setup_logger()
@@ -627,9 +633,17 @@ if __name__ == "__main__":
             logger.warning("Remove this while testing manually")
             logger.warning("***********************************************")
             st.reset()
+
+            if os.environ.get("SCARLETT_PROFILE_MODE"):
+                pr.disable()
+                pr.print_stats(sort='time')
             pass
         except:
             raise
     else:
         # Close into a ipython debug shell
         loop.run()
+
+        if os.environ.get("SCARLETT_PROFILE_MODE"):
+            pr.disable()
+            pr.print_stats(sort='time')

@@ -2618,3 +2618,175 @@ obj.list_properties = <bound method list_properties of <class '__gi__.GstPocketS
 2018-08-08 23:43:47,099 scarlett_os.utility.gnome (Thread #748) ERROR    (wrapper) Exception type NotImplementedError: getting an union is not supported yet
 emit ('aborted', (<class 'NotImplementedError'>, NotImplementedError('getting an union is not supported yet',), <traceback object at 0x7efe628df3c8>))
 ```
+
+# pocketsphinx_continuous
+
+```
+
+/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/listener.py:202: PyGIDeprecationWarning: GObject.MainLoop is deprecated; use GLib.MainLoop instead
+  self.__loop = GObject.MainLoop()
+Running <ScarlettListenerI(Thread #276, started 140638293059328)>
+Current configuration:
+[NAME]                  [DEFLT]         [VALUE]
+-agc                    none            none
+-agcthresh              2.0             2.000000e+00
+-allphone
+-allphone_ci            no              no
+-alpha                  0.97            9.700000e-01
+-ascale                 20.0            2.000000e+01
+-aw                     1               1
+-backtrace              no              no
+-beam                   1e-48           1.000000e-48
+-bestpath               yes             yes
+-bestpathlw             9.5             9.500000e+00
+-ceplen                 13              13
+-cmn                    current         current
+-cmninit                8.0             40,3,-1
+-compallsen             no              no
+-debug                                  0
+-dict                                   /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
+-dictcase               no              no
+-dither                 no              no
+-doublebw               no              no
+-ds                     1               1
+-fdict
+-feat                   1s_c_d_dd       1s_c_d_dd
+-featparams
+-fillprob               1e-8            1.000000e-08
+-frate                  100             100
+-fsg
+-fsgusealtpron          yes             yes
+-fsgusefiller           yes             yes
+-fwdflat                yes             yes
+-fwdflatbeam            1e-64           1.000000e-64
+-fwdflatefwid           4               4
+-fwdflatlw              8.5             8.500000e+00
+-fwdflatsfwin           25              25
+-fwdflatwbeam           7e-29           7.000000e-29
+-fwdtree                yes             yes
+-hmm                                    /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+-input_endian           little          little
+-jsgf
+-keyphrase
+-kws
+-kws_delay              10              10
+-kws_plp                1e-1            1.000000e-01
+-kws_threshold          1               1.000000e+00
+-latsize                5000            5000
+-lda
+-ldadim                 0               0
+-lifter                 0               22
+-lm                                     /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
+-lmctl
+-lmname
+-logbase                1.0001          1.000100e+00
+-logfn
+-logspec                no              no
+-lowerf                 133.33334       1.300000e+02
+-lpbeam                 1e-40           1.000000e-40
+-lponlybeam             7e-29           7.000000e-29
+-lw                     6.5             6.500000e+00
+-maxhmmpf               30000           3000
+-maxwpf                 -1              -1
+-mdef
+-mean
+-mfclogdir
+-min_endfr              0               0
+-mixw
+-mixwfloor              0.0000001       1.000000e-07
+-mllr
+-mmap                   yes             yes
+-ncep                   13              13
+-nfft                   512             512
+-nfilt                  40              25
+-nwpen                  1.0             1.000000e+00
+-pbeam                  1e-48           1.000000e-48
+-pip                    1.0             1.000000e+00
+-pl_beam                1e-10           1.000000e-10
+-pl_pbeam               1e-10           1.000000e-10
+-pl_pip                 1.0             1.000000e+00
+-pl_weight              3.0             3.000000e+00
+-pl_window              5               5
+-rawlogdir
+-remove_dc              no              no
+-remove_noise           yes             yes
+-remove_silence         yes             yes
+-round_filters          yes             yes
+-samprate               16000           1.600000e+04
+-seed                   -1              -1
+-sendump
+-senlogdir
+-senmgau
+-silprob                0.005           5.000000e-03
+-smoothspec             no              no
+-svspec                                 0-12/13-25/26-38
+-tmat
+-tmatfloor              0.0001          1.000000e-04
+-topn                   4               4
+-topn_beam              0               0
+-toprule
+-transform              legacy          dct
+-unit_area              yes             yes
+-upperf                 6855.4976       6.800000e+03
+-uw                     1.0             1.000000e+00
+-vad_postspeech         50              50
+-vad_prespeech          20              20
+-vad_startspeech        10              10
+-vad_threshold          2.0             2.000000e+00
+-var
+-varfloor               0.0001          1.000000e-04
+-varnorm                no              no
+-verbose                no              no
+-warp_params
+-warp_type              inverse_linear  inverse_linear
+-wbeam                  7e-29           7.000000e-29
+-wip                    0.65            6.500000e-01
+-wlen                   0.025625        2.562500e-02
+
+```
+
+# Pocketsphinx how do I make it fast
+
+```
+How do I make it fast?
+
+The default settings are not enough to achieve sub-realtime performance on most tasks. Here are some command-line flags you should experiment with:
+
+-beam: Beam width applied to every frame in Viterbi search (smaller values mean wider beam)"
+
+-pbeam: Beam width applied to phone transitions
+
+-wbeam: Beam width applied to word exits
+
+Main parameters to configure search width and thus accuracy-performance balance.
+
+-ds
+
+This is the dsratio. In most cases -ds 2 gives the best performance, though accuracy suffers a bit. (Frame GMM computation downsampling ratio) Thus lower should be better and higher should be less accurate.
+
+-topn
+
+The default value is 4, the fastest value is 2, but accuracy can suffer a bit depending on your acoustic model.
+
+-lpbeam
+
+This beam is quite important for performance, however the default setting is pretty narrow already. Run pocketsphinx_batch with no arguments to see what it is.
+
+-lponlybeam
+
+Likewise here as with -lpbeam. If you are finding it hard to get enough accuracy, you can widen these beams.
+
+-maxwpf
+
+This can be set quite low and still give you reasonable performance - try 5.
+
+-maxhmmpf
+
+Depending on the acoustic and language model this can be very helpful. Try 3000.
+
+-pl_window
+
+Phonetic lookahead is a specific technique which is used to speedup decoding by reducing the amount of computation. Basically everything is decoded with phonetic decoder first and then detailed search is restricted by the results of the fast phonetic search. It’s also called “Fast match”. For details and evaluations see the chapter “4.5 Phonetic Fast Match” in Efficient Algorithms for Speech Recognition Mosur K. Ravishankar
+
+pl_window specifies lookahead distance in frames. Typical values are from 0 (don’t use lookahead) to 10 (decode 10 frames ahead). Bigger values give faster decoding but reduced accuracy.
+```

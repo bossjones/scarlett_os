@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Execute lint to spot code mistakes.
+
+cd "$(dirname "$0")/.."
+
+make jhbuild-profile-mpris > mpris.prof.log 2>&1 &
+sleep 3
+
+make jhbuild-profile-tasker > tasker.prof.log 2>&1 &
+sleep 2
+
+make jhbuild-profile-listener > listener.prof.log 2>&1 &
+sleep 3

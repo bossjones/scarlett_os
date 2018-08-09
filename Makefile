@@ -900,7 +900,17 @@ makelint-install:
 # 	@echo 'git commit -a -m "Released $(RELEASE) via make release"'
 # 	@echo 'git tag --force v$(VERSION)'
 # 	@echo 'git push --tags origin master'
+.PHONY: jhbuild-profile-tasker
+jhbuild-profile-tasker:
+	jhbuild run python -m cProfile -s cumulative scarlett_os/tasker.py
 
+.PHONY: jhbuild-profile-mpris
+jhbuild-profile-mpris:
+	jhbuild run python -m cProfile -s cumulative scarlett_os/mpris.py
+
+.PHONY: jhbuild-profile-listener
+jhbuild-profile-listener:
+	jhbuild run python -m cProfile -s cumulative scarlett_os/listener.py
 
 # NOTE: You can also run pylint with warnings turned into errors using python -W error -m pylint … to get a traceback for the warnings.
 # SOURCE: https://github.com/neomake/neomake/issues/1828#issuecomment-377901357

@@ -429,3 +429,9 @@ VOLUME = "volume"  # type: str
 TEMPERATURE = "temperature"  # type: str
 SPEED_MS = "speed_ms"  # type: str
 ILLUMINANCE = "illuminance"  # type: str
+
+
+# PyGObject
+#  If the function returns False it is automatically removed from the list of event sources and will not be called again.
+G_REMOVE_EVENT = False
+G_CALLBACK_STOP = False

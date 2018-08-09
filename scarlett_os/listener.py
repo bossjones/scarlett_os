@@ -158,6 +158,11 @@ SCARLETT_LISTENER_I_SIGNALS = {
 }
 
 
+# from pocketsphinx.pocketsphinx import *
+# from sphinxbase.sphinxbase import *
+# config = Decoder.default_config()
+# config.set_float("-vad_threshold", 3.0)
+
 #################################################################
 # Managing the Gobject main loop thread.
 #################################################################
@@ -329,6 +334,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
 
     # __dr = None
     __instance = None
+
+    MAX_FAILURES = 10
 
     def __init__(self, name, config_manager, *args):
         threading.Thread.__init__(self)
@@ -625,6 +632,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             failed_temp = self.failed + 1
             self.failed = failed_temp
             logger.debug("self.failed = {}".format(int(self.failed)))
+            # failed > 10
             if self.failed > 4:
                 # reset pipline
                 self.dbus_proxy.emitSttFailedSignal()  # CHANGEME
@@ -699,7 +707,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         pocketsphinx = pipeline.get_by_name("asr")
         # from scarlett_os.internal.debugger import dump
         # print("debug-2018-pocketsphinx - BEGIN")
-        # dump(pocketsphinx)
+        # dump(pocketsphinx.get_property('decoder'))
         # print("debug-2018-pocketsphinx - END")
         # print(pocketsphinx.list_properties())
         if self._hmm:
@@ -866,6 +874,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             # IMPORTANT!!!!!
             # NOTE: I think this is causing a deadlock
             self.queue.put(buf.extract_dup(0, buf.get_size()))
+        # "OK = 0. Data passing was ok.""
         return Gst.FlowReturn.OK
 
     def _on_message(self, bus, message):
@@ -888,8 +897,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                     self.read_exc = NoStreamError()
                     self.ready_sem.release()
             elif struct and struct.get_name() == "pocketsphinx":
+                # "final", G_TYPE_BOOLEAN, final,
+                # SOURCE: https://github.com/cmusphinx/pocketsphinx/blob/1fdc9ccb637836d45d40956e745477a2bd3b470a/src/gst-plugin/gstpocketsphinx.c
                 if struct["final"]:
-                    logger.info(struct["hypothesis"])
+                    logger.info("confidence: {}".format(struct["confidence"]))
+                    logger.info("hypothesis: {}".format(struct["hypothesis"]))
                     if self.kw_found == 1:
                         # If keyword is set AND qualifier
                         # then perform action
