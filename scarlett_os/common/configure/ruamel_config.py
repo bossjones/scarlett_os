@@ -1089,19 +1089,21 @@ class ConfigManager(object):
     def prep_default_config(self):
         """setup config.yaml defaults."""
 
+        self._config_path = ConfigManager.CONFIG_PATH
+
         # Step 1. ensure sub directory actually exists
         self.check_folder_structure()
 
         # Step 2. check if config file exists, if it doesnt, create a default config
-        if not os.path.exists(ConfigManager.CONFIG_PATH):
+        if not os.path.exists(self._config_path):
             # Step 2a. Load default
             default_config = load_config(ConfigManager.DEFAULT_CONFIG)
 
-            save_config(default_config, ConfigManager.CONFIG_PATH)
+            save_config(default_config, self._config_path)
 
             print(
                 "Default config is set, please don't forget to update your github tokens, webhook tokens, and jenkins configurations appropiately! Location = {}".format(
-                    ConfigManager.CONFIG_PATH
+                    self._config_path
                 )
             )
 

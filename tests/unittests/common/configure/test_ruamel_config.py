@@ -340,3 +340,21 @@ class TestConfigManager(object):
         )
 
         shutil.rmtree(base)
+
+    def test_config_manager_prep_default_config(self, monkeypatch):
+        base = tempfile.mkdtemp()
+        config_file = os.path.join(base, "config.yaml")
+
+        monkeypatch.setattr(ruamel_config.ConfigManager, "DEFAULT_CONFIG", config_file)
+
+
+        config_manager = ruamel_config.ConfigManager(config_file)
+        config_manager.prep_default_config()
+
+        config_manager.load()
+
+        # Don't need to check all the values, if this is true, the rest are as well.
+        assert config_manager.cfg["latitude"] == 40.7056308
+
+
+        shutil.rmtree(base)
