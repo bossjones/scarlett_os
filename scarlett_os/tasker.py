@@ -437,12 +437,13 @@ def call_speaker(command_run_results):
             # source: https://wiki.gnome.org/Projects/PyGObject/Threading
             # PyGObject: uses yield True to pass control to the main loop in regular intervals.
             yield True
+            # NOTE: This is where we keep breaking intgr tests
             print("scarlett_text in tts_list")
             print("[scarlett_text]: {}".format(scarlett_text))
             print("type[scarlett_text]: {}".format(type(scarlett_text)))
             _wavepath = SoundType.get_speaker_path()[0]
             p = player.ScarlettPlayer(_wavepath, False, False)
-            logger.error("Duration: p.duration: {}".format(p.duration))
+            print("Duration: p.duration: {}".format(p.duration))
             while True:
                 try:
                     yield next(p)
