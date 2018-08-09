@@ -134,6 +134,7 @@ class ScarlettPlayer(_IdleObject):
         self.callback = callback
         # self.delay_start = False if delay_start is None else delay_start
         # self.stopme = threading.Event()
+        self._lock = threading.Lock()
 
         # Set up the Gstreamer pipeline.
         # NOTE: Need to add .new for some reason to pass tests ...
@@ -318,40 +319,42 @@ class ScarlettPlayer(_IdleObject):
         states = msg.parse_state_changed()
         # To state is PLAYING
         if msg.src.get_name() == "pipeline" and states[1] == 4:
+            # NOTE: For right now, lets not try to write anything 8/8/2018
+            pass
             # TODO: Modify the creation of this path, it should be programatically created
             # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
             # FIXME: STATIC PATH 7/3/2018
-            dotfile = (
-                "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
-            )
-            pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
+            # dotfile = (
+            #     "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player.dot"
+            # )
+            # pngfile = "/home/pi/dev/bossjones-github/scarlett_os/_debug/generator-player-pipeline.png"  # NOQA
 
-            parent_dir = get_parent_dir(dotfile)
+            # parent_dir = get_parent_dir(dotfile)
 
-            mkdir_if_does_not_exist(parent_dir)
+            # mkdir_if_does_not_exist(parent_dir)
 
-            if os.access(dotfile, os.F_OK):
-                os.remove(dotfile)
-            if os.access(pngfile, os.F_OK):
-                os.remove(pngfile)
+            # if os.access(dotfile, os.F_OK):
+            #     os.remove(dotfile)
+            # if os.access(pngfile, os.F_OK):
+            #     os.remove(pngfile)
 
-            if not fname_exists(dotfile):
-                touch_empty_file(dotfile)
+            # if not fname_exists(dotfile):
+            #     touch_empty_file(dotfile)
 
-            if not fname_exists(pngfile):
-                touch_empty_file(pngfile)
+            # if not fname_exists(pngfile):
+            #     touch_empty_file(pngfile)
 
-            # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
-            # FIXME: STATIC PATH 7/3/2018
-            Gst.debug_bin_to_dot_file(
-                msg.src, Gst.DebugGraphDetails.ALL, "generator-player"
-            )
+            # # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
+            # # FIXME: STATIC PATH 7/3/2018
+            # Gst.debug_bin_to_dot_file(
+            #     msg.src, Gst.DebugGraphDetails.ALL, "generator-player"
+            # )
 
-            cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
-                pngfile=pngfile, dotfile=dotfile
-            )
-            os.system(cmd)
-            print("pipeline dot file created in " + os.getenv("GST_DEBUG_DUMP_DOT_DIR"))
+            # cmd = "/usr/bin/dot -Tpng -o {pngfile} {dotfile}".format(
+            #     pngfile=pngfile, dotfile=dotfile
+            # )
+            # os.system(cmd)
+            # print("pipeline dot file created in " + os.getenv("GST_DEBUG_DUMP_DOT_DIR"))
 
     def _listElements(self, bin, level=0):
         try:
