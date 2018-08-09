@@ -510,6 +510,7 @@ def on_signal_recieved(*args, **kwargs):
         # 2. Perform command
         print("args[4]")
         print(args[4])
+        # FIXME: Here, maybe we should have a retry like 5 times before we decided to finally bail out 8/9/2018
         command_run_results = commands.Command.check_cmd(command_tuple=args[4])
         logger.debug("[command_run_results]: {}".format(command_run_results))
 
@@ -520,6 +521,17 @@ def on_signal_recieved(*args, **kwargs):
 
         # 4. Espeak gst plugin doesn't work, write sound to wav file
         call_espeak_subprocess(command_run_results)
+
+        # NOTE: Example of why we always get None back from Subprocess (8/9/2018)
+        # payload: ('  ScarlettListener caught a command match', 'pi-response', 'GO')
+        # 2018-08-09 00:04:35,890 scarlett_os.commands (MainThread) INFO     (check_cmd) Valid command_tuple: ('  ScarlettListener caught a command match', 'pi-response', 'GO')
+        # 2018-08-09 00:04:35,890 __main__     (MainThread) DEBUG    (on_signal_recieved) [command_run_results]: None
+        # 2018-08-09 00:04:35,890 __main__     (MainThread) INFO     (call_espeak_subprocess) Running in call_espeak_subprocess
+        # cmd: ['espeak', '-p75', '-s175', '-g1', '-w', '/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/data/sounds/espeak_tmp.wav', '-ven+f3', '.   None   .']
+        # 2018-08-09 00:04:35,892 scarlett_os.subprocess (MainThread) DEBUG    (check_command_type) Running Command: 'espeak -p75 -s175 -g1 -w /home/pi/dev/bossjones-github/scarlett_os/scar
+        # lett_os/data/sounds/espeak_tmp.wav -ven+f3 .   None   .'
+        # 2018-08-09 00:04:35,892 scarlett_os.subprocess (MainThread) DEBUG    (__init__) command: ['espeak', '-p75', '-s175', '-g1', '-w', '/home/pi/dev/bossjones-github/scarlett_os/scarle
+        # tt_os/data/sounds/espeak_tmp.wav', '-ven+f3', '.   None   .']
 
         # # 4. Scarlett Speaks
         # tts_list = SpeakerType.speaker_to_array(command_run_results)

@@ -306,6 +306,7 @@ class ScarlettPlayer(_IdleObject):
         # 8/8/2018 (Only enable this if we turn on debug mode)
         if os.environ.get("SCARLETT_DEBUG_MODE"):
             self.on_debug_activate()
+
         self.ready_sem.acquire()
 
         if self.read_exc:
