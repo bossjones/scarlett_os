@@ -13,7 +13,7 @@ click-plugins==1.0.3
 click==6.7
 colorlog==3.1.4
 configobj==5.0.6          # via ruamel.yaml.cmd
-cryptography==2.2.2       # via paramiko
+cryptography==2.3.1       # via paramiko
 fabric3==1.14.post1
 idna==2.7                 # via cryptography, requests
 jinja2==2.10
