@@ -1121,3 +1121,10 @@ ninja-install-uninstalled:
 	ninja-build -C mesonbuild/ install
 
 meson-install-uninstalled: meson-build-uninstalled ninja-install-uninstalled
+
+# Since we don't want to write to homebrew system python directly, create a virtualenv them add modules in via symlinks
+# MUST MATCH SAME VERSION!
+pyenv-virtualenv37:
+	virtualenv -p /usr/local/bin/python3 --system-site-packages ~/.pyenv/versions/system37
+
+# ~/.pyenv/versions/system37/lib/python3.7/site-packages
