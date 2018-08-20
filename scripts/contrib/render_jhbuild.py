@@ -337,6 +337,7 @@ os.environ['XDG_CONFIG_DIRS'] = '{XDG_CONFIG_DIRS}'
 os.environ['CC'] = 'gcc'
 os.environ['PROJECT_HOME'] = '{PROJECT_HOME}'
 os.environ['PYTHONSTARTUP'] = '{PYTHONSTARTUP}'
+os.environ['GI_TYPELIB_PATH'] = '{PREFIX}/lib/girepository-1.0'
 """
 
 
@@ -544,6 +545,13 @@ def compile_one(package_to_build):
         _rendered_command = pkg_dict[package_to_build]["compile-commands"].format(
             PREFIX=PREFIX
         )
+        _popen_stdout(_rendered_command, cwd=path_to_folder)
+
+def clean_one(package_to_build):
+    pkg_dict = get_package_dict(package_to_build)
+    path_to_folder = os.path.join(CHECKOUTROOT, pkg_dict[package_to_build]["folder"])
+    with cd(path_to_folder):
+        _rendered_command = "jhbuild make clean"
         _popen_stdout(_rendered_command, cwd=path_to_folder)
 
 
