@@ -248,7 +248,7 @@ cpython["name"] = "cpython"
 # cpython["cleanup"] = ["*"]
 cpython["sources"] = cpython_sources
 cpython["post-install"] = [
-    "ls -lta `pwd`"
+    "ls -lta `pwd`",
     "/app/bin/python3 -m pip install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} pip setuptools wheel"
 ]
 cpython["build-options"] = {
