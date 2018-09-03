@@ -24,8 +24,14 @@ def get_sys_module():
 
     return sys
 
+def get_distutils_module():
+    import distutils
+
+    return distutils
+
 
 def get_distutils_sysconfig_function_get_python_lib():
+    distutils = get_distutils_module()
     from distutils.sysconfig import get_python_lib
 
     return get_python_lib
