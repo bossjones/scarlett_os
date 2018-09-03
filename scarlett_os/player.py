@@ -577,6 +577,14 @@ class ScarlettPlayer(_IdleObject):
             print(self)
             # dump(self)
             print("[2018-debugging]: dump(self)  - END")
+            # FIXME: 9/2/2018 -
+            # We might need to unref our bus object. Calling too many times seems to cause problems.
+            # Hi, I got an error while calling audio_open() several times(with .mp3 files). Looks like it is due to accumulated refs of bus objects in GstAudioFile. I gave it a monkey patch and apparently it seems fine. However, since my files are not gst-encoded, I'm not sure whether this would cause any problem with actual gst decoding tasks.
+            # In my case, I inserted following lines in GstAudioFile.close():
+            # bus = self.pipeline.get_bus()
+            # bus.unref()
+            # bus.remove_signal_watch()
+            # SOURCE: https://github.com/beetbox/audioread/issues/28 ( khlukekim on Jan 28, 2016 )
             self.pipeline.get_bus().remove_signal_watch()
 
             # Stop reading the file.

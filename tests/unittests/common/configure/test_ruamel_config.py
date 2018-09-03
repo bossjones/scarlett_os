@@ -345,7 +345,7 @@ class TestConfigManager(object):
         base = tempfile.mkdtemp()
         config_file = os.path.join(base, "config.yaml")
 
-        monkeypatch.setattr(ruamel_config.ConfigManager, "DEFAULT_CONFIG", config_file)
+        monkeypatch.setattr(ruamel_config.ConfigManager, "CONFIG_PATH", config_file)
 
 
         config_manager = ruamel_config.ConfigManager(config_file)
