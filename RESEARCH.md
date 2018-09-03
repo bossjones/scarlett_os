@@ -2353,3 +2353,440 @@ os.environ['CFLAGS'] = '-fPIC -O0 -ggdb -fno-inline -fno-omit-frame-pointer'
 os.environ['PYTHON'] = '/usr/bin/python3'
 os.environ['PROMPT_COMMAND'] = ''
 ```
+
+
+# GstPocketSphinx object. dump()
+
+```
+obj.__class__ = <class '__gi__.GstPocketSphinx'>
+obj.__copy__ = <built-in method __copy__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__deepcopy__ = <built-in method __deepcopy__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__delattr__ = <method-wrapper '__delattr__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__dict__ = {}
+obj.__dir__ = <built-in method __dir__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__doc__ = Object GstPocketSphinx
+
+Properties from GstPocketSphinx:
+  hmm -> gchararray: HMM Directory
+    Directory containing acoustic model parameters
+  lm -> gchararray: LM File
+    Language model file
+  lmctl -> gchararray: LM Control File
+    Language model control file (for class LMs)
+  dict -> gchararray: Dictionary File
+    Dictionary File
+  fsg -> gchararray: FSG File
+    Finite state grammar file
+  fwdflat -> gboolean: Flat Lexicon Search
+    Enable Flat Lexicon Search
+  bestpath -> gboolean: Graph Search
+    Enable Graph Search
+  maxhmmpf -> gint: Maximum HMMs per frame
+    Maximum number of HMMs searched per frame
+  maxwpf -> gint: Maximum words per frame
+    Maximum number of words searched per frame
+  beam -> gdouble: Beam width applied to every frame in Viterbi search
+    Beam width applied to every frame in Viterbi search
+  wbeam -> gdouble: Beam width applied to word exits
+    Beam width applied to phone transitions
+  pbeam -> gdouble: Beam width applied to phone transitions
+    Beam width applied to phone transitions
+  dsratio -> gint: Frame downsampling ratio
+    Evaluate acoustic model every N frames
+  latdir -> gchararray: Lattice Directory
+    Output Directory for Lattices
+  lmname -> gchararray: LM Name
+    Language model name (to select LMs from lmctl)
+  decoder -> PSDecoder: Decoder object
+    The underlying decoder
+
+Signals from GstElement:
+  pad-added (GstPad)
+  pad-removed (GstPad)
+  no-more-pads ()
+
+Signals from GstObject:
+  deep-notify (GstObject, GParam)
+
+Properties from GstObject:
+  name -> gchararray: Name
+    The name of the object
+  parent -> GstObject: Parent
+    The parent of the object
+
+Signals from GObject:
+  notify (GParam)
+
+
+obj.__eq__ = <method-wrapper '__eq__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__format__ = <built-in method __format__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__gdoc__ = Object GstPocketSphinx
+
+Properties from GstPocketSphinx:
+  hmm -> gchararray: HMM Directory
+    Directory containing acoustic model parameters
+  lm -> gchararray: LM File
+    Language model file
+  lmctl -> gchararray: LM Control File
+    Language model control file (for class LMs)
+  dict -> gchararray: Dictionary File
+    Dictionary File
+  fsg -> gchararray: FSG File
+    Finite state grammar file
+  fwdflat -> gboolean: Flat Lexicon Search
+    Enable Flat Lexicon Search
+  bestpath -> gboolean: Graph Search
+    Enable Graph Search
+  maxhmmpf -> gint: Maximum HMMs per frame
+    Maximum number of HMMs searched per frame
+  maxwpf -> gint: Maximum words per frame
+    Maximum number of words searched per frame
+  beam -> gdouble: Beam width applied to every frame in Viterbi search
+    Beam width applied to every frame in Viterbi search
+  wbeam -> gdouble: Beam width applied to word exits
+    Beam width applied to phone transitions
+  pbeam -> gdouble: Beam width applied to phone transitions
+    Beam width applied to phone transitions
+  dsratio -> gint: Frame downsampling ratio
+    Evaluate acoustic model every N frames
+  latdir -> gchararray: Lattice Directory
+    Output Directory for Lattices
+  lmname -> gchararray: LM Name
+    Language model name (to select LMs from lmctl)
+  decoder -> PSDecoder: Decoder object
+    The underlying decoder
+
+Signals from GstElement:
+  pad-added (GstPad)
+  pad-removed (GstPad)
+  no-more-pads ()
+
+Signals from GstObject:
+  deep-notify (GstObject, GParam)
+
+Properties from GstObject:
+  name -> gchararray: Name
+    The name of the object
+  parent -> GstObject: Parent
+    The parent of the object
+
+Signals from GObject:
+  notify (GParam)
+
+
+obj.__ge__ = <method-wrapper '__ge__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__getattribute__ = <method-wrapper '__getattribute__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__gpointer__ = <capsule object NULL at 0x7efe63156b70>
+obj.__grefcount__ = 2
+obj.__gsignals__ = {}
+obj.__gt__ = <method-wrapper '__gt__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__gtype__ = <GType GstPocketSphinx (139630796424528)>
+obj.__hash__ = <method-wrapper '__hash__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__info__ = ObjectInfo(Element)
+obj.__init__ = <method-wrapper '__init__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__le__ = <method-wrapper '__le__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__lt__ = <method-wrapper '__lt__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__module__ = __gi__
+obj.__ne__ = <method-wrapper '__ne__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__new__ = <built-in method __new__ of _GObjectMetaBase object at 0x7efe6f92a2a0>
+obj.__reduce__ = <built-in method __reduce__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__reduce_ex__ = <built-in method __reduce_ex__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__repr__ = <method-wrapper '__repr__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__setattr__ = <method-wrapper '__setattr__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__sizeof__ = <built-in method __sizeof__ of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__str__ = <method-wrapper '__str__' of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.__subclasshook__ = <built-in method __subclasshook__ of GObjectMeta object at 0x7efe5406ca18>
+obj._force_floating = gi.FunctionInfo(force_floating)
+obj._gst_reserved = [0, 0, 0]
+obj._ref = gi.FunctionInfo(ref)
+obj._ref_sink = gi.FunctionInfo(ref_sink)
+obj._unref = gi.FunctionInfo(unref)
+obj._unsupported_data_method = <bound method Object._unsupported_data_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj._unsupported_method = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.abort_state = gi.FunctionInfo(abort_state)
+obj.add_control_binding = gi.FunctionInfo(add_control_binding)
+obj.add_metadata = <bound method add_metadata of <class '__gi__.GstPocketSphinx'>>
+obj.add_pad = gi.FunctionInfo(add_pad)
+obj.add_pad_template = <bound method add_pad_template of <class '__gi__.GstPocketSphinx'>>
+obj.add_static_metadata = <bound method add_static_metadata of <class '__gi__.GstPocketSphinx'>>
+obj.add_static_pad_template = <bound method add_static_pad_template of <class '__gi__.GstPocketSphinx'>>
+obj.base_time = 0
+obj.bind_property = <built-in method bind_property of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.bind_property_full = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.bus = <Gst.Bus object at 0x7efe628dd990 (GstBus at 0x7efe54016970)>
+obj.chain = <built-in method chain of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.change_state = gi.FunctionInfo(change_state)
+obj.check_uniqueness = gi.FunctionInfo(check_uniqueness)
+obj.clock = None
+obj.compat_control = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.connect = <built-in method connect of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.connect_after = <built-in method connect_after of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.connect_data = <bound method Object.connect_data of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.connect_object = <built-in method connect_object of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.connect_object_after = <built-in method connect_object_after of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.contexts = []
+obj.continue_state = gi.FunctionInfo(continue_state)
+obj.control_bindings = []
+obj.control_rate = 100000000
+obj.create_all_pads = gi.FunctionInfo(create_all_pads)
+obj.current_state = <enum GST_STATE_NULL of type Gst.State>
+obj.default_deep_notify = gi.FunctionInfo(default_deep_notify)
+obj.default_error = gi.FunctionInfo(default_error)
+obj.disconnect = <bound method _signalmethod.<locals>.meth of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.disconnect_by_func = <built-in method disconnect_by_func of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.do_change_state = gi.VFuncInfo(change_state)
+obj.do_deep_notify = gi.VFuncInfo(deep_notify)
+obj.do_get_state = gi.VFuncInfo(get_state)
+obj.do_no_more_pads = gi.VFuncInfo(no_more_pads)
+obj.do_pad_added = gi.VFuncInfo(pad_added)
+obj.do_pad_removed = gi.VFuncInfo(pad_removed)
+obj.do_post_message = gi.VFuncInfo(post_message)
+obj.do_provide_clock = gi.VFuncInfo(provide_clock)
+obj.do_query = gi.VFuncInfo(query)
+obj.do_release_pad = gi.VFuncInfo(release_pad)
+obj.do_request_new_pad = gi.VFuncInfo(request_new_pad)
+obj.do_send_event = gi.VFuncInfo(send_event)
+obj.do_set_bus = gi.VFuncInfo(set_bus)
+obj.do_set_clock = gi.VFuncInfo(set_clock)
+obj.do_set_context = gi.VFuncInfo(set_context)
+obj.do_set_state = gi.VFuncInfo(set_state)
+obj.do_state_changed = gi.VFuncInfo(state_changed)
+obj.emit = <built-in method emit of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.emit_stop_by_name = <bound method Object.stop_emission of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.find_property = <bound method find_property of <class '__gi__.GstPocketSphinx'>>
+obj.flags = 0
+obj.force_floating = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.freeze_notify = <bound method Object.freeze_notify of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.g_type_instance = <GObject.TypeInstance object at 0x7efe628de3b8 (void at 0x7efe54010150)>
+obj.get_base_time = gi.FunctionInfo(get_base_time)
+obj.get_bus = gi.FunctionInfo(get_bus)
+obj.get_clock = gi.FunctionInfo(get_clock)
+obj.get_compatible_pad = gi.FunctionInfo(get_compatible_pad)
+obj.get_compatible_pad_template = gi.FunctionInfo(get_compatible_pad_template)
+obj.get_context = gi.FunctionInfo(get_context)
+obj.get_context_unlocked = gi.FunctionInfo(get_context_unlocked)
+obj.get_contexts = gi.FunctionInfo(get_contexts)
+obj.get_control_binding = gi.FunctionInfo(get_control_binding)
+obj.get_control_rate = gi.FunctionInfo(get_control_rate)
+obj.get_data = <bound method Object._unsupported_data_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.get_factory = gi.FunctionInfo(get_factory)
+obj.get_g_value_array = gi.FunctionInfo(get_g_value_array)
+obj.get_metadata = <bound method get_metadata of <class '__gi__.GstPocketSphinx'>>
+obj.get_name = gi.FunctionInfo(get_name)
+obj.get_pad_template = <bound method get_pad_template of <class '__gi__.GstPocketSphinx'>>
+obj.get_pad_template_list = <bound method get_pad_template_list of <class '__gi__.GstPocketSphinx'>>
+obj.get_parent = gi.FunctionInfo(get_parent)
+obj.get_path_string = gi.FunctionInfo(get_path_string)
+obj.get_properties = <built-in method get_properties of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.get_property = <built-in method get_property of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.get_qdata = <bound method Object._unsupported_data_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.get_request_pad = gi.FunctionInfo(get_request_pad)
+obj.get_start_time = gi.FunctionInfo(get_start_time)
+obj.get_state = gi.FunctionInfo(get_state)
+obj.get_static_pad = gi.FunctionInfo(get_static_pad)
+obj.get_value = gi.FunctionInfo(get_value)
+obj.get_value_array = gi.FunctionInfo(get_value_array)
+obj.handler_block = <bound method signal_handler_block of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.handler_block_by_func = <built-in method handler_block_by_func of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.handler_disconnect = <bound method _signalmethod.<locals>.meth of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.handler_is_connected = <bound method _signalmethod.<locals>.meth of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.handler_unblock = <bound method _signalmethod.<locals>.meth of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.handler_unblock_by_func = <built-in method handler_unblock_by_func of GstPocketSphinx object at 0x7efe628dd8b8>
+obj.has_active_control_bindings = gi.FunctionInfo(has_active_control_bindings)
+obj.has_ancestor = gi.FunctionInfo(has_ancestor)
+obj.has_as_ancestor = gi.FunctionInfo(has_as_ancestor)
+obj.has_as_parent = gi.FunctionInfo(has_as_parent)
+obj.install_properties = <bound method install_properties of <class '__gi__.GstPocketSphinx'>>
+obj.install_property = <bound method install_property of <class '__gi__.GstPocketSphinx'>>
+obj.interface_find_property = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.interface_install_property = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.interface_list_properties = <bound method Object._unsupported_method of <__gi__.GstPocketSphinx object at 0x7efe628dd8b8 (GstPocketSphinx at 0x7efe54010150)>>
+obj.is_floating = gi.FunctionInfo(is_floating)
+obj.is_locked_state = gi.FunctionInfo(is_locked_state)
+obj.iterate_pads = gi.FunctionInfo(iterate_pads)
+obj.iterate_sink_pads = gi.FunctionInfo(iterate_sink_pads)
+obj.iterate_src_pads = gi.FunctionInfo(iterate_src_pads)
+obj.last_return = <enum GST_STATE_CHANGE_SUCCESS of type Gst.StateChangeReturn>
+obj.last_sync = 18446744073709551615
+obj.link = gi.FunctionInfo(link)
+obj.link_filtered = gi.FunctionInfo(link_filtered)
+obj.link_pads = gi.FunctionInfo(link_pads)
+obj.link_pads_filtered = gi.FunctionInfo(link_pads_filtered)
+obj.link_pads_full = gi.FunctionInfo(link_pads_full)
+obj.list_properties = <bound method list_properties of <class '__gi__.GstPocketSphinx'>>
+2018-08-08 23:43:47,099 scarlett_os.utility.gnome (Thread #748) ERROR    (wrapper) Exception Thrown from [/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/internal/debugger.py] on line [162] via function [dump]
+2018-08-08 23:43:47,099 scarlett_os.utility.gnome (Thread #748) ERROR    (wrapper) Exception type NotImplementedError: getting an union is not supported yet
+emit ('aborted', (<class 'NotImplementedError'>, NotImplementedError('getting an union is not supported yet',), <traceback object at 0x7efe628df3c8>))
+```
+
+# pocketsphinx_continuous
+
+```
+
+/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/listener.py:202: PyGIDeprecationWarning: GObject.MainLoop is deprecated; use GLib.MainLoop instead
+  self.__loop = GObject.MainLoop()
+Running <ScarlettListenerI(Thread #276, started 140638293059328)>
+Current configuration:
+[NAME]                  [DEFLT]         [VALUE]
+-agc                    none            none
+-agcthresh              2.0             2.000000e+00
+-allphone
+-allphone_ci            no              no
+-alpha                  0.97            9.700000e-01
+-ascale                 20.0            2.000000e+01
+-aw                     1               1
+-backtrace              no              no
+-beam                   1e-48           1.000000e-48
+-bestpath               yes             yes
+-bestpathlw             9.5             9.500000e+00
+-ceplen                 13              13
+-cmn                    current         current
+-cmninit                8.0             40,3,-1
+-compallsen             no              no
+-debug                                  0
+-dict                                   /home/pi/dev/bossjones-github/scarlett_os/static/speech/dict/1473.dic
+-dictcase               no              no
+-dither                 no              no
+-doublebw               no              no
+-ds                     1               1
+-fdict
+-feat                   1s_c_d_dd       1s_c_d_dd
+-featparams
+-fillprob               1e-8            1.000000e-08
+-frate                  100             100
+-fsg
+-fsgusealtpron          yes             yes
+-fsgusefiller           yes             yes
+-fwdflat                yes             yes
+-fwdflatbeam            1e-64           1.000000e-64
+-fwdflatefwid           4               4
+-fwdflatlw              8.5             8.500000e+00
+-fwdflatsfwin           25              25
+-fwdflatwbeam           7e-29           7.000000e-29
+-fwdtree                yes             yes
+-hmm                                    /home/pi/.virtualenvs/scarlett_os/share/pocketsphinx/model/en-us/en-us
+-input_endian           little          little
+-jsgf
+-keyphrase
+-kws
+-kws_delay              10              10
+-kws_plp                1e-1            1.000000e-01
+-kws_threshold          1               1.000000e+00
+-latsize                5000            5000
+-lda
+-ldadim                 0               0
+-lifter                 0               22
+-lm                                     /home/pi/dev/bossjones-github/scarlett_os/static/speech/lm/1473.lm
+-lmctl
+-lmname
+-logbase                1.0001          1.000100e+00
+-logfn
+-logspec                no              no
+-lowerf                 133.33334       1.300000e+02
+-lpbeam                 1e-40           1.000000e-40
+-lponlybeam             7e-29           7.000000e-29
+-lw                     6.5             6.500000e+00
+-maxhmmpf               30000           3000
+-maxwpf                 -1              -1
+-mdef
+-mean
+-mfclogdir
+-min_endfr              0               0
+-mixw
+-mixwfloor              0.0000001       1.000000e-07
+-mllr
+-mmap                   yes             yes
+-ncep                   13              13
+-nfft                   512             512
+-nfilt                  40              25
+-nwpen                  1.0             1.000000e+00
+-pbeam                  1e-48           1.000000e-48
+-pip                    1.0             1.000000e+00
+-pl_beam                1e-10           1.000000e-10
+-pl_pbeam               1e-10           1.000000e-10
+-pl_pip                 1.0             1.000000e+00
+-pl_weight              3.0             3.000000e+00
+-pl_window              5               5
+-rawlogdir
+-remove_dc              no              no
+-remove_noise           yes             yes
+-remove_silence         yes             yes
+-round_filters          yes             yes
+-samprate               16000           1.600000e+04
+-seed                   -1              -1
+-sendump
+-senlogdir
+-senmgau
+-silprob                0.005           5.000000e-03
+-smoothspec             no              no
+-svspec                                 0-12/13-25/26-38
+-tmat
+-tmatfloor              0.0001          1.000000e-04
+-topn                   4               4
+-topn_beam              0               0
+-toprule
+-transform              legacy          dct
+-unit_area              yes             yes
+-upperf                 6855.4976       6.800000e+03
+-uw                     1.0             1.000000e+00
+-vad_postspeech         50              50
+-vad_prespeech          20              20
+-vad_startspeech        10              10
+-vad_threshold          2.0             2.000000e+00
+-var
+-varfloor               0.0001          1.000000e-04
+-varnorm                no              no
+-verbose                no              no
+-warp_params
+-warp_type              inverse_linear  inverse_linear
+-wbeam                  7e-29           7.000000e-29
+-wip                    0.65            6.500000e-01
+-wlen                   0.025625        2.562500e-02
+
+```
+
+# Pocketsphinx how do I make it fast
+
+```
+How do I make it fast?
+
+The default settings are not enough to achieve sub-realtime performance on most tasks. Here are some command-line flags you should experiment with:
+
+-beam: Beam width applied to every frame in Viterbi search (smaller values mean wider beam)"
+
+-pbeam: Beam width applied to phone transitions
+
+-wbeam: Beam width applied to word exits
+
+Main parameters to configure search width and thus accuracy-performance balance.
+
+-ds
+
+This is the dsratio. In most cases -ds 2 gives the best performance, though accuracy suffers a bit. (Frame GMM computation downsampling ratio) Thus lower should be better and higher should be less accurate.
+
+-topn
+
+The default value is 4, the fastest value is 2, but accuracy can suffer a bit depending on your acoustic model.
+
+-lpbeam
+
+This beam is quite important for performance, however the default setting is pretty narrow already. Run pocketsphinx_batch with no arguments to see what it is.
+
+-lponlybeam
+
+Likewise here as with -lpbeam. If you are finding it hard to get enough accuracy, you can widen these beams.
+
+-maxwpf
+
+This can be set quite low and still give you reasonable performance - try 5.
+
+-maxhmmpf
+
+Depending on the acoustic and language model this can be very helpful. Try 3000.
+
+-pl_window
+
+Phonetic lookahead is a specific technique which is used to speedup decoding by reducing the amount of computation. Basically everything is decoded with phonetic decoder first and then detailed search is restricted by the results of the fast phonetic search. It’s also called “Fast match”. For details and evaluations see the chapter “4.5 Phonetic Fast Match” in Efficient Algorithms for Speech Recognition Mosur K. Ravishankar
+
+pl_window specifies lookahead distance in frames. Typical values are from 0 (don’t use lookahead) to 10 (decode 10 frames ahead). Bigger values give faster decoding but reduced accuracy.
+```

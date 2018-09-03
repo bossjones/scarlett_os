@@ -24,9 +24,10 @@ import sys
 import contextlib
 import time
 
-from scarlett_os.internal.debugger import init_debugger
+if os.environ.get("SCARLETT_DEBUG_MODE"):
+    from scarlett_os.internal.debugger import init_debugger
 
-init_debugger()
+    init_debugger()
 
 import signal
 import threading

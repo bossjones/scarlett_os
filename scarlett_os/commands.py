@@ -134,6 +134,7 @@ FORECAST_CMDS = {
 }
 
 NO_OP = "__SCARLETT_NO_OP__"
+RETRY_OP = "__SCARLETT_RETRY_OP__"
 
 ######################################################################################################################
 # NOTE: In the future time will be its own plugin class etc, for now we're just going to add arbitrary functions here:
@@ -176,12 +177,14 @@ class Command(object):
                     command, SPOTIFY_CMDS[command]
                 )
             )
+            return "spotify command"
         elif command in LIGHT_CMDS.keys():
             logger.debug(
                 "** received {}, sending 'light {}'".format(
                     command, LIGHT_CMDS[command]
                 )
             )
+            return "light command"
         elif command in TIME_CMDS.keys():
             logger.debug(
                 "** received {}, sending 'time {}'".format(command, TIME_CMDS[command])
@@ -194,15 +197,25 @@ class Command(object):
                     command, GENERAL_CMDS[command]
                 )
             )
+            return "general command"
         elif command in FORECAST_CMDS.keys():
             logger.debug(
                 "** received {}, sending 'forecast command: {}'".format(
                     command, FORECAST_CMDS[command]
                 )
             )
+            return "forecast command"
         elif command in TV_CMDS.keys():
             logger.debug(
                 "** received {}, sending 'tv command: {}'".format(
                     command, TV_CMDS[command]
                 )
             )
+            return "tv command"
+        else:
+            logger.debug(
+                "** received '{}', doesn't match anything, lets retry".format(
+                    command
+                )
+            )
+            return RETRY_OP

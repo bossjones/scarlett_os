@@ -900,7 +900,17 @@ makelint-install:
 # 	@echo 'git commit -a -m "Released $(RELEASE) via make release"'
 # 	@echo 'git tag --force v$(VERSION)'
 # 	@echo 'git push --tags origin master'
+.PHONY: jhbuild-profile-tasker
+jhbuild-profile-tasker:
+	jhbuild run python -m cProfile -s cumulative scarlett_os/tasker.py
 
+.PHONY: jhbuild-profile-mpris
+jhbuild-profile-mpris:
+	jhbuild run python -m cProfile -s cumulative scarlett_os/mpris.py
+
+.PHONY: jhbuild-profile-listener
+jhbuild-profile-listener:
+	jhbuild run python -m cProfile -s cumulative scarlett_os/listener.py
 
 # NOTE: You can also run pylint with warnings turned into errors using python -W error -m pylint … to get a traceback for the warnings.
 # SOURCE: https://github.com/neomake/neomake/issues/1828#issuecomment-377901357
@@ -911,6 +921,10 @@ run-pylint-error:
 .PHONY: jhbuild-run-pylint-error
 jhbuild-run-pylint-error:
 	jhbuild run -- pylint -E scarlett_os
+
+.PHONY: jhbuild-install
+jhbuild-install:
+	jhbuild run python setup.py install
 
 .PHONY: jhbuild-run-pylint-warning-stacktrace
 jhbuild-run-pylint-warning-stacktrace:
@@ -1107,3 +1121,10 @@ ninja-install-uninstalled:
 	ninja-build -C mesonbuild/ install
 
 meson-install-uninstalled: meson-build-uninstalled ninja-install-uninstalled
+
+# Since we don't want to write to homebrew system python directly, create a virtualenv them add modules in via symlinks
+# MUST MATCH SAME VERSION!
+pyenv-virtualenv37:
+	virtualenv -p /usr/local/bin/python3 --system-site-packages ~/.pyenv/versions/system37
+
+# ~/.pyenv/versions/system37/lib/python3.7/site-packages

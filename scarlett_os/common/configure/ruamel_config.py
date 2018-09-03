@@ -621,34 +621,6 @@ def get_version_file_path(override=None):
 #########################################################
 
 
-def _fake_config(override=None):
-    """Create a temporary config file."""
-    base = tempfile.mkdtemp()
-    logger.debug("base tempfile: {}".format(base))
-    config_file = os.path.join(base, "config.yaml")
-
-    #############################################################
-    # Example of config_file:
-    #############################################################
-    #  ⌁ pi@scarlett-ansible-manual1604-2  ~  ll /tmp/tmpnxz2wsa2
-    # total 12
-    # drwx------  2 pi   pi   4096 Feb 24 15:58 ./
-    # drwxrwxrwt 15 root root 4096 Feb 24 15:58 ../
-    # -rw-rw-r--  1 pi   pi   1034 Feb 24 15:58 config.yaml
-    # ⌁ pi@scarlett-ansible-manual1604-2  ~
-    #############################################################
-
-    if override is not None:
-        with open(config_file, "wt") as f:
-            f.write(override)
-        return base, config_file
-
-    with open(config_file, "wt") as f:
-        f.write(DEFAULT_CONFIG)
-
-    return base, config_file
-
-
 def load_config(yaml_filename):
     """Load a yaml file into memory using ruamel.yaml.round_trip_load
     Arguments:
@@ -1117,19 +1089,21 @@ class ConfigManager(object):
     def prep_default_config(self):
         """setup config.yaml defaults."""
 
+        self._config_path = ConfigManager.CONFIG_PATH
+
         # Step 1. ensure sub directory actually exists
         self.check_folder_structure()
 
         # Step 2. check if config file exists, if it doesnt, create a default config
-        if not os.path.exists(ConfigManager.CONFIG_PATH):
+        if not os.path.exists(self._config_path):
             # Step 2a. Load default
             default_config = load_config(ConfigManager.DEFAULT_CONFIG)
 
-            save_config(default_config, ConfigManager.CONFIG_PATH)
+            save_config(default_config, self._config_path)
 
             print(
                 "Default config is set, please don't forget to update your github tokens, webhook tokens, and jenkins configurations appropiately! Location = {}".format(
-                    ConfigManager.CONFIG_PATH
+                    self._config_path
                 )
             )
 
@@ -1167,6 +1141,33 @@ if __name__ == "__main__":
 
     from scarlett_os.internal.debugger import dump  # pylint: disable=W0611
     from scarlett_os.internal.debugger import pprint_color  # pylint: disable=W0611
+
+    def _fake_config(override=None):
+        """Create a temporary config file."""
+        base = tempfile.mkdtemp()
+        logger.debug("base tempfile: {}".format(base))
+        config_file = os.path.join(base, "config.yaml")
+
+        #############################################################
+        # Example of config_file:
+        #############################################################
+        #  ⌁ pi@scarlett-ansible-manual1604-2  ~  ll /tmp/tmpnxz2wsa2
+        # total 12
+        # drwx------  2 pi   pi   4096 Feb 24 15:58 ./
+        # drwxrwxrwt 15 root root 4096 Feb 24 15:58 ../
+        # -rw-rw-r--  1 pi   pi   1034 Feb 24 15:58 config.yaml
+        # ⌁ pi@scarlett-ansible-manual1604-2  ~
+        #############################################################
+
+        if override is not None:
+            with open(config_file, "wt") as f:
+                f.write(override)
+            return base, config_file
+
+        with open(config_file, "wt") as f:
+            f.write(DEFAULT_CONFIG)
+
+        return base, config_file
 
     fake_config_file_path_base, fake_config_file_path = _fake_config(
         override=RUSSIAN_CONFIG

@@ -7,6 +7,8 @@ import os
 
 logger = logging.getLogger(__name__)
 
+SCARLETT_DEBUG_MODE = os.environ.get("SCARLETT_DEBUG_MODE")
+
 # SOURCE: https://github.com/mjumbewu/jokosher/blob/e181d738674a98242b10dd697a9628be54c3121a/bin/jokosher
 # if platform.system() == "Windows":
 # 	ENV_PATHS = {"JOKOSHER_DATA_PATH" : ".\\",

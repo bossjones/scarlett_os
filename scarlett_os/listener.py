@@ -158,6 +158,11 @@ SCARLETT_LISTENER_I_SIGNALS = {
 }
 
 
+# from pocketsphinx.pocketsphinx import *
+# from sphinxbase.sphinxbase import *
+# config = Decoder.default_config()
+# config.set_float("-vad_threshold", 3.0)
+
 #################################################################
 # Managing the Gobject main loop thread.
 #################################################################
@@ -330,6 +335,8 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
     # __dr = None
     __instance = None
 
+    MAX_FAILURES = 10
+
     def __init__(self, name, config_manager, *args):
         threading.Thread.__init__(self)
         _IdleObject.__init__(self)
@@ -460,7 +467,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         ret = p.set_state(Gst.State.PLAYING)
         if ret == Gst.StateChangeReturn.FAILURE:
             logger.error("ERROR: Unable to set the pipeline to the playing state")
-        self.on_debug_activate()
+
+        # 8/8/2018 (Only enable this if we turn on debug mode)
+        if os.environ.get("SCARLETT_DEBUG_MODE"):
+            self.on_debug_activate()
+
         logger.debug("BEFORE: self.ready_sem.acquire()")
         self.ready_sem.acquire()
         logger.debug("AFTER: self.ready_sem.acquire()")
@@ -597,8 +608,6 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if os.access(pngfile, os.F_OK):
             os.remove(pngfile)
 
-        # FIXME: This needs to use dynamic paths, it's possible that we're having issues because of order of operations
-        # FIXME: STATIC PATH 7/3/2018
         Gst.debug_bin_to_dot_file(
             self.pipelines_stack[0], Gst.DebugGraphDetails.ALL, "generator-listener"
         )
@@ -623,6 +632,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             failed_temp = self.failed + 1
             self.failed = failed_temp
             logger.debug("self.failed = {}".format(int(self.failed)))
+            # failed > 10
             if self.failed > 4:
                 # reset pipline
                 self.dbus_proxy.emitSttFailedSignal()  # CHANGEME
@@ -695,6 +705,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         # get gst pipeline element pocketsphinx and set properties - BEGIN
         # ************************************************************
         pocketsphinx = pipeline.get_by_name("asr")
+        # from scarlett_os.internal.debugger import dump
+        # print("debug-2018-pocketsphinx - BEGIN")
+        # dump(pocketsphinx.get_property('decoder'))
+        # print("debug-2018-pocketsphinx - END")
+        # print(pocketsphinx.list_properties())
         if self._hmm:
             pocketsphinx.set_property("hmm", self._hmm)
         if self._lm:
@@ -717,11 +732,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
         if self._bestpath:
             pocketsphinx.set_property("bestpath", self._bestpath)
 
-        if self._silprob:
-            pocketsphinx.set_property("silprob", self._silprob)
+        # if self._silprob:
+        #     pocketsphinx.set_property("silprob", self._silprob)
 
-        if self._wip:
-            pocketsphinx.set_property("wip", self._wip)
+        # if self._wip:
+        #     pocketsphinx.set_property("wip", self._wip)
         # ************************************************************
         # get gst pipeline element pocketsphinx and set properties - END
         # ************************************************************
@@ -859,6 +874,7 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
             # IMPORTANT!!!!!
             # NOTE: I think this is causing a deadlock
             self.queue.put(buf.extract_dup(0, buf.get_size()))
+        # "OK = 0. Data passing was ok.""
         return Gst.FlowReturn.OK
 
     def _on_message(self, bus, message):
@@ -881,8 +897,11 @@ class ScarlettListenerI(threading.Thread, _IdleObject):
                     self.read_exc = NoStreamError()
                     self.ready_sem.release()
             elif struct and struct.get_name() == "pocketsphinx":
+                # "final", G_TYPE_BOOLEAN, final,
+                # SOURCE: https://github.com/cmusphinx/pocketsphinx/blob/1fdc9ccb637836d45d40956e745477a2bd3b470a/src/gst-plugin/gstpocketsphinx.c
                 if struct["final"]:
-                    logger.info(struct["hypothesis"])
+                    logger.info("confidence: {}".format(struct["confidence"]))
+                    logger.info("hypothesis: {}".format(struct["hypothesis"]))
                     if self.kw_found == 1:
                         # If keyword is set AND qualifier
                         # then perform action

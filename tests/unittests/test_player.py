@@ -198,8 +198,6 @@ class TestScarlettPlayer(object):
     def test_ScarlettPlayer_init_missing_gst_elements(
         self, mock_gst_elementfactory_make
     ):
-        path = os.path.join(
-            STATIC_SOUNDS_PATH, "pi-listening.wav"
-        )
+        path = os.path.join(STATIC_SOUNDS_PATH, "pi-listening.wav")
         with pytest.raises(scarlett_os.exceptions.IncompleteGStreamerError):
             p = player.ScarlettPlayer(path, False, False)

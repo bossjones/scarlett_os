@@ -45,12 +45,12 @@ def player_mocker_stopall(mocker):
     "Stop previous mocks, yield mocker plugin obj, then stopall mocks again"
     print("Called [setup]: mocker.stopall()")
     mocker.stopall()
-    print("Called [setup]: imp.reload(threadmanager)")
+    print("Called [setup]: imp.reload(player)")
     imp.reload(player)
     yield mocker
     print("Called [teardown]: mocker.stopall()")
     mocker.stopall()
-    print("Called [setup]: imp.reload(threadmanager)")
+    print("Called [setup]: imp.reload(player)")
     imp.reload(player)
 
 
@@ -67,9 +67,7 @@ class TestScarlettPlayer(object):
 
         player_data = []
 
-        pi_listening_wav = os.path.join(
-            STATIC_SOUNDS_PATH, "pi-listening.wav"
-        )
+        pi_listening_wav = os.path.join(STATIC_SOUNDS_PATH, "pi-listening.wav")
         # Run player
         wavefile = [pi_listening_wav]
         for path in wavefile:

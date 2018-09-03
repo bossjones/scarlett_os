@@ -39,6 +39,11 @@ from scarlett_os import tasker
 from scarlett_os.tasker import on_signal_recieved
 
 
+# from scarlett_os.internal.debugger import enable_remote_debugging
+
+# enable_remote_debugging()
+
+
 @pytest.mark.scarlettonly
 @pytest.mark.scarlettonlyintgr
 class TestScarlettTasker(IntegrationTestbaseMainloop):

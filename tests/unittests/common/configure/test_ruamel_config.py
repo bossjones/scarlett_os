@@ -24,6 +24,7 @@ from scarlett_os.common.configure import ruamel_config
 # from ruamel_config import logging
 
 from tests.conftest import dict_compare
+from tests import COMMON_MOCKED_CONFIG
 
 
 # source:
@@ -279,5 +280,81 @@ class TestFlatten(object):
 
         with pytest.raises(FileNotFoundError):
             temp_config = ruamel_config.load_config(config_file)
+
+        shutil.rmtree(base)
+
+
+@pytest.mark.ruamelconfigonly
+@pytest.mark.scarlettonly
+@pytest.mark.unittest
+@pytest.mark.simpleconfigtest
+@pytest.mark.scarlettonlyunittest
+class TestConfigManager(object):
+
+    """
+    Tests for the scarlett_os.common.configure.ruamel_config.ConfigManager class.
+    """
+
+    def test_config_path_base(self):
+        config_manager = ruamel_config.ConfigManager("/tmp/config.yaml")
+        assert config_manager.config_path_base == "/tmp"
+
+        base = tempfile.mkdtemp()
+        config_file = os.path.join(base, "config.yaml")
+
+        config_manager.config_path_base = base
+        assert config_manager.config_path_base == base
+
+        shutil.rmtree(base)
+
+    def test_config_path_base_without_args_is_default_config_path(self):
+        config_manager = ruamel_config.ConfigManager()
+        assert config_manager.config_path_base == "/home/pi/.config/scarlett_os"
+
+    def test_config_manager_env_override(self, monkeypatch):
+        base = tempfile.mkdtemp()
+        config_file = os.path.join(base, "config.yaml")
+
+        with open(config_file, "wt") as f:
+            f.write(COMMON_MOCKED_CONFIG)
+
+        monkeypatch.setenv("SCARLETT_OS_CONFIG_LATITUDE", "300")
+        monkeypatch.setenv("SCARLETT_OS_CONFIG_LONGITUDE", "200")
+        monkeypatch.setenv(
+            "SCARLETT_OS_CONFIG_POCKETSPHINX_HMM", "/tmp/model/en-us/en-us"
+        )
+        monkeypatch.setenv("SCARLETT_OS_CONFIG_POCKETSPHINX_LM", "/tmp/lm/1473.lm")
+        monkeypatch.setenv("SCARLETT_OS_CONFIG_POCKETSPHINX_DICT", "/tmp/dict/1473.dic")
+        monkeypatch.setenv("SCARLETT_OS_CONFIG_DEVICE", "plughw:CARD=Device,DEV=0")
+
+        config_manager = ruamel_config.ConfigManager(config_file)
+        config_manager.load()
+
+        assert config_manager.cfg["latitude"] == "300"
+        assert config_manager.cfg["longitude"] == "200"
+        assert config_manager.cfg["pocketsphinx"]["hmm"] == "/tmp/model/en-us/en-us"
+        assert config_manager.cfg["pocketsphinx"]["lm"] == "/tmp/lm/1473.lm"
+        assert config_manager.cfg["pocketsphinx"]["dict"] == "/tmp/dict/1473.dic"
+        assert (
+            config_manager.cfg["pocketsphinx"]["device"] == "plughw:CARD=Device,DEV=0"
+        )
+
+        shutil.rmtree(base)
+
+    def test_config_manager_prep_default_config(self, monkeypatch):
+        base = tempfile.mkdtemp()
+        config_file = os.path.join(base, "config.yaml")
+
+        monkeypatch.setattr(ruamel_config.ConfigManager, "CONFIG_PATH", config_file)
+
+
+        config_manager = ruamel_config.ConfigManager(config_file)
+        config_manager.prep_default_config()
+
+        config_manager.load()
+
+        # Don't need to check all the values, if this is true, the rest are as well.
+        assert config_manager.cfg["latitude"] == 40.7056308
+
 
         shutil.rmtree(base)

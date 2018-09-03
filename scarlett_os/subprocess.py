@@ -38,7 +38,10 @@ class Subprocess(GObject.GObject):
     :type fork: `bool`
     """
 
-    __gtype_name__ = "Subprocess"
+
+    # FIXME:     _gobject.type_register(cls, namespace.get('__gtype_name__'))
+    # RuntimeError: could not create new GType: Subprocess(subclass of GObject)
+    # __gtype_name__ = "Subprocess"
     __gsignals__ = {
         "exited": (
             GObject.SignalFlags.RUN_LAST,

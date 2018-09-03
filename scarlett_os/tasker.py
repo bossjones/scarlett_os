@@ -89,9 +89,7 @@ class SoundType:
 
     @staticmethod
     def get_speaker_path():
-        path_to_espeak_tmp_wav = os.path.join(
-            STATIC_SOUNDS_PATH, "espeak_tmp.wav"
-        )
+        path_to_espeak_tmp_wav = os.path.join(STATIC_SOUNDS_PATH, "espeak_tmp.wav")
         return [path_to_espeak_tmp_wav]
 
 
@@ -355,7 +353,7 @@ def print_keyword_args(**kwargs):
 
 
 def print_args(args):  # pragma: no cover
-    for i, v in enumerate(args):
+    for _, v in enumerate(args):
         print("another arg through *arg : {}".format(v))
 
 
@@ -439,12 +437,13 @@ def call_speaker(command_run_results):
             # source: https://wiki.gnome.org/Projects/PyGObject/Threading
             # PyGObject: uses yield True to pass control to the main loop in regular intervals.
             yield True
+            # NOTE: This is where we keep breaking intgr tests
             print("scarlett_text in tts_list")
             print("[scarlett_text]: {}".format(scarlett_text))
             print("type[scarlett_text]: {}".format(type(scarlett_text)))
             _wavepath = SoundType.get_speaker_path()[0]
             p = player.ScarlettPlayer(_wavepath, False, False)
-            logger.error("Duration: p.duration: {}".format(p.duration))
+            print("Duration: p.duration: {}".format(p.duration))
             while True:
                 try:
                     yield next(p)
@@ -512,6 +511,7 @@ def on_signal_recieved(*args, **kwargs):
         # 2. Perform command
         print("args[4]")
         print(args[4])
+        # FIXME: Here, maybe we should have a retry like 5 times before we decided to finally bail out 8/9/2018
         command_run_results = commands.Command.check_cmd(command_tuple=args[4])
         logger.debug("[command_run_results]: {}".format(command_run_results))
 
@@ -522,6 +522,17 @@ def on_signal_recieved(*args, **kwargs):
 
         # 4. Espeak gst plugin doesn't work, write sound to wav file
         call_espeak_subprocess(command_run_results)
+
+        # NOTE: Example of why we always get None back from Subprocess (8/9/2018)
+        # payload: ('  ScarlettListener caught a command match', 'pi-response', 'GO')
+        # 2018-08-09 00:04:35,890 scarlett_os.commands (MainThread) INFO     (check_cmd) Valid command_tuple: ('  ScarlettListener caught a command match', 'pi-response', 'GO')
+        # 2018-08-09 00:04:35,890 __main__     (MainThread) DEBUG    (on_signal_recieved) [command_run_results]: None
+        # 2018-08-09 00:04:35,890 __main__     (MainThread) INFO     (call_espeak_subprocess) Running in call_espeak_subprocess
+        # cmd: ['espeak', '-p75', '-s175', '-g1', '-w', '/home/pi/dev/bossjones-github/scarlett_os/scarlett_os/data/sounds/espeak_tmp.wav', '-ven+f3', '.   None   .']
+        # 2018-08-09 00:04:35,892 scarlett_os.subprocess (MainThread) DEBUG    (check_command_type) Running Command: 'espeak -p75 -s175 -g1 -w /home/pi/dev/bossjones-github/scarlett_os/scar
+        # lett_os/data/sounds/espeak_tmp.wav -ven+f3 .   None   .'
+        # 2018-08-09 00:04:35,892 scarlett_os.subprocess (MainThread) DEBUG    (__init__) command: ['espeak', '-p75', '-s175', '-g1', '-w', '/home/pi/dev/bossjones-github/scarlett_os/scarle
+        # tt_os/data/sounds/espeak_tmp.wav', '-ven+f3', '.   None   .']
 
         # # 4. Scarlett Speaks
         # tts_list = SpeakerType.speaker_to_array(command_run_results)
@@ -559,6 +570,12 @@ if __name__ == "__main__":
         from scarlett_os.internal.debugger import enable_remote_debugging
 
         enable_remote_debugging()
+
+    if os.environ.get("SCARLETT_PROFILE_MODE"):
+        import cProfile
+
+        pr = cProfile.Profile()
+        pr.enable()
 
     from scarlett_os.logger import setup_logger
 
@@ -617,9 +634,17 @@ if __name__ == "__main__":
             logger.warning("Remove this while testing manually")
             logger.warning("***********************************************")
             st.reset()
+
+            if os.environ.get("SCARLETT_PROFILE_MODE"):
+                pr.disable()
+                pr.print_stats(sort='time')
             pass
         except:
             raise
     else:
         # Close into a ipython debug shell
         loop.run()
+
+        if os.environ.get("SCARLETT_PROFILE_MODE"):
+            pr.disable()
+            pr.print_stats(sort='time')

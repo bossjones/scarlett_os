@@ -18,7 +18,7 @@ pocketsphinx:
     # Enable Graph Search | Boolean. Default: true
     # ********************************************************
     # Word insertion penalty
-    wip: 0.0001
+    wip: 1e-4
     device: plughw:CARD=Device,DEV=0
     # ********************************************************
     # FIXME: ????? THIS IS THE ORIG VALUE, do we need too set it back? 8/5/2018 # bestpath: 0

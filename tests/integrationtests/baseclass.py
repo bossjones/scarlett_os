@@ -7,11 +7,13 @@ Contains the Base class for integration tests using the classic xunit-style setu
 """
 
 import os
+# import gc
 import sys
 import signal
 import pytest
 import builtins
 import threading
+# import traceback
 
 import unittest
 import unittest.mock as mock
@@ -33,6 +35,7 @@ from scarlett_os.internal import gi  # noqa
 from scarlett_os.internal.gi import Gio  # noqa
 from scarlett_os.internal.gi import GObject  # noqa
 from scarlett_os.internal.gi import GLib
+# from scarlett_os.internal.gi import Gst
 
 from scarlett_os import tasker
 
@@ -40,6 +43,34 @@ from scarlett_os import tasker
 # source: http://doc.pytest.org/en/latest/xunit_setup.html
 
 # from scarlett_os.utility.dbus_runner import DBusRunner
+
+#########################################################################################
+# NOTE: Are we ready to test for garbage collection leaks?
+#########################################################################################
+# def handle_uncaught_exception(exctype, value, trace):
+#     traceback.print_tb(trace)
+#     print(value, file=sys.stderr)
+#     sys.exit(1)
+
+
+# sys.excepthook = handle_uncaught_exception
+
+
+# def handle_glog(domain, level, message, udata):
+#     Gst.debug_print_stack_trace()
+#     traceback.print_stack()
+#     print("%s - %s" % (domain, message), file=sys.stderr)
+#     sys.exit(-11)
+
+
+# # GStreamer Not enabled because of an assertion on caps on the CI server.
+# # See https://gitlab.gnome.org/thiblahute/pitivi/-/jobs/66570
+# for category in ["Gtk", "Gdk", "GLib-GObject", "GES"]:
+#     GLib.log_set_handler(category, GLib.LogLevelFlags.LEVEL_CRITICAL, handle_glog, None)
+
+detect_leaks = os.environ.get("SCARLETT_TEST_DETECT_LEAKS", "0") not in ("0", "")
+# os.environ["PITIVI_USER_CACHE_DIR"] = tempfile.mkdtemp(suffix="pitiviTestsuite")
+#########################################################################################
 
 
 def run_emitter_signal(request, get_environment, sig_name="ready"):
@@ -84,7 +115,10 @@ def run_emitter_signal(request, get_environment, sig_name="ready"):
 
 # @pytest.mark.usefixtures("service_on_outside", "get_environment", "get_bus")
 class IntegrationTestbase(object):
+    # _tracked_types = (Gst.MiniObject, Gst.Element, Gst.Pad, Gst.Caps)
+
     """Base class for integration tests."""
+    # _tracked_types = (Gst.MiniObject, Gst.Element, Gst.Pad, Gst.Caps)
 
     # Tests are not allowed to have an __init__ method
     # Python shells, the underscore (_) means the result of the last evaluated expression in the shell:
@@ -102,6 +136,9 @@ class IntegrationTestbase(object):
         self.status = None
         self.tasker = None
 
+        # if detect_leaks:
+        #     self.gctrack()
+
     def setup_tasker(self, monkeypatch, get_bus):
         """Create ScarlettTasker object and call setup_controller."""
         monkeypatch.setattr(
@@ -116,6 +153,51 @@ class IntegrationTestbase(object):
         self.status = None
         self.tasker.reset()
         self.tasker = None
+
+    #     if detect_leaks:
+    #         self.gccollect()
+    #         self.gcverify()
+
+    # def gctrack(self):
+    #     self.gccollect()
+    #     self._tracked = []
+    #     for obj in gc.get_objects():
+    #         if not isinstance(obj, self._tracked_types):
+    #             continue
+
+    #         self._tracked.append(obj)
+
+    # def gccollect(self):
+    #     ret = 0
+    #     while True:
+    #         c = gc.collect()
+    #         ret += c
+    #         if c == 0:
+    #             break
+    #     return ret
+
+    # def gcverify(self):
+    #     leaked = []
+    #     for obj in gc.get_objects():
+    #         if not isinstance(obj, self._tracked_types) or \
+    #                 obj in self._tracked:
+    #             continue
+
+    #         leaked.append(obj)
+
+    #     # we collect again here to get rid of temporary objects created in the
+    #     # above loop
+    #     self.gccollect()
+
+    #     for elt in leaked:
+    #         print(elt)
+    #         for i in gc.get_referrers(elt):
+    #             print("   ", i)
+
+    #     # NOTE: I think these guys are the same, not sure
+    #     # self.assertFalse(leaked, leaked)
+    #     assert not leaked, leaked
+    #     del self._tracked
 
 
 # @pytest.mark.usefixtures("service_on_outside", "get_environment", "get_bus")

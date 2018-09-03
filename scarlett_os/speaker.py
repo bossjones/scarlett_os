@@ -163,7 +163,5 @@ if __name__ == "__main__":
     ]
     for scarlett_text in tts_list:
         with s_thread.time_logger("Scarlett Speaks"):
-            path_to_espeak_tmp_wav = os.path.join(
-                STATIC_SOUNDS_PATH, "espeak_tmp.wav"
-            )
+            path_to_espeak_tmp_wav = os.path.join(STATIC_SOUNDS_PATH, "espeak_tmp.wav")
             ScarlettSpeaker(text_to_speak=scarlett_text, wavpath=path_to_espeak_tmp_wav)
