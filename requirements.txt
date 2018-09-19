@@ -22,7 +22,7 @@ markupsafe==1.0           # via jinja2
 paramiko==2.4.1           # via fabric3
 psutil==5.4.6
 pyasn1==0.4.3             # via paramiko
-pycparser==2.18           # via cffi
+pycparser==2.19           # via cffi
 pydbus==0.6.0
 pynacl==1.2.1             # via paramiko
 python-dateutil==2.7.3    # via ruamel.yaml.convert
