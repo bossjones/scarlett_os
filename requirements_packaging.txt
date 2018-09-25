@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file requirements_packaging.txt requirements_packaging.in
 #
-click==6.7                # via pip-tools
+click==7.0                # via pip-tools
 first==2.0.1              # via pip-tools
 pip-tools==2.0.2
 pipdeptree==0.13.0
