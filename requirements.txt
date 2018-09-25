@@ -10,7 +10,7 @@ certifi==2018.4.16        # via requests
 cffi==1.11.5              # via bcrypt, cryptography, pynacl
 chardet==3.0.4            # via requests
 click-plugins==1.0.3
-click==6.7
+click==7.0
 colorlog==3.1.4
 configobj==5.0.6          # via ruamel.yaml.cmd
 cryptography==2.2.2       # via paramiko
