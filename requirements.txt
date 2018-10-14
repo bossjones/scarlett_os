@@ -29,7 +29,7 @@ python-dateutil==2.7.3    # via ruamel.yaml.convert
 pyyaml==3.12
 requests==2.19.1          # via layeredconfig
 ruamel.std.argparse==0.8.1  # via ruamel.yaml.cmd
-ruamel.yaml.cmd==0.4.2
+ruamel.yaml.cmd==0.5.1
 ruamel.yaml.convert==0.3.0  # via ruamel.yaml.cmd
 ruamel.yaml==0.15.42
 six==1.11.0
