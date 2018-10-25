@@ -25,7 +25,7 @@ pyasn1==0.4.3             # via paramiko
 pycparser==2.18           # via cffi
 pydbus==0.6.0
 pynacl==1.2.1             # via paramiko
-python-dateutil==2.7.3    # via ruamel.yaml.convert
+python-dateutil==2.7.4    # via ruamel.yaml.convert
 pyyaml==3.12
 requests==2.19.1          # via layeredconfig
 ruamel.std.argparse==0.8.1  # via ruamel.yaml.cmd
