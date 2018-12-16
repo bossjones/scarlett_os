@@ -71,7 +71,7 @@ pydocstyle==2.1.1
 pyflakes==1.6.0           # via flake8
 pygal==2.4.0              # via pytest-benchmark
 pygaljs==1.0.1            # via pytest-benchmark
-pygments==2.2.0           # via ipython, pdbpp, sphinx
+pygments==2.3.1           # via ipython, pdbpp, sphinx
 pylint==1.9.2
 pyparsing==2.2.0          # via packaging
 pystuck==0.8.5
