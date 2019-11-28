@@ -37,4 +37,4 @@ typing==3.6.4
 urllib3==1.23             # via requests
 voluptuous==0.11.1
 xdg==3.0.2
-yapf==0.22.0
+yapf==0.29.0
