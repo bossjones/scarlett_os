@@ -19,7 +19,7 @@ idna==2.7                 # via cryptography, requests
 jinja2==2.10
 layeredconfig==0.3.2
 markupsafe==1.0           # via jinja2
-paramiko==2.4.1           # via fabric3
+paramiko==2.7.0           # via fabric3
 psutil==5.4.6
 pyasn1==0.4.3             # via paramiko
 pycparser==2.18           # via cffi
