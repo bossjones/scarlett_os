@@ -9,32 +9,32 @@ bcrypt==3.1.4             # via paramiko
 certifi==2018.4.16        # via requests
 cffi==1.11.5              # via bcrypt, cryptography, pynacl
 chardet==3.0.4            # via requests
-click-plugins==1.0.3
-click==6.7
-colorlog==3.1.4
+click-plugins==1.0.3      # via -r requirements.in
+click==6.7                # via -r requirements.in, click-plugins
+colorlog==3.1.4           # via -r requirements.in
 configobj==5.0.6          # via ruamel.yaml.cmd
 cryptography==2.2.2       # via paramiko
-fabric3==1.14.post1
+fabric3==1.14.post1       # via -r requirements.in
 idna==2.7                 # via cryptography, requests
-jinja2==2.10
-layeredconfig==0.3.2
+jinja2==2.10              # via -r requirements.in
+layeredconfig==0.3.2      # via -r requirements.in
 markupsafe==1.0           # via jinja2
 paramiko==2.4.1           # via fabric3
-psutil==5.4.6
+psutil==5.6.6             # via -r requirements.in
 pyasn1==0.4.3             # via paramiko
 pycparser==2.18           # via cffi
-pydbus==0.6.0
+pydbus==0.6.0             # via -r requirements.in
 pynacl==1.2.1             # via paramiko
 python-dateutil==2.7.3    # via ruamel.yaml.convert
-pyyaml==3.12
+pyyaml==3.12              # via -r requirements.in, layeredconfig
 requests==2.19.1          # via layeredconfig
 ruamel.std.argparse==0.8.1  # via ruamel.yaml.cmd
-ruamel.yaml.cmd==0.4.2
+ruamel.yaml.cmd==0.4.2    # via -r requirements.in
 ruamel.yaml.convert==0.3.0  # via ruamel.yaml.cmd
-ruamel.yaml==0.15.42
-six==1.11.0
-typing==3.6.4
+ruamel.yaml==0.15.42      # via -r requirements.in, ruamel.yaml.convert
+six==1.11.0               # via -r requirements.in, bcrypt, configobj, cryptography, fabric3, layeredconfig, pynacl, python-dateutil
+typing==3.6.4             # via -r requirements.in
 urllib3==1.23             # via requests
-voluptuous==0.11.1
-xdg==3.0.2
-yapf==0.22.0
+voluptuous==0.11.1        # via -r requirements.in
+xdg==3.0.2                # via -r requirements.in
+yapf==0.22.0              # via -r requirements.in
