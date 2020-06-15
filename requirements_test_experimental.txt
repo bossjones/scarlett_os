@@ -34,4 +34,4 @@ six==1.11.0               # via more-itertools, prompt-toolkit, pydocstyle, pyte
 snowballstemmer==1.2.1    # via pydocstyle
 traitlets==4.3.2          # via ipython
 unittest2pytest==0.3
-wcwidth==0.1.7            # via prompt-toolkit
+wcwidth==0.1.8            # via prompt-toolkit

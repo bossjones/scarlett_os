@@ -12,4 +12,4 @@ prompt-toolkit==1.0.15    # via ptpython
 ptpython==0.41
 pygments==2.2.0           # via ptpython
 six==1.11.0               # via prompt-toolkit
-wcwidth==0.1.7            # via prompt-toolkit
+wcwidth==0.1.8            # via prompt-toolkit
