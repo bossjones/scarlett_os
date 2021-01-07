@@ -6,10 +6,10 @@
 #
 docopt==0.6.2             # via ptpython
 jedi==0.12.1              # via ptpython
-lxml==4.2.3
+lxml==4.6.2               # via -r requirements_autocomplete.in
 parso==0.3.0              # via jedi
 prompt-toolkit==1.0.15    # via ptpython
-ptpython==0.41
+ptpython==0.41            # via -r requirements_autocomplete.in
 pygments==2.2.0           # via ptpython
 six==1.11.0               # via prompt-toolkit
 wcwidth==0.1.7            # via prompt-toolkit
